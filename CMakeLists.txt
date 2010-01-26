@@ -1,0 +1,8 @@
+CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
+
+PROJECT (MessageFacility)
+
+ADD_SUBDIRECTORY (MessageLogger)
+ADD_SUBDIRECTORY (MessageService)
+#ADD_SUBDIRECTORY (ParameterSet)
+#ADD_SUBDIRECTORY (Utilities)
