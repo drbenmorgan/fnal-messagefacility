@@ -1,9 +1,9 @@
-#ifndef FWCore_Utilities_Algorithms_h
-#define FWCore_Utilities_Algorithms_h
+#ifndef MessageFacility_Utilities_Algorithms_h
+#define MessageFacility_Utilities_Algorithms_h
 
 #include <algorithm>
 
-namespace edm {
+namespace mf {
 
   /// Function templates that provide wrappers for standard algorithms,
   /// avoiding some duplication

@@ -1,12 +1,12 @@
-#ifndef FWCore_MessageService_SingleThreadMSPresence_h
-#define FWCore_MessageService_SingleThreadMSPresence_h
+#ifndef MessageFacility_MessageService_SingleThreadMSPresence_h
+#define MessageFacility_MessageService_SingleThreadMSPresence_h
 
 #include "boost/thread/thread.hpp"
-#include "FWCore/Utilities/interface/Presence.h"
-#include "FWCore/MessageService/interface/MessageLoggerScribe.h"
-#include "FWCore/MessageLogger/interface/AbstractMLscribe.h"
+#include "Utilities/interface/Presence.h"
+#include "MessageService/interface/MessageLoggerScribe.h"
+#include "MessageLogger/interface/AbstractMLscribe.h"
 
-namespace edm  {
+namespace mf  {
 namespace service {       
 
 class SingleThreadMSPresence : public Presence
@@ -28,7 +28,7 @@ private:
 
 
 }   // end of namespace service
-}  // namespace edm
+}  // namespace mf
 
 
-#endif  // FWCore_MessageService_SingleThreadMSPresence_h
+#endif  // MessageFacility_MessageService_SingleThreadMSPresence_h

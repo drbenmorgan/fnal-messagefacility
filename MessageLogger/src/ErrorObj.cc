@@ -42,7 +42,7 @@
 // ----------------------------------------------------------------------
 
 
-#include "FWCore/MessageLogger/interface/ErrorObj.h"
+#include "MessageLogger/interface/ErrorObj.h"
 
 #ifndef IOSTREAM_INCLUDED
 #endif
@@ -60,7 +60,7 @@
 // ----------------------------------------------------------------------
 
 
-namespace edm
+namespace mf
 {
 
 
@@ -275,4 +275,4 @@ ErrorObj & operator<<( ErrorObj & e, const char s[] ) {
   return e.opltlt(s);
 }
 
-} // end of namespace edm  */
+} // end of namespace mf  */

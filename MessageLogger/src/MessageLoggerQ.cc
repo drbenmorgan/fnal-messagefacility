@@ -1,8 +1,8 @@
-#include "FWCore/MessageLogger/interface/MessageLoggerQ.h"
-#include "FWCore/MessageLogger/interface/AbstractMLscribe.h"
-#include "FWCore/MessageLogger/interface/ConfigurationHandshake.h"
-#include "FWCore/Utilities/interface/EDMException.h"
-#include "FWCore/MessageLogger/interface/ErrorObj.h"
+#include "MessageLogger/interface/MessageLoggerQ.h"
+#include "MessageLogger/interface/AbstractMLscribe.h"
+#include "MessageLogger/interface/ConfigurationHandshake.h"
+#include "Utilities/interface/EDMException.h"
+#include "MessageLogger/interface/ErrorObj.h"
 
 #include <cstring>
 #include <iostream>
@@ -50,18 +50,18 @@
 // 14 - 8/12/09 mf, cdj
 //      Better ownership management of standAlone or other scribe
 
-using namespace edm;
+using namespace mf;
 
 // ChangeLog 11
 namespace {
-   class StandAloneScribe : public edm::service::AbstractMLscribe {
+   class StandAloneScribe : public mf::service::AbstractMLscribe {
       
    public:
       StandAloneScribe() {}
             
       // ---------- member functions ---------------------------
       virtual
-      void  runCommand(edm::MessageLoggerQ::OpCode  opcode, void * operand);
+      void  runCommand(mf::MessageLoggerQ::OpCode  opcode, void * operand);
       
    private:
       StandAloneScribe(const StandAloneScribe&); // stop default
@@ -73,11 +73,11 @@ namespace {
    };      
    
    void  
-   StandAloneScribe::runCommand(edm::MessageLoggerQ::OpCode  opcode, void * operand) {
+   StandAloneScribe::runCommand(mf::MessageLoggerQ::OpCode  opcode, void * operand) {
       //even though we don't print, have to clean up memory
       switch (opcode) {
-         case edm::MessageLoggerQ::LOG_A_MESSAGE: {
-            edm::ErrorObj *  errorobj_p = static_cast<edm::ErrorObj *>(operand);
+         case mf::MessageLoggerQ::LOG_A_MESSAGE: {
+            mf::ErrorObj *  errorobj_p = static_cast<mf::ErrorObj *>(operand);
 	    if ( MessageLoggerQ::ignore				// ChangeLog 13
 	    		(errorobj_p->xid().severity, errorobj_p->xid().id) ) {
               delete errorobj_p;
@@ -95,9 +95,9 @@ namespace {
             delete errorobj_p;
             break;
          }
-         case edm::MessageLoggerQ::JOBREPORT:
-         case edm::MessageLoggerQ::JOBMODE:
-         case edm::MessageLoggerQ::GROUP_STATS:
+         case mf::MessageLoggerQ::JOBREPORT:
+         case mf::MessageLoggerQ::JOBMODE:
+         case mf::MessageLoggerQ::GROUP_STATS:
 	 {
             std::string* string_p = static_cast<std::string*> (operand);
             delete string_p;
@@ -118,7 +118,7 @@ namespace {
 
 } // end of anonymous namespace
 
-boost::shared_ptr<edm::service::AbstractMLscribe>  
+boost::shared_ptr<mf::service::AbstractMLscribe>  
   MessageLoggerQ::mlscribe_ptr = obtainStandAloneScribePtr();  
   				// changeLog 8, 11, 14
 
@@ -139,7 +139,7 @@ MessageLoggerQ *
 
 void
   MessageLoggerQ::setMLscribe_ptr
-  	(boost::shared_ptr<edm::service::AbstractMLscribe> m) // changeLog 8, 14
+  	(boost::shared_ptr<mf::service::AbstractMLscribe> m) // changeLog 8, 14
 {
   if (!m) { 
     mlscribe_ptr = obtainStandAloneScribePtr();
@@ -163,7 +163,7 @@ void
   try {
     mlscribe_ptr->runCommand(opcode, operand);
   }
-  catch(edm::Exception& ex)
+  catch(mf::Exception& ex)
   {
     ex << "\n The preceding exception was thrown in MessageLoggerScribe\n";
     ex << "and forwarded to the main thread from the Messages thread.";
@@ -255,15 +255,15 @@ bool
 }  // MessageLoggerQ::handshaked(op)
 
 // change Log 13:
-edm::ELseverityLevel MessageLoggerQ::threshold ("WARNING");
+mf::ELseverityLevel MessageLoggerQ::threshold ("WARNING");
 std::set<std::string> MessageLoggerQ::squelchSet;
 void MessageLoggerQ::standAloneThreshold(std::string const & severity) {
-  threshold = edm::ELseverityLevel(severity);  
+  threshold = mf::ELseverityLevel(severity);  
 }
 void MessageLoggerQ::squelch(std::string const & category) {
   squelchSet.insert(category);  
 }
-bool MessageLoggerQ::ignore ( edm::ELseverityLevel const & severity, 
+bool MessageLoggerQ::ignore ( mf::ELseverityLevel const & severity, 
   			       std::string const & category ) {
   if ( severity < threshold ) return true;
   if ( squelchSet.count(category) > 0 ) return true;

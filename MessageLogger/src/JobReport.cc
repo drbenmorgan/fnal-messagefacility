@@ -27,16 +27,16 @@ Changes Log 1: 2009/01/14 10:29:00, Natalia Garcia Nebot
 
 */
 
-#include "FWCore/MessageLogger/interface/JobReport.h"
-#include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "FWCore/Utilities/interface/EDMException.h"
+#include "MessageLogger/interface/JobReport.h"
+#include "MessageLogger/interface/MessageLogger.h"
+#include "Utilities/interface/EDMException.h"
 
 #include <iostream>
 #include <sstream>
 
 
 
-namespace edm
+namespace mf
 {
     /*
      * Note that output formatting is spattered across these classes
@@ -110,16 +110,16 @@ namespace edm
   }
 
   //To talk to MessageLogger directly
-  edm::MessageSender& operator<< (edm::MessageSender& os, JobReport::InputFile const& f) {
+  mf::MessageSender& operator<< (mf::MessageSender& os, JobReport::InputFile const& f) {
     return print(os,f);
   }
-  edm::MessageSender& operator<< (edm::MessageSender& os, JobReport::OutputFile const& f){
+  mf::MessageSender& operator<< (mf::MessageSender& os, JobReport::OutputFile const& f){
     return print(os,f);
   }
-  edm::MessageSender& operator<< (edm::MessageSender& os, JobReport::RunReport const& f){
+  mf::MessageSender& operator<< (mf::MessageSender& os, JobReport::RunReport const& f){
     return print(os,f);
   }
-//  edm::MessageSender& operator<< (edm::MessageSender& os, JobReport::LumiSectionReport const& rep) {
+//  mf::MessageSender& operator<< (mf::MessageSender& os, JobReport::LumiSectionReport const& rep) {
 //    return print(os,rep);
 //  }
 //
@@ -127,14 +127,14 @@ namespace edm
 
     JobReport::InputFile& JobReport::JobReportImpl::getInputFileForToken(JobReport::Token t) {
 	if (t >= inputFiles_.size() ) {
-	    throw edm::Exception(edm::errors::LogicError)
+	    throw mf::Exception(mf::errors::LogicError)
 	      << "Access reported for input file with token "
 	      << t
 	      << " but no matching input file is found\n";
 	}
 
 	if (inputFiles_[t].fileHasBeenClosed) {
-	    throw edm::Exception(edm::errors::LogicError)
+	    throw mf::Exception(mf::errors::LogicError)
 	      << "Access reported for input file with token "
 	      << t
 	      << " after this file has been closed.\n"
@@ -148,13 +148,13 @@ namespace edm
 
     JobReport::OutputFile& JobReport::JobReportImpl::getOutputFileForToken(JobReport::Token t) {
 	if (t >= outputFiles_.size() ) {
-	    throw edm::Exception(edm::errors::LogicError)
+	    throw mf::Exception(mf::errors::LogicError)
 	      << "Access reported for output file with token "
 	      << t
 	      << " but no matching output file is found\n";
 	}
 	if (outputFiles_[t].fileHasBeenClosed) {
-	    throw edm::Exception(edm::errors::LogicError)
+	    throw mf::Exception(mf::errors::LogicError)
 	      << "Access reported for output file with token "
 	      << t
 	      << " after this file has been closed.\n"
@@ -937,4 +937,4 @@ namespace edm
   }
 
 
-} //namspace edm
+} //namspace mf

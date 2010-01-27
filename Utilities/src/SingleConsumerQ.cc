@@ -1,6 +1,6 @@
-#include "FWCore/Utilities/interface/SingleConsumerQ.h"
+#include "Utilities/interface/SingleConsumerQ.h"
 
-namespace edm
+namespace mf
 {
 
   SingleConsumerQ::SingleConsumerQ(int max_event_size, int max_queue_depth):

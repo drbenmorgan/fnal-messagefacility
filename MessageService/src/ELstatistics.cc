@@ -25,11 +25,11 @@
 //  ---------------------------------------------------------------------
 
 
-#include "FWCore/MessageService/interface/ELstatistics.h"
-#include "FWCore/MessageService/interface/ELadministrator.h"
-#include "FWCore/MessageService/interface/ELcontextSupplier.h"
+#include "MessageService/interface/ELstatistics.h"
+#include "MessageService/interface/ELadministrator.h"
+#include "MessageService/interface/ELcontextSupplier.h"
 
-#include "FWCore/MessageLogger/interface/ErrorObj.h"
+#include "MessageLogger/interface/ErrorObj.h"
 
 #include <iostream>
 #include <iomanip>
@@ -42,7 +42,7 @@
 // #define ELstatsLOG_TRACE
 
 
-namespace edm {
+namespace mf {
 namespace service {
 
 
@@ -161,7 +161,7 @@ ELstatistics::clone() const  {
 }  // clone()
 
 
-bool  ELstatistics::log( const edm::ErrorObj & msg )  {
+bool  ELstatistics::log( const mf::ErrorObj & msg )  {
 
   #ifdef ELstatsLOG_TRACE
     std::cerr << "  =:=:=: Log to an ELstatistics\n";
@@ -564,4 +564,4 @@ void ELstatistics::noteGroupedCategory(std::string const & cat) {
 }
   
 } // end of namespace service  
-} // end of namespace edm  
+} // end of namespace mf  

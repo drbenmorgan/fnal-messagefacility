@@ -14,11 +14,11 @@
 // ----------------------------------------------------------------------
 
 
-#include "FWCore/MessageLogger/interface/ELstring.h"
-#include "FWCore/MessageLogger/interface/ELseverityLevel.h"
+#include "MessageLogger/interface/ELstring.h"
+#include "MessageLogger/interface/ELseverityLevel.h"
 
 
-namespace edm {       
+namespace mf {       
 
 
 // ----------------------------------------------------------------------
@@ -51,7 +51,7 @@ public:
 // ----------------------------------------------------------------------
 
 
-}        // end of namespace edm
+}        // end of namespace mf
 
 
 #endif  // MessageLogger_ELextendedID_h

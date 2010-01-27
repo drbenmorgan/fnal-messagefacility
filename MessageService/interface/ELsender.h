@@ -1,5 +1,5 @@
-#ifndef FWCore_MessageService_ELsender_h
-#define FWCore_MessageService_ELsender_h
+#ifndef MessageFacility_MessageService_ELsender_h
+#define MessageFacility_MessageService_ELsender_h
 
 // ----------------------------------------------------------------------
 //
@@ -37,7 +37,7 @@
 //
 // ----------------------------------------------------------------------
 
-namespace edm {       
+namespace mf {       
 namespace service {       
 
 // ----------------------------------------------------------------------
@@ -68,7 +68,7 @@ public:
 
 
 }        // end of namespace service
-}        // end of namespace edm
+}        // end of namespace mf
 
 
-#endif // FWCore_MessageService_ELsender_h
+#endif // MessageFacility_MessageService_ELsender_h

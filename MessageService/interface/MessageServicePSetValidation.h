@@ -1,5 +1,5 @@
-#ifndef FWCore_MessageService_MessageServicePSetValidation_h
-#define FWCore_MessageService_MessageServicePSetValidation_h
+#ifndef MessageFacility_MessageService_MessageServicePSetValidation_h
+#define MessageFacility_MessageService_MessageServicePSetValidation_h
 
 // -*- C++ -*-
 //
@@ -31,12 +31,12 @@
 
 // user include files
 
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/Utilities/interface/Exception.h"
+#include "ParameterSet/interface/ParameterSet.h"
+#include "Utilities/interface/Exception.h"
 
 // forward declarations
 
-namespace edm  {
+namespace mf  {
 namespace service  {
 
 
@@ -293,9 +293,9 @@ private:
 
 }  // namespace service
 
-}  // namespace edm
+}  // namespace mf
 
 
 
-#endif  // FWCore_MessageService_MessageServicePSetValidation_h
+#endif  // MessageFacility_MessageService_MessageServicePSetValidation_h
 

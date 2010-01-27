@@ -1,5 +1,5 @@
-#ifndef FWCore_MessageLogger_SilentMLscribe_h
-#define FWCore_MessageLogger_SilentMLscribe_h
+#ifndef MessageFacility_MessageLogger_SilentMLscribe_h
+#define MessageFacility_MessageLogger_SilentMLscribe_h
 // -*- C++ -*-
 //
 // Package:     MessageLogger
@@ -22,10 +22,10 @@
 // system include files
 
 // user include files
-#include "FWCore/MessageLogger/interface/AbstractMLscribe.h"
+#include "MessageLogger/interface/AbstractMLscribe.h"
 
 // forward declarations
-namespace edm {
+namespace mf {
    namespace service {
       class SilentMLscribe : public AbstractMLscribe {
          

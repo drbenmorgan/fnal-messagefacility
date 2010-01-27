@@ -1,5 +1,5 @@
-#ifndef FWCore_MessageService_ELtsErrorLog_h
-#define FWCore_MessageService_ELtsErrorLog_h
+#ifndef MessageFacility_MessageService_ELtsErrorLog_h
+#define MessageFacility_MessageService_ELtsErrorLog_h
 
 
 // ----------------------------------------------------------------------
@@ -11,11 +11,11 @@
 //
 // ----------------------------------------------------------------------
 
-#include "FWCore/MessageService/interface/ErrorLog.h"
+#include "MessageService/interface/ErrorLog.h"
 
-#include "FWCore/MessageLogger/interface/ErrorObj.h"
+#include "MessageLogger/interface/ErrorObj.h"
 
-namespace edm {       
+namespace mf {       
 namespace service {       
 
 // ----------------------------------------------------------------------
@@ -89,8 +89,8 @@ public:
 // ----------------------------------------------------------------------
 
 protected:
-  bool pokeMsg ( edm::ErrorObj & msg );
-  void dispatch ( edm::ErrorObj & msg );
+  bool pokeMsg ( mf::ErrorObj & msg );
+  void dispatch ( mf::ErrorObj & msg );
 
   // -----  member data:
   //
@@ -99,7 +99,7 @@ protected:
   ErrorLog 		e;
   ELstring 		process;
   bool 			msgIsActive;
-  edm::ErrorObj		msg;
+  mf::ErrorObj		msg;
 
 };  // ELtsErrorLog
 
@@ -133,9 +133,9 @@ inline void ELtsItem ( ELtsErrorLog & e, short n );
 inline void ELtsItem ( ELtsErrorLog & e, unsigned short n );
 
 }        // end of namespace service
-}        // end of namespace edm
+}        // end of namespace mf
 
 #define ELTSERRORLOG_ICC
-#include "FWCore/MessageService/interface/ELtsErrorLog.icc"
+#include "MessageService/interface/ELtsErrorLog.icc"
 
 #endif  // ELTSERRORLOG_H

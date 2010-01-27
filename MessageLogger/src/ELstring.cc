@@ -13,11 +13,11 @@
 // ----------------------------------------------------------------------
 
 
-#include "FWCore/MessageLogger/interface/ELstring.h"
+#include "MessageLogger/interface/ELstring.h"
 #include <cctype>
 #include <cstring>
 
-namespace edm
+namespace mf
 {
 
 
@@ -46,4 +46,4 @@ bool  eq( const ELstring & s1, const ELstring s2 )  {
 }  // eq()
 
 
-} // end of namespace edm  */
+} // end of namespace mf  */

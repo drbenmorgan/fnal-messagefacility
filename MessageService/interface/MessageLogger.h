@@ -1,5 +1,5 @@
-#ifndef FWCore_MessageService_MessageLogger_h
-#define FWCore_MessageService_MessageLogger_h
+#ifndef MessageFacility_MessageService_MessageLogger_h
+#define MessageFacility_MessageService_MessageLogger_h
 
 // -*- C++ -*-
 //
@@ -30,15 +30,15 @@
 
 // user include files
 
-#include "FWCore/MessageLogger/interface/ErrorObj.h"
+#include "MessageLogger/interface/ErrorObj.h"
 
-#include "FWCore/ServiceRegistry/interface/ActivityRegistry.h"
-#include "DataFormats/Provenance/interface/EventID.h"
-#include "FWCore/MessageLogger/interface/ELseverityLevel.h"
+//#include "ServiceRegistry/interface/ActivityRegistry.h"
+//#include "DataFormats/Provenance/interface/EventID.h"
+#include "MessageLogger/interface/ELseverityLevel.h"
 
 // forward declarations
 
-namespace edm  {
+namespace mf  {
 class ParameterSet;
 namespace service  {
 
@@ -46,8 +46,9 @@ namespace service  {
 class MessageLogger
 {
 public:
-  MessageLogger( ParameterSet const &, ActivityRegistry & );
+  MessageLogger( ParameterSet const & /*, ActivityRegistry & */);
 
+/*
   void  postBeginJob();
   void  postEndJob();
   void  jobFailure();
@@ -83,17 +84,17 @@ public:
   void  preModuleEndLumi  ( ModuleDescription const & );
   void  postModuleEndLumi ( ModuleDescription const & );
 
-  void  preEventProcessing ( edm::EventID const &, edm::Timestamp const & );
+  void  preEventProcessing ( mf::EventID const &, mf::Timestamp const & );
   void  postEventProcessing( Event const &, EventSetup const & );
 
-  void  preBeginRun    ( const edm::RunID&, const edm::Timestamp& );
-  void  postBeginRun   ( const edm::Run&, EventSetup const & );
-  void  preEndRun      ( const edm::RunID&, const edm::Timestamp& );
-  void  postEndRun     ( const edm::Run&, EventSetup const & );
-  void  preBeginLumi   ( const edm::LuminosityBlockID&, const edm::Timestamp& );
-  void  postBeginLumi  ( const edm::LuminosityBlock&, EventSetup const & );
-  void  preEndLumi     ( const edm::LuminosityBlockID&, const edm::Timestamp& );
-  void  postEndLumi    ( const edm::LuminosityBlock&, EventSetup const & );
+  void  preBeginRun    ( const mf::RunID&, const mf::Timestamp& );
+  void  postBeginRun   ( const mf::Run&, EventSetup const & );
+  void  preEndRun      ( const mf::RunID&, const mf::Timestamp& );
+  void  postEndRun     ( const mf::Run&, EventSetup const & );
+  void  preBeginLumi   ( const mf::LuminosityBlockID&, const mf::Timestamp& );
+  void  postBeginLumi  ( const mf::LuminosityBlock&, EventSetup const & );
+  void  preEndLumi     ( const mf::LuminosityBlockID&, const mf::Timestamp& );
+  void  postEndLumi    ( const mf::LuminosityBlock&, EventSetup const & );
 
   void  prePathBeginRun   ( const std::string& pathname );
   void  postPathBeginRun  ( const std::string& pathname, HLTPathStatus const&);
@@ -105,20 +106,23 @@ public:
   void  postPathEndLumi   ( const std::string& pathname, HLTPathStatus const&);
   void  preProcessPath    ( const std::string& pathname );
   void  postProcessPath   ( const std::string& pathname, HLTPathStatus const&);
+*/
 
-
-  void  fillErrorObj(edm::ErrorObj& obj) const;
+  void  fillErrorObj(mf::ErrorObj& obj) const;
   bool  debugEnabled() const { return debugEnabled_; }
 
   static 
   bool  anyDebugEnabled() { return anyDebugEnabled_; }
 
+/*
   static
   void  SummarizeInJobReport();
-  
+*/  
+
 private:
 
   // set up the module name in the message drop, and the enable/suppress info
+/*
   void  establishModule       ( const ModuleDescription& desc,
   		                std::string const & whichPhase );
   void  establishModuleCtor   ( const ModuleDescription& desc,
@@ -127,17 +131,18 @@ private:
   		                std::string const & whichPhase );
   void  establish             ( std::string const & whichPhase ); 
   void  unEstablish           ( std::string const & whichPhase ); 
+*/
   
  // put an ErrorLog object here, and maybe more
 
-  edm::EventID curr_event_;
+  //mf::EventID curr_event_;
   std::string curr_module_;
 
   std::set<std::string> debugEnabledModules_;
   std::map<std::string,ELseverityLevel> suppression_levels_;
   bool debugEnabled_;
   //this is a cache which profiling has shown to be helpful
-  std::map<const ModuleDescription*, std::string> descToCalcName_;
+  //std::map<const ModuleDescription*, std::string> descToCalcName_;
   static bool   anyDebugEnabled_;
   static bool everyDebugEnabled_;
 
@@ -154,9 +159,9 @@ private:
 
 }  // namespace service
 
-}  // namespace edm
+}  // namespace mf
 
 
 
-#endif  // FWCore_MessageService_MessageLogger_h
+#endif  // MessageFacility_MessageService_MessageLogger_h
 

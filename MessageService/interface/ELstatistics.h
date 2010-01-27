@@ -1,5 +1,5 @@
-#ifndef FWCore_MessageService_ELstatistics_h
-#define FWCore_MessageService_ELstatistics_h
+#ifndef MessageFacility_MessageService_ELstatistics_h
+#define MessageFacility_MessageService_ELstatistics_h
 
 
 // ----------------------------------------------------------------------
@@ -26,15 +26,15 @@
 //
 // ----------------------------------------------------------------------
 
-#include "FWCore/MessageService/interface/ELdestination.h"
+#include "MessageService/interface/ELdestination.h"
 
-#include "FWCore/MessageLogger/interface/ELextendedID.h"
-#include "FWCore/MessageLogger/interface/ELmap.h"
-#include "FWCore/MessageLogger/interface/ELstring.h"
+#include "MessageLogger/interface/ELextendedID.h"
+#include "MessageLogger/interface/ELmap.h"
+#include "MessageLogger/interface/ELstring.h"
 
 #include <set>
 
-namespace edm {       
+namespace mf {       
 
 
 // ----------------------------------------------------------------------
@@ -76,7 +76,7 @@ public:
 		//-| of copying a destination onto the list:  ofstream
 		//-| ownership is passed to the new copy.
 
-  virtual bool log( const edm::ErrorObj & msg );
+  virtual bool log( const mf::ErrorObj & msg );
 
   // output( const ELstring & item, const ELseverityLevel & sev )
   // from base class
@@ -133,7 +133,7 @@ private:
 
 
 }        // end of namespace service
-}        // end of namespace edm
+}        // end of namespace mf
 
 
-#endif // FWCore_MessageService_ELstatistics_h
+#endif // MessageFacility_MessageService_ELstatistics_h

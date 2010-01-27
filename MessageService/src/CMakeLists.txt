@@ -20,7 +20,7 @@ SET (FILES
     MessageLoggerDefaults.cc
     MessageLoggerScribe.cc
     MessageServicePresence.cc
-    MessageServicePSetValidation.cc
+#    MessageServicePSetValidation.cc
     MsgContext.cc
     SingleThreadMSPresence.cc
     ThreadQueue.cc

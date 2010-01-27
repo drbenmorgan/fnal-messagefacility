@@ -1,5 +1,5 @@
-#ifndef FWCore_MessageService_ELset_h
-#define FWCore_MessageService_ELset_h
+#ifndef MessageFacility_MessageService_ELset_h
+#define MessageFacility_MessageService_ELset_h
 
 
 // ----------------------------------------------------------------------
@@ -15,12 +15,12 @@
 //
 // ----------------------------------------------------------------------
 
-#include "FWCore/MessageLogger/interface/ELstring.h"
+#include "MessageLogger/interface/ELstring.h"
 
 #include <set>
 
 
-namespace edm {       
+namespace mf {       
 namespace service {       
 
 
@@ -36,7 +36,7 @@ typedef std::set<ELsetS> ELset_string;
 
 
 }        // end of namespace service
-}        // end of namespace edm
+}        // end of namespace mf
 
 
-#endif // FWCore_MessageService_ELset_h
+#endif // MessageFacility_MessageService_ELset_h

@@ -17,7 +17,7 @@
 // ----------------------------------------------------------------------
 
 
-#include "FWCore/MessageService/interface/ELlimitsTable.h"
+#include "MessageService/interface/ELlimitsTable.h"
 
 //#include <iostream>
 //using std::cerr;
@@ -27,7 +27,7 @@
 // #define ELlimitsTableATRACE
 
 
-namespace edm {
+namespace mf {
 namespace service {
 
 // ----------------------------------------------------------------------
@@ -264,4 +264,4 @@ ELlimitsTable & ELlimitsTable::operator=( const ELlimitsTable & t )  {
 
 
 } // end of namespace service  
-} // end of namespace edm  
+} // end of namespace mf  

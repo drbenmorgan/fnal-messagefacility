@@ -1,5 +1,5 @@
 #ifndef THREADSAFEERRORLOG_H
-#define FWCore_MessageService_ThreadSafeErrorLog_h
+#define MessageFacility_MessageService_ThreadSafeErrorLog_h
 
 // ----------------------------------------------------------------------
 //
@@ -18,9 +18,9 @@
 
 
 
-#include "FWCore/MessageService/interface/ELtsErrorLog.h"
+#include "MessageService/interface/ELtsErrorLog.h"
 
-namespace edm {       
+namespace mf {       
 namespace service {       
 
 
@@ -127,7 +127,7 @@ inline ThreadSafeErrorLog<Mutex> &
 
 
 }        // end of namespace service
-}       // end of namespace edm
+}       // end of namespace mf
 
 
 // ----------------------------------------------------------------------
@@ -135,7 +135,7 @@ inline ThreadSafeErrorLog<Mutex> &
 // ----------------------------------------------------------------------
 
 #define THREADSAFEERRORLOG_ICC
-  #include "FWCore/MessageLogger/interface/ThreadSafeErrorLog.icc"
+  #include "MessageLogger/interface/ThreadSafeErrorLog.icc"
 #undef  THREADSAFEERRORLOG_ICC
 
 

@@ -1,5 +1,5 @@
-#ifndef FWCore_Utilities_value_ptr_h
-#define FWCore_Utilities_value_ptr_h
+#ifndef MessageFacility_Utilities_value_ptr_h
+#define MessageFacility_Utilities_value_ptr_h
 
 // ----------------------------------------------------------------------
 //
@@ -35,7 +35,7 @@
 #include <algorithm> // for std::swap()
 #include <memory>
 
-namespace edm {
+namespace mf {
 
   // --------------------------------------------------------------------
   //

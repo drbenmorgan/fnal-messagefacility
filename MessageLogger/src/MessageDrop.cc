@@ -16,7 +16,7 @@
 #include "boost/thread/tss.hpp"
 
 // user include files
-#include "FWCore/MessageLogger/interface/MessageDrop.h"
+#include "MessageLogger/interface/MessageDrop.h"
 
 // Change Log
 //
@@ -24,10 +24,10 @@
 //		     	into the instance() method to cure a 24-byte memory
 //			leak reported by valgrind. Suggested by MP.
 
-using namespace edm;
+using namespace mf;
 
 
-edm::Exception * MessageDrop::ex_p = 0;
+mf::Exception * MessageDrop::ex_p = 0;
 
 MessageDrop *
 MessageDrop::instance()

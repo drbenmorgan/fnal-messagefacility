@@ -1,14 +1,14 @@
-#ifndef FWCore_MessageService_MessageServicePresence_h
-#define FWCore_MessageService_MessageServicePresence_h
+#ifndef MessageFacility_MessageService_MessageServicePresence_h
+#define MessageFacility_MessageService_MessageServicePresence_h
 
-#include "FWCore/Utilities/interface/Presence.h"
-#include "FWCore/MessageService/interface/MainThreadMLscribe.h"
+#include "Utilities/interface/Presence.h"
+#include "MessageService/interface/MainThreadMLscribe.h"
 
 #include "boost/thread/thread.hpp"
 #include "boost/shared_ptr.hpp"
 
 
-namespace edm  {
+namespace mf  {
 namespace service {       
 
 class ThreadQueue;
@@ -33,7 +33,7 @@ private:
 
 
 }   // end of namespace service
-}  // namespace edm
+}  // namespace mf
 
 
-#endif  // FWCore_MessageService_MessageServicePresence_h
+#endif  // MessageFacility_MessageService_MessageServicePresence_h

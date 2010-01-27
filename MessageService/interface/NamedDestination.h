@@ -1,14 +1,14 @@
-#ifndef FWCore_MessageService_NamedDestination_h
-#define FWCore_MessageService_NamedDestination_h 1
+#ifndef MessageFacility_MessageService_NamedDestination_h
+#define MessageFacility_MessageService_NamedDestination_h 1
 
-#include "FWCore/MessageService/interface/ELdestination.h"
+#include "MessageService/interface/ELdestination.h"
 
 #include <string>
 #include <memory>
 
 class ELdestination;
 
-namespace edm  {
+namespace mf  {
 namespace service {       
 
   class NamedDestination {
@@ -24,6 +24,6 @@ namespace service {
     std::auto_ptr<ELdestination> dest_p_;
   };
 }        // end of namespace service
-}       // end of namespace edm
+}       // end of namespace mf
 
-#endif // FWCore_MessageService_NamedDestination_h
+#endif // MessageFacility_MessageService_NamedDestination_h

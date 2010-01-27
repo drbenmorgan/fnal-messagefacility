@@ -1,5 +1,5 @@
-#ifndef FWCore_Utilities_UnixSignalHandlers_h
-#define FWCore_Utilities_UnixSignalHandlers_h
+#ifndef MessageFacility_Utilities_UnixSignalHandlers_h
+#define MessageFacility_Utilities_UnixSignalHandlers_h
 
 /*----------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ and manipulate Unix-style signal handling.
 #include <signal.h>
 #include "boost/thread/thread.hpp"
 
-namespace edm {
+namespace mf {
 
     extern boost::mutex usr2_lock;
     extern volatile bool shutdown_flag;
@@ -31,5 +31,5 @@ namespace edm {
     void installCustomHandler(int signum, CFUNC func);
     void sigInventory();
 
-}  // end of namespace edm
+}  // end of namespace mf
 #endif

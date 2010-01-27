@@ -1,5 +1,5 @@
-#ifndef FWCore_MessageService_ELcontextSupplier_h
-#define FWCore_MessageService_ELcontextSupplier_h
+#ifndef MessageFacility_MessageService_ELcontextSupplier_h
+#define MessageFacility_MessageService_ELcontextSupplier_h
 
 
 // ----------------------------------------------------------------------
@@ -25,10 +25,10 @@
 // ----------------------------------------------------------------------
 
 
-#include "FWCore/MessageLogger/interface/ELstring.h"
-#include "FWCore/MessageLogger/interface/ErrorObj.h"
+#include "MessageLogger/interface/ELstring.h"
+#include "MessageLogger/interface/ErrorObj.h"
 
-namespace edm {       
+namespace mf {       
 namespace service {       
 
 // ----------------------------------------------------------------------
@@ -43,8 +43,8 @@ public:
   virtual ELstring            summaryContext() const = 0;
   virtual ELstring            fullContext()    const = 0;
 
-  virtual void editErrorObj( edm::ErrorObj & msg ) const  { }
-  virtual edm::ELstring traceRoutine( ) const  { return edm::ELstring(""); }
+  virtual void editErrorObj( mf::ErrorObj & msg ) const  { }
+  virtual mf::ELstring traceRoutine( ) const  { return mf::ELstring(""); }
 
   virtual ~ELcontextSupplier()  { ; }
 
@@ -55,7 +55,7 @@ public:
 
 
 }        // end of namespace service
-}        // end of namespace edm
+}        // end of namespace mf
 
 
 #endif  // FWCore_MessageService_ELcontextSupplier_h

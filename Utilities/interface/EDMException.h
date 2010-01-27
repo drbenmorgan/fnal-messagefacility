@@ -1,5 +1,5 @@
-#ifndef FWCore_Utilities_EDMException_h
-#define FWCore_Utilities_EDMException_h
+#ifndef MessageFacility_Utilities_EDMException_h
+#define MessageFacility_Utilities_EDMException_h
 
 /**
 
@@ -18,14 +18,14 @@
 
 **/
 
-#include "FWCore/Utilities/interface/Exception.h"
+#include "Utilities/interface/Exception.h"
 #include <map>
 #include <string>
 
 #define EDM_MAP_ENTRY(map, ns, name) map[ns::name]=#name
 #define EDM_MAP_ENTRY_NONS(map, name) map[name]=#name
 
-namespace edm {
+namespace mf {
   namespace errors {
 
     // If you add a new entry to the set of values, make sure to

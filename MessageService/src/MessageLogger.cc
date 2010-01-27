@@ -58,40 +58,40 @@
 // system include files
 // user include files
 
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "ParameterSet/interface/ParameterSet.h"
 
-#include "FWCore/MessageService/interface/MessageLogger.h"
-#include "FWCore/MessageService/interface/MessageServicePSetValidation.h"
+#include "MessageService/interface/MessageLogger.h"
+//#include "MessageService/interface/MessageServicePSetValidation.h"
 
-#include "FWCore/MessageLogger/interface/MessageLoggerQ.h"
-#include "FWCore/MessageLogger/interface/MessageDrop.h"
+#include "MessageLogger/interface/MessageLoggerQ.h"
+#include "MessageLogger/interface/MessageDrop.h"
 
-#include "DataFormats/Provenance/interface/ModuleDescription.h"
+//#include "DataFormats/Provenance/interface/ModuleDescription.h"
 
-#include "FWCore/MessageLogger/interface/JobReport.h"
-#include "FWCore/Utilities/interface/EDMException.h"
-#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "MessageLogger/interface/JobReport.h"
+#include "Utilities/interface/EDMException.h"
+//#include "ServiceRegistry/interface/Service.h"
 
 #include <sstream>
 #include <string>
 #include <map>
 
-using namespace edm;
-using namespace edm::service;
+using namespace mf;
+using namespace mf::service;
 
-namespace edm {
+namespace mf {
 namespace service {
 
-bool edm::service::MessageLogger::anyDebugEnabled_                    = false;
-bool edm::service::MessageLogger::everyDebugEnabled_                  = false;
-bool edm::service::MessageLogger::fjrSummaryRequested_                = false;
+bool mf::service::MessageLogger::anyDebugEnabled_                    = false;
+bool mf::service::MessageLogger::everyDebugEnabled_                  = false;
+bool mf::service::MessageLogger::fjrSummaryRequested_                = false;
   
 //
 // constructors and destructor
 //
-edm::service::MessageLogger::
+mf::service::MessageLogger::
 MessageLogger( ParameterSet const & iPS
-             , ActivityRegistry   & iRegistry
+             /*, ActivityRegistry   & iRegistry*/
                             )
 	: curr_module_("BeginningJob")
         , debugEnabled_(false)
@@ -102,8 +102,8 @@ MessageLogger( ParameterSet const & iPS
 	, nonModule_warningEnabled(true)
 {
   // prepare cfg validation string for later use
-  MessageServicePSetValidation validator;
-  messageServicePSetValidatationResults_ = validator(iPS);	// change log 12
+  //MessageServicePSetValidation validator;
+  //messageServicePSetValidatationResults_ = validator(iPS);	// change log 12
   
   typedef std::vector<std::string>  vString;
   vString  empty_vString;
@@ -173,19 +173,20 @@ MessageLogger( ParameterSet const & iPS
   }
 
   								// change log 5
-  std::string jr_name = edm::MessageDrop::instance()->jobreport_name; 
+  std::string jr_name = mf::MessageDrop::instance()->jobreport_name; 
   if (!jr_name.empty()) {			
     std::string * jr_name_p = new std::string(jr_name);
     MessageLoggerQ::MLqJOB( jr_name_p ); 			// change log 9
   }
   
   								// change log 7
-  std::string jm = edm::MessageDrop::instance()->jobMode; 
+  std::string jm = mf::MessageDrop::instance()->jobMode; 
   std::string * jm_p = new std::string(jm);
   MessageLoggerQ::MLqMOD( jm_p ); 				// change log 9
   
   MessageLoggerQ::MLqCFG( new ParameterSet(iPS) );		// change log 9
 
+/*
   iRegistry.watchPostBeginJob(this,&MessageLogger::postBeginJob);
   iRegistry.watchPostEndJob(this,&MessageLogger::postEndJob);
   iRegistry.watchJobFailure(this,&MessageLogger::jobFailure);	// change log 14
@@ -250,9 +251,10 @@ MessageLogger( ParameterSet const & iPS
   iRegistry.watchPostPathEndLumi(this,&MessageLogger::postPathEndLumi);
   iRegistry.watchPreProcessPath(this,&MessageLogger::preProcessPath);
   iRegistry.watchPostProcessPath(this,&MessageLogger::postProcessPath);
-
+*/
 } // ctor
 
+/*
 //
 // Shared helper routines for establishing module name and enabling behavior
 //
@@ -391,8 +393,8 @@ MessageLogger::preModuleConstruction(const ModuleDescription& desc)
 {
   if (!messageServicePSetHasBeenValidated_) {			// change log 12
     if (!messageServicePSetValidatationResults_.empty() ) {
-      throw ( edm::Exception 
-                   ( edm::errors::Configuration
+      throw ( mf::Exception 
+                   ( mf::errors::Configuration
                    , messageServicePSetValidatationResults_ 
 	           )                                         );
     }
@@ -416,8 +418,8 @@ MessageLogger::preSourceConstruction(const ModuleDescription& desc)
 {
   if (!messageServicePSetHasBeenValidated_) {			// change log 12
     if (!messageServicePSetValidatationResults_.empty() ) {
-      throw ( edm::Exception 
-                   ( edm::errors::Configuration
+      throw ( mf::Exception 
+                   ( mf::errors::Configuration
                    , messageServicePSetValidatationResults_ 
 	           )                                         );
     }
@@ -504,115 +506,115 @@ void MessageLogger::postFile()
 
 
 void
-MessageLogger::preEventProcessing( const edm::EventID& iID
-                                 , const edm::Timestamp& iTime )
+MessageLogger::preEventProcessing( const mf::EventID& iID
+                                 , const mf::Timestamp& iTime )
 {
   std::ostringstream ost;
   curr_event_ = iID;
   ost << "Run: " << curr_event_.run() 
       << " Event: " << curr_event_.event();    			// change log 2
-  edm::MessageDrop::instance()->runEvent = ost.str();  
+  mf::MessageDrop::instance()->runEvent = ost.str();  
 }
 
 void
 MessageLogger::postEventProcessing(const Event&, const EventSetup&)
 {
-  edm::MessageDrop::instance()->runEvent = "PostProcessEvent";  
+  mf::MessageDrop::instance()->runEvent = "PostProcessEvent";  
 }
 
 void
-MessageLogger::preBeginRun( const edm::RunID& iID
-                          , const edm::Timestamp& iTime )	// change log 14
+MessageLogger::preBeginRun( const mf::RunID& iID
+                          , const mf::Timestamp& iTime )	// change log 14
 {
   std::ostringstream ost;
   ost << "Run: " << iID.run();
-  edm::MessageDrop::instance()->runEvent = ost.str();  
+  mf::MessageDrop::instance()->runEvent = ost.str();  
 }
 void MessageLogger::postBeginRun(const Run&, const EventSetup&)
-{ edm::MessageDrop::instance()->runEvent = "PostBeginRun"; }
+{ mf::MessageDrop::instance()->runEvent = "PostBeginRun"; }
 
 void
 MessageLogger::prePathBeginRun( const std::string & pathname )	// change log 14
 {
   std::ostringstream ost;
   ost << "RPath: " << pathname;
-  edm::MessageDrop::instance()->moduleName = ost.str();  
+  mf::MessageDrop::instance()->moduleName = ost.str();  
 }
 void MessageLogger::postPathBeginRun(std::string const&,HLTPathStatus const&)
-{ edm::MessageDrop::instance()->moduleName = "PostPathBeginRun"; }
+{ mf::MessageDrop::instance()->moduleName = "PostPathBeginRun"; }
 
 void
 MessageLogger::prePathEndRun( const std::string & pathname )	// change log 14
 {
   std::ostringstream ost;
   ost << "RPathEnd: " << pathname;
-  edm::MessageDrop::instance()->moduleName = ost.str();  
+  mf::MessageDrop::instance()->moduleName = ost.str();  
 }
 void MessageLogger::postPathEndRun(std::string const&,HLTPathStatus const&)
-{ edm::MessageDrop::instance()->moduleName = "PostPathEndRun"; }
+{ mf::MessageDrop::instance()->moduleName = "PostPathEndRun"; }
 
 void
 MessageLogger::prePathBeginLumi( const std::string & pathname )	// change log 14
 {
   std::ostringstream ost;
   ost << "LPath: " << pathname;
-  edm::MessageDrop::instance()->moduleName = ost.str();  
+  mf::MessageDrop::instance()->moduleName = ost.str();  
 }
 void MessageLogger::postPathBeginLumi(std::string const&,HLTPathStatus const&)
-{ edm::MessageDrop::instance()->moduleName = "PostPathBeginLumi"; }
+{ mf::MessageDrop::instance()->moduleName = "PostPathBeginLumi"; }
 
 void
 MessageLogger::prePathEndLumi( const std::string & pathname )	// change log 14
 {
   std::ostringstream ost;
   ost << "LPathEnd: " << pathname;
-  edm::MessageDrop::instance()->moduleName = ost.str();  
+  mf::MessageDrop::instance()->moduleName = ost.str();  
 }
 void MessageLogger::postPathEndLumi(std::string const&,HLTPathStatus const&)
-{ edm::MessageDrop::instance()->moduleName = "PostPathEndLumi"; }
+{ mf::MessageDrop::instance()->moduleName = "PostPathEndLumi"; }
 
 void
 MessageLogger::preProcessPath( const std::string & pathname )	// change log 14
 {
   std::ostringstream ost;
   ost << "PreProcPath " << pathname;
-  edm::MessageDrop::instance()->moduleName = ost.str();  
+  mf::MessageDrop::instance()->moduleName = ost.str();  
 }
 void MessageLogger::postProcessPath(std::string const&,HLTPathStatus const&)
-{ edm::MessageDrop::instance()->moduleName = "PostProcessPath"; }
+{ mf::MessageDrop::instance()->moduleName = "PostProcessPath"; }
 
 void
-MessageLogger::preEndRun( const edm::RunID& iID
-                        , const edm::Timestamp& iTime )
+MessageLogger::preEndRun( const mf::RunID& iID
+                        , const mf::Timestamp& iTime )
 {
   std::ostringstream ost;
   ost << "End Run: " << iID.run();
-  edm::MessageDrop::instance()->runEvent = ost.str();  
+  mf::MessageDrop::instance()->runEvent = ost.str();  
 }
 void MessageLogger::postEndRun(const Run&, const EventSetup&)
-{ edm::MessageDrop::instance()->runEvent = "PostEndRun"; }
+{ mf::MessageDrop::instance()->runEvent = "PostEndRun"; }
 
 void
-MessageLogger::preBeginLumi( const edm::LuminosityBlockID& iID
-                          , const edm::Timestamp& iTime )
+MessageLogger::preBeginLumi( const mf::LuminosityBlockID& iID
+                          , const mf::Timestamp& iTime )
 {
   std::ostringstream ost;
   ost << "Run: " << iID.run() << " Lumi: " << iID.luminosityBlock();
-  edm::MessageDrop::instance()->runEvent = ost.str();  
+  mf::MessageDrop::instance()->runEvent = ost.str();  
 }
 void MessageLogger::postBeginLumi(const LuminosityBlock&, const EventSetup&)
-{ edm::MessageDrop::instance()->runEvent = "PostBeginLumi"; }
+{ mf::MessageDrop::instance()->runEvent = "PostBeginLumi"; }
 
 void
-MessageLogger::preEndLumi( const edm::LuminosityBlockID& iID
-                        , const edm::Timestamp& iTime )
+MessageLogger::preEndLumi( const mf::LuminosityBlockID& iID
+                        , const mf::Timestamp& iTime )
 {
   std::ostringstream ost;
   ost << "Run: " << iID.run() << " Lumi: " << iID.luminosityBlock();
-  edm::MessageDrop::instance()->runEvent = ost.str();  
+  mf::MessageDrop::instance()->runEvent = ost.str();  
 }
 void MessageLogger::postEndLumi(const LuminosityBlock&, const EventSetup&)
-{ edm::MessageDrop::instance()->runEvent = "PostEndLumi"; }
+{ mf::MessageDrop::instance()->runEvent = "PostEndLumi"; }
 
 void
 MessageLogger::postEndJob()
@@ -629,12 +631,12 @@ MessageLogger::jobFailure()
   SummarizeInJobReport();     // Put summary info into Job Rep  // change log 10
   MessageLoggerQ::MLqSUM ( ); // trigger summary info.		// change log 9
 }
-
+*/
 
 //
 // Other methods
 //
-
+/*
 void
 MessageLogger::SummarizeInJobReport() {
   if ( fjrSummaryRequested_ ) { 
@@ -645,6 +647,7 @@ MessageLogger::SummarizeInJobReport() {
     delete smp;
   } 
 }
+*/
 
 } // end of namespace service  
-} // end of namespace edm  
+} // end of namespace mf  

@@ -1,5 +1,5 @@
-#include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "FWCore/MessageLogger/interface/MessageDrop.h"
+#include "MessageLogger/interface/MessageLogger.h"
+#include "MessageLogger/interface/MessageDrop.h"
 
 // Change Log
 //
@@ -25,7 +25,7 @@
 //
 // ------------------------------------------------------------------------
 
-namespace edm {
+namespace mf {
 
 LogInfo::~LogInfo() {}
 LogWarning::~LogWarning() {}
@@ -40,29 +40,29 @@ LogProblem::~LogProblem() {}
 LogImportant::~LogImportant() {}
 
 void LogStatistics() {
-  edm::MessageLoggerQ::MLqSUM ( ); // trigger summary info
+  mf::MessageLoggerQ::MLqSUM ( ); // trigger summary info
 }
 
 bool isDebugEnabled() {
-  return ( edm::MessageDrop::instance()->debugEnabled );
+  return ( mf::MessageDrop::instance()->debugEnabled );
 }
 
 bool isInfoEnabled() {
-  return( edm::MessageDrop::instance()->infoEnabled );
+  return( mf::MessageDrop::instance()->infoEnabled );
 }
 
 bool isWarningEnabled() {
-  return( edm::MessageDrop::instance()->warningEnabled );
+  return( mf::MessageDrop::instance()->warningEnabled );
 }
 
 void HaltMessageLogging() {
-  edm::MessageLoggerQ::MLqSHT ( ); // Shut the logger up
+  mf::MessageLoggerQ::MLqSHT ( ); // Shut the logger up
 }
 
 void FlushMessageLog() {
   if (MessageDrop::instance()->messageLoggerScribeIsRunning !=
   			MLSCRIBE_RUNNING_INDICATOR) return; 	// 6/20/08 mf
-  edm::MessageLoggerQ::MLqFLS ( ); // Flush the message log queue
+  mf::MessageLoggerQ::MLqFLS ( ); // Flush the message log queue
 }
 
 bool isMessageProcessingSetUp() {				// 6/20/08 mf
@@ -75,11 +75,11 @@ bool isMessageProcessingSetUp() {				// 6/20/08 mf
 
 void GroupLogStatistics(std::string const & category) {
   std::string * cat_p = new std::string(category);
-  edm::MessageLoggerQ::MLqGRP (cat_p); // Indicate a group summary category
+  mf::MessageLoggerQ::MLqGRP (cat_p); // Indicate a group summary category
   // Note that the scribe will be responsible for deleting cat_p
 }
 
-edm::LogDebug_::LogDebug_( std::string const & id, std::string const & file, int line )
+mf::LogDebug_::LogDebug_( std::string const & id, std::string const & file, int line )
   : ap( new MessageSender(ELsuccess,id) ), debugEnabled(true)
 { *this
         << " "
@@ -87,23 +87,23 @@ edm::LogDebug_::LogDebug_( std::string const & id, std::string const & file, int
         << ":" << line << "\n"; }
 
 std::string
-edm::LogDebug_::stripLeadingDirectoryTree(const std::string & file) const {
+mf::LogDebug_::stripLeadingDirectoryTree(const std::string & file) const {
   std::string::size_type lastSlash = file.find_last_of('/');
   if (lastSlash == std::string::npos) return file;
   if (lastSlash == file.size()-1)     return file;
   return file.substr(lastSlash+1, file.size()-lastSlash-1);
 }
 
-edm::LogTrace_::LogTrace_( std::string const & id )
+mf::LogTrace_::LogTrace_( std::string const & id )
   : ap( new MessageSender(ELsuccess,id,true) )
   , debugEnabled(true)
   {  }
 
 void setStandAloneMessageThreshold(std::string const & severity) {
-  edm::MessageLoggerQ::standAloneThreshold(severity);
+  mf::MessageLoggerQ::standAloneThreshold(severity);
 }
 void squelchStandAloneMessageCategory(std::string const & category){
-  edm::MessageLoggerQ::squelch(category);
+  mf::MessageLoggerQ::squelch(category);
 }
 
-}  // namespace edm
+}  // namespace mf

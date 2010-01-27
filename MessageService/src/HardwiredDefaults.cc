@@ -22,14 +22,14 @@
 
 
 
-#include "FWCore/MessageService/interface/MessageLoggerDefaults.h"
+#include "MessageService/interface/MessageLoggerDefaults.h"
 
 #include <iostream>
 
-namespace edm {
+namespace mf {
 namespace service {
 
-edm::JobMode 
+mf::JobMode 
 MessageLoggerDefaults::
 mode(std::string const & jm)
 {
@@ -201,5 +201,5 @@ hardwireNilJobMode()
 
 
 } // end of namespace service  
-} // end of namespace edm  
+} // end of namespace mf  
 

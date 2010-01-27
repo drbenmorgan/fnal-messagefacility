@@ -1,5 +1,5 @@
-#ifndef FWCore_MessageService_ELlimitsTable_h
-#define FWCore_MessageService_ELlimitsTable_h
+#ifndef MessageFacility_MessageService_ELlimitsTable_h
+#define MessageFacility_MessageService_ELlimitsTable_h
 
 
 // ----------------------------------------------------------------------
@@ -36,12 +36,12 @@
 // ----------------------------------------------------------------------
 
 
-#include "FWCore/MessageLogger/interface/ELstring.h"
-#include "FWCore/MessageLogger/interface/ELseverityLevel.h"
-#include "FWCore/MessageLogger/interface/ELextendedID.h"
-#include "FWCore/MessageLogger/interface/ELmap.h"
+#include "MessageLogger/interface/ELstring.h"
+#include "MessageLogger/interface/ELseverityLevel.h"
+#include "MessageLogger/interface/ELextendedID.h"
+#include "MessageLogger/interface/ELmap.h"
 
-namespace edm {       
+namespace mf {       
 namespace service {       
 
 
@@ -113,7 +113,7 @@ protected:
 
 
 }        // end of namespace service
-}        // end of namespace edm
+}        // end of namespace mf
 
 
-#endif // FWCore_MessageService_ELlimitsTable_h
+#endif // MessageFacility_MessageService_ELlimitsTable_h

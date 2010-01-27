@@ -9,17 +9,17 @@
 // ----------------------------------------------------------------------
 
 
-#include "FWCore/MessageService/interface/ELrecv.h"
-#include "FWCore/MessageService/interface/ErrorLog.h"
-#include "FWCore/MessageService/interface/ELadministrator.h"
-#include "FWCore/MessageService/interface/ELcontextSupplier.h"
+#include "MessageService/interface/ELrecv.h"
+#include "MessageService/interface/ErrorLog.h"
+#include "MessageService/interface/ELadministrator.h"
+#include "MessageService/interface/ELcontextSupplier.h"
 
 #ifndef CSTRING_INCLUDED
   #include <cstring>
 #endif
 
 
-namespace edm {
+namespace mf {
 namespace service {
 
 class ELservConSup : public ELcontextSupplier  {
@@ -180,4 +180,4 @@ void  ELrecv ( int nbytes, const char * data, ELstring localModule )  {
 
 
 } // end of namespace service  
-} // end of namespace edm  
+} // end of namespace mf  

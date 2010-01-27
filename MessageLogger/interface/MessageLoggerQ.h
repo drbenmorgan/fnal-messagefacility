@@ -1,7 +1,7 @@
-#ifndef FWCore_MessageLogger_MessageLoggerQ_h
-#define FWCore_MessageLogger_MessageLoggerQ_h
+#ifndef MessageFacility_MessageLogger_MessageLoggerQ_h
+#define MessageFacility_MessageLogger_MessageLoggerQ_h
 
-#include "FWCore/MessageLogger/interface/ELseverityLevel.h"
+#include "MessageLogger/interface/ELseverityLevel.h"
 
 #include "boost/shared_ptr.hpp"
 
@@ -9,7 +9,7 @@
 #include <map>
 #include <set>
 
-namespace edm
+namespace mf
 {
 
 // --- forward declarations:
@@ -58,7 +58,7 @@ public:
 
   // ---  bookkeeping for single-thread mode
   static  void  setMLscribe_ptr
-     (boost::shared_ptr<edm::service::AbstractMLscribe>  m);
+     (boost::shared_ptr<mf::service::AbstractMLscribe>  m);
 
   // ---  helper for scribes
   static bool handshaked ( const OpCode & op );
@@ -66,7 +66,7 @@ public:
   // --- special control of standAlone logging behavior
   static  void standAloneThreshold(std::string const & severity);
   static  void squelch(std::string const & category);
-  static  bool ignore ( edm::ELseverityLevel const & severity, 
+  static  bool ignore ( mf::ELseverityLevel const & severity, 
   			std::string const & category );
 			
 private:
@@ -85,14 +85,14 @@ private:
   void  operator = ( MessageLoggerQ const & );
 
   // --- data:
-  static  boost::shared_ptr<edm::service::AbstractMLscribe> mlscribe_ptr;
-  static  edm::ELseverityLevel threshold;
+  static  boost::shared_ptr<mf::service::AbstractMLscribe> mlscribe_ptr;
+  static  mf::ELseverityLevel threshold;
   static  std::set<std::string> squelchSet;
   
 };  // MessageLoggerQ
 
 
-}  // namespace edm
+}  // namespace mf
 
 
-#endif  // FWCore_MessageLogger_MessageLoggerQ_h
+#endif  // MessageFacility_MessageLogger_MessageLoggerQ_h

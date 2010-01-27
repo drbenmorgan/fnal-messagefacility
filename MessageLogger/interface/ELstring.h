@@ -17,7 +17,7 @@
 #include <string>
 
 
-namespace edm {       
+namespace mf {       
 
 
 // ----------------------------------------------------------------------
@@ -33,7 +33,7 @@ bool eq( const ELstring & s1, const ELstring s2 );
 // ----------------------------------------------------------------------
 
 
-}        // end of namespace edm
+}        // end of namespace mf
 
 
 #endif  // MessageLogger_ELstring_h

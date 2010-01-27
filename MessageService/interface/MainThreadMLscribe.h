@@ -1,21 +1,21 @@
-#ifndef FWCore_MessageService_MainThreadMLscribe_h
-#define FWCore_MessageService_MainThreadMLscribe_h
+#ifndef MessageFacility_MessageService_MainThreadMLscribe_h
+#define MessageFacility_MessageService_MainThreadMLscribe_h
 
-#include "FWCore/MessageLogger/interface/AbstractMLscribe.h"
-#include "FWCore/MessageLogger/interface/MessageLoggerQ.h"
-#include "FWCore/Utilities/interface/SingleConsumerQ.h"
+#include "MessageLogger/interface/AbstractMLscribe.h"
+#include "MessageLogger/interface/MessageLoggerQ.h"
+#include "Utilities/interface/SingleConsumerQ.h"
 
 // I believe the below are not needed:
 
-#include "FWCore/Utilities/interface/value_ptr.h"
-#include "FWCore/Utilities/interface/EDMException.h"
+#include "Utilities/interface/value_ptr.h"
+#include "Utilities/interface/EDMException.h"
 
-#include "FWCore/MessageService/interface/ELdestControl.h"
-#include "FWCore/MessageService/interface/MsgContext.h"
-#include "FWCore/MessageService/interface/NamedDestination.h"
-#include "FWCore/MessageService/interface/MessageLoggerDefaults.h"
+#include "MessageService/interface/ELdestControl.h"
+#include "MessageService/interface/MsgContext.h"
+#include "MessageService/interface/NamedDestination.h"
+#include "MessageService/interface/MessageLoggerDefaults.h"
 
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
+//#include "ParameterSet/interface/ParameterSet.h"
 
 #include "boost/shared_ptr.hpp"
 
@@ -25,7 +25,7 @@
 
 #include <iostream>
 
-namespace edm {
+namespace mf {
 namespace service {       
 
 // ----------------------------------------------------------------------
@@ -69,7 +69,7 @@ private:
 
 
 }   // end of namespace service
-}  // namespace edm
+}  // namespace mf
 
 
-#endif  // FWCore_MessageService_MainThreadMLscribe_h
+#endif  // MessageFacility_MessageService_MainThreadMLscribe_h

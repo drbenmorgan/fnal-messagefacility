@@ -15,7 +15,7 @@
 
 #include<sstream>
 
-namespace edm {      
+namespace mf {      
 
 // ----------------------------------------------------------------------
 // Methods for physicists adding to an ErrorObj:
@@ -63,4 +63,4 @@ ErrorObj::operator<< ( std::ios_base&(*f)(std::ios_base&) ) {
 // ----------------------------------------------------------------------
 
 
-}        // end of namespace edm
+}        // end of namespace mf

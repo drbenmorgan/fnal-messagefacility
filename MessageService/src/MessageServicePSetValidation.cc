@@ -21,16 +21,16 @@
 
 // user include files
 
-#include "FWCore/MessageService/interface/MessageServicePSetValidation.h"
+#include "MessageService/interface/MessageServicePSetValidation.h"
 
-using namespace edm;
-using namespace edm::service;
+using namespace mf;
+using namespace mf::service;
 
-namespace edm {
+namespace mf {
 namespace service {
 
 std::string
-edm::service::MessageServicePSetValidation::
+mf::service::MessageServicePSetValidation::
 operator() (ParameterSet const & pset)
 {
   messageLoggerPSet (pset); 
@@ -38,7 +38,7 @@ operator() (ParameterSet const & pset)
 }  // operator() to validate the PSet passed in
 
 void
-edm::service::MessageServicePSetValidation::
+mf::service::MessageServicePSetValidation::
 messageLoggerPSet (ParameterSet const & pset) 
 {
   // Four types of material are allowed at the MessageLogger level:
@@ -105,7 +105,7 @@ messageLoggerPSet (ParameterSet const & pset)
 } // messageLoggerPSet
 
 void 
-edm::service::MessageServicePSetValidation:: 
+mf::service::MessageServicePSetValidation:: 
 psetLists ( ParameterSet const & pset ) 
 {
   destinations = check<vString>
@@ -160,7 +160,7 @@ psetLists ( ParameterSet const & pset )
 } // psetLists
 
 void 
-edm::service::MessageServicePSetValidation:: 
+mf::service::MessageServicePSetValidation:: 
 suppressionLists ( ParameterSet const & pset ) 
 {
   debugModules = check<vString>
@@ -202,7 +202,7 @@ suppressionLists ( ParameterSet const & pset )
 
 
 void 
-edm::service::MessageServicePSetValidation:: 
+mf::service::MessageServicePSetValidation:: 
 vStringsCheck ( ParameterSet const & pset,std::string const & psetName ) 
 {
   vString vStrings = pset.getParameterNamesForType <vString> (false); 
@@ -224,7 +224,7 @@ vStringsCheck ( ParameterSet const & pset,std::string const & psetName )
 } // vStringsCheck
 
 bool 
-edm::service::MessageServicePSetValidation:: 
+mf::service::MessageServicePSetValidation:: 
 allowedVstring (std::string const & s)
 {
   if (s == "destinations") 	return true;
@@ -243,7 +243,7 @@ allowedVstring (std::string const & s)
 
 
 bool 
-edm::service::MessageServicePSetValidation::  
+mf::service::MessageServicePSetValidation::  
 validateThreshold (std::string const & thresh, std::string const & psetName)
 {
   if (checkThreshold(thresh)) return true;
@@ -254,7 +254,7 @@ validateThreshold (std::string const & thresh, std::string const & psetName)
 } // validateThreshold
 
 bool 
-edm::service::MessageServicePSetValidation::  
+mf::service::MessageServicePSetValidation::  
 checkThreshold (std::string const & thresh)
 {
   if (thresh == "WARNING") 	return true;
@@ -265,7 +265,7 @@ checkThreshold (std::string const & thresh)
 }  
 
 void
-edm::service::MessageServicePSetValidation::  
+mf::service::MessageServicePSetValidation::  
 noDuplicates(vString const & v, std::string const & psetName,
              std::string  const & parameterLabel ) 
 {
@@ -282,7 +282,7 @@ noDuplicates(vString const & v, std::string const & psetName,
 } // noDuplicates(v)
 
 void
-edm::service::MessageServicePSetValidation::  
+mf::service::MessageServicePSetValidation::  
 noDuplicates(vString const & v1, vString const & v2, 
              std::string const & psetName,
 	     std::string  const & p1, std::string  const & p2 )
@@ -301,7 +301,7 @@ noDuplicates(vString const & v1, vString const & v2,
 } // noDuplicates(v1,v2)
 
 void
-edm::service::MessageServicePSetValidation::  
+mf::service::MessageServicePSetValidation::  
 noCoutCerrClash(vString const & v, std::string const & psetName,
                 std::string  const & parameterLabel ) 
 {
@@ -320,7 +320,7 @@ noCoutCerrClash(vString const & v, std::string const & psetName,
 } // noCoutCerrClash(v)
 
 void
-edm::service::MessageServicePSetValidation::  
+mf::service::MessageServicePSetValidation::  
 noKeywords(vString const & v, std::string const & psetName,
            std::string  const & parameterLabel ) 
 {
@@ -335,7 +335,7 @@ noKeywords(vString const & v, std::string const & psetName,
 } // noKeywords(v)
 
 bool
-edm::service::MessageServicePSetValidation::  
+mf::service::MessageServicePSetValidation::  
 keywordCheck(std::string const & word)
 {
   if (word == "default") 	return false;
@@ -369,7 +369,7 @@ keywordCheck(std::string const & word)
 } // keywordCheck
 
 void
-edm::service::MessageServicePSetValidation::  
+mf::service::MessageServicePSetValidation::  
 noNonPSetUsage(ParameterSet const & pset ,
   	       vString const & v, std::string const & psetName,
                std::string  const & parameterLabel ) 
@@ -385,7 +385,7 @@ noNonPSetUsage(ParameterSet const & pset ,
 } // noNonPSetUsage
 
 void 
-edm::service::MessageServicePSetValidation::  
+mf::service::MessageServicePSetValidation::  
 noBadParams(vString const & v, vString const & params, 
   	    std::string const & psetName, 
 	    std::string const & parameterLabel, 
@@ -407,7 +407,7 @@ noBadParams(vString const & v, vString const & params,
 } // noBadParams
  
 bool
-edm::service::MessageServicePSetValidation::  
+mf::service::MessageServicePSetValidation::  
 wildcard(vString const & v) 
 {
   vString::const_iterator end = v.end();
@@ -418,7 +418,7 @@ wildcard(vString const & v)
 }
 
 void
-edm::service::MessageServicePSetValidation::  
+mf::service::MessageServicePSetValidation::  
 noOtherPsets(ParameterSet const & pset)
 {
   vString psnames;
@@ -458,7 +458,7 @@ noOtherPsets(ParameterSet const & pset)
 }
 
 bool
-edm::service::MessageServicePSetValidation::  
+mf::service::MessageServicePSetValidation::  
 lookForMatch(vString const & v, std::string const & s)
 {
   vString::const_iterator begin = v.begin();
@@ -467,7 +467,7 @@ lookForMatch(vString const & v, std::string const & s)
 }
 
 void
-edm::service::MessageServicePSetValidation::  
+mf::service::MessageServicePSetValidation::  
 destinationPSets(ParameterSet const & pset)
 {
   ParameterSet empty_PSet;
@@ -480,7 +480,7 @@ destinationPSets(ParameterSet const & pset)
 } // destinationPSets
 
 void
-edm::service::MessageServicePSetValidation::  
+mf::service::MessageServicePSetValidation::  
 destinationPSet(ParameterSet const & pset, std::string const & psetName)
 {
   // Category PSets
@@ -531,7 +531,7 @@ destinationPSet(ParameterSet const & pset, std::string const & psetName)
 } // destinationPSet
 
 void
-edm::service::MessageServicePSetValidation::  
+mf::service::MessageServicePSetValidation::  
 defaultPSet(ParameterSet const & main_pset)
 {
   ParameterSet empty_PSet;
@@ -583,7 +583,7 @@ defaultPSet(ParameterSet const & main_pset)
 } // defaultPSet
 
 void
-edm::service::MessageServicePSetValidation::  
+mf::service::MessageServicePSetValidation::  
 statisticsPSets(ParameterSet const & pset)
 {
   ParameterSet empty_PSet;
@@ -597,7 +597,7 @@ statisticsPSets(ParameterSet const & pset)
 } // statisticsPSets
 
 void
-edm::service::MessageServicePSetValidation::  
+mf::service::MessageServicePSetValidation::  
 statisticsPSet(ParameterSet const & pset, std::string const & psetName)
 {
   // Category PSets
@@ -645,7 +645,7 @@ statisticsPSet(ParameterSet const & pset, std::string const & psetName)
 } // statisticsPSet
 
 void
-edm::service::MessageServicePSetValidation::  
+mf::service::MessageServicePSetValidation::  
 fwkJobReportPSets(ParameterSet const & pset)
 {
   ParameterSet empty_PSet;
@@ -658,7 +658,7 @@ fwkJobReportPSets(ParameterSet const & pset)
 } // fwkJobReportPSets
 
 void
-edm::service::MessageServicePSetValidation::  
+mf::service::MessageServicePSetValidation::  
 fwkJobReportPSet(ParameterSet const & pset, std::string const & psetName)
 {
   // Category PSets
@@ -701,7 +701,7 @@ fwkJobReportPSet(ParameterSet const & pset, std::string const & psetName)
 } // fwkJobReportPSet
 
 void
-edm::service::MessageServicePSetValidation::  
+mf::service::MessageServicePSetValidation::  
 noNoncategoryPsets(ParameterSet const & pset,std::string const & psetName)
 {
   vString psnames;
@@ -742,7 +742,7 @@ noNoncategoryPsets(ParameterSet const & pset,std::string const & psetName)
 } // noNoncategoryPsets
 
 void
-edm::service::MessageServicePSetValidation::  
+mf::service::MessageServicePSetValidation::  
 categoryPSets(ParameterSet const & pset, std::string const & psetName ) 
 {
   categoryPSet (pset, psetName, "ERROR"  );
@@ -760,7 +760,7 @@ categoryPSets(ParameterSet const & pset, std::string const & psetName )
 } // categoryPSets	      
 
 void
-edm::service::MessageServicePSetValidation::  
+mf::service::MessageServicePSetValidation::  
 categoryPSet (ParameterSet const & pset,
 	      std::string const & OuterPsetName,
 	      std::string const & categoryName)  {
@@ -785,7 +785,7 @@ categoryPSet (ParameterSet const & pset,
 } // categoryPSet	      
 
 void
-edm::service::MessageServicePSetValidation::  
+mf::service::MessageServicePSetValidation::  
 catInts (ParameterSet const & pset, 
   	std::string  const & psetName, 
   	std::string  const & categoryName)  
@@ -811,7 +811,7 @@ catInts (ParameterSet const & pset,
 } // catInts()
 
 void
-edm::service::MessageServicePSetValidation::  
+mf::service::MessageServicePSetValidation::  
 catNoPSets (ParameterSet const & pset, 
   	std::string  const & psetName, 
   	std::string  const & categoryName)  
@@ -840,7 +840,7 @@ catNoPSets (ParameterSet const & pset,
 } // catNoPSets
 
 void
-edm::service::MessageServicePSetValidation::  
+mf::service::MessageServicePSetValidation::  
 catBoolRestriction (ParameterSet const & pset, 
   		    std::string  const & psetName, 
   		    std::string  const & categoryName,
@@ -868,4 +868,4 @@ catBoolRestriction (ParameterSet const & pset,
 
 
 } // end of namespace service  
-} // end of namespace edm  
+} // end of namespace mf  

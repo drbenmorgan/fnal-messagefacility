@@ -1,5 +1,5 @@
-#ifndef FWCore_MessageService_ELcollected_h
-#define FWCore_MessageService_ELcollected_h
+#ifndef MessageFacility_MessageService_ELcollected_h
+#define MessageFacility_MessageService_ELcollected_h
 
 
 // ----------------------------------------------------------------------
@@ -64,16 +64,16 @@
 //
 // ----------------------------------------------------------------------
 
-#include "FWCore/MessageService/interface/ELoutput.h"
-#include "FWCore/MessageService/interface/ELsender.h"
+#include "MessageService/interface/ELoutput.h"
+#include "MessageService/interface/ELsender.h"
 
-#include "FWCore/MessageLogger/interface/ELstring.h"
-#include "FWCore/MessageLogger/interface/ELextendedID.h"
-#include "FWCore/MessageLogger/interface/ErrorObj.h"
+#include "MessageLogger/interface/ELstring.h"
+#include "MessageLogger/interface/ELextendedID.h"
+#include "MessageLogger/interface/ErrorObj.h"
 
 #include "boost/shared_ptr.hpp"
 
-namespace edm {       
+namespace mf {       
 namespace service {       
 
 
@@ -113,7 +113,7 @@ public:
 		//-| of copying a destination onto the list:  ofstream
 		//-| ownership is passed to the new copy.
 
-  virtual bool log( const edm::ErrorObj & msg );
+  virtual bool log( const mf::ErrorObj & msg );
 
   // -----  Methods invoked through the ELdestControl handle:
   //
@@ -149,7 +149,7 @@ protected:
 
 
 }        // end of namespace service
-}        // end of namespace edm
+}        // end of namespace mf
 
 
 #endif // MessageService_ELcollected_h

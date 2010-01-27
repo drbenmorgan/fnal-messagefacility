@@ -10,10 +10,10 @@
 // ----------------------------------------------------------------------
 
 
-#include "FWCore/MessageLogger/interface/ELextendedID.h"
+#include "MessageLogger/interface/ELextendedID.h"
 
 
-namespace edm
+namespace mf
 {
 
 
@@ -62,4 +62,4 @@ void ELextendedID::clear()  {
 
 // ----------------------------------------------------------------------
 
-} // end of namespace edm  */
+} // end of namespace mf  */

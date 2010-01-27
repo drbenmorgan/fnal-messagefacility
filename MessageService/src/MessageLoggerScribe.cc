@@ -174,21 +174,21 @@
 //
 // ----------------------------------------------------------------------
 
-#include "FWCore/MessageService/interface/MessageLoggerScribe.h"
-#include "FWCore/MessageService/interface/ELadministrator.h"
-#include "FWCore/MessageService/interface/ELoutput.h"
-#include "FWCore/MessageService/interface/ELstatistics.h"
-#include "FWCore/MessageService/interface/ELfwkJobReport.h"
-#include "FWCore/MessageService/interface/ErrorLog.h"
-#include "FWCore/MessageService/interface/ThreadQueue.h"
+#include "MessageService/interface/MessageLoggerScribe.h"
+#include "MessageService/interface/ELadministrator.h"
+#include "MessageService/interface/ELoutput.h"
+#include "MessageService/interface/ELstatistics.h"
+#include "MessageService/interface/ELfwkJobReport.h"
+#include "MessageService/interface/ErrorLog.h"
+#include "MessageService/interface/ThreadQueue.h"
 
-#include "FWCore/MessageLogger/interface/ErrorObj.h"
-#include "FWCore/MessageLogger/interface/MessageLoggerQ.h"
-#include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "FWCore/MessageLogger/interface/ConfigurationHandshake.h"
+#include "MessageLogger/interface/ErrorObj.h"
+#include "MessageLogger/interface/MessageLoggerQ.h"
+#include "MessageLogger/interface/MessageLogger.h"
+#include "MessageLogger/interface/ConfigurationHandshake.h"
 
-#include "FWCore/Utilities/interface/EDMException.h"
-#include "FWCore/Utilities/interface/Algorithms.h"
+#include "Utilities/interface/EDMException.h"
+#include "Utilities/interface/Algorithms.h"
 
 #include <algorithm>
 #include <cassert>
@@ -199,7 +199,7 @@
 
 using std::cerr;
 
-namespace edm {
+namespace mf {
 namespace service {
 
 
@@ -308,11 +308,11 @@ void
 	try {
 	  configure_errorlog();
 	}
-	catch(edm::Exception& e)
+	catch(mf::Exception& e)
 	  {
 	    Place_for_passing_exception_ptr epp = h_p->epp;
 	    if (!(*epp)) { 
-	      *epp = boost::shared_ptr<edm::Exception>(new edm::Exception(e));
+	      *epp = boost::shared_ptr<mf::Exception>(new mf::Exception(e));
 	    } else {
 	      Pointer_to_new_exception_on_heap ep = *epp;
 	      (*ep) << "\n and another exception: \n" << e.what();
@@ -321,7 +321,7 @@ void
 	// Note - since the configuring code has not made a new copy of the 
 	// job parameter set, we must not delete job_pset_p (in contrast to
 	// the case for errorobj_p).  On the other hand, if we instantiate
-	// a new edm::Exception pointed to by *epp, it is the responsibility
+	// a new mf::Exception pointed to by *epp, it is the responsibility
 	// of the MessageLoggerQ to delete it.
 	h_p->c.notify_all();  // Signal to MessageLoggerQ that we are done
 	// finally, release the scoped lock by letting it go out of scope 
@@ -829,7 +829,7 @@ void
      // Check that this is not a duplicate name			// change log 18
     if ( stream_ps.find(actual_filename)!=stream_ps.end() ) {        
       if (clean_slate_configuration) {				// change log 22
-       throw edm::Exception ( edm::errors::Configuration ) 
+       throw mf::Exception ( mf::errors::Configuration ) 
        <<"Duplicate name for a MessageLogger Framework Job Report Destination: " 
        << actual_filename
        << "\n";
@@ -960,7 +960,7 @@ void
      // Check that this is not a duplicate name			// change log 18
     if ( stream_ps.find(actual_filename)!=stream_ps.end() ) {        
       if (clean_slate_configuration) {				// change log 22
-//        throw edm::Exception ( edm::errors::Configuration )   
+//        throw mf::Exception ( mf::errors::Configuration )   
         LogError("duplicateDestination")			// change log 35
         <<"Duplicate name for a MessageLogger Destination: " 
         << actual_filename
@@ -1088,7 +1088,7 @@ void
     if ( !search_all(ordinary_destination_filenames, actual_filename) ) {
       if ( stream_ps.find(actual_filename)!=stream_ps.end() ) {        
         if (clean_slate_configuration) {			// change log 22
-          throw edm::Exception ( edm::errors::Configuration ) 
+          throw mf::Exception ( mf::errors::Configuration ) 
           <<"Duplicate name for a MessageLogger Statistics Destination: " 
           << actual_filename
           << "\n";
@@ -1212,5 +1212,5 @@ ErrorLog * MessageLoggerScribe::static_errorlog_p;
 
 
 } // end of namespace service  
-} // end of namespace edm  
+} // end of namespace mf  
 

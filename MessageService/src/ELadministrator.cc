@@ -30,7 +30,7 @@
 //
 // ---- CMS version
 //
-// 12/12/05 mf  change exit() to throw edm::exception
+// 12/12/05 mf  change exit() to throw mf::exception
 //
 //-----------------------------------------------------------------------
 
@@ -81,12 +81,12 @@
 // ----------------------------------------------------------------------
 
 
-#include "FWCore/MessageService/interface/ELadministrator.h"
-#include "FWCore/MessageService/interface/ELdestination.h"
-#include "FWCore/MessageService/interface/ELcontextSupplier.h"
-#include "FWCore/MessageService/interface/ELoutput.h"
+#include "MessageService/interface/ELadministrator.h"
+#include "MessageService/interface/ELdestination.h"
+#include "MessageService/interface/ELcontextSupplier.h"
+#include "MessageService/interface/ELoutput.h"
 
-#include "FWCore/Utilities/interface/EDMException.h"
+#include "Utilities/interface/EDMException.h"
 
 #include <iostream>
 #include <sstream>
@@ -94,7 +94,7 @@
 using std::cerr;
 
 
-namespace edm {
+namespace mf {
 namespace service {
 
 
@@ -281,14 +281,14 @@ int ELadministrator::severityCounts( const int lev ) const  {
 static inline void msgexit(int s) {
   std::ostringstream os;
   os << "msgexit - MessageLogger requested to exit with status " << s;
-  edm::Exception e(edm::errors::LogicError, os.str());
+  mf::Exception e(mf::errors::LogicError, os.str());
   throw e;
 }
 
 static inline void msgabort() {
   std::ostringstream os;
   os << "msgabort - MessageLogger requested to abort";
-  edm::Exception e(edm::errors::LogicError, os.str());
+  mf::Exception e(mf::errors::LogicError, os.str());
   throw e;
 }
 
@@ -558,4 +558,4 @@ ELadministrator::~ELadministrator()  {
 
 
 } // end of namespace service  
-} // end of namespace edm  
+} // end of namespace mf  

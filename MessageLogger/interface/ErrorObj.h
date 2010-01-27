@@ -23,15 +23,15 @@
 // ----------------------------------------------------------------------
 
 
-#include "FWCore/MessageLogger/interface/ELstring.h"
-#include "FWCore/MessageLogger/interface/ELlist.h"
-#include "FWCore/MessageLogger/interface/ELextendedID.h"
-#include "FWCore/MessageLogger/interface/ELseverityLevel.h"
+#include "MessageLogger/interface/ELstring.h"
+#include "MessageLogger/interface/ELlist.h"
+#include "MessageLogger/interface/ELextendedID.h"
+#include "MessageLogger/interface/ELseverityLevel.h"
 
 #include <sstream>
 #include <string>
 
-namespace edm {       
+namespace mf {       
 
 
 // ----------------------------------------------------------------------
@@ -149,7 +149,7 @@ void endmsg( ErrorLog & );
 // The icc file contains the template for operator<< (ErrorObj&, T)
 
 #define ERROROBJ_ICC
-  #include "FWCore/MessageLogger/interface/ErrorObj.icc"
+  #include "MessageLogger/interface/ErrorObj.icc"
 #undef  ERROROBJ_ICC
 
 

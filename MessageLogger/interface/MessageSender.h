@@ -1,10 +1,10 @@
-#ifndef FWCore_MessageLogger_MessageSender_h
-#define FWCore_MessageLogger_MessageSender_h
+#ifndef MessageFacility_MessageLogger_MessageSender_h
+#define MessageFacility_MessageLogger_MessageSender_h
 
-#include "FWCore/MessageLogger/interface/ELstring.h"
-#include "FWCore/MessageLogger/interface/ELseverityLevel.h"
-#include "FWCore/MessageLogger/interface/ErrorObj.h"
-#include "FWCore/MessageLogger/interface/ErrorSummaryEntry.h"
+#include "MessageLogger/interface/ELstring.h"
+#include "MessageLogger/interface/ELseverityLevel.h"
+#include "MessageLogger/interface/ErrorObj.h"
+#include "MessageLogger/interface/ErrorSummaryEntry.h"
 
 #include <map>
 
@@ -16,7 +16,7 @@
 //			ErrorSummaryEntry as map key
 //			
 
-namespace edm
+namespace mf
 {
 
 typedef ErrorSummaryEntry ErrorSummaryMapKey;
@@ -59,7 +59,7 @@ private:
 };  // MessageSender
 
 
-}  // namespace edm
+}  // namespace mf
 
 
-#endif  // FWCore_MessageLogger_MessageSender_h
+#endif  // MessageFacility_MessageLogger_MessageSender_h

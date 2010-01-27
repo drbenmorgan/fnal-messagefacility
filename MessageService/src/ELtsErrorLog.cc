@@ -13,12 +13,12 @@
 //
 // ----------------------------------------------------------------------
 
-#include "FWCore/MessageService/interface/ELtsErrorLog.h"
-#include "FWCore/MessageService/interface/ELadministrator.h"
-#include "FWCore/MessageService/interface/ELoutput.h"
-#include "FWCore/MessageService/interface/ELcontextSupplier.h"
+#include "MessageService/interface/ELtsErrorLog.h"
+#include "MessageService/interface/ELadministrator.h"
+#include "MessageService/interface/ELoutput.h"
+#include "MessageService/interface/ELcontextSupplier.h"
 
-#include "FWCore/Utilities/interface/EDMException.h"
+#include "Utilities/interface/EDMException.h"
 
 #include <iostream>
 #include <iomanip>
@@ -33,7 +33,7 @@
   #include <string>
 #endif
 
-namespace edm {
+namespace mf {
 namespace service {
 
 
@@ -279,7 +279,7 @@ void ELtsErrorLog::item ( unsigned short n )  {
 // Message Completion:
 // ----------------------------------------------------------------------
 
-bool ELtsErrorLog::pokeMsg ( edm::ErrorObj & msg )  {
+bool ELtsErrorLog::pokeMsg ( mf::ErrorObj & msg )  {
 
   // -----  will we need to poke/restore info into the message?
   //
@@ -298,12 +298,12 @@ bool ELtsErrorLog::pokeMsg ( edm::ErrorObj & msg )  {
 }
 
 static inline void msgabort() {
-  edm::Exception e(edm::errors::LogicError, 
+  mf::Exception e(mf::errors::LogicError, 
   	"msgabort - MessageLogger tsErrorLog requested to abort");
   throw e;
 }
 
-void ELtsErrorLog::dispatch ( edm::ErrorObj & msg )  {
+void ELtsErrorLog::dispatch ( mf::ErrorObj & msg )  {
 
   // NOTE -- this is never called except in cases where a <Mutex> LOCK
   //         is in scope.  That is, this code should be treated as a
@@ -341,4 +341,4 @@ void ELtsErrorLog::dispatch ( edm::ErrorObj & msg )  {
 }
 
 } // end of namespace service  
-} // end of namespace edm  
+} // end of namespace mf  

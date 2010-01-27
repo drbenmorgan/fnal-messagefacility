@@ -40,10 +40,10 @@
 
 
 #ifndef ELSTRING_H
-  #include "FWCore/MessageLogger/interface/ELstring.h"
+  #include "MessageLogger/interface/ELstring.h"
 #endif
 
-namespace edm {       
+namespace mf {       
 
 
 // ----------------------------------------------------------------------
@@ -233,13 +233,13 @@ extern bool  operator>= ( ELseverityLevel const & e1
 
 // ----------------------------------------------------------------------
 
-}        // end of namespace edm
+}        // end of namespace mf
 
 
 // ----------------------------------------------------------------------
 
 #define ELSEVERITYLEVEL_ICC
-  #include "FWCore/MessageLogger/interface/ELseverityLevel.icc"
+  #include "MessageLogger/interface/ELseverityLevel.icc"
 #undef  ELSEVERITYLEVEL_ICC
 
 

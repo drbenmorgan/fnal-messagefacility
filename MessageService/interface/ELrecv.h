@@ -1,5 +1,5 @@
-#ifndef FWCore_MessageService_ELrecv_h
-#define FWCore_MessageService_ELrecv_h
+#ifndef MessageFacility_MessageService_ELrecv_h
+#define MessageFacility_MessageService_ELrecv_h
 
 
 // ----------------------------------------------------------------------
@@ -43,16 +43,16 @@
 //
 // ----------------------------------------------------------------------
 
-#include "FWCore/MessageLogger/interface/ELstring.h"
+#include "MessageLogger/interface/ELstring.h"
 
-namespace edm {       
+namespace mf {       
 namespace service {       
 
 void ELrecv ( int nbytes, const char * data );
 void ELrecv ( int nbytes, const char * data, ELstring localModule );
 
 }        // end of namespace service
-}        // end of namespace edm
+}        // end of namespace mf
 
 
-#endif // FWCore_MessageService_ELrecv_h
+#endif // MessageFacility_MessageService_ELrecv_h

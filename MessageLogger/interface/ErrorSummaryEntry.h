@@ -1,7 +1,7 @@
 #ifndef MessageLogger_ErrorSummaryEntry_h
 #define MessageLogger_ErrorSummaryEntry_h
 
-#include "FWCore/MessageLogger/interface/ELseverityLevel.h"
+#include "MessageLogger/interface/ELseverityLevel.h"
 
 #include <string>
 
@@ -32,7 +32,7 @@
 //
 // ----------------------------------------------------------------------
 
-namespace edm {       
+namespace mf {       
 
 struct ErrorSummaryEntry 
 {
@@ -63,7 +63,7 @@ struct ErrorSummaryEntry
   }
 };
 
-}        // end of namespace edm
+}        // end of namespace mf
 
 
 #endif  // MessageLogger_ErrorSummaryEntry_h

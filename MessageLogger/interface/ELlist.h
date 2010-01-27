@@ -23,14 +23,14 @@
 
 
 #ifndef ELSTRING_H
-  #include "FWCore/MessageLogger/interface/ELstring.h"
+  #include "MessageLogger/interface/ELstring.h"
 #endif
 
 
 #include <list>
 
 
-namespace edm {       
+namespace mf {       
 
 
 // ----------------------------------------------------------------------
@@ -44,7 +44,7 @@ typedef std::list<ELstring       > ELlist_string;
 // ----------------------------------------------------------------------
 
 
-}        // end of namespace edm
+}        // end of namespace mf
 
 
 #endif // MessageLogger_ELlist_h

@@ -15,20 +15,20 @@
 #include <vector>
 #include <iosfwd>
 
-#include "FWCore/ParameterSet/interface/FileInPath.h"
-#include "FWCore/Utilities/interface/InputTag.h"
-#include "FWCore/Utilities/interface/ESInputTag.h"
+#include "ParameterSet/interface/FileInPath.h"
+#include "Utilities/interface/InputTag.h"
+#include "Utilities/interface/ESInputTag.h"
 //@@ not needed, but there might be trouble if we take it out
-#include "DataFormats/Provenance/interface/EventRange.h"
-#include "DataFormats/Provenance/interface/LuminosityBlockID.h"
-#include "DataFormats/Provenance/interface/LuminosityBlockRange.h"
-#include "DataFormats/Provenance/interface/MinimalEventID.h"
+//#include "DataFormats/Provenance/interface/EventRange.h"
+//#include "DataFormats/Provenance/interface/LuminosityBlockID.h"
+//#include "DataFormats/Provenance/interface/LuminosityBlockRange.h"
+//#include "DataFormats/Provenance/interface/MinimalEventID.h"
 #include <boost/cstdint.hpp>
 
 // ----------------------------------------------------------------------
 // contents
 
-namespace edm {
+namespace mf {
   // forward declarations:
   class ParameterSet;
 
@@ -91,56 +91,56 @@ namespace edm {
     std::vector<std::string>  getVString() const;
 
     // FileInPath
-    Entry(std::string const& name, edm::FileInPath const& val, bool is_tracked);
-    edm::FileInPath getFileInPath() const;
+    Entry(std::string const& name, mf::FileInPath const& val, bool is_tracked);
+    mf::FileInPath getFileInPath() const;
   
     // InputTag
-    Entry(std::string const& name, edm::InputTag const & tag, bool is_tracked);
-    edm::InputTag getInputTag() const;
+    Entry(std::string const& name, mf::InputTag const & tag, bool is_tracked);
+    mf::InputTag getInputTag() const;
 
     // InputTag
-    Entry(std::string const& name, std::vector<edm::InputTag> const & vtag, bool is_tracked);
-    std::vector<edm::InputTag> getVInputTag() const;
+    Entry(std::string const& name, std::vector<mf::InputTag> const & vtag, bool is_tracked);
+    std::vector<mf::InputTag> getVInputTag() const;
 
     // ESInputTag
-    Entry(std::string const& name, edm::ESInputTag const & tag, bool is_tracked);
-    edm::ESInputTag getESInputTag() const;
+    Entry(std::string const& name, mf::ESInputTag const & tag, bool is_tracked);
+    mf::ESInputTag getESInputTag() const;
 
     // VESInputTag
-    Entry(std::string const& name, std::vector<edm::ESInputTag> const & vtag, bool is_tracked);
-    std::vector<edm::ESInputTag> getVESInputTag() const;
+    Entry(std::string const& name, std::vector<mf::ESInputTag> const & vtag, bool is_tracked);
+    std::vector<mf::ESInputTag> getVESInputTag() const;
 
     // EventID
-    Entry(std::string const& name, edm::MinimalEventID const & tag, bool is_tracked);
-    edm::MinimalEventID getEventID() const;
+    Entry(std::string const& name, mf::MinimalEventID const & tag, bool is_tracked);
+    mf::MinimalEventID getEventID() const;
 
     // VEventID
-    Entry(std::string const& name, std::vector<edm::MinimalEventID> const & vtag, bool is_tracked);
-    std::vector<edm::MinimalEventID> getVEventID() const;
+    Entry(std::string const& name, std::vector<mf::MinimalEventID> const & vtag, bool is_tracked);
+    std::vector<mf::MinimalEventID> getVEventID() const;
 
     // LuminosityBlockID
-    Entry(std::string const& name, edm::LuminosityBlockID const & tag, bool is_tracked);
-    edm::LuminosityBlockID getLuminosityBlockID() const;
+    Entry(std::string const& name, mf::LuminosityBlockID const & tag, bool is_tracked);
+    mf::LuminosityBlockID getLuminosityBlockID() const;
 
     // VLuminosityBlockID
-    Entry(std::string const& name, std::vector<edm::LuminosityBlockID> const & vtag, bool is_tracked);
-    std::vector<edm::LuminosityBlockID> getVLuminosityBlockID() const;
+    Entry(std::string const& name, std::vector<mf::LuminosityBlockID> const & vtag, bool is_tracked);
+    std::vector<mf::LuminosityBlockID> getVLuminosityBlockID() const;
 
     // LuminosityBlockRange
-    Entry(std::string const& name, edm::LuminosityBlockRange const & tag, bool is_tracked);
-    edm::LuminosityBlockRange getLuminosityBlockRange() const;
+    Entry(std::string const& name, mf::LuminosityBlockRange const & tag, bool is_tracked);
+    mf::LuminosityBlockRange getLuminosityBlockRange() const;
 
     // VLuminosityBlockRange
-    Entry(std::string const& name, std::vector<edm::LuminosityBlockRange> const & vtag, bool is_tracked);
-    std::vector<edm::LuminosityBlockRange> getVLuminosityBlockRange() const;
+    Entry(std::string const& name, std::vector<mf::LuminosityBlockRange> const & vtag, bool is_tracked);
+    std::vector<mf::LuminosityBlockRange> getVLuminosityBlockRange() const;
 
     // EventRange
-    Entry(std::string const& name, edm::EventRange const & tag, bool is_tracked);
-    edm::EventRange getEventRange() const;
+    Entry(std::string const& name, mf::EventRange const & tag, bool is_tracked);
+    mf::EventRange getEventRange() const;
 
     // VEventRange
-    Entry(std::string const& name, std::vector<edm::EventRange> const & vtag, bool is_tracked);
-    std::vector<edm::EventRange> getVEventRange() const;
+    Entry(std::string const& name, std::vector<mf::EventRange> const & vtag, bool is_tracked);
+    std::vector<mf::EventRange> getVEventRange() const;
 
     // ParameterSet
     Entry(std::string const& name, ParameterSet const& val, bool is_tracked);
@@ -202,7 +202,7 @@ namespace edm {
   operator!=(Entry const& a, Entry const& b) {
     return !(a == b);
   }
-} // namespace edm
+} // namespace mf
 
   
 #endif

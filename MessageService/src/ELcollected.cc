@@ -14,10 +14,10 @@
 //
 // ----------------------------------------------------------------------
 
-#include "FWCore/MessageService/interface/ELcollected.h"
-#include "FWCore/MessageService/interface/ELdestination.h"
-#include "FWCore/MessageService/interface/ELadministrator.h"
-#include "FWCore/MessageService/interface/ELcontextSupplier.h"
+#include "MessageService/interface/ELcollected.h"
+#include "MessageService/interface/ELdestination.h"
+#include "MessageService/interface/ELadministrator.h"
+#include "MessageService/interface/ELcontextSupplier.h"
 
 #include <sstream>
 
@@ -26,7 +26,7 @@
 //#define ELcollectedTRACE_LOG
 //#define ELcollected_EMIT_TRACE
 
-namespace edm {
+namespace mf {
 namespace service {
 
 
@@ -172,7 +172,7 @@ void ELcollected::emit( const ELstring & s, bool nl )  {
 // log
 // ====
 
-bool ELcollected::log( const edm::ErrorObj & msg )  {
+bool ELcollected::log( const mf::ErrorObj & msg )  {
 
   #ifdef ELcollectedTRACE_LOG
     std::cout << "    =:=:=: Log to an ELcollected \n";
@@ -274,5 +274,5 @@ bool ELcollected::log( const edm::ErrorObj & msg )  {
 
 
 } // end of namespace service  
-} // end of namespace edm  
+} // end of namespace mf  
 

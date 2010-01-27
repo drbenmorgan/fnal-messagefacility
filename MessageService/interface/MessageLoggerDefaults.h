@@ -12,7 +12,7 @@
 
  Usage:
     #include "FWCore/Utilities/interface/JobMode.h"
-    edm::JobMode mode = somehowObtainJobMode();
+    mf::JobMode mode = somehowObtainJobMode();
     MessageLoggerDefaults mlDefaults (mode);
     ...
     PSet p;
@@ -29,7 +29,7 @@
 
 // Framework include files
 
-#include "FWCore/Utilities/interface/JobMode.h"
+#include "Utilities/interface/JobMode.h"
 
 // system include files
 
@@ -64,7 +64,7 @@
 // the accessor method in this header, and implement it in
 // MessageLoggerDefaults.cc following the pattern shown for existing items
 
-namespace edm {
+namespace mf {
 namespace service {
 
 struct MessageLoggerDefaults {
@@ -118,11 +118,11 @@ public:
   void hardwireAnalysisJobMode();
   void hardwireNilJobMode();
 
-  static edm::JobMode mode(std::string const & jm);
+  static mf::JobMode mode(std::string const & jm);
    
   // ctor
 
-  explicit MessageLoggerDefaults (edm::JobMode mode = GridJobMode) {
+  explicit MessageLoggerDefaults (mf::JobMode mode = GridJobMode) {
     // mode-independent defaults
     
     // mode-dependent defaults
@@ -157,7 +157,7 @@ public:
 
 
 } // end of namespace service
-} // end of namespace edm
+} // end of namespace mf
 
 
 #endif // MessageLogger_MessageLoggerDefaults_h

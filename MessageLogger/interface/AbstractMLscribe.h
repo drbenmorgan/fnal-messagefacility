@@ -1,9 +1,9 @@
-#ifndef FWCore_MessageLogger_AbstractMLscribe_h
-#define FWCore_MessageLogger_AbstractMLscribe_h
+#ifndef MessageFacility_MessageLogger_AbstractMLscribe_h
+#define MessageFacility_MessageLogger_AbstractMLscribe_h
 
-#include "FWCore/MessageLogger/interface/MessageLoggerQ.h"
+#include "MessageLogger/interface/MessageLoggerQ.h"
 
-namespace edm  {
+namespace mf  {
 namespace service {       
 
 class AbstractMLscribe 
@@ -25,7 +25,7 @@ private:
 };  // AbstractMLscribe
 
 }   // end of namespace service
-}  // namespace edm
+}  // namespace mf
 
 
-#endif // FWCore_MessageLogger_AbstractMLscribe_h
+#endif // MessageFacility_MessageLogger_AbstractMLscribe_h

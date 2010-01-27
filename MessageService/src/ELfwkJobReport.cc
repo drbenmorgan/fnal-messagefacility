@@ -19,9 +19,9 @@
 // ----------------------------------------------------------------------
 
 
-#include "FWCore/MessageService/interface/ELfwkJobReport.h"
-#include "FWCore/MessageLogger/interface/ErrorObj.h"
-#include "FWCore/Utilities/interface/do_nothing_deleter.h"
+#include "MessageService/interface/ELfwkJobReport.h"
+#include "MessageLogger/interface/ErrorObj.h"
+#include "Utilities/interface/do_nothing_deleter.h"
 
 // Possible Traces:
 // #define ELfwkJobReportCONSTRUCTOR_TRACE
@@ -31,7 +31,7 @@
 #include <iostream>
 #include <fstream>
 
-namespace edm {
+namespace mf {
 namespace service {
 
 // ----------------------------------------------------------------------
@@ -195,7 +195,7 @@ ELfwkJobReport::clone() const  {
 } // clone()
 
 
-bool ELfwkJobReport::log( const edm::ErrorObj & msg )  {
+bool ELfwkJobReport::log( const mf::ErrorObj & msg )  {
 
   #ifdef ELfwkJobReportTRACE_LOG
     std::cerr << "    =:=:=: Log to an ELfwkJobReport \n";
@@ -413,4 +413,4 @@ void ELfwkJobReport::flush()  {
 
 
 } // end of namespace service  
-} // end of namespace edm  
+} // end of namespace mf  

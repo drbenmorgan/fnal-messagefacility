@@ -1,5 +1,5 @@
-#ifndef FWCore_MessageService_ThreadQueue_h
-#define FWCore_MessageService_ThreadQueue_h
+#ifndef MessageFacility_MessageService_ThreadQueue_h
+#define MessageFacility_MessageService_ThreadQueue_h
 // -*- C++ -*-
 //
 // Package:     MessageService
@@ -19,13 +19,13 @@
 // $Id: ThreadQueue.h,v 1.1 2009/08/12 22:22:01 fischler Exp $
 //
 
-#include "FWCore/MessageLogger/interface/MessageLoggerQ.h"
-#include "FWCore/Utilities/interface/SingleConsumerQ.h"
+#include "MessageLogger/interface/MessageLoggerQ.h"
+#include "Utilities/interface/SingleConsumerQ.h"
 
 
 
 
-namespace edm {
+namespace mf {
 namespace service {
 
 class ThreadQueue
@@ -64,6 +64,6 @@ class ThreadQueue
 };
 
 } // end namespace service
-} // end namespace edm
+} // end namespace mf
 
 #endif

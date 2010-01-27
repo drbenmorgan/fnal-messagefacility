@@ -1,5 +1,5 @@
-#ifndef FWCore_MessageService_ELoutput_h
-#define FWCore_MessageService_ELoutput_h
+#ifndef MessageFacility_MessageService_ELoutput_h
+#define MessageFacility_MessageService_ELoutput_h
 
 
 // ----------------------------------------------------------------------
@@ -22,14 +22,14 @@
 //
 // ----------------------------------------------------------------------
 
-#include "FWCore/MessageService/interface/ELdestination.h"
+#include "MessageService/interface/ELdestination.h"
 
-#include "FWCore/MessageLogger/interface/ELstring.h"
-#include "FWCore/MessageLogger/interface/ELextendedID.h"
+#include "MessageLogger/interface/ELstring.h"
+#include "MessageLogger/interface/ELextendedID.h"
 
 #include "boost/shared_ptr.hpp"
 
-namespace edm {       
+namespace mf {       
 
 
 // ----------------------------------------------------------------------
@@ -71,7 +71,7 @@ public:
                 //-| of copying a destination onto the list:  ofstream
                 //-| ownership is passed to the new copy.
 
-  virtual bool log( const edm::ErrorObj & msg );
+  virtual bool log( const mf::ErrorObj & msg );
 
   // ---  Methods invoked through the ELdestControl handle:
   //
@@ -112,7 +112,7 @@ protected:
   //
   boost::shared_ptr<std::ostream> os;
   int                             charsOnLine;
-  edm::ELextendedID               xid;
+  mf::ELextendedID               xid;
 
   bool wantTimestamp
   ,    wantModule
@@ -137,7 +137,7 @@ protected:
 
 
 }        // end of namespace service
-}        // end of namespace edm
+}        // end of namespace mf
 
 
-#endif // FWCore_MessageService_ELoutput_h
+#endif // MessageFacility_MessageService_ELoutput_h

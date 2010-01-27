@@ -6,16 +6,16 @@
 //
 // 
 
-#include "FWCore/MessageService/interface/SingleThreadMSPresence.h"
-#include "FWCore/MessageService/interface/MessageLoggerScribe.h"
+#include "MessageService/interface/SingleThreadMSPresence.h"
+#include "MessageService/interface/MessageLoggerScribe.h"
 
-#include "FWCore/MessageLogger/interface/MessageLoggerQ.h"
-#include "FWCore/MessageLogger/interface/MessageDrop.h"
+#include "MessageLogger/interface/MessageLoggerQ.h"
+#include "MessageLogger/interface/MessageDrop.h"
 
 #include "boost/shared_ptr.hpp"
 
 
-namespace edm {
+namespace mf {
 namespace service {
 
 
@@ -24,7 +24,7 @@ SingleThreadMSPresence::SingleThreadMSPresence()
 {
   //std::cout << "SingleThreadMSPresence ctor\n";
   MessageLoggerQ::setMLscribe_ptr(
-     boost::shared_ptr<edm::service::AbstractMLscribe> 
+     boost::shared_ptr<mf::service::AbstractMLscribe> 
      (new MessageLoggerScribe(
      boost::shared_ptr<ThreadQueue>())));
   MessageDrop::instance()->messageLoggerScribeIsRunning = 
@@ -36,8 +36,8 @@ SingleThreadMSPresence::~SingleThreadMSPresence()
 {
   MessageLoggerQ::MLqEND();
   MessageLoggerQ::setMLscribe_ptr
-    (boost::shared_ptr<edm::service::AbstractMLscribe>());
+    (boost::shared_ptr<mf::service::AbstractMLscribe>());
 }
 
 } // end of namespace service  
-} // end of namespace edm  
+} // end of namespace mf  

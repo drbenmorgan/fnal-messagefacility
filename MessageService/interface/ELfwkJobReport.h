@@ -1,5 +1,5 @@
-#ifndef FWCore_MessageService_ELfwkJobReport_h
-#define FWCore_MessageService_ELfwkJobReport_h
+#ifndef MessageFacility_MessageService_ELfwkJobReport_h
+#define MessageFacility_MessageService_ELfwkJobReport_h
 
 
 // ----------------------------------------------------------------------
@@ -11,14 +11,14 @@
 //
 // ----------------------------------------------------------------------
 
-#include "FWCore/MessageService/interface/ELdestination.h"
+#include "MessageService/interface/ELdestination.h"
 
-#include "FWCore/MessageLogger/interface/ELstring.h"
-#include "FWCore/MessageLogger/interface/ELextendedID.h"
+#include "MessageLogger/interface/ELstring.h"
+#include "MessageLogger/interface/ELextendedID.h"
 
 #include "boost/shared_ptr.hpp"
 
-namespace edm {       
+namespace mf {       
 
 
 // ----------------------------------------------------------------------
@@ -125,7 +125,7 @@ protected:
 
 
 }        // end of namespace service
-}        // end of namespace edm
+}        // end of namespace mf
 
 
 #endif // FWCore_MessageService_ELfwkJobReport_h

@@ -1,5 +1,5 @@
-#include "FWCore/MessageLogger/interface/LoggedErrorsSummary.h"
-#include "FWCore/MessageLogger/interface/MessageSender.h"
+#include "MessageLogger/interface/LoggedErrorsSummary.h"
+#include "MessageLogger/interface/MessageSender.h"
 
 // Change log
 //
@@ -7,7 +7,7 @@
 //			
 //  2  mf 6/22/09	Change to use severity in the key by using entry as key
 //			Also, LoggedErrorsOnlySummary()
-namespace edm {
+namespace mf {
 
 bool EnableLoggedErrorsSummary() {
   bool ret = MessageSender::errorSummaryIsBeingKept;
@@ -47,7 +47,7 @@ std::vector<ErrorSummaryEntry> LoggedErrorsOnlySummary() {    //  ChangeLog 2
   for (ErrorSummaryMapIterator i = MessageSender::errorSummaryMap.begin();
   	i != end; ++i) {
     e = i->first;    
-    if (e.severity >= edm::ELerror) {
+    if (e.severity >= mf::ELerror) {
       e.count = (i->second); 
       v.push_back(e);
     }
@@ -57,4 +57,4 @@ std::vector<ErrorSummaryEntry> LoggedErrorsOnlySummary() {    //  ChangeLog 2
   return v;
 }
 
-} // end namespace edm
+} // end namespace mf

@@ -6,10 +6,10 @@
 //
 // 
 
-#include "FWCore/MessageService/interface/ThreadQueue.h"
+#include "MessageService/interface/ThreadQueue.h"
 #include <cstring>
 
-namespace edm {
+namespace mf {
 namespace service {
 
 ThreadQueue::ThreadQueue() 
@@ -45,4 +45,4 @@ consume( MessageLoggerQ::OpCode & opcode, void * & operand )
   
 
 } // end of namespace service  
-} // end of namespace edm  
+} // end of namespace mf  

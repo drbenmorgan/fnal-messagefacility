@@ -67,13 +67,13 @@
 // ----------------------------------------------------------------------
 
 
-#include "FWCore/MessageService/interface/ELoutput.h"
-#include "FWCore/MessageService/interface/ELadministrator.h"
-#include "FWCore/MessageService/interface/ELcontextSupplier.h"
+#include "MessageService/interface/ELoutput.h"
+#include "MessageService/interface/ELadministrator.h"
+#include "MessageService/interface/ELcontextSupplier.h"
 
-#include "FWCore/MessageLogger/interface/ErrorObj.h"
+#include "MessageLogger/interface/ErrorObj.h"
 
-#include "FWCore/Utilities/interface/do_nothing_deleter.h"
+#include "Utilities/interface/do_nothing_deleter.h"
 
 // Possible Traces:
 // #define ELoutputCONSTRUCTOR_TRACE
@@ -84,7 +84,7 @@
 #include <fstream>
 #include <cstring>
 
-namespace edm {
+namespace mf {
 namespace service {
 
 // ----------------------------------------------------------------------
@@ -312,7 +312,7 @@ ELoutput::clone() const  {
 } // clone()
 
 
-bool ELoutput::log( const edm::ErrorObj & msg )  {
+bool ELoutput::log( const mf::ErrorObj & msg )  {
 
   #ifdef ELoutputTRACE_LOG
     std::cerr << "    =:=:=: Log to an ELoutput \n";
@@ -705,4 +705,4 @@ void ELoutput::flush()  {
 
 
 } // end of namespace service  
-} // end of namespace edm  
+} // end of namespace mf  

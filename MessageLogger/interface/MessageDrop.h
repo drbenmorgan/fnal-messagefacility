@@ -23,7 +23,7 @@
 
 // Framework include files
 
-#include "FWCore/Utilities/interface/EDMException.h"	// change log 4
+#include "Utilities/interface/EDMException.h"	// change log 4
 
 
 // system include files
@@ -51,7 +51,7 @@
 
 // user include files
 
-namespace edm {
+namespace mf {
 
 struct MessageDrop {
 private:
@@ -74,12 +74,12 @@ public:
   bool infoEnabled;
   bool warningEnabled;
   static unsigned char messageLoggerScribeIsRunning;	// change log 7
-  static edm::Exception * ex_p;				// change log 4
+  static mf::Exception * ex_p;				// change log 4
 };
 
 static const unsigned char  MLSCRIBE_RUNNING_INDICATOR = 29; // change log 7
 
-} // end of namespace edm
+} // end of namespace mf
 
 
 #endif // MessageLogger_MessageDrop_h

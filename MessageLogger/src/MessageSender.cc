@@ -1,6 +1,6 @@
-#include "FWCore/MessageLogger/interface/MessageSender.h"
-#include "FWCore/MessageLogger/interface/MessageLoggerQ.h"
-#include "FWCore/MessageLogger/interface/MessageDrop.h"
+#include "MessageLogger/interface/MessageSender.h"
+#include "MessageLogger/interface/MessageLoggerQ.h"
+#include "MessageLogger/interface/MessageDrop.h"
 
 #define TRACE_DROP
 #ifdef TRACE_DROP
@@ -14,7 +14,7 @@
 //			
 
 
-using namespace edm;
+using namespace mf;
 
 bool MessageSender::errorSummaryIsBeingKept = false;		// change log 1
 bool MessageSender::freshError              = false;

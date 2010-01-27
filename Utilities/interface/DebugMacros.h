@@ -1,7 +1,7 @@
 #ifndef Utilities_DebugMacros_h
 #define Utilities_DebugMacros_h
 
-namespace edm {
+namespace mf {
   struct debugvalue {
 
     debugvalue();

@@ -4,8 +4,8 @@
 #include <cstdio>
 #include <cstring>
 
-#include "FWCore/Utilities/interface/UnixSignalHandlers.h"
-#include "FWCore/Utilities/interface/DebugMacros.h"
+#include "Utilities/interface/UnixSignalHandlers.h"
+#include "Utilities/interface/DebugMacros.h"
 
 #if !defined(NSIG)
 #if defined(_NSIG)
@@ -15,7 +15,7 @@
 #endif
 #endif
 
-namespace edm {
+namespace mf {
 
     boost::mutex usr2_lock;
 
@@ -116,12 +116,12 @@ namespace edm {
     void installCustomHandler( const int signum, CFUNC func )
     {
       sigset_t oldset;
-      edm::disableAllSigs(&oldset);
+      mf::disableAllSigs(&oldset);
 #if defined(__linux__)
-      edm::disableRTSigs();
+      mf::disableRTSigs();
 #endif
-      edm::installSig(signum,func);
-      edm::reenableSigs(&oldset);
+      mf::installSig(signum,func);
+      mf::reenableSigs(&oldset);
     }
 
 //--------------------------------------------------------------
@@ -180,4 +180,4 @@ namespace edm {
       MUST_BE_ZERO(pthread_sigmask( SIG_SETMASK, &oldset, &tmpset));
     }
 
-} // end of namespace edm
+} // end of namespace mf

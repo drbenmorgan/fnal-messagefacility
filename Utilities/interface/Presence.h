@@ -1,5 +1,5 @@
-#ifndef FWCore_Utilities_Presence_h
-#define FWCore_Utilities_Presence_h
+#ifndef MessageFacility_Utilities_Presence_h
+#define MessageFacility_Utilities_Presence_h
 
 // -*- C++ -*-
 
@@ -16,7 +16,7 @@
   dynamically (run-time) loaded.  
 */
 
-namespace edm {
+namespace mf {
 
   class Presence {
   public:
@@ -24,4 +24,4 @@ namespace edm {
     virtual ~Presence() = 0;
   };
 }
-#endif // FWCore_Utilities_Presence_h
+#endif // MessageFacility_Utilities_Presence_h

@@ -1,5 +1,5 @@
-#ifndef FWCore_MessageService_ErrorLog_h
-#define FWCore_MessageService_ErrorLog_h
+#ifndef MessageFacility_MessageService_ErrorLog_h
+#define MessageFacility_MessageService_ErrorLog_h
 
 
 // ----------------------------------------------------------------------
@@ -26,13 +26,13 @@
 //
 // ----------------------------------------------------------------------
 
-#include "FWCore/MessageLogger/interface/ELstring.h"
-#include "FWCore/MessageLogger/interface/ELseverityLevel.h"
-#include "FWCore/MessageLogger/interface/ErrorObj.h"
+#include "MessageLogger/interface/ELstring.h"
+#include "MessageLogger/interface/ELseverityLevel.h"
+#include "MessageLogger/interface/ErrorObj.h"
 
 #include <sstream>
 
-namespace edm {       
+namespace mf {       
 namespace service {       
 
 
@@ -72,7 +72,7 @@ public:
 
   // -----  logging operations:
   //
-  ErrorLog & operator()( edm::ErrorObj & msg );	  // an entire message
+  ErrorLog & operator()( mf::ErrorObj & msg );	  // an entire message
 
   ErrorLog & emit( const ELstring & msg );        // just one part of a message
   ErrorLog & endmsg();				  // no more parts forthcoming
@@ -168,7 +168,7 @@ ErrorLog & operator<<( ErrorLog & e, const char s[] );
 
 
 }        // end of namespace service
-}        // end of namespace edm
+}        // end of namespace mf
 
 
 // ----------------------------------------------------------------------
@@ -176,7 +176,7 @@ ErrorLog & operator<<( ErrorLog & e, const char s[] );
 // ----------------------------------------------------------------------
 
 #define ERRORLOG_ICC
-  #include "FWCore/MessageService/interface/ErrorLog.icc"
+  #include "MessageService/interface/ErrorLog.icc"
 #undef  ERRORLOG_ICC
 
 
@@ -200,4 +200,4 @@ ErrorLog & operator<<( ErrorLog & e, const char s[] );
 // ----------------------------------------------------------------------
 
 
-#endif  // FWCore_MessageService_ErrorLog_h
+#endif  // MessageFacility_MessageService_ErrorLog_h

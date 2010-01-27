@@ -42,11 +42,11 @@
 //
 // ----------------------------------------------------------------------
 
-#include "FWCore/MessageLogger/interface/ErrorSummaryEntry.h"
+#include "MessageLogger/interface/ErrorSummaryEntry.h"
 
 #include <vector>
 
-namespace edm {       
+namespace mf {       
 
 bool EnableLoggedErrorsSummary();
 bool DisableLoggedErrorsSummary();
@@ -54,7 +54,7 @@ bool FreshErrorsExist();
 std::vector<ErrorSummaryEntry> LoggedErrorsSummary();     // Errors and Warnings
 std::vector<ErrorSummaryEntry> LoggedErrorsOnlySummary(); // Errors only
 
-}        // end of namespace edm
+}        // end of namespace mf
 
 
 #endif  // MessageLogger_ErrorSummaryEntry_h

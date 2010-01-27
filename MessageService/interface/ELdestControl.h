@@ -1,5 +1,5 @@
-#ifndef FWCore_MessageService_ELdestControl_h
-#define FWCore_MessageService_ELdestControl_h
+#ifndef MessageFacility_MessageService_ELdestControl_h
+#define MessageFacility_MessageService_ELdestControl_h
 
 
 // ----------------------------------------------------------------------
@@ -29,15 +29,15 @@
 // ----------------------------------------------------------------------
 
 
-#include "FWCore/MessageLogger/interface/ELstring.h"
-#include "FWCore/MessageLogger/interface/ELmap.h"
-#include "FWCore/MessageLogger/interface/ELseverityLevel.h"
-#include "FWCore/MessageLogger/interface/ErrorObj.h"
+#include "MessageLogger/interface/ELstring.h"
+#include "MessageLogger/interface/ELmap.h"
+#include "MessageLogger/interface/ELseverityLevel.h"
+#include "MessageLogger/interface/ErrorObj.h"
 
 #include "boost/shared_ptr.hpp"
 
 
-namespace edm {       
+namespace mf {       
 namespace service {       
 
 // ----------------------------------------------------------------------
@@ -106,7 +106,7 @@ public:
 
   virtual std::map<ELextendedID , StatsCount> statisticsMap() const;
 
-  virtual bool log( edm::ErrorObj & msg );  // Backdoor to log a formed message
+  virtual bool log( mf::ErrorObj & msg );  // Backdoor to log a formed message
                                             // to only this destination.
 				       
   virtual void changeFile (std::ostream & os);
@@ -133,7 +133,7 @@ protected:
 
 
 }        // end of namespace service
-}        // end of namespace edm
+}        // end of namespace mf
 
 
 #endif // FWCore_MessageService_ELdestControl_h

@@ -1,5 +1,5 @@
-#ifndef FWCore_Utilities_do_nothing_deleter_h
-#define FWCore_Utilities_do_nothing_deleter_h
+#ifndef MessageFacility_Utilities_do_nothing_deleter_h
+#define MessageFacility_Utilities_do_nothing_deleter_h
 
 // ----------------------------------------------------------------------
 //
@@ -30,7 +30,7 @@
 //
 // ----------------------------------------------------------------------
 
-namespace edm {
+namespace mf {
   struct do_nothing_deleter {
     void operator()(void const*) const {}
   };

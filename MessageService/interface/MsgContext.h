@@ -1,11 +1,11 @@
-#ifndef FWCore_MessageService_MsgContext_h 
-#define FWCore_MessageService_MsgContext_h 
+#ifndef MessageFacility_MessageService_MsgContext_h 
+#define MessageFacility_MessageService_MsgContext_h 
 
-#include "FWCore/MessageService/interface/ELcontextSupplier.h"
+#include "MessageService/interface/ELcontextSupplier.h"
 
 #include <string>
 
-namespace edm {
+namespace mf {
 namespace service {       
 
   class MsgContext : public ELcontextSupplier
@@ -30,6 +30,6 @@ namespace service {
   };
 
 }        // end of namespace service
-}       // end of namespace edm
+}       // end of namespace mf
 
-#endif // FWCore_MessageService_MsgContext_h
+#endif // MessageFacility_MessageService_MsgContext_h

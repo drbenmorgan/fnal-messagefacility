@@ -13,17 +13,17 @@
 // ----------------------------------------------------------------------
 
 
-#include "FWCore/MessageService/interface/ELerrorList.h"
-#include "FWCore/MessageService/interface/ELadministrator.h"
-#include "FWCore/MessageService/interface/ELcontextSupplier.h"
+#include "MessageService/interface/ELerrorList.h"
+#include "MessageService/interface/ELadministrator.h"
+#include "MessageService/interface/ELcontextSupplier.h"
 
-#include "FWCore/MessageLogger/interface/ELstring.h"
+#include "MessageLogger/interface/ELstring.h"
 
 // Possible Traces:
 // #define ELerrorListCONSTRUCTOR_TRACE
 // #define ELerrorListTRACE_LOG
 
-namespace edm {
+namespace mf {
 namespace service {
 
 
@@ -31,7 +31,7 @@ namespace service {
 // Constructors:
 // ----------------------------------------------------------------------
 
-ELerrorList::ELerrorList(std::list<edm::ErrorObj> & errorList) :
+ELerrorList::ELerrorList(std::list<mf::ErrorObj> & errorList) :
                 ELdestination (),
                 errorObjs ( errorList )
 {
@@ -80,13 +80,13 @@ ELerrorList::clone() const  {
 } // clone()
 
 
-bool ELerrorList::log( const edm::ErrorObj & msg )  {
+bool ELerrorList::log( const mf::ErrorObj & msg )  {
 
   #ifdef ELerrorListTRACE_LOG
     std::cerr << "    =:=:=: Log to an ELerrorList \n";
   #endif
 
-  edm::ErrorObj m (msg);
+  mf::ErrorObj m (msg);
 
   // See if this message is to be acted upon, and add it to limits table
   // if it was not already present:
@@ -130,4 +130,4 @@ bool ELerrorList::log( const edm::ErrorObj & msg )  {
 // ----------------------------------------------------------------------
 
 } // end of namespace service 
-} // end of namespace edm  
+} // end of namespace mf  

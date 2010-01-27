@@ -28,13 +28,13 @@
 #include <iostream>
 #include <fstream>
 
-#include "FWCore/MessageService/interface/ELdestination.h"
-#include "FWCore/MessageService/interface/ELdestControl.h"
+#include "MessageService/interface/ELdestination.h"
+#include "MessageService/interface/ELdestControl.h"
 
 // Possible Traces:
 // #define ELdestinationCONSTRUCTOR_TRACE
 
-namespace edm {
+namespace mf {
 namespace service {
                                          // Fix $001 2/13/01 mf
 #ifdef DEFECT_NO_STATIC_CONST_INIT
@@ -75,7 +75,7 @@ ELdestination::~ELdestination()  {
 // Methods invoked by the ELadministrator:
 // ----------------------------------------------------------------------
 
-bool ELdestination::log( const edm::ErrorObj & msg )  { return false; }
+bool ELdestination::log( const mf::ErrorObj & msg )  { return false; }
 
 
 // ----------------------------------------------------------------------
@@ -97,7 +97,7 @@ static ELstring notELoutputMsg = "This destination is not an ELoutput";
 
 void ELdestination::clearSummary()  {
 
-  edm::ErrorObj msg( ELwarning2, noClearSummaryMsg );
+  mf::ErrorObj msg( ELwarning2, noClearSummaryMsg );
   msg << hereMsg;
   log( msg );
 
@@ -147,7 +147,7 @@ void ELdestination::summary( )  { }
 
 void ELdestination::summary( ELdestControl & dest, const ELstring & title )  {
 
-  edm::ErrorObj msg( ELwarning2, noSummaryMsg );
+  mf::ErrorObj msg( ELwarning2, noSummaryMsg );
   msg << noSummaryMsg << " " << hereMsg << dest.getNewline() << title;
   dest.log( msg );
 
@@ -182,7 +182,7 @@ void ELdestination::summarization(
   const ELstring & title
 , const ELstring & sumLines )  {
 
-  edm::ErrorObj  msg( ELwarning2, noSummarizationMsg );
+  mf::ErrorObj  msg( ELwarning2, noSummarizationMsg );
   msg << hereMsg << newline << title;
   log( msg );
 
@@ -193,19 +193,19 @@ std::map<ELextendedID , StatsCount> ELdestination::statisticsMap() const {
 }
 
 void ELdestination::changeFile (std::ostream & os) {
-  edm::ErrorObj  msg( ELwarning2, noosMsg );
+  mf::ErrorObj  msg( ELwarning2, noosMsg );
   msg << notELoutputMsg;
   log( msg );
 }
 
 void ELdestination::changeFile (const ELstring & filename) {
-  edm::ErrorObj  msg( ELwarning2, noosMsg );
+  mf::ErrorObj  msg( ELwarning2, noosMsg );
   msg << notELoutputMsg << newline << "file requested is" << filename;
   log( msg );
 }
 
 void ELdestination::flush () {
-  edm::ErrorObj  msg( ELwarning2, noosMsg );
+  mf::ErrorObj  msg( ELwarning2, noosMsg );
   msg << "cannot flush()";
   log( msg );
 }
@@ -276,4 +276,4 @@ void close_and_delete::operator()(std::ostream* os) const {
 }
 
 } // end of namespace service  
-} // end of namespace edm  
+} // end of namespace mf  

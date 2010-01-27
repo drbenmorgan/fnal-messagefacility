@@ -49,16 +49,16 @@
 //
 // ----------------------------------------------------------------------
 
-#include "FWCore/MessageService/interface/ELdestControl.h"
+#include "MessageService/interface/ELdestControl.h"
 
-#include "FWCore/MessageLogger/interface/ELstring.h"
-#include "FWCore/MessageLogger/interface/ELlist.h"
-#include "FWCore/MessageLogger/interface/ELseverityLevel.h"
-#include "FWCore/MessageLogger/interface/ErrorObj.h"
+#include "MessageLogger/interface/ELstring.h"
+#include "MessageLogger/interface/ELlist.h"
+#include "MessageLogger/interface/ELseverityLevel.h"
+#include "MessageLogger/interface/ErrorObj.h"
 
 #include "boost/shared_ptr.hpp"
 
-namespace edm {       
+namespace mf {       
 namespace service {       
 
 
@@ -169,7 +169,7 @@ private:
   std::list<boost::shared_ptr<ELdestination> > sinks_;		
   ELseverityLevel            highSeverity_;
   int                        severityCounts_[ ELseverityLevel::nLevels ];
-  edm::ErrorObj              msg;
+  mf::ErrorObj              msg;
   bool                       msgIsActive;
 
   std::map < ELstring, boost::shared_ptr<ELdestination> > attachedDestinations;
@@ -205,7 +205,7 @@ private:
 
 
 }        // end of namespace service
-}        // end of namespace edm
+}        // end of namespace mf
 
 
 #endif  // MessageService_ELadministrator_h

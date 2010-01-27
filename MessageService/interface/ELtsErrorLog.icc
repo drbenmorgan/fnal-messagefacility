@@ -10,7 +10,7 @@
 
 #include <iostream>
 
-namespace edm {       
+namespace mf {       
 namespace service {       
 
 
@@ -67,5 +67,5 @@ void ELtsItem( ELtsErrorLog & e, unsigned short n )  {
 }
 
 }        // end of namespace service
-}        // end of namespace edm
+}        // end of namespace mf
 

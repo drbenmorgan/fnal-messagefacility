@@ -1,5 +1,5 @@
-#ifndef FWCore_MessageLogger_JobReport_h
-#define FWCore_MessageLogger_JobReport_h
+#ifndef MessageFacility_MessageLogger_JobReport_h
+#define MessageFacility_MessageLogger_JobReport_h
 // -*- C++ -*-
 //
 // Package:     MessageLogger
@@ -39,9 +39,9 @@ Changes Log 1: 2009/01/14 10:29:00, Natalia Garcia Nebot
 
 
 #include "boost/scoped_ptr.hpp"
-#include "FWCore/Utilities/interface/tinyxml.h"
+#include "Utilities/interface/tinyxml.h"
 
-namespace edm {
+namespace mf {
 
     class JobReport {
     public:

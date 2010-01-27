@@ -83,20 +83,20 @@
 
 // forward declarations
 
-#include "FWCore/MessageLogger/interface/MessageSender.h"
-#include "FWCore/MessageLogger/interface/MessageDrop.h"
-#include "FWCore/MessageLogger/interface/MessageLoggerQ.h"	// Change log 5
-#include "FWCore/MessageLogger/interface/ErrorObj.h"
-#include "FWCore/Utilities/interface/EDMException.h"		// Change log 8
+#include "MessageLogger/interface/MessageSender.h"
+#include "MessageLogger/interface/MessageDrop.h"
+#include "MessageLogger/interface/MessageLoggerQ.h"	// Change log 5
+#include "MessageLogger/interface/ErrorObj.h"
+#include "Utilities/interface/EDMException.h"		// Change log 8
 
 
-namespace edm  {
+namespace mf  {
 
 class LogWarning
 {
 public:
   explicit LogWarning( std::string const & id ) 
-    : ap ( edm::MessageDrop::instance()->warningEnabled ? 
+    : ap ( mf::MessageDrop::instance()->warningEnabled ? 
       new MessageSender(ELwarning,id) : 0 )
   { }
   ~LogWarning();						// Change log 13
@@ -168,7 +168,7 @@ class LogInfo
 {
 public:
   explicit LogInfo( std::string const & id ) 
-    : ap ( edm::MessageDrop::instance()->infoEnabled ? 
+    : ap ( mf::MessageDrop::instance()->infoEnabled ? 
       new MessageSender(ELinfo,id) : 0 )
   { }
   ~LogInfo();							// Change log 13
@@ -194,7 +194,7 @@ class LogVerbatim						// change log 2
 {
 public:
   explicit LogVerbatim( std::string const & id ) 
-    : ap ( edm::MessageDrop::instance()->infoEnabled ?		// change log 16
+    : ap ( mf::MessageDrop::instance()->infoEnabled ?		// change log 16
       new MessageSender(ELinfo,id,true) : 0 ) // the true is the verbatim arg 
   { }
   ~LogVerbatim();						// Change log 13
@@ -221,7 +221,7 @@ class LogPrint							// change log 3
 {
 public:
   explicit LogPrint( std::string const & id ) 
-    : ap ( edm::MessageDrop::instance()->warningEnabled ?	// change log 16
+    : ap ( mf::MessageDrop::instance()->warningEnabled ?	// change log 16
       new MessageSender(ELwarning,id,true) : 0 ) // the true is the Print arg 
   { }
   ~LogPrint();							// Change log 13
@@ -338,21 +338,21 @@ public:
     { if (!debugEnabled) return *this;				// Change log 8
       if (ap.get()) (*ap) << t; 
       else Exception::throwThis
-       (edm::errors::LogicError,"operator << to stale copied LogDebug_ object"); 
+       (mf::errors::LogicError,"operator << to stale copied LogDebug_ object"); 
       return *this; }
   LogDebug_ & 
   operator<< ( std::ostream&(*f)(std::ostream&))  
     { if (!debugEnabled) return *this;				// Change log 8
       if (ap.get()) (*ap) << f; 
       else Exception::throwThis
-       (edm::errors::LogicError,"operator << to stale copied LogDebug_ object"); 
+       (mf::errors::LogicError,"operator << to stale copied LogDebug_ object"); 
       return *this; }
   LogDebug_ & 
   operator<< ( std::ios_base&(*f)(std::ios_base&) )  
     { if (!debugEnabled) return *this;				// Change log 8
       if (ap.get()) (*ap) << f; 
       else Exception::throwThis
-       (edm::errors::LogicError,"operator << to stale copied LogDebug_ object"); 
+       (mf::errors::LogicError,"operator << to stale copied LogDebug_ object"); 
       return *this; }
 			   // Change log 8:  The tests for ap.get() being null 
 
@@ -376,21 +376,21 @@ public:
     { if (!debugEnabled) return *this;				// Change log 8
       if (ap.get()) (*ap) << t; 
       else Exception::throwThis
-       (edm::errors::LogicError,"operator << to stale copied LogTrace_ object"); 
+       (mf::errors::LogicError,"operator << to stale copied LogTrace_ object"); 
       return *this; }
   LogTrace_ & 
   operator<< ( std::ostream&(*f)(std::ostream&))  
     { if (!debugEnabled) return *this;				// Change log 8
       if (ap.get()) (*ap) << f; 
       else Exception::throwThis
-       (edm::errors::LogicError,"operator << to stale copied LogTrace_ object"); 
+       (mf::errors::LogicError,"operator << to stale copied LogTrace_ object"); 
       return *this; }
   LogTrace_ & 
   operator<< ( std::ios_base&(*f)(std::ios_base&) )  
     { if (!debugEnabled) return *this;				// Change log 8
       if (ap.get()) (*ap) << f; 
       else Exception::throwThis
-       (edm::errors::LogicError,"operator << to stale copied LogTrace_ object"); 
+       (mf::errors::LogicError,"operator << to stale copied LogTrace_ object"); 
       return *this; }
 			   // Change log 8:  The tests for ap.get() being null 
  
@@ -429,7 +429,7 @@ public:
   void setStandAloneMessageThreshold    (std::string const & severity);
   void squelchStandAloneMessageCategory (std::string const & category);
   
-}  // namespace edm
+}  // namespace mf
 
 
 // If ML_DEBUG is defined, LogDebug is active.  
@@ -446,17 +446,17 @@ public:
 #endif
 
 #ifdef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG 
-#define LogDebug(id) edm::Suppress_LogDebug_()
-#define LogTrace(id) edm::Suppress_LogDebug_()
+#define LogDebug(id) mf::Suppress_LogDebug_()
+#define LogTrace(id) mf::Suppress_LogDebug_()
 #else
 #define LogDebug(id)                                 \
-  ( !edm::MessageDrop::instance()->debugEnabled )    \
-    ?  edm::LogDebug_()                              \
-    :  edm::LogDebug_(id, __FILE__, __LINE__)
+  ( !mf::MessageDrop::instance()->debugEnabled )    \
+    ?  mf::LogDebug_()                              \
+    :  mf::LogDebug_(id, __FILE__, __LINE__)
 #define LogTrace(id)                                 \
-  ( !edm::MessageDrop::instance()->debugEnabled )    \
-    ?  edm::LogTrace_()                              \
-    :  edm::LogTrace_(id)
+  ( !mf::MessageDrop::instance()->debugEnabled )    \
+    ?  mf::LogTrace_()                              \
+    :  mf::LogTrace_(id)
 #endif
 #undef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
 							// change log 1, 2

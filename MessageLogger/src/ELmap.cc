@@ -17,7 +17,7 @@
 // ----------------------------------------------------------------------
 
 
-#include "FWCore/MessageLogger/interface/ELmap.h"
+#include "MessageLogger/interface/ELmap.h"
 
 #include "boost/shared_array.hpp"
 
@@ -27,7 +27,7 @@
 // #define ELmapDumpTRACE
 
 
-namespace edm
+namespace mf
 {
 
 
@@ -185,4 +185,4 @@ boost::shared_array<char> ELmapDump ( ELmap_limits m )  {
 }
 #endif
 
-} // end of namespace edm  */
+} // end of namespace mf  */

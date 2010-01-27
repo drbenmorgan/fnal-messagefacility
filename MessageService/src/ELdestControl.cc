@@ -24,8 +24,8 @@
 // ----------------------------------------------------------------------
 
 
-#include "FWCore/MessageService/interface/ELdestControl.h"
-#include "FWCore/MessageService/interface/ELdestination.h"
+#include "MessageService/interface/ELdestControl.h"
+#include "MessageService/interface/ELdestination.h"
 
 #include <iostream>
 using std::cerr;
@@ -34,7 +34,7 @@ using std::cerr;
 // #define ELdestinationCONSTRUCTOR_TRACE
 
 
-namespace edm {
+namespace mf {
 namespace service {
 
 
@@ -244,7 +244,7 @@ ELdestControl & ELdestControl::zero()  {
 }
 
 
-bool ELdestControl::log( edm::ErrorObj & msg )  {
+bool ELdestControl::log( mf::ErrorObj & msg )  {
   if (d) {
     return d->log( msg );
   } else {
@@ -291,4 +291,4 @@ void ELdestControl::flush () {
 
 
 } // end of namespace service
-} // end of namespace edm 
+} // end of namespace mf 

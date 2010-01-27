@@ -9,12 +9,12 @@
 //		    ELstatistics output.
 
 
-#include "FWCore/MessageService/interface/MsgContext.h"
+#include "MessageService/interface/MsgContext.h"
 #include <sstream>
 
 #include <iostream>
 
-namespace edm {
+namespace mf {
 namespace service {       
 
   std::string MsgContext::compress (const std::string& c) const
@@ -36,4 +36,4 @@ namespace service {
     return os.str();    
   }
 }        // end of namespace service
-}       // end of namespace edm
+}       // end of namespace mf

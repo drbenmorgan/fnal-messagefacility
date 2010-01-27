@@ -13,10 +13,10 @@
 // system include files
 
 // user include files
-#include "FWCore/MessageLogger/interface/SilentMLscribe.h"
-#include "FWCore/MessageLogger/interface/ErrorObj.h"
+#include "MessageLogger/interface/SilentMLscribe.h"
+#include "MessageLogger/interface/ErrorObj.h"
 
-namespace edm {
+namespace mf {
    namespace service {
 
 //

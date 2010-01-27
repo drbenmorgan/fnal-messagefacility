@@ -40,15 +40,15 @@
 
 #include <ostream>
 
-#include "FWCore/MessageLogger/interface/ELseverityLevel.h"
-#include "FWCore/MessageLogger/interface/ELmap.h"
+#include "MessageLogger/interface/ELseverityLevel.h"
+#include "MessageLogger/interface/ELmap.h"
 
 
 // Possible Traces
 // #define ELsevConTRACE
 
 
-namespace edm
+namespace mf
 {
 
 
@@ -416,4 +416,4 @@ ELslProxy< ELhighestSeverityGen > const  ELhighestSeverity;
 // ----------------------------------------------------------------------
 
 
-} // end of namespace edm  */
+} // end of namespace mf  */

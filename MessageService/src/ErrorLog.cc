@@ -35,14 +35,14 @@
 // ----------------------------------------------------------------------
 
 
-#include "FWCore/MessageService/interface/ErrorLog.h"
-#include "FWCore/MessageService/interface/ELadministrator.h"
-#include "FWCore/MessageService/interface/ELdestination.h"
-#include "FWCore/MessageService/interface/ELoutput.h"
-#include "FWCore/MessageService/interface/ELrecv.h"
-#include "FWCore/MessageService/interface/ELcontextSupplier.h"
+#include "MessageService/interface/ErrorLog.h"
+#include "MessageService/interface/ELadministrator.h"
+#include "MessageService/interface/ELdestination.h"
+#include "MessageService/interface/ELoutput.h"
+#include "MessageService/interface/ELrecv.h"
+#include "MessageService/interface/ELcontextSupplier.h"
 
-#include "FWCore/Utilities/interface/EDMException.h"
+#include "Utilities/interface/EDMException.h"
 
 #include <iostream>
 #include <iomanip>
@@ -57,7 +57,7 @@
   #include <string>
 #endif
 
-namespace edm {
+namespace mf {
 namespace service {
 
 
@@ -155,14 +155,14 @@ void ErrorLog::setSubroutine( const ELstring & subName )  {
 static inline void msgexit(int s) {
   std::ostringstream os;
   os << "msgexit - MessageLogger Log requested to exit with status " << s;
-  edm::Exception e(edm::errors::LogicError, os.str());
+  mf::Exception e(mf::errors::LogicError, os.str());
   throw e;
 }
 
 static inline void msgabort() {
   std::ostringstream os;
   os << "msgabort - MessageLogger Log requested to abort";
-  edm::Exception e(edm::errors::LogicError, os.str());
+  mf::Exception e(mf::errors::LogicError, os.str());
   throw e;
 }
 
@@ -177,7 +177,7 @@ static inline void possiblyAbOrEx (int s, int a, int e) {
   }
 }
 
-ErrorLog & ErrorLog::operator()( edm::ErrorObj & msg )  {
+ErrorLog & ErrorLog::operator()( mf::ErrorObj & msg )  {
 
   #ifdef ErrorLogENDMSG_TRACE
     std::cout << "=:=:=: precautionary endmsg called from operator() (msg) \n";
@@ -473,4 +473,4 @@ ErrorLog & operator<<( ErrorLog & e, const char s[] ) {
 
 
 } // end of namespace service  
-} // end of namespace edm  
+} // end of namespace mf  

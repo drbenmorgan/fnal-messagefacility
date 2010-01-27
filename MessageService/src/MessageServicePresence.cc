@@ -4,7 +4,7 @@
 //
 // Changes:
 //
-//   1 - 2/11/07  mf 	Added a call to edm::disableAllSigs(&oldset)
+//   1 - 2/11/07  mf 	Added a call to mf::disableAllSigs(&oldset)
 //			to disable signals so that they are all handled 
 //			by the event processor thread
 // 
@@ -17,16 +17,16 @@
 //			
 // 
 
-#include "FWCore/MessageService/interface/MessageServicePresence.h"
-#include "FWCore/MessageService/interface/MessageLoggerScribe.h"
-#include "FWCore/MessageService/interface/ThreadQueue.h"
+#include "MessageService/interface/MessageServicePresence.h"
+#include "MessageService/interface/MessageLoggerScribe.h"
+#include "MessageService/interface/ThreadQueue.h"
 
-#include "FWCore/MessageLogger/interface/MessageLoggerQ.h"
-#include "FWCore/Utilities/interface/UnixSignalHandlers.h"
+#include "MessageLogger/interface/MessageLoggerQ.h"
+#include "Utilities/interface/UnixSignalHandlers.h"
 
 #include <boost/bind.hpp>
 
-using namespace edm::service;
+using namespace mf::service;
 
 
 namespace  {
@@ -34,7 +34,7 @@ void
   runMessageLoggerScribe(boost::shared_ptr<ThreadQueue> queue)
 {
   sigset_t oldset;
-  edm::disableAllSigs(&oldset);
+  mf::disableAllSigs(&oldset);
   MessageLoggerScribe  m(queue);  
   m.run();
   // explicitly DO NOT reenableSigs(oldset) because -
@@ -44,7 +44,7 @@ void
 }
 }  // namespace
 
-namespace edm {
+namespace mf {
 namespace service {
 
 
@@ -66,7 +66,7 @@ MessageServicePresence::MessageServicePresence()
 	  // first executing the before-the-comma statement. 
 {
   MessageLoggerQ::setMLscribe_ptr(
-    boost::shared_ptr<edm::service::AbstractMLscribe>
+    boost::shared_ptr<mf::service::AbstractMLscribe>
         (new MainThreadMLscribe(m_queue))); 
     								// change log 3
   //std::cout << "MessageServicePresence ctor\n";
@@ -78,8 +78,8 @@ MessageServicePresence::~MessageServicePresence()
   MessageLoggerQ::MLqEND();
   m_scribeThread.join();
   MessageLoggerQ::setMLscribe_ptr
-    (boost::shared_ptr<edm::service::AbstractMLscribe>());   // change log 3
+    (boost::shared_ptr<mf::service::AbstractMLscribe>());   // change log 3
 }
 
 } // end of namespace service  
-} // end of namespace edm  
+} // end of namespace mf  

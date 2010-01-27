@@ -1,9 +1,9 @@
 
-#include "FWCore/Utilities/interface/DebugMacros.h"
+#include "Utilities/interface/DebugMacros.h"
 
 #include <cstdlib>
 
-namespace edm {
+namespace mf {
 
   debugvalue::debugvalue():
     cvalue_(getenv("PROC_DEBUG")),

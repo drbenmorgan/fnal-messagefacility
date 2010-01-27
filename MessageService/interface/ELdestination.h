@@ -1,5 +1,5 @@
-#ifndef FWCore_MessageService_ELdestination_h
-#define FWCore_MessageService_ELdestination_h
+#ifndef MessageFacility_MessageService_ELdestination_h
+#define MessageFacility_MessageService_ELdestination_h
 
 
 // ----------------------------------------------------------------------
@@ -29,14 +29,14 @@
 //
 // ----------------------------------------------------------------------
 
-#include "FWCore/MessageService/interface/ELlimitsTable.h"
-#include "FWCore/MessageService/interface/ELset.h"
+#include "MessageService/interface/ELlimitsTable.h"
+#include "MessageService/interface/ELset.h"
 
-#include "FWCore/MessageLogger/interface/ELstring.h"
-#include "FWCore/MessageLogger/interface/ErrorObj.h"
-#include "FWCore/MessageLogger/interface/ELextendedID.h"
+#include "MessageLogger/interface/ELstring.h"
+#include "MessageLogger/interface/ErrorObj.h"
+#include "MessageLogger/interface/ELextendedID.h"
 
-namespace edm {       
+namespace mf {       
 namespace service {       
 
 // ----------------------------------------------------------------------
@@ -65,11 +65,11 @@ public:
   //
 public:
   virtual ELdestination * clone() const = 0;
-  virtual bool log( const edm::ErrorObj & msg );
+  virtual bool log( const mf::ErrorObj & msg );
 
   virtual void summarization(
-    		const edm::ELstring & title,
-   		const edm::ELstring & sumLines );
+    		const mf::ELstring & title,
+   		const mf::ELstring & sumLines );
 
   virtual ELstring getNewline() const;
 
@@ -150,7 +150,7 @@ struct close_and_delete {
 };
 
 }        // end of namespace service
-}        // end of namespace edm
+}        // end of namespace mf
 
 
 #endif  // FWCore_MessageService_ELdestination_h

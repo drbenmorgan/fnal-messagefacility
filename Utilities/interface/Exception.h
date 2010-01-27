@@ -1,5 +1,5 @@
-#ifndef FWCore_Utilities_Exception_h
-#define FWCore_Utilities_Exception_h
+#ifndef MessageFacility_Utilities_Exception_h
+#define MessageFacility_Utilities_Exception_h
 
 /**
    This a basic exception type expected to be thrown by

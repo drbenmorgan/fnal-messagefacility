@@ -18,9 +18,9 @@
 
 
 
-#include "FWCore/MessageService/interface/MessageLoggerDefaults.h"
+#include "MessageService/interface/MessageLoggerDefaults.h"
 
-namespace edm {
+namespace mf {
 namespace service {
 
 std::string 
@@ -343,5 +343,5 @@ sev_timespan(std::string const & dest, std::string const & cat)
 
 
 } // end of namespace service  
-} // end of namespace edm  
+} // end of namespace mf  
 

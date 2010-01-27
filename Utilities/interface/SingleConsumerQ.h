@@ -1,5 +1,5 @@
-#ifndef FWCore_Utilities_SingleConsumerQ_h
-#define FWCore_Utilities_SingleConsumerQ_h
+#ifndef MessageFacility_Utilities_SingleConsumerQ_h
+#define MessageFacility_Utilities_SingleConsumerQ_h
 
 // -*- C++ -*-
 
@@ -38,7 +38,7 @@
 #include "boost/thread/mutex.hpp"
 #include "boost/thread/condition.hpp"
 
-namespace edm {
+namespace mf {
 
   class SingleConsumerQ
   {

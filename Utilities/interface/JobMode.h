@@ -1,5 +1,5 @@
-#ifndef FWCore_Utilities_JobMode_h
-#define FWCore_Utilities_JobMode_h
+#ifndef MessageFacility_Utilities_JobMode_h
+#define MessageFacility_Utilities_JobMode_h
 
 // -*- C++ -*-
 
@@ -10,7 +10,7 @@
 
 */
 
-namespace edm {
+namespace mf {
 
   enum JobMode {
          GridJobMode
@@ -20,4 +20,4 @@ namespace edm {
   };
 
 }
-#endif // FWCore_Utilities_JobMode_h
+#endif // MessageFacility_Utilities_JobMode_h

@@ -6,12 +6,12 @@
 //
 // 
 
-#include "FWCore/MessageService/interface/MainThreadMLscribe.h"
-#include "FWCore/MessageService/interface/ThreadQueue.h"
-#include "FWCore/MessageLogger/interface/MessageLoggerQ.h"
-#include "FWCore/MessageLogger/interface/ConfigurationHandshake.h"
+#include "MessageService/interface/MainThreadMLscribe.h"
+#include "MessageService/interface/ThreadQueue.h"
+#include "MessageLogger/interface/MessageLoggerQ.h"
+#include "MessageLogger/interface/ConfigurationHandshake.h"
 
-namespace edm {
+namespace mf {
 namespace service {
 
 MainThreadMLscribe::MainThreadMLscribe(boost::shared_ptr<ThreadQueue> tqp) 
@@ -40,7 +40,7 @@ runCommand(MessageLoggerQ::OpCode  opcode, void * operand)
       // finally, release the scoped lock by letting it go out of scope 
     }
     if ( ep ) {
-      edm::Exception ex(*ep);
+      mf::Exception ex(*ep);
       throw ex;
     }  
   } else {
@@ -51,4 +51,4 @@ runCommand(MessageLoggerQ::OpCode  opcode, void * operand)
   
 
 } // end of namespace service  
-} // end of namespace edm  
+} // end of namespace mf  
