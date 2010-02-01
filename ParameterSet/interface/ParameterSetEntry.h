@@ -7,10 +7,10 @@
     when the value_ptr = 0;
   */
 
-#include "FWCore/Utilities/interface/value_ptr.h"
-#include "DataFormats/Provenance/interface/ParameterSetID.h"
+#include "Utilities/interface/value_ptr.h"
+#include "ParameterSet/interface/ParameterSetID.h"
 
-namespace edm {
+namespace mf {
 
   // forward declaration
   class ParameterSet;

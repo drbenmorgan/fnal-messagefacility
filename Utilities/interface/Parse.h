@@ -1,9 +1,9 @@
-#ifndef FWCore_Utilities_Parse_h
-#define FWCore_Utilities_Parse_h
+#ifndef MessageFacility_Utilities_Parse_h
+#define MessageFacility_Utilities_Parse_h
 
 #include <string>
 #include <vector>
-namespace edm {
+namespace mf {
       /// only does the yacc interpretation
       std::string read_whole_file(std::string const& filename);
 

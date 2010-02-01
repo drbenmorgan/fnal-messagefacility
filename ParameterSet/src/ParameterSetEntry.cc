@@ -1,10 +1,10 @@
-#include "FWCore/ParameterSet/interface/ParameterSetEntry.h"
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/Registry.h"
-#include "FWCore/Utilities/interface/EDMException.h"
+#include "ParameterSet/interface/ParameterSetEntry.h"
+#include "ParameterSet/interface/ParameterSet.h"
+#include "ParameterSet/interface/Registry.h"
+#include "Utilities/interface/EDMException.h"
 #include <sstream>
 #include <iostream>
-namespace edm {
+namespace mf {
 
   ParameterSetEntry::ParameterSetEntry()
   : isTracked_(false),
@@ -48,7 +48,7 @@ namespace edm {
   ParameterSetEntry::toString(std::string& result) const {
     result += isTracked() ? "+Q(" : "-Q(";
     if (!theID_.isValid()) {
-      throw edm::Exception(edm::errors::LogicError)
+      throw mf::Exception(mf::errors::LogicError)
         << "ParameterSet::toString() called prematurely\n"
         << "before ParameterSet::registerIt() has been called\n"
         << "for all nested parameter sets\n";

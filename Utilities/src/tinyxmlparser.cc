@@ -29,7 +29,7 @@ distribution.
 #include <ctype.h>
 #include <stddef.h>
 
-#include "FWCore/Utilities/interface/tinyxml.h"
+#include "Utilities/interface/tinyxml.h"
 
 //#define DEBUG_PARSER
 #if defined( DEBUG_PARSER )

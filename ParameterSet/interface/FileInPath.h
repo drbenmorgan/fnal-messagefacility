@@ -1,5 +1,5 @@
-#ifndef FWCore_ParameterSet_FileInPath_h
-#define FWCore_ParameterSet_FileInPath_h
+#ifndef MessageFacility_ParameterSet_FileInPath_h
+#define MessageFacility_ParameterSet_FileInPath_h
 
 ///
 
@@ -63,7 +63,7 @@
 #include <string>
 
 
-namespace edm
+namespace mf
 {
   class FileInPath
   {
@@ -141,7 +141,7 @@ namespace edm
   }
 
   inline  std::ostream& 
-  operator<< (std::ostream& os, const edm::FileInPath& fip)
+  operator<< (std::ostream& os, const mf::FileInPath& fip)
   {
     fip.write(os);
     return os;
@@ -155,8 +155,8 @@ namespace edm
   }
 
   inline bool
-  operator== (edm::FileInPath const& a,
-	      edm::FileInPath const& b)
+  operator== (mf::FileInPath const& a,
+	      mf::FileInPath const& b)
   {
     return a.location() == b.location() && a.relativePath() == b.relativePath();      
   }

@@ -1,5 +1,5 @@
-#ifndef FWCore_ParameterSet_Registry_h
-#define FWCore_ParameterSet_Registry_h
+#ifndef MessageFacility_ParameterSet_Registry_h
+#define MessageFacility_ParameterSet_Registry_h
 
 // ----------------------------------------------------------------------
 // Declaration for pset::Registry. This is an implementation detail of
@@ -12,14 +12,14 @@
 
 #include <map>
 
-#include "DataFormats/Provenance/interface/ParameterSetID.h"
-#include "DataFormats/Provenance/interface/ParameterSetBlob.h"
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/Utilities/interface/ThreadSafeRegistry.h"
+#include "ParameterSet/interface/ParameterSetID.h"
+#include "ParameterSet/interface/ParameterSetBlob.h"
+#include "ParameterSet/interface/ParameterSet.h"
+#include "Utilities/interface/ThreadSafeRegistry.h"
 
 
 
-namespace edm {
+namespace mf {
   namespace pset {
 
     class ProcessParameterSetIDCache {
@@ -53,7 +53,7 @@ namespace edm {
 
   ParameterSet getProcessParameterSet();
 
-}  // namespace edm
+}  // namespace mf
 
 
 #endif

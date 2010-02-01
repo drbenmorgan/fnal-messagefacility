@@ -1,5 +1,5 @@
-#ifndef FWCore_ParameterSet_types_h
-#define FWCore_ParameterSet_types_h
+#ifndef MessageFacility_ParameterSet_types_h
+#define MessageFacility_ParameterSet_types_h
 
 // ----------------------------------------------------------------------
 // declaration of type encoding/decoding functions
@@ -16,12 +16,12 @@
 #include <string>
 #include <vector>
 
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "ParameterSet/interface/ParameterSet.h"
 
 // ----------------------------------------------------------------------
 // contents
 
-namespace edm
+namespace mf
 {
   //            destination    source
 
@@ -82,56 +82,8 @@ namespace edm
   bool  encode(std::string              &, std::vector<std::string> const&);
 
   // FileInPath
-  bool  decode(edm::FileInPath &, std::string const&);
-  bool  encode(std::string &, edm::FileInPath const&);
-
-  // InputTag
-  bool  decode(edm::InputTag&, std::string const&);
-  bool  encode(std::string &, edm::InputTag const&);
-
-  // VInputTag
-  bool  decode(std::vector<edm::InputTag>&, std::string const&);
-  bool  encode(std::string &, std::vector<edm::InputTag> const&);
-
-   // ESInputTag
-   bool  decode(edm::ESInputTag&, std::string const&);
-   bool  encode(std::string &, edm::ESInputTag const&);
-   
-   // VESInputTag
-   bool  decode(std::vector<edm::ESInputTag>&, std::string const&);
-   bool  encode(std::string &, std::vector<edm::ESInputTag> const&);
-   
-   // EventID
-  bool  decode(edm::MinimalEventID&, std::string const&);
-  bool  encode(std::string &, edm::MinimalEventID const&);
-
-  // VEventID
-  bool  decode(std::vector<edm::MinimalEventID>&, std::string const&);
-  bool  encode(std::string &, std::vector<edm::MinimalEventID> const&);
-
-  // LuminosityBlockID
-  bool  decode(edm::LuminosityBlockID&, std::string const&);
-  bool  encode(std::string &, edm::LuminosityBlockID const&);
-
-  // VLuminosityBlockID
-  bool  decode(std::vector<edm::LuminosityBlockID>&, std::string const&);
-  bool  encode(std::string &, std::vector<edm::LuminosityBlockID> const&);
-
-  // LuminosityBlockRange
-  bool  decode(edm::LuminosityBlockRange&, std::string const&);
-  bool  encode(std::string &, edm::LuminosityBlockRange const&);
-
-  // VLuminosityBlockRange
-  bool  decode(std::vector<edm::LuminosityBlockRange>&, std::string const&);
-  bool  encode(std::string &, std::vector<edm::LuminosityBlockRange> const&);
-
-  // EventRange
-  bool  decode(edm::EventRange&, std::string const&);
-  bool  encode(std::string &, edm::EventRange const&);
-
-  // VEventRange
-  bool  decode(std::vector<edm::EventRange>&, std::string const&);
-  bool  encode(std::string &, std::vector<edm::EventRange> const&);
+  bool  decode(mf::FileInPath &, std::string const&);
+  bool  encode(std::string &, mf::FileInPath const&);
 
   // ParameterSet
   bool  decode(ParameterSet &, std::string  const&);
@@ -141,7 +93,7 @@ namespace edm
   bool  decode(std::vector<ParameterSet> &, std::string               const&);
   bool  encode(std::string               &, std::vector<ParameterSet> const&);
 
-}  // namespace edm
+}  // namespace mf
 
 
 // ----------------------------------------------------------------------

@@ -26,7 +26,7 @@ distribution.
  */
 #define TIXML_USE_STL
 
-#include "FWCore/Utilities/interface/tinyxml.h"
+#include "Utilities/interface/tinyxml.h"
 
 // The goal of the seperate error file is to make the first
 // step towards localization. tinyxml (currently) only supports

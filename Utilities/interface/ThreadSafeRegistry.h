@@ -1,5 +1,5 @@
-#ifndef FWCore_Utilities_ThreadSafeRegistry_h
-#define FWCore_Utilities_ThreadSafeRegistry_h
+#ifndef MessageFacility_Utilities_ThreadSafeRegistry_h
+#define MessageFacility_Utilities_ThreadSafeRegistry_h
 
 #include <map>
 #include <vector>
@@ -25,7 +25,7 @@
 ///  the value of 'm'.
 // ----------------------------------------------------------------------
 
-namespace edm {
+namespace mf {
   namespace detail {
     struct empty { };
 
@@ -272,6 +272,6 @@ namespace edm {
     { }
 
   } // namespace detail
-} // namespace edm
+} // namespace mf
 
 #endif //  FWCore_Utilities_ThreadSafeRegistry_h

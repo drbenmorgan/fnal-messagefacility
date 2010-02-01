@@ -32,7 +32,7 @@ distribution.
 #include <iostream>
 #endif
 
-#include "FWCore/Utilities/interface/tinyxml.h"
+#include "Utilities/interface/tinyxml.h"
 
 
 bool TiXmlBase::condenseWhiteSpace = true;

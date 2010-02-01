@@ -7,14 +7,17 @@
     when the value_ptr = 0;
   */
 
-#include "FWCore/Utilities/interface/value_ptr.h"
-#include "FWCore/ParameterSet/interface/ParameterSetEntry.h"
+#include "Utilities/interface/value_ptr.h"
+#include "ParameterSet/interface/ParameterSetEntry.h"
 
 #include <string>
 #include <vector>
 #include <iosfwd>
 
-namespace edm {
+#include <assert.h>
+#include <iostream>
+
+namespace mf {
 
   // forward declaration
   class ParameterSet;

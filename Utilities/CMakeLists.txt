@@ -8,6 +8,6 @@ ENDFOREACH (FILE)
 # add include directories
 INCLUDE_DIRECTORIES (${MessageFacility_SOURCE_DIR})
 
-ADD_LIBRARY (MessageLoggerD SHARED ${srcFiles})
-ADD_LIBRARY (MessageLogger ${srcFiles})
+ADD_LIBRARY (UtilitiesD SHARED ${srcFiles})
+ADD_LIBRARY (Utilities ${srcFiles})
 

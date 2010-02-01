@@ -12,9 +12,9 @@
 #include "boost/filesystem/path.hpp"
 #include "boost/filesystem/operations.hpp"
 
-#include "FWCore/ParameterSet/interface/FileInPath.h"
-#include "FWCore/Utilities/interface/EDMException.h"
-#include "FWCore/Utilities/interface/Parse.h"
+#include "ParameterSet/interface/FileInPath.h"
+#include "Utilities/interface/EDMException.h"
+#include "Utilities/interface/Parse.h"
 
 namespace bf = boost::filesystem;
 
@@ -67,13 +67,13 @@ namespace
     if (!bf::exists(p)) return false;
 
     if (bf::is_directory(p))
-      throw edm::Exception(edm::errors::FileInPathError)
+      throw mf::Exception(mf::errors::FileInPathError)
 	<< "Path " 
 	<< p.native_directory_string()
 	<< " is a directory, not a file\n";
 
     if (bf::symbolic_link_exists(p))
-      throw edm::Exception(edm::errors::FileInPathError)
+      throw mf::Exception(mf::errors::FileInPathError)
 	<< "Path " 
 	<< p.native_file_string()
 	<< " is a symbolic link, not a file\n";
@@ -83,7 +83,7 @@ namespace
 
 }
 
-namespace edm
+namespace mf
 {
 
   FileInPath::FileInPath() :
@@ -106,7 +106,7 @@ namespace edm
   FileInPath::FileInPath(const char* r) :
     relativePath_(r ?
 		  r :
-		  ((throw edm::Exception(edm::errors::FileInPathError)
+		  ((throw mf::Exception(mf::errors::FileInPathError)
 		    << "Relative path must not be null\n"), r)),
     canonicalFilename_(),
     location_(Unknown)
@@ -180,14 +180,14 @@ namespace edm
     } else if (location_ == Local) {
       // Guarantee a site independent value by stripping $LOCALTOP.
       if (localTop_.empty()) {
-	throw edm::Exception(edm::errors::FileInPathError)
+	throw mf::Exception(mf::errors::FileInPathError)
 	  << "Environment Variable " 
 	  << LOCALTOP
 	  << " is not set.\n";
       }
       std::string::size_type pos = canonicalFilename_.find(localTop_);
       if (pos != 0) {
-	throw edm::Exception(edm::errors::FileInPathError)
+	throw mf::Exception(mf::errors::FileInPathError)
 	  << "Path " 
 	  << canonicalFilename_
 	  << " is not in the local release area "
@@ -198,14 +198,14 @@ namespace edm
     } else if (location_ == Release) {
       // Guarantee a site independent value by stripping $RELEASETOP.
       if (releaseTop_.empty()) {
-	throw edm::Exception(edm::errors::FileInPathError)
+	throw mf::Exception(mf::errors::FileInPathError)
 	  << "Environment Variable " 
 	  << RELEASETOP
 	  << " is not set.\n";
       }
       std::string::size_type pos = canonicalFilename_.find(releaseTop_);
       if (pos != 0) {
-	throw edm::Exception(edm::errors::FileInPathError)
+	throw mf::Exception(mf::errors::FileInPathError)
 	  << "Path " 
 	  << canonicalFilename_
 	  << " is not in the base release area "
@@ -216,14 +216,14 @@ namespace edm
     } else if (location_ == Data) {
       // Guarantee a site independent value by stripping $DATATOP.
       if (dataTop_.empty()) {
-	throw edm::Exception(edm::errors::FileInPathError)
+	throw mf::Exception(mf::errors::FileInPathError)
 	  << "Environment Variable " 
 	  << DATATOP
 	  << " is not set.\n";
       }
       std::string::size_type pos = canonicalFilename_.find(dataTop_);
       if (pos != 0) {
-	throw edm::Exception(edm::errors::FileInPathError)
+	throw mf::Exception(mf::errors::FileInPathError)
 	  << "Path " 
 	  << canonicalFilename_
 	  << " is not in the data area "
@@ -267,7 +267,7 @@ namespace edm
     relativePath_ = relname;
     if (location_ == Local) {
       if (localTop_.empty()) {
-	throw edm::Exception(edm::errors::FileInPathError)
+	throw mf::Exception(mf::errors::FileInPathError)
 	  << "Environment Variable " 
 	  << LOCALTOP
 	  << " is not set.\n";
@@ -282,7 +282,7 @@ namespace edm
       canonicalFilename_ = localTop_ + canFilename;
     } else if (location_ == Release) {
       if (releaseTop_.empty()) {
-	throw edm::Exception(edm::errors::FileInPathError)
+	throw mf::Exception(mf::errors::FileInPathError)
 	  << "Environment Variable " 
 	  << RELEASETOP
 	  << " is not set.\n";
@@ -304,7 +304,7 @@ namespace edm
       canonicalFilename_ = releaseTop_ + canFilename;
     } else if (location_ == Data) {
       if (dataTop_.empty()) {
-	throw edm::Exception(edm::errors::FileInPathError)
+	throw mf::Exception(mf::errors::FileInPathError)
 	  << "Environment Variable " 
 	  << DATATOP
 	  << " is not set.\n";
@@ -337,7 +337,7 @@ namespace edm
       dataTop_.clear();
     }
     if (!envstring(PathVariableName, searchPath_)) {
-      throw edm::Exception(edm::errors::FileInPathError)
+      throw mf::Exception(mf::errors::FileInPathError)
 	<< PathVariableName
 	<< " must be defined\n";
     }
@@ -347,7 +347,7 @@ namespace edm
   FileInPath::initialize_()
   {
     if (relativePath_.empty())
-      throw edm::Exception(edm::errors::FileInPathError)
+      throw mf::Exception(mf::errors::FileInPathError)
 	<< "Relative path must not be empty\n";
 
     // Find the file, based on the value of path variable.
@@ -370,7 +370,7 @@ namespace edm
 	canonicalFilename_ = bf::complete(relativePath_, 
 					  pathPrefix).string();
 	if (canonicalFilename_.empty())
-	  throw edm::Exception(edm::errors::FileInPathError)
+	  throw mf::Exception(mf::errors::FileInPathError)
 	    << "fullPath is empty"
 	    << "\nrelativePath() is: " << relativePath_
 	    << "\npath prefix is: " << pathPrefix.string()
@@ -421,7 +421,7 @@ namespace edm
     
     // If we got here, we ran out of path elements without finding
     // what we're looking found.
-    throw edm::Exception(edm::errors::FileInPathError)
+    throw mf::Exception(mf::errors::FileInPathError)
       << "Unable to find file "
       << relativePath_
       << " anywhere in the search path."

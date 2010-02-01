@@ -1,7 +1,7 @@
-#include "FWCore/ParameterSet/interface/VParameterSetEntry.h"
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ParameterSet/interface/split.h"
-namespace edm {
+#include "ParameterSet/interface/VParameterSetEntry.h"
+#include "ParameterSet/interface/ParameterSet.h"
+#include "ParameterSet/interface/split.h"
+namespace mf {
 
   VParameterSetEntry::VParameterSetEntry()
   : tracked(false),

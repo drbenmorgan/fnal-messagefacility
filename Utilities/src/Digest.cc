@@ -1,8 +1,8 @@
 #include <iomanip>
 #include <sstream>
 
-#include "FWCore/Utilities/interface/EDMException.h"
-#include "FWCore/Utilities/interface/Digest.h"
+#include "Utilities/interface/EDMException.h"
+#include "Utilities/interface/Digest.h"
 
 namespace cms
 {
@@ -26,7 +26,7 @@ namespace cms
 	case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
 	  return hexed - 'A' + 10;
 	default:
-	  throw edm::Exception(edm::errors::LogicError)
+	  throw mf::Exception(mf::errors::LogicError)
 	    << "Non-hex character in Hash "
 	    << "Please report this to the core framework developers";
 	}
@@ -132,7 +132,7 @@ namespace cms
       default:
 	{
 	  // Not really sure of what sort of exception to throw...
-	  throw edm::Exception(edm::errors::LogicError)
+	  throw mf::Exception(mf::errors::LogicError)
 	    << "String of illegal length: "
 	    << hexy.size()
 	    << " given to MD5Result::fromHexifiedString";	  

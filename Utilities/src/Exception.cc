@@ -1,5 +1,5 @@
 
-#include "FWCore/Utilities/interface/Exception.h"
+#include "Utilities/interface/Exception.h"
 
 namespace cms {
 

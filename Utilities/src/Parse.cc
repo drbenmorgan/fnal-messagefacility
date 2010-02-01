@@ -1,17 +1,17 @@
-#include "FWCore/Utilities/interface/Parse.h"
-#include "FWCore/Utilities/interface/EDMException.h"
-#include "FWCore/Utilities/interface/Algorithms.h"
+#include "Utilities/interface/Parse.h"
+#include "Utilities/interface/EDMException.h"
+#include "Utilities/interface/Algorithms.h"
 #include <boost/tokenizer.hpp>
 #include <fstream>
 #include <iostream>
 
-namespace edm {
+namespace mf {
 
     std::string  read_whole_file(std::string const& filename) {
       std::string result;
       std::ifstream input(filename.c_str());
       if (!input) {
-       throw edm::Exception(errors::Configuration,"MissingFile")
+       throw mf::Exception(errors::Configuration,"MissingFile")
          << "Cannot read file " << filename;
       }
       std::string buffer;
@@ -65,5 +65,5 @@ namespace edm {
       return result;
     }
 
-} // namespace edm
+} // namespace mf
 

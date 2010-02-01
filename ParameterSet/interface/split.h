@@ -19,7 +19,7 @@
 // ----------------------------------------------------------------------
 // contents
 
-namespace edm  {
+namespace mf  {
 
   template< class FwdIter >
   FwdIter
@@ -37,7 +37,7 @@ namespace edm  {
          , std::string const& string_to_split
          , char first, char sep, char last);
 
-}  // namespace edm
+}  // namespace mf
 
 
 // ----------------------------------------------------------------------
@@ -45,7 +45,7 @@ namespace edm  {
 
 template< class FwdIter >
 FwdIter
-  edm::contextual_find(FwdIter b, FwdIter e
+  mf::contextual_find(FwdIter b, FwdIter e
                       , char first, char sep, char last)
 {
   for(int  nested = 0;  b != e;  ++b)  {
@@ -67,7 +67,7 @@ FwdIter
 
 template< class FwdIter >
 FwdIter
-  edm::contextual_find_not(FwdIter b, FwdIter e
+  mf::contextual_find_not(FwdIter b, FwdIter e
                           , char /* first */ , char sep, char /* last */)
 {
   for(;  b != e;  ++b)  {
@@ -85,7 +85,7 @@ FwdIter
 
 template< class OutIter >
 bool
-  edm::split(OutIter dest, std::string const& s
+  mf::split(OutIter dest, std::string const& s
             , char first, char sep, char last)
 {
   typedef  std::string::const_iterator  str_c_iter;

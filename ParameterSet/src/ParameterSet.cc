@@ -7,15 +7,15 @@
 // prerequisite source files and headers
 // ----------------------------------------------------------------------
 
-//#include "Utilities/interface/Digest.h"
+#include "Utilities/interface/Digest.h"
 
 #include "ParameterSet/interface/ParameterSet.h"
-//#include "ParameterSet/interface/Registry.h"
+#include "ParameterSet/interface/Registry.h"
 
-//#include "ParameterSet/interface/split.h"
-//#include "MessageLogger/interface/MessageLogger.h"
-//#include "Utilities/interface/EDMException.h"
-//#include "Utilities/interface/Algorithms.h"
+#include "ParameterSet/interface/split.h"
+#include "MessageLogger/interface/MessageLogger.h"
+#include "Utilities/interface/EDMException.h"
+#include "Utilities/interface/Algorithms.h"
 
 #include "boost/bind.hpp"
 
@@ -30,23 +30,814 @@
 
 namespace mf {
 
+  void
+  ParameterSet::invalidateRegistration(std::string const& nameOfTracked) const {
+    // We have added a new parameter.  Invalidate the ID.
+    if(isRegistered()) {
+      id_ = ParameterSetID();
+      if (!nameOfTracked.empty()) {
+        // Give a warning (informational for now).
+        LogInfo("ParameterSet")  << "Warning: You have added a new tracked parameter\n"
+				 <<  "'" << nameOfTracked << "' to a previously registered parameter set.\n"
+				 << "This is a bad idea because the new parameter(s) will not be recorded.\n"
+				 << "Use the forthcoming ParameterSetDescription facility instead.\n"
+				 << "A warning is given only for the first such parameter in a pset.\n";
+      }
+    }
+    assert(!isRegistered());
+  }
+
   // ----------------------------------------------------------------------
   // constructors
   // ----------------------------------------------------------------------
 
-  ParameterSet::ParameterSet() 
+  ParameterSet::ParameterSet() :
+    tbl_(),
+    psetTable_(),
+    vpsetTable_(),
+    id_()
   {
   }
 
   // ----------------------------------------------------------------------
   // from coded string
 
-  ParameterSet::ParameterSet(std::string const& code) 
+  ParameterSet::ParameterSet(std::string const& code) :
+    tbl_(),
+    psetTable_(),
+    vpsetTable_(),
+    id_()
   {
+    if(!fromString(code)) {
+      throw mf::Exception(errors::Configuration,"InvalidInput")
+	<< "The encoded configuration string "
+	<< "passed to a ParameterSet during construction is invalid:\n"
+	<< code;
+    }
   }
 
+  // ----------------------------------------------------------------------
+  // from coded string and ID.  Will cause registration
+
+  ParameterSet::ParameterSet(std::string const& code, ParameterSetID const& id) :
+    tbl_(),
+    psetTable_(),
+    vpsetTable_(),
+    id_(id)
+  {
+    if(!fromString(code)) {
+      throw mf::Exception(errors::Configuration,"InvalidInput")
+	<< "The encoded configuration string "
+	<< "passed to a ParameterSet during construction is invalid:\n"
+	<< code;
+    }
+    pset::Registry::instance()->insertMapped(*this);
+  }
 
   ParameterSet::~ParameterSet() {}
+
+  ParameterSet const& ParameterSet::registerIt() {
+    if(!isRegistered()) {
+      calculateID();
+      pset::Registry::instance()->insertMapped(*this);
+    }
+    return *this;
+  }
+
+  void ParameterSet::calculateID() {
+    // make sure contained tracked psets are updated
+    for(psettable::iterator i = psetTable_.begin(), e = psetTable_.end(); i != e; ++i) {
+      if (!i->second.pset().isRegistered()) {
+	i->second.pset().registerIt();
+      }
+      i->second.updateID();
+    }
+
+    // make sure contained tracked vpsets are updated
+    for(vpsettable::iterator i = vpsetTable_.begin(), e = vpsetTable_.end(); i != e; ++i) {
+      i->second.registerPsetsAndUpdateIDs();
+    }
+
+    std::string stringrep;
+    toString(stringrep);
+    cms::Digest md5alg(stringrep);
+    id_ = ParameterSetID(md5alg.digest().toString());
+    assert(isRegistered());
+  }
+
+  // ----------------------------------------------------------------------
+  // identification
+  ParameterSetID
+  ParameterSet::id() const {
+    // checks if valid
+    if (!isRegistered()) {
+      throw mf::Exception(mf::errors::LogicError)
+        << "ParameterSet::id() called prematurely\n"
+        << "before ParameterSet::registerIt() has been called.\n";
+    }
+    return id_;
+  }
+
+  void ParameterSet::setID(ParameterSetID const& id) const {
+    id_ = id;
+  }
+
+  // ----------------------------------------------------------------------
+  // Entry-handling
+  // ----------------------------------------------------------------------
+
+  Entry const*
+  ParameterSet::getEntryPointerOrThrow_(char const* name) const {
+    return getEntryPointerOrThrow_(std::string(name));
+  }
+
+  Entry const*
+  ParameterSet::getEntryPointerOrThrow_(std::string const& name) const {
+    Entry const* result = retrieveUntracked(name);
+    if (result == 0)
+      throw mf::Exception(errors::Configuration, "MissingParameter:")
+	<< "The required parameter '" << name
+	<< "' was not specified.\n";
+    return result;
+  }
+
+  template <class T, class U> T first(std::pair<T,U> const& p)
+  { return p.first; }
+
+  template <class T, class U> U second(std::pair<T,U> const& p)
+  { return p.second; }
+
+  Entry const&
+  ParameterSet::retrieve(char const* name) const {
+    return retrieve(std::string(name));
+  }
+
+  Entry const&
+  ParameterSet::retrieve(std::string const& name) const {
+    table::const_iterator  it = tbl_.find(name);
+    if (it == tbl_.end()) {
+	throw mf::Exception(errors::Configuration,"MissingParameter:")
+	  << "Parameter '" << name
+	  << "' not found.";
+    }
+    if (it->second.isTracked() == false) {
+      if (name[0] == '@') {
+	throw mf::Exception(errors::Configuration,"StatusMismatch:")
+	  << "Framework Error:  Parameter '" << name
+	  << "' is incorrectly designated as tracked in the framework.";
+      } else {
+	throw mf::Exception(errors::Configuration,"StatusMismatch:")
+	  << "Parameter '" << name
+	  << "' is designated as tracked in the code,\n"
+          << "but is designated as untracked in the configuration file.\n"
+          << "Please remove 'untracked' from the configuration file for parameter '"<< name << "'.";
+      }
+    }
+    return it->second;
+  }  // retrieve()
+
+  Entry const* const
+  ParameterSet::retrieveUntracked(char const* name) const {
+    return retrieveUntracked(std::string(name));
+  }
+
+  Entry const* const
+  ParameterSet::retrieveUntracked(std::string const& name) const {
+    table::const_iterator  it = tbl_.find(name);
+
+    if (it == tbl_.end()) return 0;
+    if (it->second.isTracked()) {
+      if (name[0] == '@') {
+	throw mf::Exception(errors::Configuration,"StatusMismatch:")
+	  << "Framework Error:  Parameter '" << name
+	  << "' is incorrectly designated as untracked in the framework.";
+      } else {
+	throw mf::Exception(errors::Configuration,"StatusMismatch:")
+	  << "Parameter '" << name
+	  << "' is designated as untracked in the code,\n"
+          << "but is not designated as untracked in the configuration file.\n"
+          << "Please change the configuration file to 'untracked <type> " << name << "'.";
+      }
+    }
+    return &it->second;
+  }  // retrieve()
+
+  ParameterSetEntry const&
+  ParameterSet::retrieveParameterSet(std::string const& name) const {
+    psettable::const_iterator it = psetTable_.find(name);
+    if (it == psetTable_.end()) {
+        throw mf::Exception(errors::Configuration,"MissingParameter:")
+          << "ParameterSet '" << name
+          << "' not found.";
+    }
+    if (it->second.isTracked() == false) {
+      if (name[0] == '@') {
+        throw mf::Exception(errors::Configuration,"StatusMismatch:")
+          << "Framework Error:  ParameterSet '" << name
+          << "' is incorrectly designated as tracked in the framework.";
+      } else {
+        throw mf::Exception(errors::Configuration,"StatusMismatch:")
+          << "ParameterSet '" << name
+          << "' is designated as tracked in the code,\n"
+          << "but is designated as untracked in the configuration file.\n"
+          << "Please remove 'untracked' from the configuration file for parameter '"<< name << "'.";
+      }
+    }
+    return it->second;
+  }  // retrieve()
+
+  ParameterSetEntry const* const
+  ParameterSet::retrieveUntrackedParameterSet(std::string const& name) const {
+    psettable::const_iterator  it = psetTable_.find(name);
+
+    if (it == psetTable_.end()) return 0;
+    if (it->second.isTracked()) {
+      if (name[0] == '@') {
+        throw mf::Exception(errors::Configuration,"StatusMismatch:")
+          << "Framework Error:  ParameterSet '" << name
+          << "' is incorrectly designated as untracked in the framework.";
+      } else {
+        throw mf::Exception(errors::Configuration,"StatusMismatch:")
+          << "ParameterSet '" << name
+          << "' is designated as untracked in the code,\n"
+          << "but is not designated as untracked in the configuration file.\n"
+          << "Please change the configuration file to 'untracked <type> " << name << "'.";
+      }
+    }
+    return &it->second;
+  }  // retrieve()
+
+  VParameterSetEntry const&
+  ParameterSet::retrieveVParameterSet(std::string const& name) const {
+    vpsettable::const_iterator it = vpsetTable_.find(name);
+    if (it == vpsetTable_.end()) {
+        throw mf::Exception(errors::Configuration,"MissingParameter:")
+          << "VParameterSet '" << name
+          << "' not found.";
+    }
+    if (it->second.isTracked() == false) {
+      throw mf::Exception(errors::Configuration,"StatusMismatch:")
+        << "VParameterSet '" << name
+        << "' is designated as tracked in the code,\n"
+        << "but is designated as untracked in the configuration file.\n"
+        << "Please remove 'untracked' from the configuration file for parameter '"<< name << "'.";
+    }
+    return it->second;
+  }  // retrieve()
+
+  VParameterSetEntry const* const
+  ParameterSet::retrieveUntrackedVParameterSet(std::string const& name) const {
+    vpsettable::const_iterator it = vpsetTable_.find(name);
+
+    if (it == vpsetTable_.end()) return 0;
+    if (it->second.isTracked()) {
+      throw mf::Exception(errors::Configuration,"StatusMismatch:")
+        << "VParameterSet '" << name
+        << "' is designated as untracked in the code,\n"
+        << "but is not designated as untracked in the configuration file.\n"
+        << "Please change the configuration file to 'untracked <type> " << name << "'.";
+    }
+    return &it->second;
+  }  // retrieve()
+
+  Entry const* const
+  ParameterSet::retrieveUnknown(char const* name) const {
+    return retrieveUnknown(std::string(name));
+  }
+
+  Entry const* const
+  ParameterSet::retrieveUnknown(std::string const& name) const {
+    table::const_iterator it = tbl_.find(name);
+    if (it == tbl_.end()) {
+      return 0;
+    }
+    return &it->second;
+  }
+
+  ParameterSetEntry const* const
+  ParameterSet::retrieveUnknownParameterSet(std::string const& name) const {
+    psettable::const_iterator  it = psetTable_.find(name);
+    if (it == psetTable_.end()) {
+      return 0;
+    }
+    return &it->second;
+  }
+
+  VParameterSetEntry const* const
+  ParameterSet::retrieveUnknownVParameterSet(std::string const& name) const {
+    vpsettable::const_iterator  it = vpsetTable_.find(name);
+    if (it == vpsetTable_.end()) {
+      return 0;
+    }
+    return &it->second;
+  }
+
+  // ----------------------------------------------------------------------
+  // ----------------------------------------------------------------------
+
+  std::string
+  ParameterSet::getParameterAsString(std::string const& name) const {
+    if(existsAs<ParameterSet>(name)) {
+      return retrieveUnknownParameterSet(name)->toString();
+    }
+    else if(existsAs<std::vector<ParameterSet> >(name)) {
+      return retrieveUnknownVParameterSet(name)->toString();
+    }
+    else if(exists(name)) {
+      return retrieveUnknown(name)->toString();
+    }
+    else {
+      throw mf::Exception(errors::Configuration,"getParameterAsString")
+       << "Cannot find parameter " << name  << " in " << *this;
+    }
+  }
+
+  // ----------------------------------------------------------------------
+  // ----------------------------------------------------------------------
+
+  void
+  ParameterSet::insert(bool okay_to_replace, char const* name, Entry const& value) {
+    insert(okay_to_replace, std::string(name), value);
+  }
+
+  void
+  ParameterSet::insert(bool okay_to_replace, std::string const& name, Entry const& value) {
+    // We should probably get rid of 'okay_to_replace', which will
+    // simplify the logic in this function.
+    table::iterator  it = tbl_.find(name);
+
+    if(it == tbl_.end())  {
+      if(!tbl_.insert(std::make_pair(name, value)).second)
+        throw mf::Exception(errors::Configuration,"InsertFailure")
+	  << "cannot insert " << name
+	  << " into a ParameterSet\n";
+    }
+    else if(okay_to_replace)  {
+      it->second = value;
+    }
+  }  // insert()
+
+  void ParameterSet::insertParameterSet(bool okay_to_replace, std::string const& name, ParameterSetEntry const& entry) {
+    // We should probably get rid of 'okay_to_replace', which will
+    // simplify the logic in this function.
+    psettable::iterator it = psetTable_.find(name);
+
+    if(it == psetTable_.end()) {
+      if(!psetTable_.insert(std::make_pair(name, entry)).second)
+        throw mf::Exception(errors::Configuration,"InsertFailure")
+          << "cannot insert " << name
+          << " into a ParameterSet\n";
+    } else if(okay_to_replace) {
+      it->second = entry;
+    }
+  }  // insert()
+
+  void ParameterSet::insertVParameterSet(bool okay_to_replace, std::string const& name, VParameterSetEntry const& entry) {
+    // We should probably get rid of 'okay_to_replace', which will
+    // simplify the logic in this function.
+    vpsettable::iterator it = vpsetTable_.find(name);
+
+    if(it == vpsetTable_.end()) {
+      if(!vpsetTable_.insert(std::make_pair(name, entry)).second)
+        throw mf::Exception(errors::Configuration,"InsertFailure")
+          << "cannot insert " << name
+          << " into a VParameterSet\n";
+    } else if(okay_to_replace) {
+      it->second = entry;
+    }
+  }  // insert()
+
+  void
+  ParameterSet::augment(ParameterSet const& from) {
+    // This preemptive invalidation may be more agressive than necessary.
+    invalidateRegistration(std::string());
+    if(&from == this) {
+      return;
+    }
+
+    for(table::const_iterator b = from.tbl_.begin(), e = from.tbl_.end(); b != e; ++b) {
+      this->insert(false, b->first, b->second);
+    }
+    for(psettable::const_iterator b = from.psetTable_.begin(), e = from.psetTable_.end(); b != e; ++b) {
+      this->insertParameterSet(false, b->first, b->second);
+    }
+    for(vpsettable::const_iterator b = from.vpsetTable_.begin(), e = from.vpsetTable_.end(); b != e; ++b) {
+      this->insertVParameterSet(false, b->first, b->second);
+    }
+  }  // augment()
+
+  void ParameterSet::copyFrom(ParameterSet const& from, std::string const& name) {
+    invalidateRegistration(std::string());
+    if(from.existsAs<ParameterSet>(name)) {
+      this->insertParameterSet(false, name, *(from.retrieveUnknownParameterSet(name)) );
+    }
+    else if(from.existsAs<std::vector<ParameterSet> >(name)) {
+      this->insertVParameterSet(false, name, *(from.retrieveUnknownVParameterSet(name)) );
+    }
+    else if(from.exists(name)) {
+      this->insert(false, name, *(from.retrieveUnknown(name)) );
+    }
+    else {
+      throw mf::Exception(errors::Configuration, "copyFrom")
+       << "Cannot find parameter " << name  << " in " << from;
+    }
+  }
+
+  ParameterSet *
+  ParameterSet::getPSetForUpdate(std::string const& name, bool & isTracked) {
+    assert(!isRegistered());
+    isTracked = false;
+    psettable::iterator it = psetTable_.find(name);
+    if (it == psetTable_.end()) return 0;
+    isTracked = it->second.isTracked();
+    return &it->second.pset();
+  }
+
+  VParameterSetEntry *
+  ParameterSet::getPSetVectorForUpdate(std::string const& name) {
+    assert(!isRegistered());
+    vpsettable::iterator it = vpsetTable_.find(name);
+    if (it == vpsetTable_.end()) return 0;
+    return &it->second;
+  }
+
+  // ----------------------------------------------------------------------
+  // coding
+  // ----------------------------------------------------------------------
+
+  void
+  ParameterSet::toString(std::string& rep) const {
+    // make sure the PSets get filled
+    if (empty()) {
+      rep += "<>";
+      return;
+    }
+    size_t size = 1;
+    for(table::const_iterator b = tbl_.begin(), e = tbl_.end(); b != e; ++b) {
+      if (b->second.isTracked()) {
+        size += 2;
+        size += b->first.size();
+        size += b->second.sizeOfString();
+      }
+    }
+    for(psettable::const_iterator b = psetTable_.begin(), e = psetTable_.end(); b != e; ++b) {
+      if (b->second.isTracked()) {
+        size += 2;
+        size += b->first.size();
+        size += b->first.size();
+        size += b->first.size();
+        size += sizeof(ParameterSetID);
+      }
+    }
+    for(vpsettable::const_iterator b = vpsetTable_.begin(), e = vpsetTable_.end(); b != e; ++b) {
+      if (b->second.isTracked()) {
+        size += 2;
+        size += b->first.size();
+        size += sizeof(ParameterSetID) * b->second.vpset().size();
+      }
+    }
+
+    rep.reserve(rep.size()+size);
+    rep += '<';
+    std::string start;
+    std::string const between(";");
+    for(table::const_iterator b = tbl_.begin(), e = tbl_.end(); b != e; ++b) {
+      if (b->second.isTracked()) {
+        rep += start;
+        rep += b->first;
+        rep += '=';
+        b->second.toString(rep);
+        start = between;
+      }
+    }
+    for(psettable::const_iterator b = psetTable_.begin(), e = psetTable_.end(); b != e; ++b) {
+      if (b->second.isTracked()) {
+        rep += start;
+        rep += b->first;
+        rep += '=';
+        b->second.toString(rep);
+        start = between;
+      }
+    }
+    for(vpsettable::const_iterator b = vpsetTable_.begin(), e = vpsetTable_.end(); b != e; ++b) {
+      if (b->second.isTracked()) {
+        rep += start;
+        rep += b->first;
+        rep += '=';
+        b->second.toString(rep);
+        start = between;
+      }
+    }
+
+    rep += '>';
+  }  // to_string()
+
+  std::string
+  ParameterSet::toString() const {
+    std::string result;
+    toString(result);
+    return result;
+  }
+
+  // ----------------------------------------------------------------------
+
+  bool
+  ParameterSet::fromString(std::string const& from) {
+    std::vector<std::string> temp;
+    if(!split(std::back_inserter(temp), from, '<', ';', '>'))
+      return false;
+
+    tbl_.clear();  // precaution
+    for(std::vector<std::string>::const_iterator b = temp.begin(), e = temp.end(); b != e; ++b) {
+      // locate required name/value separator
+      std::string::const_iterator q = find_in_all(*b, '=');
+      if(q == b->end())
+        return false;
+
+      // form name unique to this ParameterSet
+      std::string  name = std::string(b->begin(), q);
+      if(tbl_.find(name) != tbl_.end())
+        return false;
+
+      std::string rep(q+1, b->end());
+      // entries are generically of the form tracked-type-rep
+      if (rep[0] == '-') {
+      }
+      if(rep[1] == 'Q') {
+        ParameterSetEntry psetEntry(rep);
+        if(!psetTable_.insert(std::make_pair(name, psetEntry)).second) {
+          return false;
+	}
+      } else if(rep[1] == 'q') {
+        VParameterSetEntry vpsetEntry(rep);
+        if(!vpsetTable_.insert(std::make_pair(name, vpsetEntry)).second) {
+          return false;
+	}
+      } else if(rep[1] == 'P') {
+        Entry value(name, rep);
+        ParameterSetEntry psetEntry(value.getPSet(), value.isTracked());
+        if(!psetTable_.insert(std::make_pair(name, psetEntry)).second) {
+          return false;
+        }
+      } else if(rep[1] == 'p') {
+        Entry value(name, rep);
+        VParameterSetEntry vpsetEntry(value.getVPSet(), value.isTracked());
+        if(!vpsetTable_.insert(std::make_pair(name, vpsetEntry)).second) {
+          return false;
+        }
+      } else {
+        // form value and insert name/value pair
+        Entry  value(name, rep);
+        if(!tbl_.insert(std::make_pair(name, value)).second) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }  // from_string()
+
+  std::vector<FileInPath>::size_type
+  ParameterSet::getAllFileInPaths(std::vector<FileInPath>& output) const {
+    std::vector<FileInPath>::size_type count = 0;
+    table::const_iterator it = tbl_.begin();
+    table::const_iterator end = tbl_.end();
+    while (it != end) {
+	Entry const& e = it->second;
+	if (e.typeCode() == 'F') {
+	    ++count;
+	    output.push_back(e.getFileInPath());
+	}
+	++it;
+    }
+    return count;
+  }
+
+  std::vector<std::string>
+  ParameterSet::getParameterNames() const {
+    std::vector<std::string> returnValue;
+    std::transform(tbl_.begin(), tbl_.end(), back_inserter(returnValue),
+		   boost::bind(&std::pair<std::string const, Entry>::first,_1));
+    std::transform(psetTable_.begin(), psetTable_.end(), back_inserter(returnValue),
+                   boost::bind(&std::pair<std::string const, ParameterSetEntry>::first,_1));
+    std::transform(vpsetTable_.begin(), vpsetTable_.end(), back_inserter(returnValue),
+                   boost::bind(&std::pair<std::string const, VParameterSetEntry>::first,_1));
+    return returnValue;
+  }
+
+  bool ParameterSet::exists(std::string const& parameterName) const {
+    return(tbl_.find(parameterName) != tbl_.end() ||
+     psetTable_.find(parameterName) != psetTable_.end() ||
+    vpsetTable_.find(parameterName) != vpsetTable_.end());
+  }
+
+  ParameterSet
+  ParameterSet::trackedPart() const {
+    ParameterSet result;
+    for(table::const_iterator tblItr = tbl_.begin(); tblItr != tbl_.end(); ++tblItr) {
+      if(tblItr->second.isTracked()) {
+        result.tbl_.insert(*tblItr);
+      }
+    }
+    for(psettable::const_iterator psetItr = psetTable_.begin(); psetItr != psetTable_.end(); ++psetItr) {
+      if(psetItr->second.isTracked()) {
+        result.addParameter<ParameterSet>(psetItr->first, psetItr->second.pset().trackedPart());
+      }
+    }
+    for(vpsettable::const_iterator vpsetItr = vpsetTable_.begin(); vpsetItr != vpsetTable_.end(); ++vpsetItr) {
+      if(vpsetItr->second.isTracked()) {
+	VParameterSet vresult;
+	std::vector<ParameterSet> const& this_vpset = vpsetItr->second.vpset();
+
+	typedef std::vector<ParameterSet>::const_iterator Iter;
+	for (Iter i = this_vpset.begin(), e = this_vpset.end(); i != e; ++i) {
+	  vresult.push_back(i->trackedPart());
+	}
+        result.addParameter<VParameterSet>(vpsetItr->first, vresult);
+      }
+    }
+    return result;
+  }
+
+  size_t
+  ParameterSet::getParameterSetNames(std::vector<std::string>& output) {
+    std::transform(psetTable_.begin(), psetTable_.end(), back_inserter(output),
+                   boost::bind(&std::pair<std::string const, ParameterSetEntry>::first,_1));
+    return output.size();
+  }
+
+  size_t
+  ParameterSet::getParameterSetNames(std::vector<std::string>& output,
+                                     bool trackiness) const {
+    for(psettable::const_iterator psetItr = psetTable_.begin();
+        psetItr != psetTable_.end(); ++psetItr) {
+      if(psetItr->second.isTracked() == trackiness) {
+        output.push_back(psetItr->first);
+      }
+    }
+    return output.size();
+  }
+
+  size_t
+  ParameterSet::getParameterSetVectorNames(std::vector<std::string>& output,
+					    bool trackiness) const {
+    for(vpsettable::const_iterator vpsetItr = vpsetTable_.begin();
+         vpsetItr != vpsetTable_.end(); ++vpsetItr) {
+      if(vpsetItr->second.isTracked() == trackiness) {
+        output.push_back(vpsetItr->first);
+      }
+    }
+    return output.size();
+  }
+
+  size_t
+  ParameterSet::getNamesByCode_(char code,
+				bool trackiness,
+				std::vector<std::string>& output) const {
+    size_t count = 0;
+    if (code == 'Q') {
+      return getParameterSetNames(output, trackiness);
+    }
+    if (code == 'q') {
+      return getParameterSetVectorNames(output, trackiness);
+    }
+    table::const_iterator it = tbl_.begin();
+    table::const_iterator end = tbl_.end();
+    while (it != end) {
+      Entry const& e = it->second;
+      if (e.typeCode() == code &&
+	  e.isTracked() == trackiness) { // if it is a vector of ParameterSet
+	  ++count;
+	  output.push_back(it->first); // save the name
+      }
+      ++it;
+    }
+    return count;
+  }
+
+  template <>
+  std::vector<std::string> ParameterSet::getParameterNamesForType<FileInPath>(bool trackiness) const
+  {
+    std::vector<std::string> result;
+    getNamesByCode_('F', trackiness, result);
+    return result;
+  }
+
+  bool operator==(ParameterSet const& a, ParameterSet const& b) {
+    if (a.isRegistered() && b.isRegistered()) {
+      return (a.id() == b.id());
+    }
+    return isTransientEqual(a.trackedPart(), b.trackedPart());
+  }
+
+  bool isTransientEqual(ParameterSet const& a, ParameterSet const& b) {
+    if (a.tbl().size() != b.tbl().size()) {
+	return false;
+    }
+    if (a.psetTable().size() != b.psetTable().size()) {
+	return false;
+    }
+    if (a.vpsetTable().size() != b.vpsetTable().size()) {
+	return false;
+    }
+    typedef ParameterSet::table::const_iterator Ti;
+    for (Ti i = a.tbl().begin(), e = a.tbl().end(),
+	    j = b.tbl().begin(), f = b.tbl().end();
+	    i != e; ++i, ++j) {
+      if (*i != *j) {
+	return false;
+      }
+    }
+    typedef ParameterSet::psettable::const_iterator Pi;
+    for (Pi i = a.psetTable().begin(), e = a.psetTable().end(),
+	    j = b.psetTable().begin(), f = b.psetTable().end();
+	    i != e; ++i, ++j) {
+      if (i->first != j->first) {
+	return false;
+      }
+      if (i->second.isTracked() != j->second.isTracked()) {
+	return false;
+      }
+      if (!isTransientEqual(i->second.pset(), j->second.pset())) {
+	return false;
+      }
+    }
+    typedef ParameterSet::vpsettable::const_iterator PVi;
+    for (PVi i = a.vpsetTable().begin(), e = a.vpsetTable().end(),
+	     j = b.vpsetTable().begin(), f = b.vpsetTable().end();
+	     i != e; ++i, ++j) {
+      if (i->first != j->first) {
+	return false;
+      }
+      if (i->second.isTracked() != j->second.isTracked()) {
+	return false;
+      }
+      std::vector<ParameterSet> const& iv = i->second.vpset();
+      std::vector<ParameterSet> const& jv = j->second.vpset();
+      if (iv.size() != jv.size()) {
+	return false;
+      }
+      for (size_t k = 0; k < iv.size(); ++k) {
+        if (!isTransientEqual(iv[k], jv[k])) {
+	  return false;
+	}
+      }
+    }
+    return true;
+  }
+
+  std::string ParameterSet::dump() const {
+    std::ostringstream os;
+    os << "{" << std::endl;
+    for(table::const_iterator i = tbl_.begin(), e = tbl_.end(); i != e; ++i) {
+      // indent a bit
+      os << "  " << i->first << ": " << i->second << std::endl;
+    }
+    os << "}";
+    os << "{" << std::endl;
+    for(psettable::const_iterator i = psetTable_.begin(), e = psetTable_.end(); i != e; ++i) {
+      // indent a bit
+      std::string n = i->first;
+      ParameterSetEntry const& pe = i->second;
+      os << "  " << n << ": " << pe <<  std::endl;
+    }
+    os << "}";
+    os << "{" << std::endl;
+    for(vpsettable::const_iterator i = vpsetTable_.begin(), e = vpsetTable_.end(); i != e; ++i) {
+      // indent a bit
+      std::string n = i->first;
+      VParameterSetEntry const& pe = i->second;
+      os << "  " << n << ": " << pe <<  std::endl;
+    }
+    os << "}";
+    return os.str();
+  }
+
+  std::ostream & operator<<(std::ostream & os, ParameterSet const& pset) {
+    os << pset.dump();
+    return os;
+  }
+
+  // Free function to return a parameterSet given its ID.
+  ParameterSet
+  getParameterSet(ParameterSetID const& id) {
+    ParameterSet result;
+    if(!pset::Registry::instance()->getMapped(id, result)) {
+      throw mf::Exception(errors::Configuration,"MissingParameterSet:")
+        << "Parameter Set ID '" << id << "' not found.";
+    }
+    result.setID(id);
+    return result;
+  }
+
+  void ParameterSet::deprecatedInputTagWarning(std::string const& name, 
+					       std::string const& label) const {
+    LogWarning("Configuration") << "Warning:\n\tstring " << name 
+				<< " = \"" << label 
+				<< "\"\nis deprecated, "
+				<< "please update your config file to use\n\tInputTag " 
+				<< name << " = " << label;
+  }
 
   // specializations
   // ----------------------------------------------------------------------
@@ -55,7 +846,7 @@ namespace mf {
   template<>
   bool
   ParameterSet::getParameter<bool>(std::string const& name) const {
-    return true;
+    return retrieve(name).getBool();
   }
 
   // ----------------------------------------------------------------------
@@ -64,14 +855,13 @@ namespace mf {
   template<>
   int
   ParameterSet::getParameter<int>(std::string const& name) const {
-    return 0;
+    return retrieve(name).getInt32();
   }
 
   template<>
   std::vector<int>
   ParameterSet::getParameter<std::vector<int> >(std::string const& name) const {
-    std::vector<int> val;
-    return val;
+    return retrieve(name).getVInt32();
   }
   
  // ----------------------------------------------------------------------
@@ -80,14 +870,13 @@ namespace mf {
   template<>
   long long
   ParameterSet::getParameter<long long>(std::string const& name) const {
-    return 0;
+    return retrieve(name).getInt64();
   }
 
   template<>
   std::vector<long long>
   ParameterSet::getParameter<std::vector<long long> >(std::string const& name) const {
-    std::vector<long long> val;
-    return val;
+    return retrieve(name).getVInt64();
   }
 
   // ----------------------------------------------------------------------
@@ -96,14 +885,13 @@ namespace mf {
   template<>
   unsigned int
   ParameterSet::getParameter<unsigned int>(std::string const& name) const {
-    return 0;
+    return retrieve(name).getUInt32();
   }
   
   template<>
   std::vector<unsigned int>
   ParameterSet::getParameter<std::vector<unsigned int> >(std::string const& name) const {
-    std::vector<unsigned int> val;
-    return val;
+    return retrieve(name).getVUInt32();
   }
   
   // ----------------------------------------------------------------------
@@ -112,14 +900,13 @@ namespace mf {
   template<>
   unsigned long long
   ParameterSet::getParameter<unsigned long long>(std::string const& name) const {
-    return 0;
+    return retrieve(name).getUInt64();
   }
 
   template<>
   std::vector<unsigned long long>
   ParameterSet::getParameter<std::vector<unsigned long long> >(std::string const& name) const {
-    std::vector<unsigned long long> val;
-    return val;
+    return retrieve(name).getVUInt64();
   }
 
   // ----------------------------------------------------------------------
@@ -128,14 +915,13 @@ namespace mf {
   template<>
   double
   ParameterSet::getParameter<double>(std::string const& name) const {
-    return 0.0;
+    return retrieve(name).getDouble();
   }
   
   template<>
   std::vector<double>
   ParameterSet::getParameter<std::vector<double> >(std::string const& name) const {
-    std::vector<double> val;
-    return val;
+    return retrieve(name).getVDouble();
   }
   
   // ----------------------------------------------------------------------
@@ -144,17 +930,38 @@ namespace mf {
   template<>
   std::string
   ParameterSet::getParameter<std::string>(std::string const& name) const {
-    std::string val;
-    return val;
+    return retrieve(name).getString();
   }
   
   template<>
   std::vector<std::string>
   ParameterSet::getParameter<std::vector<std::string> >(std::string const& name) const {
-    std::vector<std::string> val;
-    return val;
+    return retrieve(name).getVString();
   }
 
+  // ----------------------------------------------------------------------
+  // FileInPath
+
+  template <>
+  FileInPath
+  ParameterSet::getParameter<FileInPath>(std::string const& name) const {
+    return retrieve(name).getFileInPath();
+  }
+  
+  // ----------------------------------------------------------------------
+  // PSet, vPSet
+  
+  template<>
+  ParameterSet
+  ParameterSet::getParameter<ParameterSet>(std::string const& name) const {
+    return getParameterSet(name);
+  }
+  
+  template<>
+  VParameterSet
+  ParameterSet::getParameter<VParameterSet>(std::string const& name) const {
+    return getParameterSetVector(name);
+  }
   
   // untracked parameters
   
@@ -164,13 +971,14 @@ namespace mf {
   template<>
   bool
   ParameterSet::getUntrackedParameter<bool>(std::string const& name, bool const& defaultValue) const {
-    return defaultValue;
+    Entry const* entryPtr = retrieveUntracked(name);
+    return entryPtr == 0 ? defaultValue : entryPtr->getBool();
   }
 
   template<>
   bool
   ParameterSet::getUntrackedParameter<bool>(std::string const& name) const {
-    return true;
+    return getEntryPointerOrThrow_(name)->getBool();
   }
   
   // ----------------------------------------------------------------------
@@ -179,26 +987,27 @@ namespace mf {
   template<>
   int
   ParameterSet::getUntrackedParameter<int>(std::string const& name, int const& defaultValue) const {
-    return defaultValue;
+    Entry const* entryPtr = retrieveUntracked(name);
+    return entryPtr == 0 ? defaultValue : entryPtr->getInt32();
   }
 
   template<>
   int
   ParameterSet::getUntrackedParameter<int>(std::string const& name) const {
-    return 0;
+    return getEntryPointerOrThrow_(name)->getInt32();
   }
 
   template<>
   std::vector<int>
   ParameterSet::getUntrackedParameter<std::vector<int> >(std::string const& name, std::vector<int> const& defaultValue) const {
-    return defaultValue;
+    Entry const* entryPtr = retrieveUntracked(name);
+    return entryPtr == 0 ? defaultValue : entryPtr->getVInt32();
   }
 
   template<>
   std::vector<int>
   ParameterSet::getUntrackedParameter<std::vector<int> >(std::string const& name) const {
-    std::vector<int> val;
-    return val;
+    return getEntryPointerOrThrow_(name)->getVInt32();
   }
   
   // ----------------------------------------------------------------------
@@ -207,26 +1016,27 @@ namespace mf {
   template<>
   unsigned int
   ParameterSet::getUntrackedParameter<unsigned int>(std::string const& name, unsigned int const& defaultValue) const {
-    return defaultValue;
+    Entry const* entryPtr = retrieveUntracked(name);
+    return entryPtr == 0 ? defaultValue : entryPtr->getUInt32();
   }
 
   template<>
   unsigned int
   ParameterSet::getUntrackedParameter<unsigned int>(std::string const& name) const {
-    return 0;
+    return getEntryPointerOrThrow_(name)->getUInt32();
   }
   
   template<>
   std::vector<unsigned int>
   ParameterSet::getUntrackedParameter<std::vector<unsigned int> >(std::string const& name, std::vector<unsigned int> const& defaultValue) const {
-    return defaultValue;
+    Entry const* entryPtr = retrieveUntracked(name);
+    return entryPtr == 0 ? defaultValue : entryPtr->getVUInt32();
   }
 
   template<>
   std::vector<unsigned int>
   ParameterSet::getUntrackedParameter<std::vector<unsigned int> >(std::string const& name) const {
-    std::vector<unsigned int> val;
-    return val;
+    return getEntryPointerOrThrow_(name)->getVUInt32();
   }
 
   // ----------------------------------------------------------------------
@@ -235,26 +1045,27 @@ namespace mf {
   template<>
   unsigned long long
   ParameterSet::getUntrackedParameter<unsigned long long>(std::string const& name, unsigned long long const& defaultValue) const {
-    return defaultValue;
+    Entry const* entryPtr = retrieveUntracked(name);
+    return entryPtr == 0 ? defaultValue : entryPtr->getUInt64();
   }
 
   template<>
   unsigned long long
   ParameterSet::getUntrackedParameter<unsigned long long>(std::string const& name) const {
-    return 0;
+    return getEntryPointerOrThrow_(name)->getUInt64();
   }
 
   template<>
   std::vector<unsigned long long>
   ParameterSet::getUntrackedParameter<std::vector<unsigned long long> >(std::string const& name, std::vector<unsigned long long> const& defaultValue) const {
-    return defaultValue;
+    Entry const* entryPtr = retrieveUntracked(name);
+    return entryPtr == 0 ? defaultValue : entryPtr->getVUInt64();
   }
 
   template<>
   std::vector<unsigned long long>
   ParameterSet::getUntrackedParameter<std::vector<unsigned long long> >(std::string const& name) const {
-    std::vector<unsigned long long> val;
-    return val;
+    return getEntryPointerOrThrow_(name)->getVUInt64();
   }
 
   // ----------------------------------------------------------------------
@@ -263,26 +1074,27 @@ namespace mf {
   template<>
   long long
   ParameterSet::getUntrackedParameter<long long>(std::string const& name, long long const& defaultValue) const {
-    return defaultValue;
+    Entry const* entryPtr = retrieveUntracked(name);
+    return entryPtr == 0 ? defaultValue : entryPtr->getInt64();
   }
 
   template<>
   long long
   ParameterSet::getUntrackedParameter<long long>(std::string const& name) const {
-    return 0;
+    return getEntryPointerOrThrow_(name)->getInt64();
   }
 
   template<>
   std::vector<long long>
   ParameterSet::getUntrackedParameter<std::vector<long long> >(std::string const& name, std::vector<long long> const& defaultValue) const {
-    return defaultValue;
+    Entry const* entryPtr = retrieveUntracked(name);
+    return entryPtr == 0 ? defaultValue : entryPtr->getVInt64();
   }
 
   template<>
   std::vector<long long>
   ParameterSet::getUntrackedParameter<std::vector<long long> >(std::string const& name) const {
-    std::vector<long long> val;
-    return val;
+    return getEntryPointerOrThrow_(name)->getVInt64();
   }
 
   // ----------------------------------------------------------------------
@@ -291,26 +1103,26 @@ namespace mf {
   template<>
   double
   ParameterSet::getUntrackedParameter<double>(std::string const& name, double const& defaultValue) const {
-    return defaultValue;
+    Entry const* entryPtr = retrieveUntracked(name);
+    return entryPtr == 0 ? defaultValue : entryPtr->getDouble();
   }
 
   template<>
   double
   ParameterSet::getUntrackedParameter<double>(std::string const& name) const {
-    return 0.0;
+    return getEntryPointerOrThrow_(name)->getDouble();
   }  
   
   template<>
   std::vector<double>
   ParameterSet::getUntrackedParameter<std::vector<double> >(std::string const& name, std::vector<double> const& defaultValue) const {
-    return defaultValue;
+    Entry const* entryPtr = retrieveUntracked(name); return entryPtr == 0 ? defaultValue : entryPtr->getVDouble(); 
   }
 
   template<>
   std::vector<double>
   ParameterSet::getUntrackedParameter<std::vector<double> >(std::string const& name) const {
-    std::vector<double> val;
-    return val;
+    return getEntryPointerOrThrow_(name)->getVDouble();
   }
   
   // ----------------------------------------------------------------------
@@ -319,30 +1131,45 @@ namespace mf {
   template<>
   std::string
   ParameterSet::getUntrackedParameter<std::string>(std::string const& name, std::string const& defaultValue) const {
-    return defaultValue;
+    Entry const* entryPtr = retrieveUntracked(name);
+    return entryPtr == 0 ? defaultValue : entryPtr->getString();
   }
 
   template<>
   std::string
   ParameterSet::getUntrackedParameter<std::string>(std::string const& name) const {
-    std::string val;
-    return val;
+    return getEntryPointerOrThrow_(name)->getString();
   }
   
   template<>
   std::vector<std::string>
   ParameterSet::getUntrackedParameter<std::vector<std::string> >(std::string const& name, std::vector<std::string> const& defaultValue) const {
-    return defaultValue;
+    Entry const* entryPtr = retrieveUntracked(name);
+    return entryPtr == 0 ? defaultValue : entryPtr->getVString();
   }
 
   template<>
   std::vector<std::string>
   ParameterSet::getUntrackedParameter<std::vector<std::string> >(std::string const& name) const {
-    std::vector<std::string> val;
-    return val;
+    return getEntryPointerOrThrow_(name)->getVString();
   }
 
-/*
+  // ----------------------------------------------------------------------
+  //  FileInPath
+
+  template<>
+  FileInPath
+  ParameterSet::getUntrackedParameter<FileInPath>(std::string const& name, FileInPath const& defaultValue) const {
+    Entry const* entryPtr = retrieveUntracked(name);
+    return entryPtr == 0 ? defaultValue : entryPtr->getFileInPath();
+  }
+
+  template<>
+  FileInPath
+  ParameterSet::getUntrackedParameter<FileInPath>(std::string const& name) const {
+    return getEntryPointerOrThrow_(name)->getFileInPath();
+  }
+
   // specializations
   // ----------------------------------------------------------------------
   // Bool, vBool
@@ -443,6 +1270,29 @@ namespace mf {
     return retrieve(name).getVString();
   }
 
+  // ----------------------------------------------------------------------
+  // FileInPath
+
+  template <>
+  FileInPath
+  ParameterSet::getParameter<FileInPath>(char const* name) const {
+    return retrieve(name).getFileInPath();
+  }
+  
+  // ----------------------------------------------------------------------
+  // PSet, vPSet
+  
+  template<>
+  ParameterSet
+  ParameterSet::getParameter<ParameterSet>(char const* name) const {
+    return getParameterSet(name);
+  }
+  
+  template<>
+  VParameterSet
+  ParameterSet::getParameter<VParameterSet>(char const* name) const {
+    return getParameterSetVector(name);
+  }
 
   // untracked parameters
   
@@ -634,5 +1484,234 @@ namespace mf {
   ParameterSet::getUntrackedParameter<std::vector<std::string> >(char const* name) const {
     return getEntryPointerOrThrow_(name)->getVString();
   }
-*/
+
+  // ----------------------------------------------------------------------
+  //  FileInPath
+
+  template<>
+  FileInPath
+  ParameterSet::getUntrackedParameter<FileInPath>(char const* name, FileInPath const& defaultValue) const {
+    Entry const* entryPtr = retrieveUntracked(name);
+    return entryPtr == 0 ? defaultValue : entryPtr->getFileInPath();
+  }
+
+  template<>
+  FileInPath
+  ParameterSet::getUntrackedParameter<FileInPath>(char const* name) const {
+    return getEntryPointerOrThrow_(name)->getFileInPath();
+  }
+
+  // ----------------------------------------------------------------------
+  // PSet, vPSet
+
+  template<>
+  ParameterSet
+  ParameterSet::getUntrackedParameter<ParameterSet>(char const* name, ParameterSet const& defaultValue) const {
+    return getUntrackedParameterSet(name, defaultValue);
+  }
+
+  template<>
+  VParameterSet
+  ParameterSet::getUntrackedParameter<VParameterSet>(char const* name, VParameterSet const& defaultValue) const {
+    return getUntrackedParameterSetVector(name, defaultValue);
+  }
+
+  template<>
+  ParameterSet
+  ParameterSet::getUntrackedParameter<ParameterSet>(std::string const& name, ParameterSet const& defaultValue) const {
+    return getUntrackedParameterSet(name, defaultValue);
+  }
+
+  template<>
+  VParameterSet
+  ParameterSet::getUntrackedParameter<VParameterSet>(std::string const& name, VParameterSet const& defaultValue) const {
+    return getUntrackedParameterSetVector(name, defaultValue);
+  }
+
+  template<>
+  ParameterSet
+  ParameterSet::getUntrackedParameter<ParameterSet>(char const* name) const {
+    return getUntrackedParameterSet(name);
+  }
+
+  template<>
+  VParameterSet
+  ParameterSet::getUntrackedParameter<VParameterSet>(char const* name) const {
+    return getUntrackedParameterSetVector(name);
+  }
+
+  template<>
+  ParameterSet
+  ParameterSet::getUntrackedParameter<ParameterSet>(std::string const& name) const {
+    return getUntrackedParameterSet(name);
+  }
+
+  template<>
+  VParameterSet
+  ParameterSet::getUntrackedParameter<VParameterSet>(std::string const& name) const {
+    return getUntrackedParameterSetVector(name);
+  }
+
+//----------------------------------------------------------------------------------
+// specializations for addParameter and addUntrackedParameter
+
+  template <>
+  void
+  ParameterSet::addParameter<ParameterSet>(std::string const& name, ParameterSet value) {
+    invalidateRegistration(name);
+    insertParameterSet(true, name, ParameterSetEntry(value, true));
+  }
+
+  template <>
+  void
+  ParameterSet::addParameter<VParameterSet>(std::string const& name, VParameterSet value) {
+    invalidateRegistration(name);
+    insertVParameterSet(true, name, VParameterSetEntry(value, true));
+  }
+
+  template <>
+  void
+  ParameterSet::addParameter<ParameterSet>(char const* name, ParameterSet value) {
+    invalidateRegistration(name);
+    insertParameterSet(true, name, ParameterSetEntry(value, true));
+  }
+
+  template <>
+  void
+  ParameterSet::addParameter<VParameterSet>(char const* name, VParameterSet value) {
+    invalidateRegistration(name);
+    insertVParameterSet(true, name, VParameterSetEntry(value, true));
+  }
+
+  template <>
+  void
+  ParameterSet::addUntrackedParameter<ParameterSet>(std::string const& name, ParameterSet value) {
+    insertParameterSet(true, name, ParameterSetEntry(value, false));
+  }
+
+  template <>
+  void
+  ParameterSet::addUntrackedParameter<VParameterSet>(std::string const& name, VParameterSet value) {
+    insertVParameterSet(true, name, VParameterSetEntry(value, false));
+  }
+
+  template <>
+  void
+  ParameterSet::addUntrackedParameter<ParameterSet>(char const* name, ParameterSet value) {
+    insertParameterSet(true, name, ParameterSetEntry(value, false));
+  }
+
+  template <>
+  void
+  ParameterSet::addUntrackedParameter<VParameterSet>(char const* name, VParameterSet value) {
+    insertVParameterSet(true, name, VParameterSetEntry(value, false));
+  }
+
+//----------------------------------------------------------------------------------
+// specializations for getParameterNamesForType
+
+  template <>
+  std::vector<std::string> 
+  ParameterSet::getParameterNamesForType<ParameterSet>(bool trackiness) const {
+    std::vector<std::string> output;
+    getParameterSetNames(output, trackiness);
+    return output; 
+  }
+
+  template <>
+  std::vector<std::string> 
+  ParameterSet::getParameterNamesForType<VParameterSet>(bool trackiness) const {
+    std::vector<std::string> output;
+    getParameterSetVectorNames(output, trackiness);
+    return output; 
+  }
+
+  ParameterSet const&
+  ParameterSet::getParameterSet(std::string const& name) const {
+    return retrieveParameterSet(name).pset();
+  }
+
+  ParameterSet const&
+  ParameterSet::getParameterSet(char const* name) const {
+    return retrieveParameterSet(name).pset();
+  }
+
+  ParameterSet const&
+  ParameterSet::getUntrackedParameterSet(std::string const& name, ParameterSet const& defaultValue) const {
+    return getUntrackedParameterSet(name.c_str(), defaultValue);
+  }
+
+  ParameterSet const&
+  ParameterSet::getUntrackedParameterSet(char const* name, ParameterSet const& defaultValue) const {
+    ParameterSetEntry const* entryPtr = retrieveUntrackedParameterSet(name);
+    if (entryPtr == 0) {
+      if (!defaultValue.isRegistered()) {
+	const_cast<ParameterSet&>(defaultValue).registerIt();
+      }
+      return defaultValue;
+    }
+    return entryPtr->pset();
+  }
+
+  ParameterSet const&
+  ParameterSet::getUntrackedParameterSet(std::string const& name) const {
+    return getUntrackedParameterSet(name.c_str());
+  }
+
+  ParameterSet const&
+  ParameterSet::getUntrackedParameterSet(char const* name) const {
+    ParameterSetEntry const* result = retrieveUntrackedParameterSet(name);
+    if (result == 0)
+      throw mf::Exception(errors::Configuration, "MissingParameter:")
+        << "The required ParameterSet '" << name << "' was not specified.\n";
+    return result->pset();
+  }
+
+  VParameterSet const&
+  ParameterSet::getParameterSetVector(std::string const& name) const {
+    return retrieveVParameterSet(name).vpset();
+  }
+
+  VParameterSet const&
+  ParameterSet::getParameterSetVector(char const* name) const {
+    return retrieveVParameterSet(name).vpset();
+  }
+
+  VParameterSet const&
+  ParameterSet::getUntrackedParameterSetVector(std::string const& name, VParameterSet const& defaultValue) const {
+    return getUntrackedParameterSetVector(name.c_str(), defaultValue);
+  }
+
+  VParameterSet const&
+  ParameterSet::getUntrackedParameterSetVector(char const* name, VParameterSet const& defaultValue) const {
+    VParameterSetEntry const* entryPtr = retrieveUntrackedVParameterSet(name);
+    return entryPtr == 0 ? defaultValue : entryPtr->vpset();
+  }
+
+  VParameterSet const&
+  ParameterSet::getUntrackedParameterSetVector(std::string const& name) const {
+    return getUntrackedParameterSetVector(name.c_str());
+  }
+
+  VParameterSet const&
+  ParameterSet::getUntrackedParameterSetVector(char const* name) const {
+    VParameterSetEntry const* result = retrieveUntrackedVParameterSet(name);
+    if (result == 0)
+      throw mf::Exception(errors::Configuration, "MissingParameter:")
+        << "The required ParameterSetVector '" << name << "' was not specified.\n";
+    return result->vpset();
+  }
+
+//----------------------------------------------------------------------------------
+  ParameterSet::Bool
+  operator&&(ParameterSet::Bool a, ParameterSet::Bool b) {
+    if (a == ParameterSet::False || b == ParameterSet::False) {
+      return ParameterSet::False;
+    } else if (a == ParameterSet::Unknown || b == ParameterSet::Unknown) {
+      return ParameterSet::Unknown;
+    }
+    return ParameterSet::True;
+  }
+
+
 } // namespace mf
