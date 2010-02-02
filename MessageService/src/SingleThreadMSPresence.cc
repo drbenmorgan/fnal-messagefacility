@@ -31,7 +31,6 @@ SingleThreadMSPresence::SingleThreadMSPresence()
   				MLSCRIBE_RUNNING_INDICATOR;
 }
 
-
 SingleThreadMSPresence::~SingleThreadMSPresence()
 {
   MessageLoggerQ::MLqEND();

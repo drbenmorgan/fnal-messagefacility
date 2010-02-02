@@ -1,6 +1,8 @@
 #ifndef MessageFacility_Utilities_Presence_h
 #define MessageFacility_Utilities_Presence_h
 
+#include <string>
+
 // -*- C++ -*-
 
 /*
@@ -23,5 +25,10 @@ namespace mf {
     Presence() {}
     virtual ~Presence() = 0;
   };
+
+  struct PresenceFactory {
+      static Presence * createInstance(std::string const& s);
+  };
+
 }
 #endif // MessageFacility_Utilities_Presence_h

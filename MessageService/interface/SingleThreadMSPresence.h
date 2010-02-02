@@ -23,7 +23,7 @@ private:
   // --- no copying:
   SingleThreadMSPresence(SingleThreadMSPresence const &);
   void  operator = (SingleThreadMSPresence const &);
-  
+
 };  // SingleThreadMSPresence
 
 

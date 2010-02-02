@@ -72,7 +72,6 @@ MessageServicePresence::MessageServicePresence()
   //std::cout << "MessageServicePresence ctor\n";
 }
 
-
 MessageServicePresence::~MessageServicePresence()
 {
   MessageLoggerQ::MLqEND();
