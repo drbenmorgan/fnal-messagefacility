@@ -3,7 +3,7 @@ INCLUDE_DIRECTORIES (${MessageFacility_SOURCE_DIR})
 FIND_PACKAGE (Boost COMPONENTS thread filesystem REQUIRED)
 
 ADD_EXECUTABLE (MFTest MFTest.cc)
-
+#ADD_DEFINITIONS ("-g") 
 TARGET_LINK_LIBRARIES (MFTest 
                        MessageServiceD
                        MessageLoggerD
@@ -11,3 +11,5 @@ TARGET_LINK_LIBRARIES (MFTest
                        UtilitiesD
                        ${Boost_LIBRARIES}
                        pthread)
+
+ADD_SUBDIRECTORY (DDStest)
