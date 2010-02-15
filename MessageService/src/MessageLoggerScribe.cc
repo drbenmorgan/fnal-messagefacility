@@ -950,7 +950,9 @@ void
     // change log 18 - this had been done in concert with attaching destination
     
     std::string actual_filename = filename;			// change log 4
-    if ( (filename != "cout") && (filename != "cerr") )  {
+    if ( (filename != "cout") 
+        && (filename != "cerr") 
+        && (filename.find(':',0) == std::string::npos) )  {
       const std::string::size_type npos = std::string::npos;
       if ( filename.find('.') == npos ) {
         actual_filename += ".log";
@@ -989,10 +991,38 @@ void
       stream_ps["cerr"] = &std::cerr;
     }
     else  {
-      boost::shared_ptr<std::ofstream> os_sp(new std::ofstream(actual_filename.c_str()));
-      file_ps.push_back(os_sp);
-      dest_ctrl = admin_p->attach( ELoutput(*os_sp) );
-      stream_ps[actual_filename] = os_sp.get();
+      // distinguish remote destinations from local file destinations
+      std::string::size_type seprator = actual_filename.find(':', 0);
+
+      if( seprator != std::string::npos) 
+      {
+
+        std::string extension_type = actual_filename.substr(0, seprator);
+        std::string extension_name = actual_filename.substr(seprator);
+
+        // grab all of this destination's parameters:
+        PSet dest_pset = getAparameter<PSet>(*job_pset_p, actual_filename, empty_PSet);
+
+        boost::scoped_ptr<ELdestination> dest_sp(
+            ELdestinationFactory::getInstance() -> createInstance(extension_type, dest_pset) );
+
+        if(dest_sp.get() == 0) 
+        {
+          LogError("ExtensionNotFound")
+              << "Extension specified in " << actual_filename << " does not exist!\n";
+          continue;
+        }
+
+        dest_ctrl = admin_p->attach( *dest_sp );
+
+      } 
+      else 
+      {
+        boost::shared_ptr<std::ofstream> os_sp(new std::ofstream(actual_filename.c_str()));
+        file_ps.push_back(os_sp);
+        dest_ctrl = admin_p->attach( ELoutput(*os_sp) );
+        stream_ps[actual_filename] = os_sp.get();
+      }
     }
     //(*errorlog_p)( ELinfo, "added_dest") << filename << endmsg;
 

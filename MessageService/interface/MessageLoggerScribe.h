@@ -14,6 +14,7 @@
 #include "ParameterSet/interface/ParameterSet.h"
 
 #include "boost/shared_ptr.hpp"
+#include "boost/scoped_ptr.hpp"
 
 #include <iosfwd>
 #include <vector>

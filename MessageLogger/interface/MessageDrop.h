@@ -57,7 +57,7 @@ struct MessageDrop {
 private:
   MessageDrop() 
   : moduleName ("")
-  , runEvent("pre-events")
+  , runEvent("MF-pre-events")
   , jobreport_name()					// change log 5
   , jobMode("")						// change log 6
   , debugEnabled(true) 					// change log 1

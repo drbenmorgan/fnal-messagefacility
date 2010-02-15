@@ -6,5 +6,6 @@ ADD_SUBDIRECTORY (MessageLogger)
 ADD_SUBDIRECTORY (MessageService)
 ADD_SUBDIRECTORY (ParameterSet)
 ADD_SUBDIRECTORY (Utilities)
+ADD_SUBDIRECTORY (Extensions)
 
 ADD_SUBDIRECTORY (test)

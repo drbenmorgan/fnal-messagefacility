@@ -1,0 +1,44 @@
+/*
+ *                         OpenSplice DDS
+ *
+ *   This software and documentation are Copyright 2006 to 2009 PrismTech 
+ *   Limited and its licensees. All rights reserved. See file:
+ *
+ *                     $OSPL_HOME/LICENSE 
+ *
+ *   for full copyright notice and license terms. 
+ *
+ */
+
+/************************************************************************
+ * LOGICAL_NAME:    Chat.idl
+ * FUNCTION:        OpenSplice Tutorial example code.
+ * MODULE:          Tutorial for the C++ programming language.
+ * DATE             june 2006.
+ ************************************************************************
+ * 
+ * This file contains the data definitions for the tutorial examples.
+ *
+ ***/
+ 
+module MessageFacility {
+
+    struct MFMessage {
+        long      serial_;          // serial
+
+        string    idOverflow_;      // id_Overflow
+        string    timestamp_;       // timestamp
+        string    items_;           // a combined string for all items
+        //bool    reactedTo;        // reacted to
+        string    context_;         // context
+
+                                    // following are from ExtendedID
+        string    process_;         // process name
+        string    id_;              // message_id, or the category
+        long      severity_;        // string represent of severity
+        string    module_;          // module name
+        string    subroutine_;      // subroutine name
+    };
+#pragma keylist MFMessage context_
+
+};
