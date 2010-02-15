@@ -31,6 +31,8 @@
 #include "MessageService/interface/ELdestination.h"
 #include "MessageService/interface/ELdestControl.h"
 
+//#include "Extensions/interface/ELDDSdest.h"
+
 // Possible Traces:
 // #define ELdestinationCONSTRUCTOR_TRACE
 
@@ -273,6 +275,30 @@ void close_and_delete::operator()(std::ostream* os) const {
   std::ofstream* p = static_cast<std::ofstream*>(os);
   p->close();
   delete os;
+}
+
+// Destination factory
+ELdestinationFactory * ELdestinationFactory::instance;
+
+ELdestinationFactory * ELdestinationFactory::getInstance()
+{
+  if(!instance) instance = new ELdestinationFactory;
+  return instance;
+}
+
+void ELdestinationFactory::reg(std::string name, ELdestination* (*f)(ParameterSet const &)) 
+{
+  getMap() -> insert(std::make_pair(name, f));
+}
+
+ELdestination * ELdestinationFactory::createInstance (std::string const & name, ParameterSet const & pset )
+{
+  map_type::iterator it = getMap()->find(name);
+
+  if(it == getMap()->end())
+    return 0;
+    
+  return it->second(pset);
 }
 
 } // end of namespace service  
