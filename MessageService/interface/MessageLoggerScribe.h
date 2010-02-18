@@ -80,6 +80,9 @@ namespace service {
 //  12 - 8/10/09 mf, cj
 //	 member data  to hold shared pointer to thread queue
 //
+//  13 - 02/18/10 ql
+//       Trim the leading and trailing whitespaces in parsing categories in
+//       order to get the consistency in category names
 // -----------------------------------------------------------------------
 
 class ThreadQueue;
@@ -129,6 +132,9 @@ private:
 		      );
   void  configure_default_fwkJobReport( ELdestControl & dest_ctrl); //ChangeLog 4
   void  configure_external_dests( );
+
+  // --- util function to trim leading and trailing whitespaces from a string
+  std::string trim_copy(std::string const src);                 // ChangeLog 13
 
 #define VALIDATE_ELSEWHERE					// ChangeLog 11
 

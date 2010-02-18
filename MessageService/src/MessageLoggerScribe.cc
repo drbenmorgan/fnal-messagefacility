@@ -1200,6 +1200,18 @@ void
  
 }  // MessageLoggerScribe::configure_external_dests
 
+std::string MessageLoggerScribe::trim_copy(std::string const src)
+{
+  std::string::size_type len = src.length();
+  std::string::size_type i    = 0;
+  std::string::size_type j    = len-1;
+
+  while( (i < len) && (src[i] == ' ') ) ++i;
+  while( (j > 0  ) && (src[j] == ' ') ) --j;
+
+  return src.substr(i,j-i+1);
+}
+
 void
   MessageLoggerScribe::parseCategories (std::string const & s,
   				        std::vector<std::string> & cats)
@@ -1207,8 +1219,9 @@ void
   const std::string::size_type npos = std::string::npos;
         std::string::size_type i    = 0;
   while ( i != npos ) {    
-    std::string::size_type j = s.find('|',i);   
-    cats.push_back (s.substr(i,j-i));
+    std::string::size_type j = s.find('|',i); 
+    std::string cat = trim_copy(s.substr(i,j-i));  
+    cats.push_back (cat);
     i = j;
     while ( (i != npos) && (s[i] == '|') ) ++i; 
     // the above handles cases of || and also | at end of string
