@@ -12,7 +12,7 @@ ADD_EXECUTABLE (MFTest
     MFTest.cc
     )
 
-#ADD_DEFINITIONS ("-g") 
+ADD_DEFINITIONS ("-g") 
 
 TARGET_LINK_LIBRARIES (MFTest 
     MessageServiceD

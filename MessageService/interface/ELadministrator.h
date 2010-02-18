@@ -152,6 +152,8 @@ protected:
   // ---  traditional birth/death, but disallowed to users:
   //
   ELadministrator();
+
+public:
   virtual ~ELadministrator();
 
 private:

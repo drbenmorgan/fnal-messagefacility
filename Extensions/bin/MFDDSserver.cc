@@ -178,6 +178,8 @@ int main()
           std::cout << "context (host): " << msg->context_    << "\n";
           std::cout << "module:         " << msg->module_     << "\n";
           std::cout << "id (category):  " << msg->id_         << "\n";
+          std::cout << "file:           " << msg->file_       << "\n";
+          std::cout << "line:           " << msg->line_       << "\n";
           std::cout << "items:          " << msg->items_      << "\n";
           //std::cout << "idOverflow:   " << msg->idOverflow_ << "\n";
           //std::cout << "process:      " << msg->process_    << "\n";
@@ -234,18 +236,6 @@ int main()
   checkStatus(status, "detach_condition( newMsg )");
   status = serverWS -> detach_condition( newStatus.in() );
   checkStatus(status, "detach_condition( newStatus )");
-
-  // Remove the datareader
-  //status = MFSubscriber -> delete_datareader( reader.in() );
-  //checkStatus(status, "delete_datareader()");
-
-  // Remove the subscriber
-  //status = participant -> delete_subscriber( MFSubscriber.in() );
-  //checkStatus(status, "delete_subscriber()");
-
-  // Remove the topic
-  //status = participant -> delete_topic( MFMessageTopic.in() );
-  //checkStatus(status, "delete_topic()");
 
   // De-allocate type-names
   CORBA::string_free(MFMessageTypeName);

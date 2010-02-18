@@ -25,17 +25,19 @@ module MessageFacility {
 
     struct MFMessage {
         long      serial_;          // serial
+        string    timestamp_;       // timestamp
 
         string    idOverflow_;      // id_Overflow
-        string    timestamp_;       // timestamp
         string    items_;           // a combined string for all items
-        //bool    reactedTo;        // reacted to
         string    context_;         // context
+
+        string    file_;             // filename
+        string    line_;             // line number
 
                                     // following are from ExtendedID
         string    process_;         // process name
         string    id_;              // message_id, or the category
-        long      severity_;        // string represent of severity
+        string    severity_;        // string represent of severity
         string    module_;          // module name
         string    subroutine_;      // subroutine name
     };

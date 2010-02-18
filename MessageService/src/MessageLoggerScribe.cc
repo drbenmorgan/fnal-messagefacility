@@ -463,7 +463,7 @@ void MessageLoggerScribe::log ( ErrorObj *  errorobj_p ) {
   for (unsigned int icat = 0; icat < categories.size(); ++icat) {
     errorobj_p->setID(categories[icat]);
     (*errorlog_p)( *errorobj_p );  // route the message text
-  } 
+  }
 }
 
 void
@@ -1014,7 +1014,6 @@ void
         }
 
         dest_ctrl = admin_p->attach( *dest_sp );
-
       } 
       else 
       {
@@ -1238,7 +1237,7 @@ void
   }
 }
 
-ErrorLog * MessageLoggerScribe::static_errorlog_p;
+//ErrorLog * MessageLoggerScribe::static_errorlog_p;
 
 
 } // end of namespace service  

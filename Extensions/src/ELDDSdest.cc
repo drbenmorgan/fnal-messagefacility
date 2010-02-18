@@ -144,6 +144,13 @@ ELDDSdest::ELDDSdest(ParameterSet const & pset_)
 , bConnected          ( false      )
 , partitionName       ("MessageFacility")
 , MFMessageTypeName   ( NULL       )
+, dpf ()
+, participant ()
+, MFMessageTopic ()
+, MFPublisher ()
+, parentWriter ()
+, MFMessageTS           (            )
+, talker              (            )
 , wantTimestamp       ( true       )
 , wantModule          ( true       )
 , wantSubroutine      ( true       )
@@ -278,6 +285,13 @@ ELDDSdest::ELDDSdest( const ELDDSdest & orig )
 , bConnected          ( orig.bConnected           )
 , partitionName       ( orig.partitionName        )
 , MFMessageTypeName   ( orig.MFMessageTypeName    )
+, dpf (orig.dpf)
+, participant (orig.participant)
+, MFMessageTopic (orig.MFMessageTopic)
+, MFPublisher (orig.MFPublisher)
+, parentWriter (orig.parentWriter)
+, MFMessageTS           ( orig.MFMessageTS            )
+, talker              ( orig.talker           )
 , wantTimestamp       ( orig.wantTimestamp        )
 , wantModule          ( orig.wantModule           )
 , wantSubroutine      ( orig.wantSubroutine       )
@@ -308,7 +322,7 @@ ELDDSdest::ELDDSdest( const ELDDSdest & orig )
   ignoreThese           = orig.ignoreThese;
 
   // ql 02/09/10
-  // OpenSplice DDS initialization code is in hereo
+  // OpenSplice DDS initialization code is in here
   createDDSConnection();
 
 }  // ELDDSdest()
@@ -365,18 +379,18 @@ bool ELDDSdest::createDDSConnection()
       reliable_topic_qos,
       NULL,
       ANY_STATUS);
-  // check MFMessageTopic here
+  checkHandle(MFMessageTopic.in(), "create_topic()");
 
   // Adpat the default PublisherQos to write into the "MessageFacility" part
   status = participant -> get_default_publisher_qos(pub_qos);
-  // check status here
+  checkStatus(status, "get_default_publisher_qos()");
   pub_qos.partition.name.length(1);
   pub_qos.partition.name[0] = partitionName;
 
   // Create a publisher for the MessageFacility
   MFPublisher = participant -> create_publisher (
       pub_qos, NULL, ANY_STATUS);
-  // check MFPublisher here
+  checkHandle(MFPublisher.in(), "create_publisher()");
 
   // Create a datawriter for the MFMessage Topic
   parentWriter = MFPublisher -> create_datawriter (
@@ -384,11 +398,11 @@ bool ELDDSdest::createDDSConnection()
       DATAWRITER_QOS_USE_TOPIC_QOS,
       NULL,
       ANY_STATUS);
-  // check parentWriter here
+  checkHandle(parentWriter, "create_datawriter()");
 
   // Narrow the abstract parent into its typed representative
   talker = MFMessageDataWriter::_narrow(parentWriter);
-  // check talker here
+  checkHandle(talker.in(), "narrow()");
 
 
   // Initialize the MF messages on Heap
@@ -478,22 +492,42 @@ bool ELDDSdest::log( const mf::ErrorObj & msg )  {
   //
 
   if(DDSmsg.get() == 0)                   return false;
-  
-  DDSmsg->timestamp_  = CORBA::string_dup(formatTime(msg.timestamp()));
-  DDSmsg->context_    = CORBA::string_dup(ELadministrator::instance()->getContextSupplier().context().c_str());
-  DDSmsg->idOverflow_ = CORBA::string_dup(msg.idOverflow().c_str());
 
-  DDSmsg->process_    = CORBA::string_dup(xid.process.c_str());
-  DDSmsg->id_         = CORBA::string_dup(xid.id.c_str());
-  DDSmsg->severity_   = xid.severity.getLevel();
-  DDSmsg->module_     = CORBA::string_dup(xid.module.c_str());
-  DDSmsg->subroutine_ = CORBA::string_dup(xid.subroutine.c_str());
+  DDSmsg->context_    = CORBA::string_dup(
+      ELadministrator::instance()->getContextSupplier().context().c_str()     );
+
+  DDSmsg->timestamp_  = CORBA::string_dup( formatTime(msg.timestamp())        );
+  DDSmsg->idOverflow_ = CORBA::string_dup( msg.idOverflow().c_str()           );
+
+  DDSmsg->process_    = CORBA::string_dup( xid.process.c_str()                );
+  DDSmsg->id_         = CORBA::string_dup( xid.id.c_str()                     );
+  DDSmsg->severity_   = CORBA::string_dup( xid.severity.getInputStr().c_str() );
+  DDSmsg->module_     = CORBA::string_dup( xid.module.c_str()                 );
+  DDSmsg->subroutine_ = CORBA::string_dup( xid.subroutine.c_str()             );
+
+  DDSmsg->file_       = CORBA::string_dup( ""                                 );
+  DDSmsg->line_       = CORBA::string_dup( ""                                 );
   
   std::string items;
+
   ELlist_string::const_iterator it;
-  for ( it = msg.items().begin();  it != msg.items().end();  ++it )  {
+  int itemcount = 0;
+  for ( it = msg.items().begin();  it != msg.items().end();  ++it ) 
+  {
+    itemcount ++;
+
+    if( xid.severity < ELinfo )  // debug message
+    {
+      if( itemcount == 2 )      DDSmsg -> file_ = CORBA::string_dup( (*it).c_str() );
+      else if( itemcount == 4 ) DDSmsg -> line_ = CORBA::string_dup( (*it).c_str() );
+      else if( itemcount > 5  ) items += *it;
+    }
+    else
+    {      
       items += *it;
+    }
   }
+
   DDSmsg->items_       = CORBA::string_dup(items.c_str());
 
   flush();
@@ -870,42 +904,16 @@ void ELDDSdest::changeFile (const ELstring & filename) {
 
 void ELDDSdest::flush()  {
 
-  std::string buf;
-
   // Register a MFMessage for this host if not yet done so
   if(!bMsgRegistered)
   { 
-    std::cout<<"Start registering...\n";
-
-    //buf = "192.168.1.1";
-    //msg -> process_ = CORBA::string_dup(buf.c_str());
-
     userHandle = talker -> register_instance(*DDSmsg);
     bMsgRegistered = true;
-
-    std::cout<<"register done. \n";
   }
 
   // Write a message using the pre-generated instance handle
   status = talker -> write(*DDSmsg, userHandle);
-
-  /*ostringstream bb;
-
-  for(int z = 0; z< 10; z++)
-  {
-    bb.str( std::string("") );
-    bb << "Message no. " << z;
-
-    msg -> items_ = CORBA::string_dup(bb.str().c_str());
-    
-    std::cout << bb.str() << "\n";
-
-    // Write a message using the pre-generated instance handle
-    status = talker -> write(*msg, userHandle);
-    // check status here
-    
-    usleep(100000);
-  }*/
+  checkStatus(status, "talker->write()");
 
 }
 

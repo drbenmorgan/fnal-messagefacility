@@ -78,6 +78,10 @@
 
 #include <memory>
 #include <string>
+#include <set>
+
+#include "boost/shared_ptr.hpp"
+#include "boost/scoped_ptr.hpp"
 
 // user include files
 
@@ -88,6 +92,10 @@
 #include "MessageLogger/interface/MessageLoggerQ.h"	// Change log 5
 #include "MessageLogger/interface/ErrorObj.h"
 #include "Utilities/interface/EDMException.h"		// Change log 8
+
+#include "Utilities/interface/Presence.h"
+#include "MessageService/interface/MessageLogger.h"
+#include "ParameterSet/interface/ParameterSet.h"
 
 
 namespace mf  {
@@ -428,7 +436,32 @@ public:
   // that do not create a MessageServicePresence:
   void setStandAloneMessageThreshold    (std::string const & severity);
   void squelchStandAloneMessageCategory (std::string const & category);
-  
+
+  // Change log 18
+  //
+  void StartMessageFacility(
+      std::string const & mode, 
+      boost::shared_ptr<Presence> & MFPresence);
+
+  void SetModuleName(std::string const & modulename);
+
+class MessageFacilityService
+{
+private:
+  MessageFacilityService()
+  : MFServiceEnabled  (false)
+  , theML             (     )
+  { }
+
+public:
+  static MessageFacilityService & instance();
+
+  bool   MFServiceEnabled;
+
+  boost::shared_ptr<service::MessageLogger> theML;
+};
+
+
 }  // namespace mf
 
 

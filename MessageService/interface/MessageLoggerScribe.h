@@ -104,7 +104,7 @@ public:
 		  						// changeLog 9
 
   // --- obtain a pointer to the errorlog 
-  static ErrorLog * getErrorLog_ptr() {return static_errorlog_p;}
+  //static ErrorLog * getErrorLog_ptr() {return static_errorlog_p;}
   
 private:
   // --- convenience typedefs
@@ -224,7 +224,7 @@ private:
 
   // --- other helpers
   void parseCategories (std::string const & s, std::vector<std::string> & cats);
-  void setStaticErrorLog_ptr() {static_errorlog_p = errorlog_p.get();}
+  //void setStaticErrorLog_ptr() {static_errorlog_p = errorlog_p.get();}
   
   // --- data:
   ELadministrator                   * admin_p;
@@ -239,7 +239,7 @@ private:
   std::vector<ELdestControl>          statisticsDestControls;
   std::vector<bool>                   statisticsResets;
   std::string	  		      jobReportOption;
-  static ErrorLog		    * static_errorlog_p;
+  //static ErrorLog		    * static_errorlog_p;
   bool				      clean_slate_configuration;
   value_ptr<MessageLoggerDefaults>    messageLoggerDefaults;
   bool				      active;

@@ -1,6 +1,12 @@
 #include "MessageLogger/interface/MessageLogger.h"
 #include "MessageLogger/interface/MessageDrop.h"
 
+#include "ParameterSet/interface/ParameterSet.h"
+#include "ParameterSet/interface/Entry.h"
+#include "ParameterSet/interface/ParameterSetEntry.h"
+
+#include "MessageService/interface/MessageServicePresence.h"
+
 // Change Log
 //
 // 12/12/07  mf   elimination of dummyLogDebugObject_, dummyLogTraceObject_
@@ -104,6 +110,81 @@ void setStandAloneMessageThreshold(std::string const & severity) {
 }
 void squelchStandAloneMessageCategory(std::string const & category){
   mf::MessageLoggerQ::squelch(category);
+}
+
+// MessageFacilityService
+MessageFacilityService & MessageFacilityService::instance()
+{
+  static MessageFacilityService mfs;
+  return mfs;
+}
+
+// Start MessageFacility service
+void StartMessageFacility(
+      std::string const & mode, 
+      boost::shared_ptr<Presence> & MFPresence)
+{
+  MessageFacilityService & mfs = MessageFacilityService::instance();
+
+  if( !mfs.MFServiceEnabled )
+  {
+    // Prepare ParameterSet object for configuration
+    ParameterSet pset;
+
+    // Common threshold
+    std::string com_threshold("DEBUG");
+    Entry ecomthreshold("entry_threshold", com_threshold, false);
+    pset.insert(true, "threshold", ecomthreshold);
+
+    // Debug modules
+    std::vector<std::string> vdebugmodules;
+    vdebugmodules.push_back("MFTest");
+    Entry evdebugmodules("entry_debugModules", vdebugmodules, false);
+    pset.insert(true, "debugModules", evdebugmodules);
+  
+    // Destinations
+    std::vector<std::string> vdests;
+    vdests.push_back("cout");
+    vdests.push_back("DDS:test");
+    Entry evdests("destinations", vdests, false);
+    pset.insert(true, "destinations", evdests);
+
+    // configurations for destination "DDS:test"
+    ParameterSet psetdest;
+
+    std::string threshold("DEBUG");
+    Entry ethreshold("entry_threshold", threshold, false);
+    psetdest.insert(true, "threshold", ethreshold);
+
+    ParameterSetEntry pse(psetdest, false);
+    pset.insertParameterSet(true, "DDS:test", pse);
+
+    // MessageServicePresence
+    MFPresence.reset( PresenceFactory::createInstance(mode) );
+
+    // The MessageLogger
+    mfs.theML.reset( new service::MessageLogger(pset) );
+
+    mfs.MFServiceEnabled    = true;
+  }
+}
+
+// Set module name and debug settings
+void SetModuleName(std::string const & modulename)
+{
+  MessageDrop * drop = MessageDrop::instance();
+
+  drop -> moduleName = modulename;
+
+  MessageFacilityService & mfs = MessageFacilityService::instance();
+
+  if( mfs.theML->everyDebugEnabled_ )
+    drop -> debugEnabled = true;
+  else if( mfs.theML->debugEnabledModules_.count(modulename))
+    drop -> debugEnabled = true;
+  else
+    drop -> debugEnabled = false;
+
 }
 
 }  // namespace mf

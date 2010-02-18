@@ -138,13 +138,13 @@ private:
   //mf::EventID curr_event_;
   std::string curr_module_;
 
-  std::set<std::string> debugEnabledModules_;
+  //std::set<std::string> debugEnabledModules_;
   std::map<std::string,ELseverityLevel> suppression_levels_;
   bool debugEnabled_;
   //this is a cache which profiling has shown to be helpful
   //std::map<const ModuleDescription*, std::string> descToCalcName_;
   static bool   anyDebugEnabled_;
-  static bool everyDebugEnabled_;
+  //static bool everyDebugEnabled_;
 
   static bool fjrSummaryRequested_;
   bool messageServicePSetHasBeenValidated_;
@@ -153,6 +153,10 @@ private:
   bool nonModule_debugEnabled;
   bool nonModule_infoEnabled;
   bool nonModule_warningEnabled;  
+
+public:
+  std::set<std::string> debugEnabledModules_;
+  static bool everyDebugEnabled_;
   
 };  // MessageLogger
 
