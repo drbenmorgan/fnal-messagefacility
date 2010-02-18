@@ -516,7 +516,10 @@ bool ELDDSdest::log( const mf::ErrorObj & msg )  {
   {
     itemcount ++;
 
-    if( xid.severity < ELinfo )  // debug message
+    if(    xid.severity == ELsuccess    // debug   message
+        || xid.severity == ELinfo       // info    message 
+        || xid.severity == ELwarning    // warning message
+        || xid.severity == ELerror )    // error   message
     {
       if( itemcount == 2 )      DDSmsg -> file_ = CORBA::string_dup( (*it).c_str() );
       else if( itemcount == 4 ) DDSmsg -> line_ = CORBA::string_dup( (*it).c_str() );

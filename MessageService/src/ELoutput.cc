@@ -455,7 +455,11 @@ bool ELoutput::log( const mf::ErrorObj & msg )  {
   // Provide traceback information:
   //
 
-  bool insertNewlineAfterHeader = ( msg.xid().severity != ELsuccess );
+  bool insertNewlineAfterHeader = ( 
+         (msg.xid().severity != ELsuccess) 
+      && (msg.xid().severity != ELinfo   )
+      && (msg.xid().severity != ELwarning)
+      && (msg.xid().severity != ELerror  ) );
   // ELsuccess is what LogDebug issues
   
   if  ( !msg.is_verbatim() ) 

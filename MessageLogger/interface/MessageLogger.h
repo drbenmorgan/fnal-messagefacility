@@ -72,6 +72,14 @@
 //
 // 17 wmtan 10/29/09 Out of line LogDebug_ and LogTrace_ constructors.
 //
+// 18 ql  02/16/10  Added StartMessageFacilityService() and SetModuleName() to
+//                  simplify the start up commands of the stand alone 
+//                  MessageFacility. A MessageFacilityService singleton class
+//                  is established to hold the global handler
+//
+// 19 1l  02/18/10  Modified LogError(), LogWarning(), LogInfo() to insert
+//                  _FILE_ and _LINE_ in the message
+//
 // =================================================
 
 // system include files
@@ -100,53 +108,54 @@
 
 namespace mf  {
 
-class LogWarning
+class LogWarning_
 {
 public:
-  explicit LogWarning( std::string const & id ) 
-    : ap ( mf::MessageDrop::instance()->warningEnabled ? 
-      new MessageSender(ELwarning,id) : 0 )
-  { }
-  ~LogWarning();						// Change log 13
+  explicit LogWarning_( std::string const & id, std::string const & file, int line);
+  ~LogWarning_();						// Change log 13
 
   template< class T >
-    LogWarning & 
+    LogWarning_ & 
     operator<< (T const & t)  { if(ap.get()) (*ap) << t; return *this; }
-  LogWarning & 
+  LogWarning_ & 
   operator<< ( std::ostream&(*f)(std::ostream&))  
 				      { if(ap.get()) (*ap) << f; return *this; }
-  LogWarning & 
+  LogWarning_ & 
   operator<< ( std::ios_base&(*f)(std::ios_base&) )  
 				      { if(ap.get()) (*ap) << f; return *this; }     
 private:
   std::auto_ptr<MessageSender> ap; 
-  LogWarning( LogWarning const& );				// Change log 9
+  LogWarning_( LogWarning_ const& );				// Change log 9
    
-};  // LogWarning
+};  // LogWarning_
 
-class LogError
+#define LogWarning(id)  mf::LogWarning_(id, __FILE__, __LINE__)
+
+
+class LogError_
 {
 public:
-  explicit LogError( std::string const & id ) 
-    : ap( new MessageSender(ELerror,id) )
-  { }
-  ~LogError();							// Change log 13
+  explicit LogError_( std::string const & id, std::string const & file, int line);
+  ~LogError_();							// Change log 13
 
   template< class T >
-    LogError & 
+    LogError_ & 
     operator<< (T const & t)  { (*ap) << t; return *this; }
-  LogError & 
+  LogError_ & 
   operator<< ( std::ostream&(*f)(std::ostream&))  
 				      { (*ap) << f; return *this; }
-  LogError & 
+  LogError_ & 
   operator<< ( std::ios_base&(*f)(std::ios_base&) )  
 				      { (*ap) << f; return *this; }     
 
 private:
   std::auto_ptr<MessageSender> ap; 
-  LogError( LogError const& );					// Change log 9
+  LogError_( LogError_ const& );				// Change log 9
 
 };  // LogError
+
+#define LogError(id)  mf::LogError_(id, __FILE__, __LINE__)
+
 
 class LogSystem
 {
@@ -172,30 +181,30 @@ private:
 
 };  // LogSystem
 
-class LogInfo				
+class LogInfo_				
 {
 public:
-  explicit LogInfo( std::string const & id ) 
-    : ap ( mf::MessageDrop::instance()->infoEnabled ? 
-      new MessageSender(ELinfo,id) : 0 )
-  { }
-  ~LogInfo();							// Change log 13
+  explicit LogInfo_( std::string const & id, std::string const & file, int line);
+  ~LogInfo_();							// Change log 13
 
   template< class T >
-    LogInfo & 
+    LogInfo_ & 
     operator<< (T const & t)  { if(ap.get()) (*ap) << t; return *this; }
-  LogInfo & 
+  LogInfo_ & 
   operator<< ( std::ostream&(*f)(std::ostream&))  
 				      { if(ap.get()) (*ap) << f; return *this; }
-  LogInfo & 
+  LogInfo_ & 
   operator<< ( std::ios_base&(*f)(std::ios_base&) )  
 				      { if(ap.get()) (*ap) << f; return *this; }     
 
 private:
   std::auto_ptr<MessageSender> ap; 
-  LogInfo( LogInfo const& );					// Change log 9
+  LogInfo_( LogInfo_ const& );					// Change log 9
   
 };  // LogInfo
+
+#define LogInfo(id)  mf::LogInfo_(id, __FILE__, __LINE__)
+
 
 // verbatim version of LogInfo
 class LogVerbatim						// change log 2
@@ -367,7 +376,7 @@ public:
 private:
   std::auto_ptr<MessageSender> ap; 
   bool debugEnabled;
-  std::string stripLeadingDirectoryTree (const std::string & file) const;
+  //std::string stripLeadingDirectoryTree (const std::string & file) const;
 								// change log 10
 };  // LogDebug_
 
@@ -431,6 +440,10 @@ public:
   void GroupLogStatistics(std::string const & category);
   bool isMessageProcessingSetUp();
 
+  // Change Log 19
+  // The method is stripped from LogDebug_ class to be a free function
+  std::string stripLeadingDirectoryTree(const std::string & file);
+  
   // Change Log 15
   // The following two methods have no effect except in stand-alone apps
   // that do not create a MessageServicePresence:

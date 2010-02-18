@@ -33,9 +33,9 @@
 
 namespace mf {
 
-LogInfo::~LogInfo() {}
-LogWarning::~LogWarning() {}
-LogError::~LogError() {}
+LogInfo_::~LogInfo_() {}
+LogWarning_::~LogWarning_() {}
+LogError_::~LogError_() {}
 LogAbsolute::~LogAbsolute() {}
 LogSystem::~LogSystem() {}
 LogVerbatim::~LogVerbatim() {}
@@ -85,6 +85,44 @@ void GroupLogStatistics(std::string const & category) {
   // Note that the scribe will be responsible for deleting cat_p
 }
 
+std::string stripLeadingDirectoryTree(const std::string & file)
+{
+  std::string::size_type lastSlash = file.find_last_of('/');
+  if (lastSlash == std::string::npos) return file;
+  if (lastSlash == file.size()-1)     return file;
+  return file.substr(lastSlash+1, file.size()-lastSlash-1);
+}
+
+// LogWarning
+mf::LogWarning_::LogWarning_( std::string const & id, std::string const & file, int line )
+    : ap ( mf::MessageDrop::instance()->warningEnabled ? 
+           new MessageSender(ELwarning,id) : 0 )
+{ 
+  *this << " "
+        << stripLeadingDirectoryTree(file)
+        << ":" << line << "\n";
+}
+
+// LogError
+mf::LogError_::LogError_( std::string const & id, std::string const & file, int line )
+    : ap( new MessageSender(ELerror,id) )
+{ 
+  *this << " "
+        << stripLeadingDirectoryTree(file)
+        << ":" << line << "\n";
+}
+
+// LogInfo
+mf::LogInfo_::LogInfo_( std::string const & id, std::string const & file, int line )
+    : ap ( mf::MessageDrop::instance()->infoEnabled ? 
+           new MessageSender(ELinfo,id) : 0 )
+{ 
+  *this << " "
+        << stripLeadingDirectoryTree(file)
+        << ":" << line << "\n";
+}
+
+// LogDebug
 mf::LogDebug_::LogDebug_( std::string const & id, std::string const & file, int line )
   : ap( new MessageSender(ELsuccess,id) ), debugEnabled(true)
 { *this
@@ -92,14 +130,7 @@ mf::LogDebug_::LogDebug_( std::string const & id, std::string const & file, int 
         << stripLeadingDirectoryTree(file)
         << ":" << line << "\n"; }
 
-std::string
-mf::LogDebug_::stripLeadingDirectoryTree(const std::string & file) const {
-  std::string::size_type lastSlash = file.find_last_of('/');
-  if (lastSlash == std::string::npos) return file;
-  if (lastSlash == file.size()-1)     return file;
-  return file.substr(lastSlash+1, file.size()-lastSlash-1);
-}
-
+// LogTrace
 mf::LogTrace_::LogTrace_( std::string const & id )
   : ap( new MessageSender(ELsuccess,id,true) )
   , debugEnabled(true)
