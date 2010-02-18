@@ -1,11 +1,7 @@
-
-SET (FILES
-    ELDDSdest.cc
-    CheckStatus.cpp
-    DDSdest_bld/MessageFacility.cpp
-    DDSdest_bld/MessageFacilityDcps.cpp
-    DDSdest_bld/MessageFacilityDcps_impl.cpp
-    DDSdest_bld/MessageFacilitySplDcps.cpp
+FILE (GLOB FILES 
+    ${MessageFacility_SOURCE_DIR}/Extensions/src/*.cc
+    ${MessageFacility_SOURCE_DIR}/Extensions/src/*.cpp
+    ${MessageFacility_SOURCE_DIR}/Extensions/src/DDSdest_bld/*.cpp
     )
 
 SET (IDLFILES

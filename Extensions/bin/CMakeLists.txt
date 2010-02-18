@@ -17,13 +17,14 @@ LINK_DIRECTORIES (
     $ENV{OSPL_HOME}/lib
     )
 
-ADD_EXECUTABLE (MFDDSserver
+FILE (GLOB serverSrcFiles
     MFDDSserver.cc
-    ../src/CheckStatus.cpp
-    ../src/DDSdest_bld/MessageFacility.cpp
-    ../src/DDSdest_bld/MessageFacilityDcps.cpp
-    ../src/DDSdest_bld/MessageFacilityDcps_impl.cpp
-    ../src/DDSdest_bld/MessageFacilitySplDcps.cpp
+    ${MessageFacility_SOURCE_DIR}/Extensions/src/CheckStatus.cpp
+    ${MessageFacility_SOURCE_DIR}/Extensions/src/DDSdest_bld/*.cpp
+    )
+
+ADD_EXECUTABLE (MFDDSserver
+    ${serverSrcFiles}
     )
 
 TARGET_LINK_LIBRARIES (MFDDSserver
