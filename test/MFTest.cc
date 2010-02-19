@@ -1,16 +1,15 @@
 //#define NDEBUG
 
 #include <iostream>
-#include <string>
-#include <boost/shared_ptr.hpp>
 
-#include <pthread.h>
+#include "boost/shared_ptr.hpp"
+#include "boost/thread.hpp"
 
 #include "MessageLogger/interface/MessageLogger.h"
 
 using namespace mf;
 
-void * anotherLogger(void *arg)
+void anotherLogger()
 {
   // Set module name
   SetModuleName("anotherLogger");
@@ -18,7 +17,7 @@ void * anotherLogger(void *arg)
   LogWarning("warn1 | warn2") << "Followed by a WARNING message.";
   LogDebug("debug")           << "The debug message in the other thread";
 
-  return NULL;
+  return;
 }
 
 int main()
@@ -27,12 +26,11 @@ int main()
   boost::shared_ptr<Presence> MFPresence;
   StartMessageFacility("MessageServicePresence", MFPresence);
 
-  // Set module name for main thread
+  // Set module name for the main thread
   SetModuleName("MFTest");
 
   // Start up another logger in a seperate thread
-  pthread_t tid;
-  pthread_create(&tid, NULL, anotherLogger, NULL);
+  boost::thread loggerThread(anotherLogger);
 
   // Issue messages with different severity levels
   LogError("err1|err2") << "This is an ERROR message.";
@@ -40,7 +38,7 @@ int main()
   LogDebug("debug")     << "DEBUG information.";
 
   // Thread join
-  pthread_join  (tid, 0);
+  loggerThread.join();
 
   return 0;
 }
