@@ -22,11 +22,26 @@ LINK_DIRECTORIES (
     $ENV{OSPL_HOME}/lib
     )
 
-ADD_CUSTOM_TARGET (ELDDSdestIDL ALL
-    COMMAND $ENV{OSPL_HOME}/bin/idlpp -S -l cpp -d ${SRC_DIR}/DDSdest_bld -I ${SRC_DIR} ${idlFiles}
-    )
+#ADD_CUSTOM_TARGET (ELDDSdestIDL ALL
+#    COMMAND $ENV{OSPL_HOME}/bin/idlpp -S -l cpp -d ${SRC_DIR}/DDSdest_bld -I ${SRC_DIR} ${idlFiles}
+#    )
 
 ADD_LIBRARY (ExtensionsD SHARED ${FILES})  
 ADD_LIBRARY (Extensions ${FILES})  
 
 ADD_SUBDIRECTORY (bin)
+
+FILE (GLOB includeFiles
+    ${MessageFacility_SOURCE_DIR}/Extensions/interface/*.h
+    )
+
+INSTALL (FILES ${includeFiles}
+    DESTINATION include/Extensions/interface
+    )
+
+INSTALL (TARGETS Extensions ExtensionsD
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    ) 
+

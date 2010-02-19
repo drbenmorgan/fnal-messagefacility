@@ -11,3 +11,17 @@ INCLUDE_DIRECTORIES (${MessageFacility_SOURCE_DIR})
 ADD_LIBRARY (UtilitiesD SHARED ${srcFiles})
 ADD_LIBRARY (Utilities ${srcFiles})
 
+FILE (GLOB includeFiles
+    ${MessageFacility_SOURCE_DIR}/Utilities/interface/*.h
+    )
+
+INSTALL (FILES ${includeFiles}
+    DESTINATION include/Utilities/interface
+    )
+
+INSTALL (TARGETS Utilities UtilitiesD
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    ) 
+

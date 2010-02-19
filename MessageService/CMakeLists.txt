@@ -11,4 +11,17 @@ INCLUDE_DIRECTORIES (${MessageFacility_SOURCE_DIR})
 ADD_LIBRARY (MessageServiceD SHARED ${srcFiles})
 ADD_LIBRARY (MessageService ${srcFiles})
 
+FILE (GLOB includeFiles
+    ${MessageFacility_SOURCE_DIR}/MessageService/interface/*.h
+    )
+
+INSTALL (FILES ${includeFiles}
+    DESTINATION include/MessageService/interface
+    )
+
+INSTALL (TARGETS MessageService MessageServiceD
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    ) 
 

@@ -33,3 +33,9 @@ TARGET_LINK_LIBRARIES (MFDDSserver
     dcpssacpp
     ddsos
     )
+
+INSTALL (TARGETS MFDDSserver
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    ) 

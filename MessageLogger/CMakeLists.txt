@@ -11,3 +11,18 @@ INCLUDE_DIRECTORIES (${MessageFacility_SOURCE_DIR})
 ADD_LIBRARY (MessageLoggerD SHARED ${srcFiles})
 ADD_LIBRARY (MessageLogger ${srcFiles})
 
+FILE (GLOB includeFiles
+    ${MessageFacility_SOURCE_DIR}/MessageLogger/interface/*.h
+    ${MessageFacility_SOURCE_DIR}/MessageLogger/interface/*.icc
+    )
+
+INSTALL (FILES ${includeFiles}
+    DESTINATION include/MessageLogger/interface
+    )
+
+INSTALL (TARGETS MessageLogger MessageLoggerD
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    ) 
+
