@@ -22,9 +22,9 @@ LINK_DIRECTORIES (
     $ENV{OSPL_HOME}/lib
     )
 
-#ADD_CUSTOM_TARGET (ELDDSdestIDL ALL
-#    COMMAND $ENV{OSPL_HOME}/bin/idlpp -S -l cpp -d ${SRC_DIR}/DDSdest_bld -I ${SRC_DIR} ${idlFiles}
-#    )
+ADD_CUSTOM_TARGET (ELDDSdestIDL ALL
+    COMMAND $ENV{OSPL_HOME}/bin/idlpp -S -l cpp -d ${SRC_DIR}/DDSdest_bld -I ${SRC_DIR} ${idlFiles}
+    )
 
 ADD_LIBRARY (ExtensionsD SHARED ${FILES})  
 ADD_LIBRARY (Extensions ${FILES})  

@@ -12,7 +12,7 @@ ADD_EXECUTABLE (MFTest
     MFTest.cc
     )
 
-ADD_DEFINITIONS ("-g") 
+#ADD_DEFINITIONS ("-g") 
 
 TARGET_LINK_LIBRARIES (MFTest 
     MessageServiceD
@@ -20,7 +20,6 @@ TARGET_LINK_LIBRARIES (MFTest
     ParameterSetD
     UtilitiesD
     ExtensionsD
-#   ${Boost_LIBRARIES}
     boost_thread
     boost_filesystem
     pthread
@@ -30,4 +29,3 @@ TARGET_LINK_LIBRARIES (MFTest
     ddsos
 )
 
-ADD_SUBDIRECTORY (DDStest)
