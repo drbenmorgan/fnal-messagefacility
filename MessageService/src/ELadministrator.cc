@@ -516,6 +516,10 @@ ELadministrator::ELadministrator()
   for ( int lev = 0;  lev < ELseverityLevel::nLevels;  ++lev )
     severityCounts_[lev] = 0;
 
+  // Set process_ to hostname
+  char hostname[1024];
+  process_ = (gethostname(hostname, 1023)==0) ? hostname : "Unkonwn Host";
+
 }  // ELadministrator()
 
 

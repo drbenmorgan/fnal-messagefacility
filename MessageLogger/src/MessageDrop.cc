@@ -18,7 +18,6 @@
 // user include files
 #include "MessageLogger/interface/MessageDrop.h"
 
-#include <unistd.h>
 
 // Change Log
 //
@@ -42,9 +41,6 @@ MessageDrop::instance()
   if(drop==0) { 
     drops.reset(new MessageDrop);
     drop=drops.get(); 
-
-    char hostname[1024];
-    drop->runEvent = (gethostname(hostname, 1023)==0) ? hostname : "Unkonwn Host";
   }
   return drop;
 }

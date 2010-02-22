@@ -175,8 +175,9 @@ int main()
           MFMessage * msg = &(msgSeq[i]);
           std::cout << "severity:       " << msg->severity_   << "\n";
           std::cout << "timesamp:       " << msg->timestamp_  << "\n";
-          std::cout << "context (host): " << msg->context_    << "\n";
+          std::cout << "process (host): " << msg->process_    << "\n";
           std::cout << "module:         " << msg->module_     << "\n";
+          std::cout << "context:        " << msg->context_    << "\n";
           std::cout << "id (category):  " << msg->id_         << "\n";
           std::cout << "file:           " << msg->file_       << "\n";
           std::cout << "line:           " << msg->line_       << "\n";
