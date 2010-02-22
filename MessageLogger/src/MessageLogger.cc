@@ -176,8 +176,9 @@ void StartMessageFacility(
     // Destinations
     std::vector<std::string> vdests;
     vdests.push_back("cout");
+    vdests.push_back("logfile");
     vdests.push_back("DDS:test");
-    Entry evdests("destinations", vdests, false);
+    Entry evdests("entry_destinations", vdests, false);
     pset.insert(true, "destinations", evdests);
 
     // configurations for destination "DDS:test"
@@ -189,6 +190,12 @@ void StartMessageFacility(
 
     ParameterSetEntry pse(psetdest, false);
     pset.insertParameterSet(true, "DDS:test", pse);
+
+    // Statistics destination
+    std::vector<std::string> vstats;
+    vstats.push_back("stats");
+    Entry evstats("entry_statistics", vstats, false);
+    pset.insert(true, "statistics", evstats);
 
     // MessageServicePresence
     MFPresence.reset( PresenceFactory::createInstance(mode) );

@@ -36,9 +36,13 @@ int main()
   LogError("err1|err2") << "This is an ERROR message.";
   LogWarning("warning") << "Followed by a WARNING message.";
   LogDebug("debug")     << "DEBUG information.";
+  LogDebug("debug")     << "DEBUG information.";
+  LogDebug("debug")     << "DEBUG information.";
 
   // Thread join
   loggerThread.join();
+
+  LogStatistics();
 
   return 0;
 }
