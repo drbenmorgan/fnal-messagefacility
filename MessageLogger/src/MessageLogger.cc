@@ -225,4 +225,10 @@ void SetModuleName(std::string const & modulename)
 
 }
 
+// Set the run/event context
+void SetContext(std::string const & context)
+{
+  MessageDrop::instance() -> runEvent = context;
+}
+
 }  // namespace mf

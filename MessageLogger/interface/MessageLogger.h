@@ -72,12 +72,12 @@
 //
 // 17 wmtan 10/29/09 Out of line LogDebug_ and LogTrace_ constructors.
 //
-// 18 ql  02/16/10  Added StartMessageFacilityService() and SetModuleName() to
-//                  simplify the start up commands of the stand alone 
-//                  MessageFacility. A MessageFacilityService singleton class
-//                  is established to hold the global handler
+// 18 ql  02/16/10  Added StartMessageFacilityService(), SetModuleName(),
+//                  SetContext() to simplify the start up commands of the 
+//                  stand alone MessageFacility. A MessageFacilityService
+//                  singleton class is established to hold the global handler.
 //
-// 19 1l  02/18/10  Modified LogError(), LogWarning(), LogInfo() to insert
+// 19 ql  02/18/10  Modified LogError(), LogWarning(), LogInfo() to insert
 //                  _FILE_ and _LINE_ in the message
 //
 // =================================================
@@ -457,6 +457,8 @@ public:
       boost::shared_ptr<Presence> & MFPresence);
 
   void SetModuleName(std::string const & modulename);
+
+  void SetContext(std::string const & context);
 
 class MessageFacilityService
 {

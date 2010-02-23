@@ -41,6 +41,6 @@ module MessageFacility {
         string    module_;          // module name
         string    subroutine_;      // subroutine name
     };
-#pragma keylist MFMessage context_
+#pragma keylist MFMessage process_
 
 };

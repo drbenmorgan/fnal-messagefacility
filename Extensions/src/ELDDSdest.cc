@@ -144,12 +144,12 @@ ELDDSdest::ELDDSdest(ParameterSet const & pset_)
 , bConnected          ( false      )
 , partitionName       ("MessageFacility")
 , MFMessageTypeName   ( NULL       )
-, dpf ()
-, participant ()
-, MFMessageTopic ()
-, MFPublisher ()
-, parentWriter ()
-, MFMessageTS           (            )
+, dpf                 (            )
+, participant         (            )
+, MFMessageTopic      (            )
+, MFPublisher         (            )
+, parentWriter        (            )
+, MFMessageTS         (            )
 , talker              (            )
 , wantTimestamp       ( true       )
 , wantModule          ( true       )
@@ -285,13 +285,13 @@ ELDDSdest::ELDDSdest( const ELDDSdest & orig )
 , bConnected          ( orig.bConnected           )
 , partitionName       ( orig.partitionName        )
 , MFMessageTypeName   ( orig.MFMessageTypeName    )
-, dpf (orig.dpf)
-, participant (orig.participant)
-, MFMessageTopic (orig.MFMessageTopic)
-, MFPublisher (orig.MFPublisher)
-, parentWriter (orig.parentWriter)
-, MFMessageTS           ( orig.MFMessageTS            )
-, talker              ( orig.talker           )
+, dpf                 ( orig.dpf                  )
+, participant         ( orig.participant          )
+, MFMessageTopic      ( orig.MFMessageTopic       )
+, MFPublisher         ( orig.MFPublisher          )
+, parentWriter        ( orig.parentWriter         )
+, MFMessageTS         ( orig.MFMessageTS          )
+, talker              ( orig.talker               )
 , wantTimestamp       ( orig.wantTimestamp        )
 , wantModule          ( orig.wantModule           )
 , wantSubroutine      ( orig.wantSubroutine       )
@@ -493,8 +493,7 @@ bool ELDDSdest::log( const mf::ErrorObj & msg )  {
 
   if(DDSmsg.get() == 0)                   return false;
 
-  DDSmsg->context_    = CORBA::string_dup(
-      ELadministrator::instance()->getContextSupplier().context().c_str()     );
+  DDSmsg->context_    = CORBA::string_dup( msg.context().c_str()              );
 
   DDSmsg->timestamp_  = CORBA::string_dup( formatTime(msg.timestamp())        );
   DDSmsg->idOverflow_ = CORBA::string_dup( msg.idOverflow().c_str()           );

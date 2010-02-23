@@ -28,6 +28,7 @@ int main()
 
   // Set module name for the main thread
   SetModuleName("MFTest");
+  SetContext("pre-event");
 
   // Start up another logger in a seperate thread
   boost::thread loggerThread(anotherLogger);
@@ -35,6 +36,11 @@ int main()
   // Issue messages with different severity levels
   LogError("err1|err2") << "This is an ERROR message.";
   LogWarning("warning") << "Followed by a WARNING message.";
+
+  // Switch context
+  SetContext("pro-event");
+
+  // Log Debugs
   LogDebug("debug")     << "DEBUG information.";
   LogDebug("debug")     << "DEBUG information.";
   LogDebug("debug")     << "DEBUG information.";
