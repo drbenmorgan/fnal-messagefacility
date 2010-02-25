@@ -111,7 +111,8 @@ int main()
   checkHandle(reader.in(), "narrow()");
 
   // Indicate Server is up...
-  std::cout << "MessageFacility DDS server is up and listening for messages...\n";
+  std::cout << "MessageFacility DDS server is up and listening for messages "
+            << "(press ctrl-c to quit)...\n";
 
   //-----------------------------------------------------------------
   // Blocked receive using wait-condition

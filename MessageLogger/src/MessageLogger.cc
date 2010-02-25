@@ -143,6 +143,7 @@ void squelchStandAloneMessageCategory(std::string const & category){
   mf::MessageLoggerQ::squelch(category);
 }
 
+
 // MessageFacilityService
 MessageFacilityService & MessageFacilityService::instance()
 {
@@ -150,68 +151,109 @@ MessageFacilityService & MessageFacilityService::instance()
   return mfs;
 }
 
+MessageFacilityService::MessageFacilityService()
+  : MFServiceEnabled  (false)
+  , theML             (     )
+{
+  // Prepare a common ParameterSet object
+  ParameterSet pset;
+
+  // Common threshold
+  std::string com_threshold("DEBUG");
+  Entry ecomthreshold("entry_threshold", com_threshold, false);
+  pset.insert(true, "threshold", ecomthreshold);
+
+  // Debug modules
+  std::vector<std::string> vdebugmodules;
+  vdebugmodules.push_back("*");
+  Entry evdebugmodules("entry_debugModules", vdebugmodules, false);
+  pset.insert(true, "debugModules", evdebugmodules);
+  
+  // Statistics destination
+  std::vector<std::string> vstats;
+  vstats.push_back("stats");
+  Entry evstats("entry_statistics", vstats, false);
+  pset.insert(true, "statistics", evstats);
+
+  // Make copies of from the pset
+  logConsole = pset;
+  logFile    = pset;
+  logServer  = pset;
+  logCF      = pset;
+  logCS      = pset;
+  logFS      = pset;
+  logCFS     = pset;
+  
+  // Customize destinations
+  std::vector<std::string> vdc;
+  vdc.push_back("cout");
+  Entry evdc("entry_destinations", vdc, false);
+  logConsole. insert(true, "destinations", evdc);
+
+  std::vector<std::string> vdf;
+  vdf.push_back("logfile");
+  Entry evdf("entry_destinations", vdf, false);
+  logFile   . insert(true, "destinations", evdf);
+
+  std::vector<std::string> vds;
+  vds.push_back("DDS:test");
+  Entry evds("entry_destinations", vds, false);
+  logServer . insert(true, "destinations", evds);
+
+  vdc.push_back("logfile");
+  Entry evdcf("entry_destinations", vdc, false);
+  logCF     . insert(true, "destinations", evdcf);
+
+  vdf.push_back("DDS:test");
+  Entry evdfs("entry_destinations", vdf, false);
+  logFS     . insert(true, "destinations", evdfs);
+
+  vds.push_back("cout");
+  Entry evdcs("entry_destinations", vds, false);
+  logCS     . insert(true, "destinations", evdcs);
+
+  vdc.push_back("DDS:test");
+  Entry evdcfs("entry_destinations", vdc, false);
+  logCFS    . insert(true, "destinations", evdcfs);
+
+}
+
+
 // Start MessageFacility service
 void StartMessageFacility(
       std::string const & mode, 
       boost::shared_ptr<Presence> & MFPresence)
 {
+  StartMessageFacility( mode, MFPresence, MessageFacilityService::instance().logCF );
+}
+
+// Start MessageFacility service
+void StartMessageFacility(
+      std::string const & mode,
+      boost::shared_ptr<Presence> & MFPresence,
+      ParameterSet const & pset)
+{
   MessageFacilityService & mfs = MessageFacilityService::instance();
 
   if( !mfs.MFServiceEnabled )
   {
-    // Prepare ParameterSet object for configuration
-    ParameterSet pset;
-
-    // Common threshold
-    std::string com_threshold("DEBUG");
-    Entry ecomthreshold("entry_threshold", com_threshold, false);
-    pset.insert(true, "threshold", ecomthreshold);
-
-    // Debug modules
-    std::vector<std::string> vdebugmodules;
-    vdebugmodules.push_back("MFTest");
-    Entry evdebugmodules("entry_debugModules", vdebugmodules, false);
-    pset.insert(true, "debugModules", evdebugmodules);
-  
-    // Destinations
-    std::vector<std::string> vdests;
-    vdests.push_back("cout");
-    vdests.push_back("logfile");
-    vdests.push_back("DDS:test");
-    Entry evdests("entry_destinations", vdests, false);
-    pset.insert(true, "destinations", evdests);
-
-    // configurations for destination "DDS:test"
-    ParameterSet psetdest;
-
-    std::string threshold("DEBUG");
-    Entry ethreshold("entry_threshold", threshold, false);
-    psetdest.insert(true, "threshold", ethreshold);
-
-    ParameterSetEntry pse(psetdest, false);
-    pset.insertParameterSet(true, "DDS:test", pse);
-
-    // Statistics destination
-    std::vector<std::string> vstats;
-    vstats.push_back("stats");
-    Entry evstats("entry_statistics", vstats, false);
-    pset.insert(true, "statistics", evstats);
-
     // MessageServicePresence
     MFPresence.reset( PresenceFactory::createInstance(mode) );
 
     // The MessageLogger
     mfs.theML.reset( new service::MessageLogger(pset) );
 
-    mfs.MFServiceEnabled    = true;
+    mfs.MFServiceEnabled = true;
   }
 }
 
 // Set module name and debug settings
 void SetModuleName(std::string const & modulename)
 {
-  MessageDrop * drop = MessageDrop::instance();
+  if( !MessageFacilityService::instance().MFServiceEnabled )
+    return;
 
+  MessageDrop * drop = MessageDrop::instance();
   drop -> moduleName = modulename;
 
   MessageFacilityService & mfs = MessageFacilityService::instance();
@@ -228,6 +270,9 @@ void SetModuleName(std::string const & modulename)
 // Set the run/event context
 void SetContext(std::string const & context)
 {
+  if( !MessageFacilityService::instance().MFServiceEnabled )
+    return;
+
   MessageDrop::instance() -> runEvent = context;
 }
 

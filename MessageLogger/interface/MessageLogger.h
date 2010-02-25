@@ -456,6 +456,11 @@ public:
       std::string const & mode, 
       boost::shared_ptr<Presence> & MFPresence);
 
+  void StartMessageFacility(
+      std::string const & mode,
+      boost::shared_ptr<Presence> & MFPresence,
+      ParameterSet const & pset);
+
   void SetModuleName(std::string const & modulename);
 
   void SetContext(std::string const & context);
@@ -463,10 +468,7 @@ public:
 class MessageFacilityService
 {
 private:
-  MessageFacilityService()
-  : MFServiceEnabled  (false)
-  , theML             (     )
-  { }
+  MessageFacilityService();
 
 public:
   static MessageFacilityService & instance();
@@ -474,6 +476,14 @@ public:
   bool   MFServiceEnabled;
 
   boost::shared_ptr<service::MessageLogger> theML;
+
+  ParameterSet logConsole;    // log to console only
+  ParameterSet logFile;       // log to local file only
+  ParameterSet logServer;     // log to DDS server only
+  ParameterSet logCF;         // log to both console and local file
+  ParameterSet logFS;         // log to both local file and DDS server
+  ParameterSet logCS;         // log to both console and DDS server
+  ParameterSet logCFS;        // log to console, local file, and DDS server
 };
 
 
