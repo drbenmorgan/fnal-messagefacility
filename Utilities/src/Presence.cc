@@ -17,6 +17,6 @@ namespace mf {
     else if(s.compare("MessageServicePresence") == 0)
       return new service::MessageServicePresence();
     else
-      return 0;
+      return new service::MessageServicePresence();
   }
 }
