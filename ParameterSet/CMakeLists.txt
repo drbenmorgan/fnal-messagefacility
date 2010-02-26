@@ -11,6 +11,10 @@ INCLUDE_DIRECTORIES (${MessageFacility_SOURCE_DIR})
 ADD_LIBRARY (ParameterSetD SHARED ${srcFiles})  
 ADD_LIBRARY (ParameterSet ${srcFiles})  
 
+SET_TARGET_PROPERTIES (ParameterSetD
+    PROPERTIES OUTPUT_NAME ParameterSet
+    )
+
 FILE (GLOB includeFiles
     ${MessageFacility_SOURCE_DIR}/ParameterSet/interface/*.h
     )

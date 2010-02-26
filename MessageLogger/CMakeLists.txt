@@ -11,6 +11,10 @@ INCLUDE_DIRECTORIES (${MessageFacility_SOURCE_DIR})
 ADD_LIBRARY (MessageLoggerD SHARED ${srcFiles})
 ADD_LIBRARY (MessageLogger ${srcFiles})
 
+SET_TARGET_PROPERTIES (MessageLoggerD
+    PROPERTIES OUTPUT_NAME MessageLogger
+    )
+
 FILE (GLOB includeFiles
     ${MessageFacility_SOURCE_DIR}/MessageLogger/interface/*.h
     ${MessageFacility_SOURCE_DIR}/MessageLogger/interface/*.icc
@@ -18,6 +22,11 @@ FILE (GLOB includeFiles
 
 INSTALL (FILES ${includeFiles}
     DESTINATION include/MessageLogger/interface
+    )
+
+INSTALL (FILES
+    ${MessageFacility_SOURCE_DIR}/MessageLogger/interface/MessageLogger.h
+    DESTINATION include
     )
 
 INSTALL (TARGETS MessageLogger MessageLoggerD

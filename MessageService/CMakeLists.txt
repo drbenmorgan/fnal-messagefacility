@@ -11,6 +11,10 @@ INCLUDE_DIRECTORIES (${MessageFacility_SOURCE_DIR})
 ADD_LIBRARY (MessageServiceD SHARED ${srcFiles})
 ADD_LIBRARY (MessageService ${srcFiles})
 
+SET_TARGET_PROPERTIES (MessageServiceD
+    PROPERTIES OUTPUT_NAME MessageService
+    )
+
 FILE (GLOB includeFiles
     ${MessageFacility_SOURCE_DIR}/MessageService/interface/*.h
     )

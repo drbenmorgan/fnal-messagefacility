@@ -27,7 +27,11 @@ ADD_CUSTOM_TARGET (ELDDSdestIDL ALL
     )
 
 ADD_LIBRARY (ExtensionsD SHARED ${FILES})  
-ADD_LIBRARY (Extensions ${FILES})  
+# ADD_LIBRARY (Extensions ${FILES})  
+
+SET_TARGET_PROPERTIES (ExtensionsD
+    PROPERTIES OUTPUT_NAME Extensions
+    )
 
 ADD_SUBDIRECTORY (bin)
 
@@ -39,7 +43,7 @@ INSTALL (FILES ${includeFiles}
     DESTINATION include/Extensions/interface
     )
 
-INSTALL (TARGETS Extensions ExtensionsD
+INSTALL (TARGETS ExtensionsD
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
