@@ -12,7 +12,11 @@ ADD_LIBRARY (MessageServiceD SHARED ${srcFiles})
 ADD_LIBRARY (MessageService ${srcFiles})
 
 SET_TARGET_PROPERTIES (MessageServiceD
-    PROPERTIES OUTPUT_NAME MessageService
+    PROPERTIES OUTPUT_NAME MF_MessageService
+    )
+
+SET_TARGET_PROPERTIES (MessageService
+    PROPERTIES OUTPUT_NAME MF_MessageService
     )
 
 FILE (GLOB includeFiles

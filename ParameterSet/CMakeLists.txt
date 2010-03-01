@@ -12,7 +12,11 @@ ADD_LIBRARY (ParameterSetD SHARED ${srcFiles})
 ADD_LIBRARY (ParameterSet ${srcFiles})  
 
 SET_TARGET_PROPERTIES (ParameterSetD
-    PROPERTIES OUTPUT_NAME ParameterSet
+    PROPERTIES OUTPUT_NAME MF_ParameterSet
+    )
+
+SET_TARGET_PROPERTIES (ParameterSet
+    PROPERTIES OUTPUT_NAME MF_ParameterSet
     )
 
 FILE (GLOB includeFiles

@@ -12,7 +12,11 @@ ADD_LIBRARY (UtilitiesD SHARED ${srcFiles})
 ADD_LIBRARY (Utilities ${srcFiles})
 
 SET_TARGET_PROPERTIES (UtilitiesD
-    PROPERTIES OUTPUT_NAME Utilities
+    PROPERTIES OUTPUT_NAME MF_Utilities
+    )
+
+SET_TARGET_PROPERTIES (Utilities
+    PROPERTIES OUTPUT_NAME MF_Utilities
     )
 
 FILE (GLOB includeFiles

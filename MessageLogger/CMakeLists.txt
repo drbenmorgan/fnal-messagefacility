@@ -12,7 +12,11 @@ ADD_LIBRARY (MessageLoggerD SHARED ${srcFiles})
 ADD_LIBRARY (MessageLogger ${srcFiles})
 
 SET_TARGET_PROPERTIES (MessageLoggerD
-    PROPERTIES OUTPUT_NAME MessageLogger
+    PROPERTIES OUTPUT_NAME MF_MessageLogger
+    )
+
+SET_TARGET_PROPERTIES (MessageLogger
+    PROPERTIES OUTPUT_NAME MF_MessageLogger
     )
 
 FILE (GLOB includeFiles
