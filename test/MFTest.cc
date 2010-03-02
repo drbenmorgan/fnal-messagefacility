@@ -37,7 +37,7 @@ int main()
   boost::thread loggerThread(anotherLogger);
 
   // Issue messages with different severity levels
-  LogError("err1|err2") << "This is an ERROR message.";
+  LogError("err1|err2|") << "This is an ERROR message.";
   LogWarning("warning") << "Followed by a WARNING message.";
 
   // Switch context

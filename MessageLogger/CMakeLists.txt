@@ -39,3 +39,4 @@ INSTALL (TARGETS MessageLogger MessageLoggerD
     ARCHIVE DESTINATION lib
     ) 
 
+ADD_SUBDIRECTORY (bin)

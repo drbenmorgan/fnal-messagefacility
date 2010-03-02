@@ -6,13 +6,11 @@ LINK_DIRECTORIES (
     $ENV{OSPL_HOME}/lib
     )
 
-ADD_EXECUTABLE (MFTest
-    MFTest.cc
+ADD_EXECUTABLE (msglogger
+    msglogger.cc
     )
 
-#ADD_DEFINITIONS ("-g") 
-
-TARGET_LINK_LIBRARIES (MFTest 
+TARGET_LINK_LIBRARIES (msglogger
     MessageServiceD
     MessageLoggerD
     ParameterSetD
@@ -20,6 +18,7 @@ TARGET_LINK_LIBRARIES (MFTest
     ExtensionsD
     boost_thread
     boost_filesystem
+    boost_program_options
     pthread
     ddsdatabase
     dcpsgapi
@@ -27,3 +26,8 @@ TARGET_LINK_LIBRARIES (MFTest
     ddsos
     )
 
+INSTALL (TARGETS msglogger
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    )
