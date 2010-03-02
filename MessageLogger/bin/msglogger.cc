@@ -54,44 +54,48 @@ int main(int ac, char* av[])
   string         message;
   string         cat;
   string         dest;
+  vector<string> messages;
   vector<string> vcat;
   vector<string> vdest;
 
   vector<string> vcat_def;
   vector<string> vdest_def;
 
-  vcat_def.push_back("cat");
-  vdest_def.push_back("terminal");
+  vcat_def.push_back("");
+  vdest_def.push_back("stdout");
 
   try {
-    po::options_description desc("Allowed options");
-    desc.add_options()
+    po::options_description cmdopt("Allowed options");
+    cmdopt.add_options()
       ("help,h", "display help message")
       ("severity,s", po::value<string>(&severity)->default_value("info"), 
         "severity of the message (error, warning, info, debug)")
-      ("category,c", po::value< vector<string> >(&vcat)->default_value(vcat_def, ""),
+      ("category,c", 
+        po::value< vector<string> >(&vcat)->default_value(vcat_def, "null"),
         "message id / categories")
-      ("destination,d", po::value< vector<string> >(&vdest)->default_value(vdest_def, ""),
-        "logging destination(s) of the message (stdout, file, server)")
-      ("message,m", po::value<string>(&message), "message body");
+      ("destination,d", 
+        po::value< vector<string> >(&vdest)->default_value(vdest_def, "stdout"),
+        "logging destination(s) of the message (stdout, file, server)");
 
+    po::options_description hidden("Hidden options");
+    hidden.add_options()
+      ("message", po::value< vector<string> >(&messages), "message text");
+
+    po::options_description desc;
+    desc.add(cmdopt).add(hidden);
+
+    po::positional_options_description p;
+    p.add("message", -1);
+        
     po::variables_map vm;
-    po::store(po::parse_command_line(ac, av, desc), vm);
+    po::store(po::command_line_parser(ac, av).options(desc).positional(p).run(), vm);
     po::notify(vm);
 
     if(vm.count("help"))
     {
-      cout << "Usage: msglogger [options]\n";
-      cout << desc;
+      cout << "Usage: msglogger [options] <message text>\n";
+      cout << cmdopt;
       return 0;
-    }
-
-    // "--message" is a must
-    if(!vm.count("message"))
-    {
-      cout << "Message body is missing!\n";
-      cout << "Use \"msglogger --help\" for help messages\n";
-      return 1;
     }
   } 
   catch(std::exception & e)
@@ -104,6 +108,23 @@ int main(int ac, char* av[])
     return 1;
   }
     
+  vector<string>::iterator it;
+
+  // must have message text
+  if(messages.size()==0)
+  {
+    cout << "Message text is missing!\n";
+    cout << "Use \"msglogger --help\" for help messages\n";
+    return 1;
+  }
+
+  // build message text string
+  it = messages.begin();
+  while(it!=messages.end())
+  {
+    message += *it + " ";
+    ++it;
+  }
 
   // checking severity...
   transform(severity.begin(), severity.end(), severity.begin(), ::toupper);
@@ -115,7 +136,7 @@ int main(int ac, char* av[])
   }
 
   // checking categories..
-  vector<string>::iterator it = vcat.begin();
+  it = vcat.begin();
   while(it!=vcat.end())
   {
     cat += *it + "|";
