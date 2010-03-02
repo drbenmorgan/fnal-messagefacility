@@ -1216,14 +1216,14 @@ void
   MessageLoggerScribe::parseCategories (std::string const & s,
   				        std::vector<std::string> & cats)
 {
-  const std::string::size_type npos = std::string::npos;
+  const std::string::size_type npos = s.length();
         std::string::size_type i    = 0;
-  while ( i != npos ) {    
+  while ( i < npos ) {    
     std::string::size_type j = s.find('|',i); 
     std::string cat = trim_copy(s.substr(i,j-i));  
     cats.push_back (cat);
     i = j;
-    while ( (i != npos) && (s[i] == '|') ) ++i; 
+    while ( (i < npos) && (s[i] == '|') ) ++i; 
     // the above handles cases of || and also | at end of string
   } 
   // Note:  This algorithm assigns, as desired, one null category if it
