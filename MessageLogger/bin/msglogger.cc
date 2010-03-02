@@ -54,6 +54,7 @@ int main(int ac, char* av[])
   string         message;
   string         cat;
   string         dest;
+
   vector<string> messages;
   vector<string> vcat;
   vector<string> vdest;
@@ -68,7 +69,8 @@ int main(int ac, char* av[])
     po::options_description cmdopt("Allowed options");
     cmdopt.add_options()
       ("help,h", "display help message")
-      ("severity,s", po::value<string>(&severity)->default_value("info"), 
+      ("severity,s", 
+        po::value<string>(&severity)->default_value("info"), 
         "severity of the message (error, warning, info, debug)")
       ("category,c", 
         po::value< vector<string> >(&vcat)->default_value(vcat_def, "null"),
