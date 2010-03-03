@@ -88,6 +88,9 @@
 
 #include "Utilities/interface/EDMException.h"
 
+#include <netdb.h>
+#include <arpa/inet.h>
+
 #include <iostream>
 #include <sstream>
 #include <list>
@@ -246,6 +249,12 @@ void ELadministrator::resetSeverityCount()  {
 // ----------------------------------------------------------------------
 // Accessors:
 // ----------------------------------------------------------------------
+
+const ELstring & ELadministrator::hostname() const { return hostname_; }
+
+const ELstring & ELadministrator::hostaddr() const { return hostaddr_; }
+
+long ELadministrator::pid() const { return pid_;}
 
 const ELstring & ELadministrator::process() const  { return process_; }
 
@@ -500,6 +509,9 @@ ELadministrator * ELadministrator::instance()  {
 
 ELadministrator::ELadministrator()
 : process_       ( ""                                                        )
+, pid_           ( 0                                                        )
+, hostname_      ( ""                                                        )
+, hostaddr_      ( ""                                                        )
 , context_       ( emptyContext.clone()                                      )
 , abortThreshold_( ELseverityLevel (ELseverityLevel::ELsev_abort)            )
 , exitThreshold_ ( ELseverityLevel (ELseverityLevel::ELsev_highestSeverity)  )
@@ -516,9 +528,16 @@ ELadministrator::ELadministrator()
   for ( int lev = 0;  lev < ELseverityLevel::nLevels;  ++lev )
     severityCounts_[lev] = 0;
 
-  // Set process_ to hostname
   char hostname[1024];
-  process_ = (gethostname(hostname, 1023)==0) ? hostname : "Unkonwn Host";
+  hostname_ = (gethostname(hostname, 1023)==0) ? hostname : "Unkonwn Host";
+
+  hostent *host;
+  host = gethostbyname(hostname);
+  char * ip = inet_ntoa( *(struct in_addr *)host->h_addr );
+  hostaddr_ = ip;
+
+  pid_t pid = getpid();
+  pid_ = (long) pid;
 
 }  // ELadministrator()
 

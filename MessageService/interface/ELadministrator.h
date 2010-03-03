@@ -143,6 +143,10 @@ protected:
   const ELseverityLevel       & highSeverity() const;
   int                           severityCounts( int lev ) const;
 
+  const ELstring              & hostname() const;
+  const ELstring              & hostaddr() const;
+  long                          pid() const;
+
   // ---  actions on messages:
   //
   void finishMsg();
@@ -171,8 +175,12 @@ private:
   std::list<boost::shared_ptr<ELdestination> > sinks_;		
   ELseverityLevel            highSeverity_;
   int                        severityCounts_[ ELseverityLevel::nLevels ];
-  mf::ErrorObj              msg;
+  mf::ErrorObj               msg;
   bool                       msgIsActive;
+
+  ELstring                   hostname_;
+  ELstring                   hostaddr_;
+  long                       pid_;
 
   std::map < ELstring, boost::shared_ptr<ELdestination> > attachedDestinations;
 

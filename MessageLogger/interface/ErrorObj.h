@@ -79,6 +79,9 @@ public:
   virtual void  setSubroutine( const ELstring & subroutine );
   virtual void  setContext   ( const ELstring & context );
   virtual void  setProcess   ( const ELstring & proc );
+  virtual void  setHostName  ( const ELstring & hostname );
+  virtual void  setHostAddr  ( const ELstring & hostaddr );
+  virtual void  setPID       ( long             pid );
 		//-| process is always determined through ErrorLog or
 		//-| an ELdestControl, both of which talk to ELadministrator.
 

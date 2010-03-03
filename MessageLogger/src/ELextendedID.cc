@@ -56,6 +56,9 @@ void ELextendedID::clear()  {
   severity   = ELunspecified;
   module     = "";
   subroutine = "";
+  hostname   = "";
+  hostaddr   = "";
+  pid        = 0;
 
 }  // clear()
 

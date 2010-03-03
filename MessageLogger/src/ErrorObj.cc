@@ -191,6 +191,17 @@ void ErrorObj::setReactedTo( bool r )  {
   myReactedTo = r;
 }
 
+void ErrorObj::setHostName( const ELstring & hostname ) {
+  myXid.hostname = hostname;
+} 
+
+void ErrorObj::setHostAddr( const ELstring & hostaddr ) {
+  myXid.hostaddr = hostaddr;
+} 
+
+void ErrorObj::setPID( long pid ) {
+  myXid.pid = pid;
+} 
 
 #ifdef ErrorObj_SUB_TRACE
   static int subN = 0;

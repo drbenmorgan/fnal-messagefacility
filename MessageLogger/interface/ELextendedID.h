@@ -37,6 +37,10 @@ public:
   ELstring        module;
   ELstring        subroutine;
 
+  ELstring        hostname;
+  ELstring        hostaddr;
+  long            pid;
+
   // -----  Comparator:
   //
   bool operator<( const ELextendedID & xid ) const;

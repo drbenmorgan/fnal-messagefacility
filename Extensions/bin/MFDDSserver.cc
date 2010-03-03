@@ -179,7 +179,10 @@ int main()
           MFMessage * msg = &(msgSeq[i]);
           std::cout << "severity:       " << msg->severity_   << "\n";
           std::cout << "timesamp:       " << msg->timestamp_  << "\n";
-          std::cout << "process (host): " << msg->process_    << "\n";
+          std::cout << "hostname:       " << msg->hostname_   << "\n";
+          std::cout << "hostaddr (ip):  " << msg->hostaddr_   << "\n";
+          std::cout << "process:        " << msg->process_    << "\n";
+          std::cout << "porcess id:     " << msg->pid_        << "\n";
           std::cout << "module:         " << msg->module_     << "\n";
           std::cout << "context:        " << msg->context_    << "\n";
           std::cout << "id (category):  " << msg->id_         << "\n";

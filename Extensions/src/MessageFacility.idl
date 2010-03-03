@@ -1,46 +1,41 @@
 /*
- *                         OpenSplice DDS
+ *  MessageFacility.idl
+ *  ==================================================================
+ *  
+ *  Defination of OpenSplice DDS IDL data type for logging messages
+ *  with MessageFacility over networks.
  *
- *   This software and documentation are Copyright 2006 to 2009 PrismTech 
- *   Limited and its licensees. All rights reserved. See file:
- *
- *                     $OSPL_HOME/LICENSE 
- *
- *   for full copyright notice and license terms. 
+ *  qlu  02/11/10    Created
+ *  qlu  03/02/10    Added hostname_, hostaddr_, pid_ to MFMessage.
+ *                   Keylist has been changed to pid_ and hostname_
  *
  */
 
-/************************************************************************
- * LOGICAL_NAME:    Chat.idl
- * FUNCTION:        OpenSplice Tutorial example code.
- * MODULE:          Tutorial for the C++ programming language.
- * DATE             june 2006.
- ************************************************************************
- * 
- * This file contains the data definitions for the tutorial examples.
- *
- ***/
- 
 module MessageFacility {
 
     struct MFMessage {
         long      serial_;          // serial
         string    timestamp_;       // timestamp
 
-        string    idOverflow_;      // id_Overflow
         string    items_;           // a combined string for all items
-        string    context_;         // context
 
         string    file_;             // filename
         string    line_;             // line number
 
-                                    // following are from ExtendedID
         string    process_;         // process name
+        long      pid_;             // process id
+
         string    id_;              // message_id, or the category
+        string    idOverflow_;      // the overflow part of the message id
+
         string    severity_;        // string represent of severity
         string    module_;          // module name
+        string    context_;         // context
         string    subroutine_;      // subroutine name
+
+        string    hostname_;        // host name
+        string    hostaddr_;        // host ip address
     };
-#pragma keylist MFMessage process_
+    #pragma keylist MFMessage pid_ hostname_
 
 };

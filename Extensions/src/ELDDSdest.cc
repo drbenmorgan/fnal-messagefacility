@@ -504,6 +504,10 @@ bool ELDDSdest::log( const mf::ErrorObj & msg )  {
   DDSmsg->module_     = CORBA::string_dup( xid.module.c_str()                 );
   DDSmsg->subroutine_ = CORBA::string_dup( xid.subroutine.c_str()             );
 
+  DDSmsg->hostname_   = CORBA::string_dup( xid.hostname.c_str()               );
+  DDSmsg->hostaddr_   = CORBA::string_dup( xid.hostaddr.c_str()               );
+  DDSmsg->pid_        = xid.pid;
+
   DDSmsg->file_       = CORBA::string_dup( ""                                 );
   DDSmsg->line_       = CORBA::string_dup( ""                                 );
   
