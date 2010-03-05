@@ -96,6 +96,7 @@ public:
   // ---  get/set fundamental properties:
   //
   void setProcess( const ELstring & process );
+  void setApplication( const ELstring & application );
   ELstring swapProcess( const ELstring & process );
   void setContextSupplier( const ELcontextSupplier & supplier );
   const ELcontextSupplier & getContextSupplier() const;
@@ -132,6 +133,8 @@ public:
   void wipe();
   void finish();
   
+  const ELstring              & application() const;
+
 protected:
   // ---  member data accessors:
   //
@@ -180,6 +183,7 @@ private:
 
   ELstring                   hostname_;
   ELstring                   hostaddr_;
+  ELstring                   application_;
   long                       pid_;
 
   std::map < ELstring, boost::shared_ptr<ELdestination> > attachedDestinations;

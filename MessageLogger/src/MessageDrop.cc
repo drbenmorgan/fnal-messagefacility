@@ -17,6 +17,7 @@
 
 // user include files
 #include "MessageLogger/interface/MessageDrop.h"
+#include "MessageService/interface/ELadministrator.h"
 
 
 // Change Log
@@ -24,9 +25,6 @@
 // 1 12/13/07 mf     	the static drops had been file-global level; moved it
 //		     	into the instance() method to cure a 24-byte memory
 //			leak reported by valgrind. Suggested by MP.
-
-// 2 02/15/10 ql        Retrieve hostname and store it in the runEvent everytime
-//                      a new instance is instantiated
 
 using namespace mf;
 
@@ -41,6 +39,7 @@ MessageDrop::instance()
   if(drop==0) { 
     drops.reset(new MessageDrop);
     drop=drops.get(); 
+    drop->moduleName = mf::service::ELadministrator::instance()->application();
   }
   return drop;
 }

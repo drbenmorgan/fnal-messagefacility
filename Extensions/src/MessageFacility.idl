@@ -29,6 +29,7 @@ module MessageFacility {
         string    idOverflow_;      // the overflow part of the message id
 
         string    severity_;        // string represent of severity
+        string    application_;     // application name
         string    module_;          // module name
         string    context_;         // context
         string    subroutine_;      // subroutine name

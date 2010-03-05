@@ -192,6 +192,7 @@ int main()
           std::cout << "hostaddr (ip):  " << msg->hostaddr_   << "\n";
           std::cout << "process:        " << msg->process_    << "\n";
           std::cout << "porcess id:     " << msg->pid_        << "\n";
+          std::cout << "application:    " << msg->application_<< "\n";
           std::cout << "module:         " << msg->module_     << "\n";
           std::cout << "context:        " << msg->context_    << "\n";
           std::cout << "id (category):  " << msg->id_         << "\n";

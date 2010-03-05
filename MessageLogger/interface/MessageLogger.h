@@ -465,8 +465,8 @@ public:
       std::string const & mode,
       ParameterSet const & pset);
 
+  void SetApplicationName(std::string const & application);
   void SetModuleName(std::string const & modulename);
-
   void SetContext(std::string const & context);
 
 

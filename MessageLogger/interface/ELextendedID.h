@@ -39,6 +39,7 @@ public:
 
   ELstring        hostname;
   ELstring        hostaddr;
+  ELstring        application;
   long            pid;
 
   // -----  Comparator:

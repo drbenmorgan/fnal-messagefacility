@@ -6,6 +6,7 @@
 #include "ParameterSet/interface/ParameterSetEntry.h"
 
 #include "MessageService/interface/MessageServicePresence.h"
+#include "MessageService/interface/ELadministrator.h"
 
 // Change Log
 //
@@ -314,6 +315,18 @@ void StartMessageFacility(
 
     mfs.MFServiceEnabled = true;
   }
+}
+
+// Set application name
+void SetApplicationName(std::string const & application)
+{
+  if( !MessageFacilityService::instance().MFServiceEnabled )
+    return;
+
+  mf::service::ELadministrator::instance()->setApplication(application);
+
+  SetModuleName(application);
+
 }
 
 // Set module name and debug settings

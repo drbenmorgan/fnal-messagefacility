@@ -30,6 +30,7 @@ int main()
       MessageFacilityService::logCFS());
 
   // Set module name for the main thread
+  SetApplicationName("MessageFacility");
   SetModuleName("MFTest");
   SetContext("pre-event");
 

@@ -91,6 +91,7 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 
+#include <fstream>
 #include <iostream>
 #include <sstream>
 #include <list>
@@ -119,6 +120,11 @@ void ELadministrator::setProcess( const ELstring & process )  {
 
 }  // setProcess()
 
+void ELadministrator::setApplication( const ELstring & application) {
+
+  application_ = application;
+
+}
 
 ELstring ELadministrator::swapProcess( const ELstring & process )  {
 
@@ -253,6 +259,8 @@ void ELadministrator::resetSeverityCount()  {
 const ELstring & ELadministrator::hostname() const { return hostname_; }
 
 const ELstring & ELadministrator::hostaddr() const { return hostaddr_; }
+
+const ELstring & ELadministrator::application() const { return application_; }
 
 long ELadministrator::pid() const { return pid_;}
 
@@ -509,9 +517,10 @@ ELadministrator * ELadministrator::instance()  {
 
 ELadministrator::ELadministrator()
 : process_       ( ""                                                        )
-, pid_           ( 0                                                        )
+, pid_           ( 0                                                         )
 , hostname_      ( ""                                                        )
 , hostaddr_      ( ""                                                        )
+, application_   ( ""                                                        )
 , context_       ( emptyContext.clone()                                      )
 , abortThreshold_( ELseverityLevel (ELseverityLevel::ELsev_abort)            )
 , exitThreshold_ ( ELseverityLevel (ELseverityLevel::ELsev_highestSeverity)  )
@@ -528,16 +537,38 @@ ELadministrator::ELadministrator()
   for ( int lev = 0;  lev < ELseverityLevel::nLevels;  ++lev )
     severityCounts_[lev] = 0;
 
+  // hostname
   char hostname[1024];
   hostname_ = (gethostname(hostname, 1023)==0) ? hostname : "Unkonwn Host";
 
+  // host ip address
   hostent *host;
   host = gethostbyname(hostname);
   char * ip = inet_ntoa( *(struct in_addr *)host->h_addr );
   hostaddr_ = ip;
 
+  // process id
   pid_t pid = getpid();
   pid_ = (long) pid;
+
+  // get process name from '/proc/pid/cmdline'
+  std::stringstream ss;
+  ss << "//proc//" << pid_ << "//cmdline";
+  std::ifstream procfile(ss.str().c_str());
+
+  std::string procinfo;
+
+  if( procfile.is_open() ) 
+  {
+    procfile >> procinfo;
+    procfile.close();
+  }
+
+  size_t end = procinfo.find('\0');
+  size_t start = procinfo.find_last_of('/',end);
+
+  process_ = procinfo.substr(start+1, end-start);
+  application_ = process_;
 
 }  // ELadministrator()
 

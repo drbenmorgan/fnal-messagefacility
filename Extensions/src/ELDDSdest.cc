@@ -493,20 +493,22 @@ bool ELDDSdest::log( const mf::ErrorObj & msg )  {
 
   if(DDSmsg.get() == 0)                   return false;
 
-  DDSmsg->context_    = CORBA::string_dup( msg.context().c_str()              );
-
   DDSmsg->timestamp_  = CORBA::string_dup( formatTime(msg.timestamp())        );
-  DDSmsg->idOverflow_ = CORBA::string_dup( msg.idOverflow().c_str()           );
-
-  DDSmsg->process_    = CORBA::string_dup( xid.process.c_str()                );
-  DDSmsg->id_         = CORBA::string_dup( xid.id.c_str()                     );
-  DDSmsg->severity_   = CORBA::string_dup( xid.severity.getInputStr().c_str() );
-  DDSmsg->module_     = CORBA::string_dup( xid.module.c_str()                 );
-  DDSmsg->subroutine_ = CORBA::string_dup( xid.subroutine.c_str()             );
 
   DDSmsg->hostname_   = CORBA::string_dup( xid.hostname.c_str()               );
   DDSmsg->hostaddr_   = CORBA::string_dup( xid.hostaddr.c_str()               );
+
+  DDSmsg->process_    = CORBA::string_dup( xid.process.c_str()                );
   DDSmsg->pid_        = xid.pid;
+
+  DDSmsg->severity_   = CORBA::string_dup( xid.severity.getInputStr().c_str() );
+  DDSmsg->id_         = CORBA::string_dup( xid.id.c_str()                     );
+  DDSmsg->idOverflow_ = CORBA::string_dup( msg.idOverflow().c_str()           );
+
+  DDSmsg->application_= CORBA::string_dup( xid.application.c_str()            );
+  DDSmsg->module_     = CORBA::string_dup( xid.module.c_str()                 );
+  DDSmsg->context_    = CORBA::string_dup( msg.context().c_str()              );
+  DDSmsg->subroutine_ = CORBA::string_dup( xid.subroutine.c_str()             );
 
   DDSmsg->file_       = CORBA::string_dup( ""                                 );
   DDSmsg->line_       = CORBA::string_dup( ""                                 );
@@ -524,9 +526,18 @@ bool ELDDSdest::log( const mf::ErrorObj & msg )  {
         || xid.severity == ELwarning    // warning message
         || xid.severity == ELerror )    // error   message
     {
-      if( itemcount == 2 )      DDSmsg -> file_ = CORBA::string_dup( (*it).c_str() );
-      else if( itemcount == 4 ) DDSmsg -> line_ = CORBA::string_dup( (*it).c_str() );
-      else if( itemcount > 5  ) items += *it;
+      if( itemcount == 2 )      
+      {
+        DDSmsg -> file_ = CORBA::string_dup( (*it).c_str() );
+      }
+      else if( itemcount == 4 ) 
+      {
+        DDSmsg -> line_ = CORBA::string_dup( (*it).c_str() );
+      }
+      else if( itemcount > 5  ) 
+      {
+        items += *it;
+      }
     }
     else
     {      

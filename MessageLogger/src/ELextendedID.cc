@@ -58,6 +58,7 @@ void ELextendedID::clear()  {
   subroutine = "";
   hostname   = "";
   hostaddr   = "";
+  application= "";
   pid        = 0;
 
 }  // clear()

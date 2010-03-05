@@ -135,15 +135,16 @@ ErrorLog & ErrorLog::operator() (
   // -----  form ErrorObj for this new message:
   //
   a->msgIsActive = true;
-  a->msg.set          ( sev, id );
-  a->msg.setProcess   ( a->process() );
-  a->msg.setModule    ( module );
-  a->msg.setSubroutine( subroutine );
-  a->msg.setReactedTo ( false );
+  a->msg.set            ( sev, id );
+  a->msg.setProcess     ( a->process() );
+  a->msg.setModule      ( module );
+  a->msg.setSubroutine  ( subroutine );
+  a->msg.setReactedTo   ( false );
 
-  a->msg.setHostName  ( a->hostname() );
-  a->msg.setHostAddr  ( a->hostaddr() );
-  a->msg.setPID       ( a->pid()      );
+  a->msg.setHostName    ( a->hostname()    );
+  a->msg.setHostAddr    ( a->hostaddr()    );
+  a->msg.setApplication ( a->application() );
+  a->msg.setPID         ( a->pid()         );
 
   return  *this;
 
@@ -191,21 +192,23 @@ ErrorLog & ErrorLog::operator()( mf::ErrorObj & msg )  {
 
   // -----  will we need to poke/restore info into the message?
   //
-  bool updateProcess   ( msg.xid().process   .length() == 0 );
-  bool updateModule    ( msg.xid().module    .length() == 0 );
-  bool updateSubroutine( msg.xid().subroutine.length() == 0 );
-  bool updateHostName  ( msg.xid().hostname  .length() == 0 );
-  bool updateHostAddr  ( msg.xid().hostaddr  .length() == 0 );
-  bool updatePID       ( msg.xid().pid                 == 0 );
+  bool updateProcess    ( msg.xid().process   .length() == 0 );
+  bool updateModule     ( msg.xid().module    .length() == 0 );
+  bool updateSubroutine ( msg.xid().subroutine.length() == 0 );
+  bool updateHostName   ( msg.xid().hostname  .length() == 0 );
+  bool updateHostAddr   ( msg.xid().hostaddr  .length() == 0 );
+  bool updateApplication( msg.xid().application.length()== 0 );
+  bool updatePID        ( msg.xid().pid                 == 0 );
 
   // -----  poke, if needed:
   //
-  if ( updateProcess    )  msg.setProcess   ( a->process()  );
-  if ( updateModule     )  msg.setModule    ( module        );
-  if ( updateSubroutine )  msg.setSubroutine( subroutine    );
-  if ( updateHostName   )  msg.setHostName  ( a->hostname() );
-  if ( updateHostAddr   )  msg.setHostAddr  ( a->hostaddr() );
-  if ( updatePID        )  msg.setPID       ( a->pid()      );
+  if ( updateProcess    )  msg.setProcess    ( a->process()  );
+  if ( updateModule     )  msg.setModule     ( module        );
+  if ( updateSubroutine )  msg.setSubroutine ( subroutine    );
+  if ( updateHostName   )  msg.setHostName   ( a->hostname() );
+  if ( updateHostAddr   )  msg.setHostAddr   ( a->hostaddr() );
+  if ( updateApplication)  msg.setApplication( a->application() );
+  if ( updatePID        )  msg.setPID        ( a->pid()      );
 
   // severity level statistics keeping:                 // $$ mf 6/7/01
   int lev = msg.xid().severity.getLevel();
@@ -234,12 +237,13 @@ ErrorLog & ErrorLog::operator()( mf::ErrorObj & msg )  {
 
   // -----  restore, if we poked above:
   //
-  if ( updateProcess    )  msg.setProcess   ( "" );
-  if ( updateModule     )  msg.setModule    ( "" );
-  if ( updateSubroutine )  msg.setSubroutine( "" );
-  if ( updateHostName   )  msg.setHostName  ( "" );
-  if ( updateHostAddr   )  msg.setHostAddr  ( "" );
-  if ( updatePID        )  msg.setPID       ( 0  );
+  if ( updateProcess    )  msg.setProcess    ( "" );
+  if ( updateModule     )  msg.setModule     ( "" );
+  if ( updateSubroutine )  msg.setSubroutine ( "" );
+  if ( updateHostName   )  msg.setHostName   ( "" );
+  if ( updateHostAddr   )  msg.setHostAddr   ( "" );
+  if ( updateApplication)  msg.setApplication( "" );
+  if ( updatePID        )  msg.setPID        ( 0  );
 
   return  *this;
 

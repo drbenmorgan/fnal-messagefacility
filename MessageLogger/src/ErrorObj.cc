@@ -199,6 +199,10 @@ void ErrorObj::setHostAddr( const ELstring & hostaddr ) {
   myXid.hostaddr = hostaddr;
 } 
 
+void ErrorObj::setApplication( const ELstring & application ) {
+  myXid.application = application;
+} 
+
 void ErrorObj::setPID( long pid ) {
   myXid.pid = pid;
 } 
