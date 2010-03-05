@@ -49,6 +49,10 @@ void LogStatistics() {
   mf::MessageLoggerQ::MLqSUM ( ); // trigger summary info
 }
 
+void LogErrorObj(ErrorObj * eo_p) {
+  mf::MessageLoggerQ::MLqLOG(eo_p);
+}
+
 bool isDebugEnabled() {
   return ( mf::MessageDrop::instance()->debugEnabled );
 }

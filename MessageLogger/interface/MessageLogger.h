@@ -80,6 +80,9 @@
 // 19 ql  02/18/10  Modified LogError(), LogWarning(), LogInfo() to insert
 //                  _FILE_ and _LINE_ in the message
 //
+// 20 ql  03/05/10  Added LogErrorObj(const ErrorObj & eo) to log a structured
+//                  ErrorObj directly
+//
 // =================================================
 
 // system include files
@@ -341,6 +344,7 @@ std::string stripLeadingDirectoryTree(const std::string & file);
 // change log 10:  removed onlyLowestDirectory()
 
 void LogStatistics(); 
+void LogErrorObj(ErrorObj * eo_p);
 
 class LogDebug_
 {
@@ -464,6 +468,7 @@ public:
   void SetModuleName(std::string const & modulename);
 
   void SetContext(std::string const & context);
+
 
 class MessageFacilityService
 {
