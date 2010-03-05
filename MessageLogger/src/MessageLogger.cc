@@ -145,6 +145,9 @@ void squelchStandAloneMessageCategory(std::string const & category){
 
 
 // MessageFacilityService
+std::string MessageFacilityService::SingleThread = "SingleThreadMSPresence";
+std::string MessageFacilityService::MultiThread = "MessageServicePresence";
+
 MessageFacilityService & MessageFacilityService::instance()
 {
   static MessageFacilityService mfs;
@@ -221,16 +224,16 @@ MessageFacilityService::MessageFacilityService()
 
 // Start MessageFacility service
 void StartMessageFacility(
-      std::string const & mode, 
-      boost::shared_ptr<Presence> & MFPresence)
+      boost::shared_ptr<Presence> & MFPresence,
+      std::string const & mode )
 {
-  StartMessageFacility( mode, MFPresence, MessageFacilityService::instance().logCF );
+  StartMessageFacility( MFPresence, mode, MessageFacilityService::instance().logCF );
 }
 
 // Start MessageFacility service
 void StartMessageFacility(
-      std::string const & mode,
       boost::shared_ptr<Presence> & MFPresence,
+      std::string const & mode,
       ParameterSet const & pset)
 {
   MessageFacilityService & mfs = MessageFacilityService::instance();

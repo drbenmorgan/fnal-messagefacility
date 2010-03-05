@@ -453,12 +453,12 @@ public:
   // Change log 18
   //
   void StartMessageFacility(
-      std::string const & mode, 
-      boost::shared_ptr<Presence> & MFPresence);
+      boost::shared_ptr<Presence> & MFPresence,
+      std::string const & mode);
 
   void StartMessageFacility(
-      std::string const & mode,
       boost::shared_ptr<Presence> & MFPresence,
+      std::string const & mode,
       ParameterSet const & pset);
 
   void SetModuleName(std::string const & modulename);
@@ -472,6 +472,9 @@ private:
 
 public:
   static MessageFacilityService & instance();
+
+  static std::string SingleThread;
+  static std::string MultiThread;
 
   bool   MFServiceEnabled;
 

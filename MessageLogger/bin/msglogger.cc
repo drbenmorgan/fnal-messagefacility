@@ -197,7 +197,10 @@ int main(int ac, char* av[])
 
   // start up message facility service
   boost::shared_ptr<mf::Presence> MFPresence;
-  mf::StartMessageFacility("SingleThreadMSPresence", MFPresence, pset);
+  mf::StartMessageFacility( 
+      MFPresence, 
+      mf::MessageFacilityService::SingleThread, 
+      pset );
   mf::SetModuleName("msgLogger");
   
   // logging message...

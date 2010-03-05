@@ -25,8 +25,8 @@ int main()
   // Start MessageFacility Service
   boost::shared_ptr<Presence> MFPresence;
   StartMessageFacility(
-      "MessageServicePresence", 
       MFPresence,
+      MessageFacilityService::MultiThread, 
       MessageFacilityService::instance().logCFS);
 
   // Set module name for the main thread
