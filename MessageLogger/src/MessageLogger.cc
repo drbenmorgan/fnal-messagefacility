@@ -158,9 +158,7 @@ MessageFacilityService & MessageFacilityService::instance()
   return mfs;
 }
 
-MessageFacilityService::MessageFacilityService()
-  : MFServiceEnabled  (false)
-  , theML             (     )
+ParameterSet MessageFacilityService::commonPSet()
 {
   // Prepare a common ParameterSet object
   ParameterSet pset;
@@ -182,47 +180,109 @@ MessageFacilityService::MessageFacilityService()
   Entry evstats("entry_statistics", vstats, false);
   pset.insert(true, "statistics", evstats);
 
-  // Make copies of from the pset
-  logConsole = pset;
-  logFile    = pset;
-  logServer  = pset;
-  logCF      = pset;
-  logCS      = pset;
-  logFS      = pset;
-  logCFS     = pset;
-  
+  return pset;
+}
+
+ParameterSet MessageFacilityService::logConsole()
+{
+  ParameterSet pset = commonPSet();
+
   // Customize destinations
-  std::vector<std::string> vdc;
-  vdc.push_back("cout");
-  Entry evdc("entry_destinations", vdc, false);
-  logConsole. insert(true, "destinations", evdc);
+  std::vector<std::string> vd;
+  vd.push_back("cout");
+  Entry evd("entry_destinations", vd, false);
+  pset.insert(true, "destinations", evd);
 
-  std::vector<std::string> vdf;
-  vdf.push_back("logfile");
-  Entry evdf("entry_destinations", vdf, false);
-  logFile   . insert(true, "destinations", evdf);
+  return pset;
+}
 
-  std::vector<std::string> vds;
-  vds.push_back("DDS:test");
-  Entry evds("entry_destinations", vds, false);
-  logServer . insert(true, "destinations", evds);
+ParameterSet MessageFacilityService::logServer()
+{
+  ParameterSet pset = commonPSet();
 
-  vdc.push_back("logfile");
-  Entry evdcf("entry_destinations", vdc, false);
-  logCF     . insert(true, "destinations", evdcf);
+  // Customize destinations
+  std::vector<std::string> vd;
+  vd.push_back("DDS|test");
+  Entry evd("entry_destinations", vd, false);
+  pset.insert(true, "destinations", evd);
 
-  vdf.push_back("DDS:test");
-  Entry evdfs("entry_destinations", vdf, false);
-  logFS     . insert(true, "destinations", evdfs);
+  return pset;
+}
 
-  vds.push_back("cout");
-  Entry evdcs("entry_destinations", vds, false);
-  logCS     . insert(true, "destinations", evdcs);
+ParameterSet MessageFacilityService::logFile(std::string const & filename)
+{
+  ParameterSet pset = commonPSet();
 
-  vdc.push_back("DDS:test");
-  Entry evdcfs("entry_destinations", vdc, false);
-  logCFS    . insert(true, "destinations", evdcfs);
+  // Customize destinations
+  std::vector<std::string> vd;
+  vd.push_back(filename);
+  Entry evd("entry_destinations", vd, false);
+  pset.insert(true, "destinations", evd);
 
+  return pset;
+}
+
+ParameterSet MessageFacilityService::logCS()
+{
+  ParameterSet pset = commonPSet();
+
+  // Customize destinations
+  std::vector<std::string> vd;
+  vd.push_back("cout");
+  vd.push_back("DDS|test");
+  Entry evd("entry_destinations", vd, false);
+  pset.insert(true, "destinations", evd);
+
+  return pset;
+}
+
+ParameterSet MessageFacilityService::logCF(std::string const & filename)
+{
+  ParameterSet pset = commonPSet();
+
+  // Customize destinations
+  std::vector<std::string> vd;
+  vd.push_back("cout");
+  vd.push_back(filename);
+  Entry evd("entry_destinations", vd, false);
+  pset.insert(true, "destinations", evd);
+
+  return pset;
+}
+
+ParameterSet MessageFacilityService::logFS(std::string const & filename)
+{
+  ParameterSet pset = commonPSet();
+
+  // Customize destinations
+  std::vector<std::string> vd;
+  vd.push_back(filename);
+  vd.push_back("DDS|test");
+  Entry evd("entry_destinations", vd, false);
+  pset.insert(true, "destinations", evd);
+
+  return pset;
+}
+
+ParameterSet MessageFacilityService::logCFS(std::string const & filename)
+{
+  ParameterSet pset = commonPSet();
+
+  // Customize destinations
+  std::vector<std::string> vd;
+  vd.push_back("cout");
+  vd.push_back(filename);
+  vd.push_back("DDS|test");
+  Entry evd("entry_destinations", vd, false);
+  pset.insert(true, "destinations", evd);
+
+  return pset;
+}
+
+MessageFacilityService::MessageFacilityService()
+  : MFServiceEnabled  (false)
+  , theML             (     )
+{
 }
 
 
@@ -231,7 +291,9 @@ void StartMessageFacility(
       boost::shared_ptr<Presence> & MFPresence,
       std::string const & mode )
 {
-  StartMessageFacility( MFPresence, mode, MessageFacilityService::instance().logCF );
+  StartMessageFacility(MFPresence, 
+      mode, 
+      MessageFacilityService::logCF() );
 }
 
 // Start MessageFacility service

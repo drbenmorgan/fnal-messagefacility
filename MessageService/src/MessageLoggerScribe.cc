@@ -952,7 +952,7 @@ void
     std::string actual_filename = filename;			// change log 4
     if ( (filename != "cout") 
         && (filename != "cerr") 
-        && (filename.find(':',0) == std::string::npos) )  {
+        && (filename.find('|',0) == std::string::npos) )  {
       const std::string::size_type npos = std::string::npos;
       if ( filename.find('.') == npos ) {
         actual_filename += ".log";
@@ -992,7 +992,7 @@ void
     }
     else  {
       // distinguish remote destinations from local file destinations
-      std::string::size_type seprator = actual_filename.find(':', 0);
+      std::string::size_type seprator = actual_filename.find('|', 0);
 
       if( seprator != std::string::npos) 
       {

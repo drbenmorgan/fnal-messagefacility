@@ -28,6 +28,13 @@ ADD_EXECUTABLE (MFDDSserver
     )
 
 TARGET_LINK_LIBRARIES (MFDDSserver
+    MessageServiceD
+    MessageLoggerD
+    ParameterSetD
+    UtilitiesD
+    ExtensionsD
+    boost_thread
+    boost_filesystem
     ddsdatabase
     dcpsgapi
     dcpssacpp

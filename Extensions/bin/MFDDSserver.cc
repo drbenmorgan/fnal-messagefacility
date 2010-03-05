@@ -2,6 +2,9 @@
 #include "DDSdest_bld/ccpp_MessageFacility.h"
 #include "Extensions/interface/CheckStatus.h"
 
+#include "MessageLogger/interface/MessageLogger.h"
+
+#include <boost/shared_ptr.hpp>
 #include <iostream>
 
 using namespace DDS;
@@ -139,6 +142,12 @@ int main()
   // Initialize the guardList to obtain the triggered conditions
   guardList.length(2);
 
+  // Start MessageFacility Service
+  boost::shared_ptr<mf::Presence> MFPresence;
+  mf::StartMessageFacility(MFPresence,
+      mf::MessageFacilityService::SingleThread,
+      mf::MessageFacilityService::logFile("msgarchiver"));
+
   // Read messages from the reader
   int z = 0;
   bool terminated = false;
@@ -190,15 +199,24 @@ int main()
           std::cout << "line:           " << msg->line_       << "\n";
           std::cout << "items:          " << msg->items_      << "\n";
           //std::cout << "idOverflow:   " << msg->idOverflow_ << "\n";
-          //std::cout << "process:      " << msg->process_    << "\n";
           //std::cout << "subroutine:   " << msg->subroutine_ << "\n";
-          //std::cout << "sample_state =   " << infoSeq[i].sample_state << "\n";
-          //std::cout << "view_state =     " << infoSeq[i].view_state << "\n";
-          //std::cout << "instance_state = " << infoSeq[i].instance_state << "\n";
+
+          //std::cout <<"sample_state =   "<< infoSeq[i].sample_state << "\n";
+          //std::cout <<"view_state =     "<< infoSeq[i].view_state << "\n";
+          //std::cout <<"instance_state = "<< infoSeq[i].instance_state << "\n";
+
+          // Re-construct the ErrorObject
+          std::string s_sev (msg->severity_);
+          std::string s_id  (msg->id_);
+          mf::ELseverityLevel sev(s_sev);
+          mf::ErrorObj * eo_p = new mf::ErrorObj(sev, s_id);
+          (*eo_p) << msg->items_;
+
+          mf::LogErrorObj(eo_p);
         }
 
-        //std::cout << "=================================================" << "\n";
-        std::cout << "Round = " << z << "; msg = " << msgSeq->length() << "\n\n";
+        //std::cout << "==============================================" << "\n";
+        std::cout << "Round = " <<z<< "; msg = " << msgSeq->length() << "\n\n";
 
         status = reader -> return_loan(msgSeq, infoSeq);
         checkStatus(status, "return_loan()");

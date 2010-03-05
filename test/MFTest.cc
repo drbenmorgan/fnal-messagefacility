@@ -27,7 +27,7 @@ int main()
   StartMessageFacility(
       MFPresence,
       MessageFacilityService::MultiThread, 
-      MessageFacilityService::instance().logCFS);
+      MessageFacilityService::logCFS());
 
   // Set module name for the main thread
   SetModuleName("MFTest");

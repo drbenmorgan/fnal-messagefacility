@@ -54,6 +54,7 @@ int main(int ac, char* av[])
   string         message;
   string         cat;
   string         dest;
+  string         filename;
 
   vector<string> messages;
   vector<string> vcat;
@@ -77,7 +78,10 @@ int main(int ac, char* av[])
         "message id / categories")
       ("destination,d", 
         po::value< vector<string> >(&vdest)->default_value(vdest_def, "stdout"),
-        "logging destination(s) of the message (stdout, file, server)");
+        "logging destination(s) of the message (stdout, file, server)")
+      ("filename,f",
+        po::value<string>(&filename)->default_value("logfile"),
+        "specify the log file name");
 
     po::options_description hidden("Hidden options");
     hidden.add_options()
@@ -171,28 +175,28 @@ int main(int ac, char* av[])
   switch(flag)
   {
     case 0x01:
-      pset = mf::MessageFacilityService::instance().logConsole;
+      pset = mf::MessageFacilityService::logConsole();
       break;
     case 0x02:
-      pset = mf::MessageFacilityService::instance().logFile;
+      pset = mf::MessageFacilityService::logFile(filename);
       break;
     case 0x03:
-      pset = mf::MessageFacilityService::instance().logCF;
+      pset = mf::MessageFacilityService::logCF(filename);
       break;
     case 0x04:
-      pset = mf::MessageFacilityService::instance().logServer;
+      pset = mf::MessageFacilityService::logServer();
       break;
     case 0x05:
-      pset = mf::MessageFacilityService::instance().logCS;
+      pset = mf::MessageFacilityService::logCS();
       break;
     case 0x06:
-      pset = mf::MessageFacilityService::instance().logFS;
+      pset = mf::MessageFacilityService::logFS(filename);
       break;
     case 0x07:
-      pset = mf::MessageFacilityService::instance().logCFS;
+      pset = mf::MessageFacilityService::logCFS(filename);
       break;
     default:
-      pset = mf::MessageFacilityService::instance().logConsole;
+      pset = mf::MessageFacilityService::logConsole();
   }
 
   // start up message facility service

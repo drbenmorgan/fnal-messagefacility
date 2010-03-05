@@ -478,6 +478,14 @@ private:
 public:
   static MessageFacilityService & instance();
 
+  static ParameterSet logConsole();
+  static ParameterSet logServer();
+  static ParameterSet logFile(std::string const & filename = "logfile");
+  static ParameterSet logCS();
+  static ParameterSet logCF(std::string const & filename = "logfile");
+  static ParameterSet logFS(std::string const & filename = "logfile");
+  static ParameterSet logCFS(std::string const & filename = "logfile");
+
   static std::string SingleThread;
   static std::string MultiThread;
 
@@ -485,13 +493,8 @@ public:
 
   boost::shared_ptr<service::MessageLogger> theML;
 
-  ParameterSet logConsole;    // log to console only
-  ParameterSet logFile;       // log to local file only
-  ParameterSet logServer;     // log to DDS server only
-  ParameterSet logCF;         // log to both console and local file
-  ParameterSet logFS;         // log to both local file and DDS server
-  ParameterSet logCS;         // log to both console and DDS server
-  ParameterSet logCFS;        // log to console, local file, and DDS server
+private:
+  static ParameterSet commonPSet();
 };
 
 
