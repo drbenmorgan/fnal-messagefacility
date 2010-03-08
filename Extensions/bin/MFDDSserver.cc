@@ -143,8 +143,7 @@ int main()
   guardList.length(2);
 
   // Start MessageFacility Service
-  boost::shared_ptr<mf::Presence> MFPresence;
-  mf::StartMessageFacility(MFPresence,
+  mf::StartMessageFacility(
       mf::MessageFacilityService::SingleThread,
       mf::MessageFacilityService::logFile("msgarchiver"));
 

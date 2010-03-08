@@ -200,12 +200,8 @@ int main(int ac, char* av[])
   }
 
   // start up message facility service
-  boost::shared_ptr<mf::Presence> MFPresence;
-  mf::StartMessageFacility( 
-      MFPresence, 
-      mf::MessageFacilityService::SingleThread, 
-      pset );
-  mf::SetModuleName("msgLogger");
+  mf::StartMessageFacility( mf::MessageFacilityService::SingleThread, pset );
+  mf::SetApplicationName("msgLogger");
   
   // logging message...
   if( severity == "ERROR" )

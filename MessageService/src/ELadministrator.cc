@@ -497,11 +497,11 @@ static ELemptyContextSupplier  emptyContext;
 
 
 ELadministrator * ELadministrator::instance_ = 0;
-
+ELadminDestroyer  ELadministrator::destroyer_;
 
 ELadministrator * ELadministrator::instance()  {
 
-  static ELadminDestroyer destroyer_;
+  //static ELadminDestroyer destroyer_;
   // This deviates from Vlissides' pattern where destroyer_ was a static
   // instance in the ELadministrator class.  This construct should be
   // equivalent, but the original did not call the destructor under KCC.

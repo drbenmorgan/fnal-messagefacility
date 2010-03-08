@@ -2,17 +2,13 @@
 
 #include <iostream>
 
-#include "boost/shared_ptr.hpp"
-#include "boost/thread.hpp"
-
 #include "MessageLogger/interface/MessageLogger.h"
-
-using namespace mf;
+#include "boost/thread.hpp"
 
 void anotherLogger()
 {
   // Set module name
-  SetModuleName("anotherLogger");
+  mf::SetModuleName("anotherLogger");
 
   LogWarning("warn1 | warn2") << "Followed by a WARNING message.";
   LogDebug("debug")           << "The debug message in the other thread";
@@ -23,26 +19,24 @@ void anotherLogger()
 int main()
 {
   // Start MessageFacility Service
-  boost::shared_ptr<Presence> MFPresence;
-  StartMessageFacility(
-      MFPresence,
-      MessageFacilityService::MultiThread, 
-      MessageFacilityService::logCFS());
+  mf::StartMessageFacility(
+      mf::MessageFacilityService::MultiThread, 
+      mf::MessageFacilityService::logCFS());
 
   // Set module name for the main thread
-  SetApplicationName("MessageFacility");
-  SetModuleName("MFTest");
-  SetContext("pre-event");
+  mf::SetApplicationName("MessageFacility");
+  mf::SetModuleName("MFTest");
+  mf::SetContext("pre-event");
 
   // Start up another logger in a seperate thread
   boost::thread loggerThread(anotherLogger);
 
   // Issue messages with different severity levels
-  LogError("err1|err2|") << "This is an ERROR message.";
+  LogError("err1|err2") << "This is an ERROR message.";
   LogWarning("warning") << "Followed by a WARNING message.";
 
   // Switch context
-  SetContext("pro-event");
+  mf::SetContext("pro-event");
 
   // Log Debugs
   LogDebug("debug")     << "DEBUG information.";
@@ -52,7 +46,7 @@ int main()
   // Thread join
   loggerThread.join();
 
-  LogStatistics();
+  mf::LogStatistics();
 
   return 0;
 }

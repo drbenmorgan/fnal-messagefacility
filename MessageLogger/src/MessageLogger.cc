@@ -282,24 +282,13 @@ ParameterSet MessageFacilityService::logCFS(std::string const & filename)
 
 MessageFacilityService::MessageFacilityService()
   : MFServiceEnabled  (false)
+  , thePresence       (     )
   , theML             (     )
 {
 }
 
-
 // Start MessageFacility service
 void StartMessageFacility(
-      boost::shared_ptr<Presence> & MFPresence,
-      std::string const & mode )
-{
-  StartMessageFacility(MFPresence, 
-      mode, 
-      MessageFacilityService::logCF() );
-}
-
-// Start MessageFacility service
-void StartMessageFacility(
-      boost::shared_ptr<Presence> & MFPresence,
       std::string const & mode,
       ParameterSet const & pset)
 {
@@ -308,7 +297,7 @@ void StartMessageFacility(
   if( !mfs.MFServiceEnabled )
   {
     // MessageServicePresence
-    MFPresence.reset( PresenceFactory::createInstance(mode) );
+    mfs.thePresence.reset( PresenceFactory::createInstance(mode) );
 
     // The MessageLogger
     mfs.theML.reset( new service::MessageLogger(pset) );

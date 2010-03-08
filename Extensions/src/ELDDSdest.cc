@@ -172,109 +172,6 @@ ELDDSdest::ELDDSdest(ParameterSet const & pset_)
 
 }  // ELDDSdest()
 
-
-/*ELDDSdest::ELDDSdest( Transporter & tp_ , bool emitAtStart )
-: ELdestination       (       )
-, tp                  ( &tp_  )
-, charsOnLine         ( 0     )
-, xid                 (       )
-, wantTimestamp       ( true  )
-, wantModule          ( true  )
-, wantSubroutine      ( true  )
-, wantText            ( true  )
-, wantSomeContext     ( true  )
-, wantSerial          ( false )
-, wantFullContext     ( false )
-, wantTimeSeparate    ( false )
-, wantEpilogueSeparate( false )
-{
-
-  #ifdef ELDDSdestCONSTRUCTOR_TRACE
-    std::cerr << "Constructor for ELDDSdest( tp )\n";
-  #endif
-
-                                        // Enh 001 2/13/01 mf
-  if (emitAtStart) {
-    bool tprm = preambleMode;
-    preambleMode = true;
-    emit( "\n=================================================", true );
-    emit( "\nMessage Log File written by MessageLogger service \n" );
-    emit( "\n=================================================\n", true );
-    preambleMode = tprm;
-  }
-
-}  // ELDDSdest()
-*/
-
-/*ELDDSdest::ELDDSdest( const ELstring & fileName, bool emitAtStart )
-: ELdestination       (       )
-, charsOnLine         ( 0     )
-, xid                 (       )
-, wantTimestamp       ( true  )
-, wantModule          ( true  )
-, wantSubroutine      ( true  )
-, wantText            ( true  )
-, wantSomeContext     ( true  )
-, wantSerial          ( false )
-, wantFullContext     ( false )
-, wantTimeSeparate    ( false )
-, wantEpilogueSeparate( false )
-{
-
-  #ifdef ELDDSdestCONSTRUCTOR_TRACE
-    std::cerr << "Constructor for ELDDSdest( " << fileName << " )\n";
-  #endif
-
-  bool tprm = preambleMode;
-  preambleMode = true;
-  if ( tp && *tp )  {
-    #ifdef ELDDSdestCONSTRUCTOR_TRACE
-      std::cerr << "          Testing if tp is owned\n";
-    #endif
-    #ifdef ELDDSdestCONSTRUCTOR_TRACE
-      std::cerr << "          About to do first emit\n";
-    #endif
-                                        // Enh 001 2/13/01 mf
-    if (emitAtStart) {
-      emit( "\n=======================================================",
-                                                                true );
-      emit( "\nError Log File " );
-      emit( fileName );
-      emit( " \n" );
-    }
-  }
-  else  {
-    #ifdef ELDDSdestCONSTRUCTOR_TRACE
-      std::cerr << "          Deleting tp\n";
-    #endif
-    //tp.reset(&std::cerr, do_nothing_deleter());
-    #ifdef ELDDSdestCONSTRUCTOR_TRACE
-      std::cerr << "          about to emit to cerr\n";
-    #endif
-    if (emitAtStart) {
-      emit( "\n=======================================================",
-                                                                true );
-      emit( "\n%MSG** Logging to cerr is being substituted" );
-      emit( " for specified log file \"" );
-      emit( fileName  );
-      emit( "\" which could not be opened for write or append.\n" );
-    }
-  }
-  if (emitAtStart) {
-    emit( formatTime(time(0)), true );
-    emit( "\n=======================================================\n",
-                                                                true );
-  }
-  preambleMode = tprm;
-
-  #ifdef ELDDSdestCONSTRUCTOR_TRACE
-    std::cerr << "Constructor for ELDDSdest completed.\n";
-  #endif
-
-}  // ELDDSdest()
-*/
-
-
 ELDDSdest::ELDDSdest( const ELDDSdest & orig )
 : ELdestination       (                           )
 , pset                ( orig.pset                 )
@@ -321,10 +218,6 @@ ELDDSdest::ELDDSdest( const ELDDSdest & orig )
   respondToMostModules  = orig.respondToMostModules;
   ignoreThese           = orig.ignoreThese;
 
-  // ql 02/09/10
-  // OpenSplice DDS initialization code is in here
-  createDDSConnection();
-
 }  // ELDDSdest()
 
 
@@ -344,6 +237,7 @@ ELDDSdest::~ELDDSdest()  {
 // ----------------------------------------------------------------------
 bool ELDDSdest::createDDSConnection()
 {
+  if(bConnected) return true;
 
   // Create a DomainParticipantFactory and a DomainParticipant
   dpf = DomainParticipantFactory::get_instance();
@@ -404,11 +298,6 @@ bool ELDDSdest::createDDSConnection()
   talker = MFMessageDataWriter::_narrow(parentWriter);
   checkHandle(talker.in(), "narrow()");
 
-
-  // Initialize the MF messages on Heap
-  DDSmsg.reset(new MFMessage());
-  // check msg here
-
   // Actual message has not yet registered
   bMsgRegistered = false;
 
@@ -426,10 +315,10 @@ void ELDDSdest::destroyDDSConnection()
   // Leave the partition by disposing and unregistering the message instance
   if(bMsgRegistered)
   {
-    status = talker -> dispose(*DDSmsg, userHandle);
+    status = talker -> dispose(DDSmsg, userHandle);
     //check status here
 
-    status = talker -> unregister_instance(*DDSmsg, userHandle);
+    status = talker -> unregister_instance(DDSmsg, userHandle);
     // check status here
   }
 
@@ -491,27 +380,27 @@ bool ELDDSdest::log( const mf::ErrorObj & msg )  {
   // Build an IDL object from ErrorObj
   //
 
-  if(DDSmsg.get() == 0)                   return false;
+  if(!bConnected)    createDDSConnection();
 
-  DDSmsg->timestamp_  = CORBA::string_dup( formatTime(msg.timestamp())        );
+  DDSmsg.timestamp_  = CORBA::string_dup( formatTime(msg.timestamp())        );
 
-  DDSmsg->hostname_   = CORBA::string_dup( xid.hostname.c_str()               );
-  DDSmsg->hostaddr_   = CORBA::string_dup( xid.hostaddr.c_str()               );
+  DDSmsg.hostname_   = CORBA::string_dup( xid.hostname.c_str()               );
+  DDSmsg.hostaddr_   = CORBA::string_dup( xid.hostaddr.c_str()               );
 
-  DDSmsg->process_    = CORBA::string_dup( xid.process.c_str()                );
-  DDSmsg->pid_        = xid.pid;
+  DDSmsg.process_    = CORBA::string_dup( xid.process.c_str()                );
+  DDSmsg.pid_        = xid.pid;
 
-  DDSmsg->severity_   = CORBA::string_dup( xid.severity.getInputStr().c_str() );
-  DDSmsg->id_         = CORBA::string_dup( xid.id.c_str()                     );
-  DDSmsg->idOverflow_ = CORBA::string_dup( msg.idOverflow().c_str()           );
+  DDSmsg.severity_   = CORBA::string_dup( xid.severity.getInputStr().c_str() );
+  DDSmsg.id_         = CORBA::string_dup( xid.id.c_str()                     );
+  DDSmsg.idOverflow_ = CORBA::string_dup( msg.idOverflow().c_str()           );
 
-  DDSmsg->application_= CORBA::string_dup( xid.application.c_str()            );
-  DDSmsg->module_     = CORBA::string_dup( xid.module.c_str()                 );
-  DDSmsg->context_    = CORBA::string_dup( msg.context().c_str()              );
-  DDSmsg->subroutine_ = CORBA::string_dup( xid.subroutine.c_str()             );
+  DDSmsg.application_= CORBA::string_dup( xid.application.c_str()            );
+  DDSmsg.module_     = CORBA::string_dup( xid.module.c_str()                 );
+  DDSmsg.context_    = CORBA::string_dup( msg.context().c_str()              );
+  DDSmsg.subroutine_ = CORBA::string_dup( xid.subroutine.c_str()             );
 
-  DDSmsg->file_       = CORBA::string_dup( ""                                 );
-  DDSmsg->line_       = CORBA::string_dup( ""                                 );
+  DDSmsg.file_       = CORBA::string_dup( ""                                 );
+  DDSmsg.line_       = CORBA::string_dup( ""                                 );
   
   std::string items;
 
@@ -528,11 +417,11 @@ bool ELDDSdest::log( const mf::ErrorObj & msg )  {
     {
       if( itemcount == 2 )      
       {
-        DDSmsg -> file_ = CORBA::string_dup( (*it).c_str() );
+        DDSmsg . file_ = CORBA::string_dup( (*it).c_str() );
       }
       else if( itemcount == 4 ) 
       {
-        DDSmsg -> line_ = CORBA::string_dup( (*it).c_str() );
+        DDSmsg . line_ = CORBA::string_dup( (*it).c_str() );
       }
       else if( itemcount > 5  ) 
       {
@@ -545,198 +434,9 @@ bool ELDDSdest::log( const mf::ErrorObj & msg )  {
     }
   }
 
-  DDSmsg->items_       = CORBA::string_dup(items.c_str());
+  DDSmsg.items_       = CORBA::string_dup(items.c_str());
 
   flush();
-
-  return true;
-  
-
-  // Output the prologue:
-  //
-  preambleMode = true;
-
-  if  ( !msg.is_verbatim()  ) {
-    charsOnLine = 0; 						// Change log 5
-    emit( preamble );
-    emit( xid.severity.getSymbol() );
-    emit( " " );
-    emit( xid.id );
-    emit( msg.idOverflow() );
-    emit( ": " );
-  }
-  
-  #ifdef ELDDSdestTRACE_LOG
-    std::cerr << "    =:=:=: Prologue done \n";
-  #endif
-  // Output serial number of message:
-  //
-  if  ( !msg.is_verbatim()  ) 
- {
-    if ( wantSerial )  {
-      std::ostringstream s;
-      s << msg.serial();
-      emit( "[serial #" + s.str() + ELstring("] ") );
-    }
-  }
-  
-#ifdef OUTPUT_FORMATTED_ERROR_MESSAGES
-  // Output each item in the message (before the epilogue):
-  //
-  if ( wantText )  {
-    ELlist_string::const_iterator it;
-    for ( it = msg.items().begin();  it != msg.items().end();  ++it )  {
-    #ifdef ELDDSdestTRACE_LOG
-      std::cerr << "      =:=:=: Item:  " << *it << '\n';
-    #endif
-      emit( *it );
-    }
-  }
-#endif
-
-  // Provide further identification:
-  //
-  bool needAspace = true;
-  if  ( !msg.is_verbatim()  ) 
- {
-    if ( wantEpilogueSeparate )  {
-      if ( xid.module.length() + xid.subroutine.length() > 0 )  {
-	emit("\n");
-	needAspace = false;
-      }
-      else if ( wantTimestamp && !wantTimeSeparate )  {
-	emit("\n");
-	needAspace = false;
-      }
-    }
-    if ( wantModule && (xid.module.length() > 0) )  {
-      if (needAspace) { emit(ELstring(" ")); needAspace = false; }
-      emit( xid.module + ELstring(" ") );
-    }
-    if ( wantSubroutine && (xid.subroutine.length() > 0) )  {
-      if (needAspace) { emit(ELstring(" ")); needAspace = false; }
-      emit( xid.subroutine + "()" + ELstring(" ") );
-    }
-  }
-  
-  #ifdef ELDDSdestTRACE_LOG
-    std::cerr << "    =:=:=: Module and Subroutine done \n";
-  #endif
-
-  // Provide time stamp:
-  //
-  if  ( !msg.is_verbatim() ) 
- {
-    if ( wantTimestamp )  {
-      if ( wantTimeSeparate )  {
-	emit( ELstring("\n") );
-	needAspace = false;
-      }
-      if (needAspace) { emit(ELstring(" ")); needAspace = false; }
-      emit( formatTime(msg.timestamp()) + ELstring(" ") );
-    }
-  }
-  
-  #ifdef ELDDSdestTRACE_LOG
-    std::cerr << "    =:=:=: TimeStamp done \n";
-  #endif
-
-  // Provide the context information:
-  //
-  if  ( !msg.is_verbatim() ) 
- {
-    if ( wantSomeContext ) {
-      if (needAspace) { emit(ELstring(" ")); needAspace = false; }
-      #ifdef ELDDSdestTRACE_LOG
-	std::cerr << "    =:=:=:>> context supplier is at 0x"
-                  << std::hex
-                  << &ELadministrator::instance()->getContextSupplier() << '\n';
-	std::cerr << "    =:=:=:>> context is --- "
-                  << ELadministrator::instance()->getContextSupplier().context()
-                  << '\n';
-      #endif
-      if ( wantFullContext )  {
-	emit( ELadministrator::instance()->getContextSupplier().fullContext());
-      #ifdef ELDDSdestTRACE_LOG
-	std::cerr << "    =:=:=: fullContext done: \n";
-      #endif
-      } else  {
-	emit( ELadministrator::instance()->getContextSupplier().context());
-    #ifdef ELDDSdestTRACE_LOG
-      std::cerr << "    =:=:=: Context done: \n";
-    #endif
-      }
-    }
-  }
-  
-  // Provide traceback information:
-  //
-
-  bool insertNewlineAfterHeader = ( msg.xid().severity != ELsuccess );
-  // ELsuccess is what LogDebug issues
-  
-  if  ( !msg.is_verbatim() ) 
- {
-    if ( msg.xid().severity >= traceThreshold )  {
-      emit( ELstring("\n")
-            + ELadministrator::instance()->getContextSupplier().traceRoutine()
-          , insertNewlineAfterHeader );
-    }
-    else  {                                        //else statement added JV:1
-      emit ("", insertNewlineAfterHeader);
-    }
-  }
-  #ifdef ELDDSdestTRACE_LOG
-    std::cerr << "    =:=:=: Trace routine done: \n";
-  #endif
-
-#ifndef OUTPUT_FORMATTED_ERROR_MESSAGES
-  // Finally, output each item in the message:
-  //
-  preambleMode = false;
-  if ( wantText )  {
-    emit("||");
-    ELlist_string::const_iterator it;
-    int item_count = 0;
-    for ( it = msg.items().begin();  it != msg.items().end();  ++it )  {
-    #ifdef ELDDSdestTRACE_LOG
-      std::cerr << "      =:=:=: Item:  " << *it << '\n';
-    #endif
-      ++item_count;
-      if  ( !msg.is_verbatim() ) {
-	if ( !insertNewlineAfterHeader && (item_count == 3) ) {
-          // in a LogDebug message, the first 3 items are FILE, :, and LINE
-          emit( *it, true );
-	} else {
-          emit( *it );
-	}
-      } else {
-        emit( *it );
-      }
-    }
-    emit("||");
-  }
-#endif
-
-  // And after the message, add a %MSG on its own line
-  // Change log 4  6/11/07 mf
-
-  if  ( !msg.is_verbatim() ) 
-  {
-    emit ("\n%MSG");
-  }
-  
-
-  // Done; message has been fully processed; separate, flush, and leave
-  //
-
-  //(*tp) << newline;
-  flush(); 
-
-
-  #ifdef ELDDSdestTRACE_LOG
-    std::cerr << "  =:=:=: log(msg) done: \n";
-  #endif
 
   return true;
 
@@ -750,84 +450,6 @@ bool ELDDSdest::log( const mf::ErrorObj & msg )  {
 // ----------------------------------------------------------------------
 
 void ELDDSdest::emit( const ELstring & s, bool nl )  {
-
-  #ifdef ELDDSdest_EMIT_TRACE
-    std::cerr << "[][][] in emit:  charsOnLine is " << charsOnLine << '\n';
-    std::cerr << "[][][] in emit:  s.length() " << s.length() << '\n';
-    std::cerr << "[][][] in emit:  lineLength is " << lineLength << '\n';
-  #endif
-
-  if (s.length() == 0)  {
-    if ( nl )  {
-      //(*tp) << newline ;//<< std::flush;
-      charsOnLine = 0;
-    }
-    return;
-  }
-
-  char first = s[0];
-  char second,
-       last,
-       last2;
-  second = (s.length() < 2) ? '\0' : s[1];
-  last = (s.length() < 2) ? '\0' : s[s.length()-1];
-  last2 = (s.length() < 3) ? '\0' : s[s.length()-2];
-         //checking -2 because the very last char is sometimes a ' ' inserted
-         //by ErrorLog::operator<<
-
-  if (preambleMode) {
-               //Accounts for newline @ the beginning of the ELstring     JV:2
-    if ( first == '\n'
-    || (charsOnLine + static_cast<int>(s.length())) > lineLength )  {
-      #ifdef ELDDSdest_EMIT_TRACE
-	std::cerr << "[][][] in emit: about to << to *tp \n";
-      #endif
-      #ifdef HEADERS_BROKEN_INTO_LINES_AND_INDENTED
-      // Change log 3: Removed this code 6/11/07 mf
-      //(*tp) << newline << indent;
-      charsOnLine = indent.length();
-      #else
-      charsOnLine = 0;   					// Change log 5   
-      #endif
-      if (second != ' ')  {
-	//(*tp) << ' ';
-	charsOnLine++;
-      }
-      if ( first == '\n' )  {
-	//(*tp) << s.substr(1);
-      }
-      else  {
-	//(*tp) << s;
-      }
-    }
-    #ifdef ELDDSdest_EMIT_TRACE
-      std::cerr << "[][][] in emit: about to << s to *tp: " << s << " \n";
-    #endif
-    else  {
-      //(*tp) << s;
-    }
-
-    if (last == '\n' || last2 == '\n')  {  //accounts for newline @ end    $$ JV:2
-      //(*tp) << indent;                    //of the ELstring
-      if (last != ' ')
-	//(*tp) << ' ';
-      charsOnLine = indent.length() + 1;
-    }
-
-    if ( nl )  {
-      //(*tp) << newline /*<< std::flush*/; 
-      charsOnLine = 0;
-    }
-    else       {                                 charsOnLine += s.length(); }
-}
-
-  if (!preambleMode) {
-    //(*tp) << s;
-  }
-  
-  #ifdef ELDDSdest_EMIT_TRACE
-    std::cerr << "[][][] in emit: completed \n";
-  #endif
 
 }  // emit()
 
@@ -924,12 +546,12 @@ void ELDDSdest::flush()  {
   // Register a MFMessage for this host if not yet done so
   if(!bMsgRegistered)
   { 
-    userHandle = talker -> register_instance(*DDSmsg);
+    userHandle = talker -> register_instance(DDSmsg);
     bMsgRegistered = true;
   }
 
   // Write a message using the pre-generated instance handle
-  status = talker -> write(*DDSmsg, userHandle);
+  status = talker -> write(DDSmsg, userHandle);
   checkStatus(status, "talker->write()");
 
 }

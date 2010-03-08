@@ -150,6 +150,8 @@ protected:
   const ELstring              & hostaddr() const;
   long                          pid() const;
 
+  static ELadminDestroyer       destroyer_;
+
   // ---  actions on messages:
   //
   void finishMsg();

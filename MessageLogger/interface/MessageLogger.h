@@ -454,21 +454,6 @@ public:
   void setStandAloneMessageThreshold    (std::string const & severity);
   void squelchStandAloneMessageCategory (std::string const & category);
 
-  // Change log 18
-  //
-  void StartMessageFacility(
-      boost::shared_ptr<Presence> & MFPresence,
-      std::string const & mode);
-
-  void StartMessageFacility(
-      boost::shared_ptr<Presence> & MFPresence,
-      std::string const & mode,
-      ParameterSet const & pset);
-
-  void SetApplicationName(std::string const & application);
-  void SetModuleName(std::string const & modulename);
-  void SetContext(std::string const & context);
-
 
 class MessageFacilityService
 {
@@ -491,11 +476,23 @@ public:
 
   bool   MFServiceEnabled;
 
+  boost::shared_ptr<Presence> thePresence;
   boost::shared_ptr<service::MessageLogger> theML;
 
 private:
   static ParameterSet commonPSet();
 };
+
+  // Change log 18
+  //
+
+  void StartMessageFacility(
+      std::string const & mode,
+      ParameterSet const & pset = MessageFacilityService::logCF());
+
+  void SetApplicationName(std::string const & application);
+  void SetModuleName(std::string const & modulename);
+  void SetContext(std::string const & context);
 
 
 }  // namespace mf

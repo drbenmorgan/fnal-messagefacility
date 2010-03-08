@@ -1001,15 +1001,19 @@ void
         std::string extension_name = actual_filename.substr(seprator);
 
         // grab all of this destination's parameters:
-        PSet dest_pset = getAparameter<PSet>(*job_pset_p, actual_filename, empty_PSet);
+        PSet dest_pset = getAparameter<PSet>(*job_pset_p, 
+            actual_filename, empty_PSet);
 
         boost::scoped_ptr<ELdestination> dest_sp(
-            ELdestinationFactory::getInstance() -> createInstance(extension_type, dest_pset) );
+            ELdestinationFactory::getInstance() 
+                -> createInstance(extension_type, dest_pset) );
 
         if(dest_sp.get() == 0) 
         {
           LogError("ExtensionNotFound")
-              << "Extension specified in " << actual_filename << " does not exist!\n";
+              << "Extension specified in " 
+              << actual_filename 
+              << " does not exist!\n";
           continue;
         }
 

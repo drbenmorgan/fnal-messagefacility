@@ -156,7 +156,7 @@ private:
   MFMessageDataWriter_var         talker;
 
   // Message pointer
-  boost::shared_ptr<MFMessage>    DDSmsg;
+  MFMessage                       DDSmsg;
 
   // others
   bool                            bMsgRegistered;
