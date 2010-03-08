@@ -108,6 +108,8 @@
 #include "MessageService/interface/MessageLogger.h"
 #include "ParameterSet/interface/ParameterSet.h"
 
+#include "boost/thread/mutex.hpp"
+
 
 namespace mf  {
 
@@ -478,6 +480,8 @@ public:
 
   boost::shared_ptr<Presence> thePresence;
   boost::shared_ptr<service::MessageLogger> theML;
+
+  boost::mutex m;
 
 private:
   static ParameterSet commonPSet();

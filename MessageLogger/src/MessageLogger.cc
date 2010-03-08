@@ -294,6 +294,8 @@ void StartMessageFacility(
 {
   MessageFacilityService & mfs = MessageFacilityService::instance();
 
+  boost::mutex::scoped_lock lock(mfs.m);
+
   if( !mfs.MFServiceEnabled )
   {
     // MessageServicePresence
@@ -309,13 +311,14 @@ void StartMessageFacility(
 // Set application name
 void SetApplicationName(std::string const & application)
 {
-  if( !MessageFacilityService::instance().MFServiceEnabled )
-    return;
+  MessageFacilityService & mfs = MessageFacilityService::instance();
+
+  if( ! mfs.MFServiceEnabled )    return;
+
+  boost::mutex::scoped_lock lock(mfs.m);
 
   mf::service::ELadministrator::instance()->setApplication(application);
-
   SetModuleName(application);
-
 }
 
 // Set module name and debug settings
