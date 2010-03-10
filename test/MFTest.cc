@@ -18,6 +18,7 @@ void anotherLogger()
 
 int main()
 {
+
   // Start MessageFacility Service
   mf::StartMessageFacility(
       mf::MessageFacilityService::MultiThread, 
@@ -47,6 +48,8 @@ int main()
   loggerThread.join();
 
   mf::LogStatistics();
+
+  //sleep(2);
 
   return 0;
 }

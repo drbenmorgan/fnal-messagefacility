@@ -282,9 +282,13 @@ ParameterSet MessageFacilityService::logCFS(std::string const & filename)
 
 MessageFacilityService::MessageFacilityService()
   : MFServiceEnabled  (false)
-  , thePresence       (     )
   , theML             (     )
 {
+}
+
+MFSdestroyer::~MFSdestroyer()
+{
+  MessageFacilityService::instance().MFPresence.reset();
 }
 
 // Start MessageFacility service
@@ -298,13 +302,34 @@ void StartMessageFacility(
 
   if( !mfs.MFServiceEnabled )
   {
+
+    /*
+     * qlu 03/10/10 The order of object initialization and destruction is
+     *              curcial in starting up and shutting down the Message
+     *              Facility service. In the d'tor of MessageServicePresence
+     *              it sends out a END message to the queue and waits for the
+     *              MLscribe thread to finish logging all remaining messages
+     *              in the queue. Therefore the ELadministrator singleton
+     *              (whose instance is handled by a local static variable)
+     *              and all attached destinations must be present during the
+     *              process. We must provide the secured method to gurantee
+     *              that the MessageServicePresence will be destroyed first,
+     *              and particularly *BEFORE* the destruction of ELadmin.
+     *              This is achieved by instantiating a static object, who
+     *              is responsible for killing the Presence at the *END* of 
+     *              the start sequence. So this destroyer object will be killed
+     *              before everyone else.
+     */
+
     // MessageServicePresence
-    mfs.thePresence.reset( PresenceFactory::createInstance(mode) );
+    mfs.MFPresence.reset( PresenceFactory::createInstance(mode) );
 
     // The MessageLogger
     mfs.theML.reset( new service::MessageLogger(pset) );
 
     mfs.MFServiceEnabled = true;
+
+    static MFSdestroyer destroyer;
   }
 }
 

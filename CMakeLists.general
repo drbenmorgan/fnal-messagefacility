@@ -4,7 +4,7 @@ PROJECT (MessageFacility)
 
 SET (CMAKE_INSTALL_PREFIX ${MessageFacility_SOURCE_DIR}/build)
 
-MESSAGE (${CMAKE_INSTALL_PREFIX})
+#ADD_DEFINITIONS (-g)
 
 ADD_SUBDIRECTORY (MessageLogger)
 ADD_SUBDIRECTORY (MessageService)

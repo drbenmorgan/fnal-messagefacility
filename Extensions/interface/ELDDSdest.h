@@ -70,6 +70,8 @@ public:
 
   virtual bool log( const mf::ErrorObj & msg );
 
+  virtual void finish();
+
   // ---  Methods invoked through the ELdestControl handle:
   //
 protected:
@@ -134,10 +136,10 @@ private:
   // ---  OpenSplice DDS related fields
 
   // Generic DDS entities
-  DomainParticipantFactory_var    dpf;
-  DomainParticipant_var           participant;
-  Topic_var                       MFMessageTopic;
-  Publisher_var                   MFPublisher;
+  DomainParticipantFactory_ptr    dpf;
+  DomainParticipant_ptr           participant;
+  Topic_ptr                       MFMessageTopic;
+  Publisher_ptr                   MFPublisher;
   DataWriter_ptr                  parentWriter;
 
   // QosPolicy holders
@@ -152,8 +154,8 @@ private:
   ReturnCode_t                    status;
 
   // Type-specific DDS entities
-  MFMessageTypeSupport_var        MFMessageTS;
-  MFMessageDataWriter_var         talker;
+  MFMessageTypeSupport_ptr        MFMessageTS;
+  MFMessageDataWriter_ptr         talker;
 
   // Message pointer
   MFMessage                       DDSmsg;

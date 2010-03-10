@@ -478,13 +478,19 @@ public:
 
   bool   MFServiceEnabled;
 
-  boost::shared_ptr<Presence> thePresence;
+  boost::shared_ptr<Presence> MFPresence;
   boost::shared_ptr<service::MessageLogger> theML;
 
   boost::mutex m;
 
 private:
   static ParameterSet commonPSet();
+};
+
+class MFSdestroyer
+{
+public:
+  ~MFSdestroyer();
 };
 
   // Change log 18

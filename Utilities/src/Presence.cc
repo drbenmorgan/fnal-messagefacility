@@ -13,10 +13,16 @@ namespace mf {
 
   Presence * PresenceFactory::createInstance(std::string const& s) {
     if(s.compare("SingleThreadMSPresence") == 0)
+    {
       return new service::SingleThreadMSPresence();
+    }
     else if(s.compare("MessageServicePresence") == 0)
+    {
       return new service::MessageServicePresence();
+    }
     else
+    {
       return new service::MessageServicePresence();
+    }
   }
 }

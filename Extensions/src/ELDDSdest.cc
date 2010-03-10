@@ -218,6 +218,8 @@ ELDDSdest::ELDDSdest( const ELDDSdest & orig )
   respondToMostModules  = orig.respondToMostModules;
   ignoreThese           = orig.ignoreThese;
 
+  createDDSConnection();
+
 }  // ELDDSdest()
 
 
@@ -227,9 +229,11 @@ ELDDSdest::~ELDDSdest()  {
     std::cerr << "Destructor for ELDDSdest\n";
   #endif
 
-  destroyDDSConnection();
-
 }  // ~ELDDSdest()
+
+void ELDDSdest::finish() {
+  destroyDDSConnection();
+}
 
 
 // ----------------------------------------------------------------------
@@ -241,19 +245,19 @@ bool ELDDSdest::createDDSConnection()
 
   // Create a DomainParticipantFactory and a DomainParticipant
   dpf = DomainParticipantFactory::get_instance();
-  checkHandle(dpf.in(), "get_instance");
+  checkHandle(dpf, "get_instance");
 
   participant = dpf -> create_participant (
       domain, PARTICIPANT_QOS_DEFAULT, NULL, ANY_STATUS);
-  checkHandle(participant.in(), "create_participant()");
+  checkHandle(participant, "create_participant()");
 
   // Register the required datatype for MFMessage
   MFMessageTS = new MFMessageTypeSupport();
-  checkHandle(MFMessageTS.in(), "MessageTypeSupport()");
+  checkHandle(MFMessageTS, "MessageTypeSupport()");
 
   MFMessageTypeName = MFMessageTS -> get_type_name();
   status = MFMessageTS -> register_type (
-      participant.in(),
+      participant,
       MFMessageTypeName);
   checkStatus(status, "register_type()");
 
@@ -273,7 +277,7 @@ bool ELDDSdest::createDDSConnection()
       reliable_topic_qos,
       NULL,
       ANY_STATUS);
-  checkHandle(MFMessageTopic.in(), "create_topic()");
+  checkHandle(MFMessageTopic, "create_topic()");
 
   // Adpat the default PublisherQos to write into the "MessageFacility" part
   status = participant -> get_default_publisher_qos(pub_qos);
@@ -284,11 +288,11 @@ bool ELDDSdest::createDDSConnection()
   // Create a publisher for the MessageFacility
   MFPublisher = participant -> create_publisher (
       pub_qos, NULL, ANY_STATUS);
-  checkHandle(MFPublisher.in(), "create_publisher()");
+  checkHandle(MFPublisher, "create_publisher()");
 
   // Create a datawriter for the MFMessage Topic
   parentWriter = MFPublisher -> create_datawriter (
-      MFMessageTopic.in(),
+      MFMessageTopic,
       DATAWRITER_QOS_USE_TOPIC_QOS,
       NULL,
       ANY_STATUS);
@@ -296,7 +300,7 @@ bool ELDDSdest::createDDSConnection()
 
   // Narrow the abstract parent into its typed representative
   talker = MFMessageDataWriter::_narrow(parentWriter);
-  checkHandle(talker.in(), "narrow()");
+  checkHandle(talker, "narrow()");
 
   // Actual message has not yet registered
   bMsgRegistered = false;
@@ -316,30 +320,32 @@ void ELDDSdest::destroyDDSConnection()
   if(bMsgRegistered)
   {
     status = talker -> dispose(DDSmsg, userHandle);
-    //check status here
+    checkStatus(status, "talker->dispose()");
 
     status = talker -> unregister_instance(DDSmsg, userHandle);
-    // check status here
+    checkStatus(status, "talker->unregister_instance()");
   }
 
   // Remove the DataWriters
-  status = MFPublisher -> delete_datawriter( talker.in() );
-  // check status here
+  status = MFPublisher -> delete_datawriter( talker );
+  checkStatus(status, "delete_datawriter()");
 
   // Remove the Publisher
-  status = participant -> delete_publisher( MFPublisher.in() );
-  // check status here
+  status = participant -> delete_publisher( MFPublisher );
+  checkStatus(status, "delete_publisher()");
 
   // Remove the topic
-  status = participant -> delete_topic( MFMessageTopic.in() );
-  // check status here
+  status = participant -> delete_topic( MFMessageTopic );
+  checkStatus(status, "delete_topic()");
 
   // Remove the type-names
   CORBA::string_free(MFMessageTypeName);
 
   // Remove the DomainParticipant
-  status = dpf -> delete_participant( participant.in() );
-  // check status here
+  status = dpf -> delete_participant( participant );
+  checkStatus(status, "delete_participant()");
+
+  bConnected = false;
 }
 
 // ----------------------------------------------------------------------
@@ -380,7 +386,7 @@ bool ELDDSdest::log( const mf::ErrorObj & msg )  {
   // Build an IDL object from ErrorObj
   //
 
-  if(!bConnected)    createDDSConnection();
+  //if(!bConnected)    createDDSConnection();
 
   DDSmsg.timestamp_  = CORBA::string_dup( formatTime(msg.timestamp())        );
 

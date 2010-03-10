@@ -180,37 +180,52 @@ int main()
         {
           if(infoSeq[i].instance_state == NOT_ALIVE_DISPOSED_INSTANCE_STATE)
           {
-            terminated = true;
+            //terminated = true;
             continue;
           }
 
           MFMessage * msg = &(msgSeq[i]);
           std::cout << "severity:       " << msg->severity_   << "\n";
-          std::cout << "timesamp:       " << msg->timestamp_  << "\n";
+          std::cout << "timestamp:      " << msg->timestamp_  << "\n";
           std::cout << "hostname:       " << msg->hostname_   << "\n";
-          std::cout << "hostaddr (ip):  " << msg->hostaddr_   << "\n";
+          std::cout << "hostaddr(ip):   " << msg->hostaddr_   << "\n";
           std::cout << "process:        " << msg->process_    << "\n";
-          std::cout << "porcess id:     " << msg->pid_        << "\n";
+          std::cout << "porcess_id:     " << msg->pid_        << "\n";
           std::cout << "application:    " << msg->application_<< "\n";
           std::cout << "module:         " << msg->module_     << "\n";
           std::cout << "context:        " << msg->context_    << "\n";
-          std::cout << "id (category):  " << msg->id_         << "\n";
+          std::cout << "category(id):   " << msg->id_         << "\n";
           std::cout << "file:           " << msg->file_       << "\n";
           std::cout << "line:           " << msg->line_       << "\n";
-          std::cout << "items:          " << msg->items_      << "\n";
+          std::cout << "message:        " << msg->items_      << "\n";
           //std::cout << "idOverflow:   " << msg->idOverflow_ << "\n";
           //std::cout << "subroutine:   " << msg->subroutine_ << "\n";
+          std::cout << std::endl;
 
           //std::cout <<"sample_state =   "<< infoSeq[i].sample_state << "\n";
           //std::cout <<"view_state =     "<< infoSeq[i].view_state << "\n";
           //std::cout <<"instance_state = "<< infoSeq[i].instance_state << "\n";
 
           // Re-construct the ErrorObject
-          std::string s_sev (msg->severity_);
-          std::string s_id  (msg->id_);
-          mf::ELseverityLevel sev(s_sev);
-          mf::ErrorObj * eo_p = new mf::ErrorObj(sev, s_id);
-          (*eo_p) << msg->items_;
+          //std::string s_sev (msg->severity_);
+          //std::string s_id  (msg->id_);
+          //mf::ELseverityLevel sev(s_sev);
+          mf::ErrorObj * eo_p = new mf::ErrorObj(
+              mf::ELseverityLevel(std::string(msg->severity_)), 
+              std::string(msg->id_) );
+
+          eo_p -> setHostName   ( std::string(msg->hostname_)    );
+          eo_p -> setHostAddr   ( std::string(msg->hostaddr_)    );
+          eo_p -> setProcess    ( std::string(msg->process_)     );
+          eo_p -> setPID        ( (long)      msg->pid_          );
+          eo_p -> setApplication( std::string(msg->application_) );
+          eo_p -> setModule     ( std::string(msg->module_)      );
+          eo_p -> setContext    ( std::string(msg->context_)     );
+          eo_p -> setSubroutine ( std::string(msg->subroutine_)  );
+
+          (*eo_p) << " " << msg->file_
+                  << ":" << msg->line_
+                  << "\n" << msg->items_;
 
           mf::LogErrorObj(eo_p);
         }

@@ -497,7 +497,6 @@ static ELemptyContextSupplier  emptyContext;
 
 
 ELadministrator * ELadministrator::instance_ = 0;
-ELadminDestroyer  ELadministrator::destroyer_;
 
 ELadministrator * ELadministrator::instance()  {
 
@@ -506,11 +505,17 @@ ELadministrator * ELadministrator::instance()  {
   // instance in the ELadministrator class.  This construct should be
   // equivalent, but the original did not call the destructor under KCC.
 
-  if ( !instance_ )  {
-    instance_ = new ELadministrator;
-    destroyer_.setELadmin( instance_ );
-  }
-  return instance_;
+  //if ( !instance_ )  {
+    //instance_ = new ELadministrator;
+    //destroyer_.setELadmin( instance_ );
+  //}
+  //return instance_;
+
+  // qlu  03/10/10  use static variable to handle the destruction of
+  //                the singleton class, instead of using the destroyer
+  //                pattern.
+  static ELadministrator admin;
+  return &admin;
 
 }  // instance()
 
