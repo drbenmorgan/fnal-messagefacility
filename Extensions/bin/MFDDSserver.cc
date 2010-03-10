@@ -5,10 +5,87 @@
 #include "MessageLogger/interface/MessageLogger.h"
 
 #include <boost/shared_ptr.hpp>
+#include <boost/thread.hpp>
 #include <iostream>
+#include <string>
 
 using namespace DDS;
 using namespace MessageFacility;
+
+// required by all threads
+static GuardCondition_var       cmdline;
+static GuardCondition_var       escape;
+
+// boost::thread
+boost::thread                   trigger;
+boost::thread                   cmdHandler;
+
+bool bDisplayMsg;
+int  z;
+
+void cmdLineTrigger()
+{
+  ReturnCode_t status;
+
+  std::string input;
+  getline(std::cin, input);
+
+  status = cmdline->set_trigger_value(TRUE);
+  checkStatus(status, "triggering command line interface");
+
+  return;
+}
+
+void cmdLineInterface()
+{
+  std::string cmd;
+
+  while(true)
+  {
+    std::cout << "> ";
+    getline(std::cin, cmd);
+
+    if(cmd == "quit")
+    {
+      escape -> set_trigger_value(TRUE);
+      return;
+    }
+    else if(cmd == "resume")
+    {
+      std::cout << "Resuming to message monitoring mode.\n";
+      bDisplayMsg = true;
+
+      // listening for trigger
+      trigger = boost::thread(cmdLineTrigger);
+
+      return;
+    }
+    else if(cmd == "stat")
+    {
+      std::cout << "Total " << z << " messages has been received.\n";
+    }
+    else if(cmd == "help")
+    {
+      std::cout << "MessageFacility DDS server available commands:\n"
+                << "  help          display this help message\n"
+                << "  stat          summary of received messages\n"
+                << "  resume        resume to message listening mode\n"
+                << "  quit          exit MessageFacility DDS server\n"
+                << "  ... more interactive commands on the way.\n";
+    }
+    else if(cmd.empty())
+    {
+    }
+    else
+    {
+      std::cout << "Command "<< cmd << " not found. "
+                << "Type \"help\" for a list of available commands.\n";
+    }
+  }
+
+  return;
+}
+
 
 int main()
 {
@@ -114,8 +191,8 @@ int main()
   checkHandle(reader.in(), "narrow()");
 
   // Indicate Server is up...
-  std::cout << "MessageFacility DDS server is up and listening for messages "
-            << "(press ctrl-c to quit)...\n";
+  std::cout << "MessageFacility DDS server is up and listening for messages\n"
+            << "(press enter then \"quit\" to exit listening)...\n";
 
   //-----------------------------------------------------------------
   // Blocked receive using wait-condition
@@ -133,40 +210,68 @@ int main()
   newStatus -> set_enabled_statuses (DATA_AVAILABLE_STATUS);
   checkHandle(newStatus, "get_statuscondition()");
 
+  // Create a command line guard that will be used to trigger the 
+  // command line interface
+  cmdline = new GuardCondition();
+
+  // Create a guard that will be used for exit
+  escape  = new GuardCondition();
+
+  // Attaching guardians
   serverWS = new WaitSet();
   status = serverWS -> attach_condition( newMsg.in() );
   checkStatus(status, "attach_condition( newMsg )");
   status = serverWS -> attach_condition( newStatus.in() );
   checkStatus(status, "attach_condition( newStatus )");
+  status = serverWS -> attach_condition( cmdline.in() );
+  checkStatus(status, "attach_condition( cmdline )");
+  status = serverWS -> attach_condition( escape.in() );
+  checkStatus(status, "attach_condition( escape )");
 
   // Initialize the guardList to obtain the triggered conditions
-  guardList.length(2);
+  guardList.length(4);
 
   // Start MessageFacility Service
   mf::StartMessageFacility(
       mf::MessageFacilityService::SingleThread,
       mf::MessageFacilityService::logFile("msgarchiver"));
 
+  // Start the thread for triggering the command line interface
+  trigger = boost::thread(cmdLineTrigger);
+
   // Read messages from the reader
-  int z = 0;
+  bDisplayMsg = true;
+  z = 0;
+
   bool terminated = false;
   while (!terminated)
   {
     status = serverWS -> wait(guardList, DURATION_INFINITE);
     checkStatus(status, "WaitSet::wait()");
 
-    //std::cout << "status = " << status << "\n";
-
     // walk over all guards
     for(CORBA::ULong gi = 0; gi < guardList.length(); gi++)
     {
-      if(guardList[gi] == newMsg.in())
-      //if(guardList[gi] == newStatus.in())
+      if(guardList[gi] == escape.in())
+      {
+        terminated = true;
+      }
+      else if(guardList[gi] == cmdline.in())
+      {
+        // set to no message display on stdout
+        // logging to file still going on...
+        bDisplayMsg = false;
+
+        // reset the trigger
+        status = cmdline->set_trigger_value(FALSE);
+        checkStatus(status, "reset trigger..");
+        
+        // spawn command handling thread
+        cmdHandler = boost::thread(cmdLineInterface);
+      }
+      else if(guardList[gi] == newMsg.in())
       {
         // new message coming in
-
-        z++;
-
         status = reader -> take (
             msgSeq,
             infoSeq,
@@ -176,40 +281,46 @@ int main()
             ANY_INSTANCE_STATE );
         checkStatus(status, "take()");
 
+        z += msgSeq->length();
+
         for(CORBA::ULong i = 0; i < msgSeq->length(); i++)
         {
           if(infoSeq[i].instance_state == NOT_ALIVE_DISPOSED_INSTANCE_STATE)
           {
-            //terminated = true;
+            --z;
+            std::cout << "One logger exits.\n";
             continue;
           }
 
           MFMessage * msg = &(msgSeq[i]);
-          std::cout << "severity:       " << msg->severity_   << "\n";
-          std::cout << "timestamp:      " << msg->timestamp_  << "\n";
-          std::cout << "hostname:       " << msg->hostname_   << "\n";
-          std::cout << "hostaddr(ip):   " << msg->hostaddr_   << "\n";
-          std::cout << "process:        " << msg->process_    << "\n";
-          std::cout << "porcess_id:     " << msg->pid_        << "\n";
-          std::cout << "application:    " << msg->application_<< "\n";
-          std::cout << "module:         " << msg->module_     << "\n";
-          std::cout << "context:        " << msg->context_    << "\n";
-          std::cout << "category(id):   " << msg->id_         << "\n";
-          std::cout << "file:           " << msg->file_       << "\n";
-          std::cout << "line:           " << msg->line_       << "\n";
-          std::cout << "message:        " << msg->items_      << "\n";
-          //std::cout << "idOverflow:   " << msg->idOverflow_ << "\n";
-          //std::cout << "subroutine:   " << msg->subroutine_ << "\n";
-          std::cout << std::endl;
 
-          //std::cout <<"sample_state =   "<< infoSeq[i].sample_state << "\n";
-          //std::cout <<"view_state =     "<< infoSeq[i].view_state << "\n";
-          //std::cout <<"instance_state = "<< infoSeq[i].instance_state << "\n";
+          if(bDisplayMsg)
+          {
+            std::cout << "severity:       " << msg->severity_   << "\n";
+            std::cout << "timestamp:      " << msg->timestamp_  << "\n";
+            std::cout << "hostname:       " << msg->hostname_   << "\n";
+            std::cout << "hostaddr(ip):   " << msg->hostaddr_   << "\n";
+            std::cout << "process:        " << msg->process_    << "\n";
+            std::cout << "porcess_id:     " << msg->pid_        << "\n";
+            std::cout << "application:    " << msg->application_<< "\n";
+            std::cout << "module:         " << msg->module_     << "\n";
+            std::cout << "context:        " << msg->context_    << "\n";
+            std::cout << "category(id):   " << msg->id_         << "\n";
+            std::cout << "file:           " << msg->file_       << "\n";
+            std::cout << "line:           " << msg->line_       << "\n";
+            std::cout << "message:        " << msg->items_      << "\n";
+            //std::cout << "idOverflow:   " << msg->idOverflow_ << "\n";
+            //std::cout << "subroutine:   " << msg->subroutine_ << "\n";
+            std::cout << std::endl;
+
+            //std::cout <<"sample_state =   "<< infoSeq[i].sample_state << "\n";
+            //std::cout <<"view_state =     "<< infoSeq[i].view_state << "\n";
+            //std::cout <<"instance_state = "
+            //          << infoSeq[i].instance_state << "\n";
+
+          }
 
           // Re-construct the ErrorObject
-          //std::string s_sev (msg->severity_);
-          //std::string s_id  (msg->id_);
-          //mf::ELseverityLevel sev(s_sev);
           mf::ErrorObj * eo_p = new mf::ErrorObj(
               mf::ELseverityLevel(std::string(msg->severity_)), 
               std::string(msg->id_) );
@@ -230,12 +341,12 @@ int main()
           mf::LogErrorObj(eo_p);
         }
 
-        //std::cout << "==============================================" << "\n";
-        std::cout << "Round = " <<z<< "; msg = " << msgSeq->length() << "\n\n";
+        if(bDisplayMsg)
+            std::cout << "Recevied messages " << z << "\n\n";
 
         status = reader -> return_loan(msgSeq, infoSeq);
         checkStatus(status, "return_loan()");
-      
+     
       }
     }
     

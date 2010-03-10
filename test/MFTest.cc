@@ -40,9 +40,14 @@ int main()
   mf::SetContext("pro-event");
 
   // Log Debugs
-  LogDebug("debug")     << "DEBUG information.";
-  LogDebug("debug")     << "DEBUG information.";
-  LogDebug("debug")     << "DEBUG information.";
+  for(int i=0; i<100; ++i)
+  {
+    LogDebug("debug")     << "DEBUG information.";
+    LogDebug("debug")     << "DEBUG information.";
+    LogDebug("debug")     << "DEBUG information.";
+
+    sleep(1);
+  }
 
   // Thread join
   loggerThread.join();
