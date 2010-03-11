@@ -473,6 +473,8 @@ public:
   static ParameterSet logFS(std::string const & filename = "logfile");
   static ParameterSet logCFS(std::string const & filename = "logfile");
 
+  static ParameterSet logArchive(std::string const & filename = "msgarchive");
+
   static std::string SingleThread;
   static std::string MultiThread;
 

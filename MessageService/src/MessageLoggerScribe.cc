@@ -998,7 +998,12 @@ void
       {
 
         std::string extension_type = actual_filename.substr(0, seprator);
-        std::string extension_name = actual_filename.substr(seprator);
+        std::string extension_name = actual_filename.substr(seprator+1);
+
+        const std::string::size_type npos = std::string::npos;
+        if ( extension_name.find('.') == npos ) {
+          extension_name += ".log";
+        }  
 
         // grab all of this destination's parameters:
         PSet dest_pset = getAparameter<PSet>(*job_pset_p, 

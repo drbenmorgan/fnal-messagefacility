@@ -280,6 +280,19 @@ ParameterSet MessageFacilityService::logCFS(std::string const & filename)
   return pset;
 }
 
+ParameterSet MessageFacilityService::logArchive(std::string const & filename)
+{
+  ParameterSet pset = commonPSet();
+
+  // Customize destinations
+  std::vector<std::string> vd;
+  vd.push_back("ARCHIVE|"+filename);
+  Entry evd("entry_destinations", vd, false);
+  pset.insert(true, "destinations", evd);
+
+  return pset;
+}
+
 MessageFacilityService::MessageFacilityService()
   : MFServiceEnabled  (false)
   , theML             (     )
