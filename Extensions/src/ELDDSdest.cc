@@ -128,13 +128,13 @@ static char ts[] = "dd-Mon-yyyy hh:mm:ss TZN     ";
 // ----------------------------------------------------------------------
 // Class registeration:
 // ----------------------------------------------------------------------
-REG_DESTINATION(DDS)
+REG_DESTINATION(DDS, ELDDSdest)
 
 // ----------------------------------------------------------------------
 // Constructors:
 // ----------------------------------------------------------------------
 
-ELDDSdest::ELDDSdest(ParameterSet const & pset_)
+ELDDSdest::ELDDSdest(std::string const & name_, ParameterSet const & pset_)
 : ELdestination       (            )
 , pset                ( pset_      )
 , charsOnLine         ( 0          )
@@ -385,9 +385,6 @@ bool ELDDSdest::log( const mf::ErrorObj & msg )  {
 
   // Build an IDL object from ErrorObj
   //
-
-  //if(!bConnected)    createDDSConnection();
-
   DDSmsg.timestamp_  = CORBA::string_dup( formatTime(msg.timestamp())        );
 
   DDSmsg.hostname_   = CORBA::string_dup( xid.hostname.c_str()               );

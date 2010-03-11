@@ -155,24 +155,26 @@ struct close_and_delete {
 // Destination factory for loading destinations dynamically
 struct ELdestinationFactory
 {
-  typedef std::map<std::string, ELdestination*(*)(ParameterSet const &)> map_type;
+  typedef std::map<std::string, ELdestination*(*)(std::string const &, ParameterSet const &)> map_type;
 
 public:
-  static ELdestinationFactory * getInstance();
-  void reg(std::string name, ELdestination* (*f)(ParameterSet const &));
-  ELdestination * createInstance (std::string const & s, ParameterSet const & pset );
+  static void reg( std::string type_str, 
+      ELdestination* (*f)(std::string const &, ParameterSet const &));
+
+  static ELdestination * createInstance ( std::string const & type,
+      std::string const & name,
+      ParameterSet const & pset );
 
 private:
   ELdestinationFactory() {};
 
-  map_type * getMap()
+  static map_type * getMap()
   {
     if(!map) map = new map_type;
     return map;
   }
 
-  map_type * map;
-  static ELdestinationFactory * instance;
+  static map_type * map;
 };
 
 }        // end of namespace service

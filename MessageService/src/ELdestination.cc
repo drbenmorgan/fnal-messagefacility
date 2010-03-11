@@ -278,27 +278,25 @@ void close_and_delete::operator()(std::ostream* os) const {
 }
 
 // Destination factory
-ELdestinationFactory * ELdestinationFactory::instance;
+ELdestinationFactory::map_type * ELdestinationFactory::map;
 
-ELdestinationFactory * ELdestinationFactory::getInstance()
+void ELdestinationFactory::reg(std::string type_str, 
+         ELdestination* (*f)(std::string const &, ParameterSet const &)) 
 {
-  if(!instance) instance = new ELdestinationFactory;
-  return instance;
+  getMap()->insert(std::make_pair(type_str, f));
 }
 
-void ELdestinationFactory::reg(std::string name, ELdestination* (*f)(ParameterSet const &)) 
+ELdestination * 
+ELdestinationFactory::createInstance (std::string const & type_str, 
+         std::string const & name,         
+         ParameterSet const & pset )
 {
-  getMap() -> insert(std::make_pair(name, f));
-}
-
-ELdestination * ELdestinationFactory::createInstance (std::string const & name, ParameterSet const & pset )
-{
-  map_type::iterator it = getMap()->find(name);
+  map_type::iterator it = getMap()->find(type_str);
 
   if(it == getMap()->end())
     return 0;
     
-  return it->second(pset);
+  return it->second(name, pset);
 }
 
 } // end of namespace service  

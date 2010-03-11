@@ -1005,8 +1005,8 @@ void
             actual_filename, empty_PSet);
 
         boost::scoped_ptr<ELdestination> dest_sp(
-            ELdestinationFactory::getInstance() 
-                -> createInstance(extension_type, dest_pset) );
+            ELdestinationFactory::createInstance(
+                extension_type, extension_name, dest_pset) );
 
         if(dest_sp.get() == 0) 
         {

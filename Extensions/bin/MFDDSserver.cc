@@ -234,7 +234,7 @@ int main()
   // Start MessageFacility Service
   mf::StartMessageFacility(
       mf::MessageFacilityService::SingleThread,
-      mf::MessageFacilityService::logFile("msgarchiver"));
+      mf::MessageFacilityService::logFile("msgarchive"));
 
   // Start the thread for triggering the command line interface
   trigger = boost::thread(cmdLineTrigger);

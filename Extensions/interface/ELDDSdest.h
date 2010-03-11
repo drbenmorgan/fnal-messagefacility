@@ -52,9 +52,7 @@ public:
 
   // ---  Birth/death:
   //
-  ELDDSdest(ParameterSet const & pset_);
-  //ELDDSdest( Transporter & tp, bool emitAtStart = false );	// 6/11/07 mf
-  //ELDDSdest( const ELstring & fileName, bool emitAtStart = false );
+  ELDDSdest(std::string const & name_, ParameterSet const & pset_);
   virtual ~ELDDSdest();
 
   // ---  Methods invoked by the ELadministrator:
@@ -170,9 +168,6 @@ private:
   bool createDDSConnection();
   void destroyDDSConnection();
 
-private:
-  // ---  ELdestinationFactory register
-  //static DerivedRegister<ELDDSdest> reg;
 };  // ELDDSdest
 
 

@@ -1,21 +1,31 @@
-#include "MessageService/interface/ELdestination.h"
-#include "ParameterSet/interface/ParameterSet.h"
+#include <string>
 
 namespace mf {
+
+class ParameterSet;
+
 namespace service {
+
+class ELdestination;
+class ELdestinationFactory;
 
 struct DestinationMaker
 {
-  DestinationMaker(std::string const & name, ELdestination* (*f)(ParameterSet const &))
+  DestinationMaker( std::string const & type_str, 
+      ELdestination* (*f)(std::string const &, ParameterSet const &) )
   {
-    ELdestinationFactory::getInstance() -> reg(name, f);
+    ELdestinationFactory::reg(type_str, f);
   }
 };
 
 };
 };
 
-#define REG_DESTINATION(name) \
-  ELdestination * name ## _maker_func(ParameterSet const & pset)\
-    { return new EL ## name ## dest(pset); } \
-  DestinationMaker name ## _maker_func_global_var(#name, &name ## _maker_func );
+#define REG_DESTINATION(type_str, type_name)            \
+  ELdestination * type_name ## _maker_func(             \
+        std::string const & name,                       \
+        ParameterSet const & pset )                     \
+    { return new type_name(name, pset); }               \
+  DestinationMaker type_name ## _maker_func_global_var( \
+        #type_str,                                      \
+        &type_name ## _maker_func );
