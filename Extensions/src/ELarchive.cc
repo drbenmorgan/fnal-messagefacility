@@ -446,6 +446,35 @@ bool ELarchive::log( const mf::ErrorObj & msg )  {
 	needAspace = false;
       }
     }
+
+    // timestamp
+    if ( wantTimestamp )  {
+      if ( wantTimeSeparate )  {
+	emit( ELstring("\n") );
+	needAspace = false;
+      }
+      if (needAspace) { emit(ELstring(" ")); needAspace = false; }
+      emit( formatTime(msg.timestamp()) + ELstring(" ") );
+    }
+
+    if(xid.hostname.length()>0) {
+      emit( xid.hostname + ELstring(" ") );
+    }
+    if(xid.hostaddr.length()>0) {
+      emit( ELstring("(") + xid.hostaddr + ELstring(")") );
+    }
+
+    emit(" ", true);
+
+    if(xid.process.length()>0) {
+      if (needAspace) { emit(ELstring(" ")); needAspace = false; }
+      emit( xid.process + ELstring(" ") );
+    }
+
+    if(xid.application.length()>0) {
+      if (needAspace) { emit(ELstring(" ")); needAspace = false; }
+      emit( xid.application + ELstring(" ") );
+    }
     if ( wantModule && (xid.module.length() > 0) )  {
       if (needAspace) { emit(ELstring(" ")); needAspace = false; }
       emit( xid.module + ELstring(" ") );
@@ -462,6 +491,7 @@ bool ELarchive::log( const mf::ErrorObj & msg )  {
 
   // Provide time stamp:
   //
+#if 0
   if  ( !msg.is_verbatim() ) 
  {
     if ( wantTimestamp )  {
@@ -473,6 +503,7 @@ bool ELarchive::log( const mf::ErrorObj & msg )  {
       emit( formatTime(msg.timestamp()) + ELstring(" ") );
     }
   }
+#endif
   
   #ifdef ELarchiveTRACE_LOG
     std::cerr << "    =:=:=: TimeStamp done \n";
