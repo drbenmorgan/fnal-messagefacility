@@ -22,6 +22,7 @@ INCLUDE (${QT_USE_FILE})
 # add include directories
 INCLUDE_DIRECTORIES (
     ${MessageFacility_SOURCE_DIR}
+    ${MessageFacility_BINARY_DIR}
     ${SRC_DIR}
     ${BIN_DIR}/..
     $ENV{OSPL_HOME}/include
@@ -33,14 +34,15 @@ LINK_DIRECTORIES (
     $ENV{OSPL_HOME}/lib
     )
 
-FILE (GLOB serverSrcFiles
-    MFDDSserver.cc
+
+FILE (GLOB DDSSrcFiles
     ${SRC_DIR}/../src/CheckStatus.cpp
     ${BIN_DIR}/../DDSdest_bld/*.cpp
     )
 
 ADD_EXECUTABLE (MFDDSserver
-    ${serverSrcFiles}
+    MFDDSserver.cc
+    ${DDSSrcFiles}
     )
 
 TARGET_LINK_LIBRARIES (MFDDSserver
@@ -85,6 +87,7 @@ ADD_EXECUTABLE (msgviewer
     msgviewerdlg.cc
     ${msgviewer_ui_headers}
     ${msgviewer_moc_files}
+    ${DDSSrcFiles}
     )
 
 TARGET_LINK_LIBRARIES (msgviewer
