@@ -45,14 +45,14 @@ void cmdLineInterface()
     std::cout << "> ";
     getline(std::cin, cmd);
 
-    if(cmd == "quit")
+    if(cmd == "quit" || cmd == "q")
     {
       escape -> set_trigger_value(TRUE);
       return;
     }
-    else if(cmd == "resume")
+    else if(cmd == "resume" || cmd == "r")
     {
-      std::cout << "Resuming to message monitoring mode.\n";
+      std::cout << "Resumed to message monitoring mode.\n";
       bDisplayMsg = true;
 
       // listening for trigger
@@ -60,17 +60,17 @@ void cmdLineInterface()
 
       return;
     }
-    else if(cmd == "stat")
+    else if(cmd == "stat" || cmd == "s")
     {
       std::cout << "Total " << z << " messages has been received.\n";
     }
-    else if(cmd == "help")
+    else if(cmd == "help" || cmd == "h")
     {
       std::cout << "MessageFacility DDS server available commands:\n"
-                << "  help          display this help message\n"
-                << "  stat          summary of received messages\n"
-                << "  resume        resume to message listening mode\n"
-                << "  quit          exit MessageFacility DDS server\n"
+                << "  (h)elp          display this help message\n"
+                << "  (s)tat          summary of received messages\n"
+                << "  (r)esume        resume to message listening mode\n"
+                << "  (q)uit          exit MessageFacility DDS server\n"
                 << "  ... more interactive commands on the way.\n";
     }
     else if(cmd.empty())
