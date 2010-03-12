@@ -1,7 +1,19 @@
+#
+#  Extension/bin/CMakeLists.txt
+#  -------------------------------------------------------------------
+#
+#  CMake build file for MFDDSserver and msgviewer
+#
+
 
 SET (SRC_DIR
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}
     )
+
+SET (BIN_DIR
+    ${CMAKE_CURRENT_BINARY_DIR}
+    )
+
 
 # Include Qt4 module
 FIND_PACKAGE (Qt4 4.5.2 REQUIRED)
@@ -10,9 +22,8 @@ INCLUDE (${QT_USE_FILE})
 # add include directories
 INCLUDE_DIRECTORIES (
     ${MessageFacility_SOURCE_DIR}
-    ${MessageFacility_BINARY_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/../src
+    ${SRC_DIR}
+    ${BIN_DIR}/..
     $ENV{OSPL_HOME}/include
     $ENV{OSPL_HOME}/include/sys
     $ENV{OSPL_HOME}/include/dcps/C++/SACPP
@@ -24,8 +35,8 @@ LINK_DIRECTORIES (
 
 FILE (GLOB serverSrcFiles
     MFDDSserver.cc
-    ${MessageFacility_SOURCE_DIR}/Extensions/src/CheckStatus.cpp
-    ${MessageFacility_SOURCE_DIR}/Extensions/src/DDSdest_bld/*.cpp
+    ${SRC_DIR}/../src/CheckStatus.cpp
+    ${BIN_DIR}/../DDSdest_bld/*.cpp
     )
 
 ADD_EXECUTABLE (MFDDSserver

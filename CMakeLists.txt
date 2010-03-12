@@ -1,3 +1,11 @@
+#
+#  CMakeLists.txt
+#  -------------------------------------------------------------------
+#
+#  CMake build file for project MessageFacility
+#
+
+
 CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
 
 PROJECT (MessageFacility)

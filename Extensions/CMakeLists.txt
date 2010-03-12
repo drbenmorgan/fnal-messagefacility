@@ -1,7 +1,18 @@
+#
+#  Extensions/CMakeLists.txt
+#  -------------------------------------------------------------------
+#
+#  CMake build file for library Extensions and ExtensionsD
+#
+
 INCLUDE (src/CMakeLists.txt)
 
 SET (SRC_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/src
+    )
+
+SET (BIN_DIR
+    ${CMAKE_CURRENT_BINARY_DIR}
     )
 
 # add idl files in the src/ directory
@@ -12,7 +23,7 @@ ENDFOREACH (IDLFILE)
 # add include directories
 INCLUDE_DIRECTORIES (
     ${MessageFacility_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${BIN_DIR}
     $ENV{OSPL_HOME}/include
     $ENV{OSPL_HOME}/include/sys
     $ENV{OSPL_HOME}/include/dcps/C++/SACPP
@@ -22,8 +33,8 @@ LINK_DIRECTORIES (
     $ENV{OSPL_HOME}/lib
     )
 
-ADD_CUSTOM_TARGET (ELDDSdestIDL ALL
-    COMMAND $ENV{OSPL_HOME}/bin/idlpp -S -l cpp -d ${SRC_DIR}/DDSdest_bld -I ${SRC_DIR} ${idlFiles}
+ADD_CUSTOM_TARGET (DDSIDL ALL
+    COMMAND $ENV{OSPL_HOME}/bin/idlpp -S -l cpp -d ${BIN_DIR}/DDSdest_bld -I ${SRC_DIR} ${idlFiles}
     )
 
 ADD_LIBRARY (ExtensionsD SHARED ${FILES})  
