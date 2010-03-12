@@ -11,5 +11,6 @@ msgViewerDlg::msgViewerDlg(QDialog * parent)
 
 void msgViewerDlg::pause()
 {
+//  msgBrowser->setText("warning");
   QMessageBox::about(this, "About MsgViewer", "pausing...");
 }

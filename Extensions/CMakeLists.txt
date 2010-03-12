@@ -37,8 +37,15 @@ ADD_CUSTOM_TARGET (DDSIDL ALL
     COMMAND $ENV{OSPL_HOME}/bin/idlpp -S -l cpp -d ${BIN_DIR}/DDSdest_bld -I ${SRC_DIR} ${idlFiles}
     )
 
-ADD_LIBRARY (ExtensionsD SHARED ${FILES})  
-ADD_LIBRARY (Extensions ${FILES})  
+ADD_LIBRARY (ExtensionsD SHARED 
+    ${SRC_FILES}
+    ${DDS_FILES}
+    )
+  
+ADD_LIBRARY (Extensions   
+    ${SRC_FILES}
+    ${DDS_FILES}
+    )
 
 SET_TARGET_PROPERTIES (ExtensionsD
     PROPERTIES OUTPUT_NAME MF_Extensions

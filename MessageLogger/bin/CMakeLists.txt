@@ -1,3 +1,10 @@
+#
+#  MessageLogger/bin/CMakeLists.txt
+#  -------------------------------------------------------------------
+#
+#  CMake build file for MessageLogger
+#
+
 INCLUDE_DIRECTORIES (
     ${MessageFacility_SOURCE_DIR}
     )

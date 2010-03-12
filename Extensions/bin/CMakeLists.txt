@@ -14,7 +14,6 @@ SET (BIN_DIR
     ${CMAKE_CURRENT_BINARY_DIR}
     )
 
-
 # Include Qt4 module
 FIND_PACKAGE (Qt4 4.5.2 REQUIRED)
 INCLUDE (${QT_USE_FILE})
@@ -34,15 +33,8 @@ LINK_DIRECTORIES (
     $ENV{OSPL_HOME}/lib
     )
 
-
-FILE (GLOB DDSSrcFiles
-    ${SRC_DIR}/../src/CheckStatus.cpp
-    ${BIN_DIR}/../DDSdest_bld/*.cpp
-    )
-
 ADD_EXECUTABLE (MFDDSserver
     MFDDSserver.cc
-    ${DDSSrcFiles}
     )
 
 TARGET_LINK_LIBRARIES (MFDDSserver
@@ -87,7 +79,6 @@ ADD_EXECUTABLE (msgviewer
     msgviewerdlg.cc
     ${msgviewer_ui_headers}
     ${msgviewer_moc_files}
-    ${DDSSrcFiles}
     )
 
 TARGET_LINK_LIBRARIES (msgviewer
