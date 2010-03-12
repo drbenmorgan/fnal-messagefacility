@@ -1,12 +1,14 @@
 #include <QApplication>
 
-#include "msgwidget.h"
+#include "msgviewerdlg.h"
 
 int main( int argc, char ** argv )
 {
   QApplication app(argc, argv);
-  msgWidget *dialog = new msgWidget();
+  msgViewerDlg *dialog = new msgViewerDlg();
 
   dialog->show();
   return app.exec();
+
+  return 0;
 }

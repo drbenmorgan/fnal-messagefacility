@@ -58,37 +58,38 @@ IF (QT_WRAP_CPP)
     QT_WRAP_UI (msgviewer
         msgviewer_ui_headers
         msgviewer_ui_sources
-        msgviewerdlg.ui
+        msgviewerdlgui.ui
         )
 
     QT_WRAP_CPP (msgviewer
         msgviewer_moc_files
-        msgwidget.h
-        )
-
-    ADD_EXECUTABLE (msgviewer
-        msgviewer.cc
-        msgwidget.cc
-        ${msgviewer_moc_files}
-        )
-
-    TARGET_LINK_LIBRARIES (msgviewer
-        MessageServiceD
-        MessageLoggerD
-        ParameterSetD
-        UtilitiesD
-        ExtensionsD
-        boost_thread
-        boost_filesystem
-        ddsdatabase
-        dcpsgapi
-        dcpssacpp
-        ddsos
-        ${QT_LIBRARIES}
+        msgviewerdlg.h
         )
 
   ENDIF (QT_WRAP_UI) 
 ENDIF (QT_WRAP_CPP)
+
+ADD_EXECUTABLE (msgviewer
+    msgviewer.cc
+    msgviewerdlg.cc
+    ${msgviewer_ui_headers}
+    ${msgviewer_moc_files}
+    )
+
+TARGET_LINK_LIBRARIES (msgviewer
+    MessageServiceD
+    MessageLoggerD
+    ParameterSetD
+    UtilitiesD
+    ExtensionsD
+    boost_thread
+    boost_filesystem
+    ddsdatabase
+    dcpsgapi
+    dcpssacpp
+    ddsos
+    ${QT_LIBRARIES}
+    )
 
 INSTALL (TARGETS msgviewer
     RUNTIME DESTINATION bin

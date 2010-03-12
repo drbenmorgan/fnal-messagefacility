@@ -1,15 +1,15 @@
 #include <QtGui>
 
-#include "msgwidget.h"
+#include "msgviewerdlg.h"
 
-msgWidget::msgWidget(QWidget * parent)
+msgViewerDlg::msgViewerDlg(QDialog * parent)
 {
-  setupUi((QDialog*)this);
+  setupUi(this);
 
   connect(btnPause, SIGNAL( clicked() ), this, SLOT(pause()));
 }
 
-void msgWidget::pause()
+void msgViewerDlg::pause()
 {
   QMessageBox::about(this, "About MsgViewer", "pausing...");
 }
