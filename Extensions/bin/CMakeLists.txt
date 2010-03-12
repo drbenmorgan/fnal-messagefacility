@@ -3,9 +3,14 @@ SET (SRC_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     )
 
+# Include Qt4 module
+FIND_PACKAGE (Qt4 4.5.2 REQUIRED)
+INCLUDE (${QT_USE_FILE})
+
 # add include directories
 INCLUDE_DIRECTORIES (
     ${MessageFacility_SOURCE_DIR}
+    ${MessageFacility_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/../src
     $ENV{OSPL_HOME}/include
@@ -46,3 +51,48 @@ INSTALL (TARGETS MFDDSserver
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
     ) 
+
+IF (QT_WRAP_CPP)
+  IF (QT_WRAP_UI)
+
+    QT_WRAP_UI (msgviewer
+        msgviewer_ui_headers
+        msgviewer_ui_sources
+        msgviewerdlg.ui
+        )
+
+    QT_WRAP_CPP (msgviewer
+        msgviewer_moc_files
+        msgwidget.h
+        )
+
+    ADD_EXECUTABLE (msgviewer
+        msgviewer.cc
+        msgwidget.cc
+        ${msgviewer_moc_files}
+        )
+
+    TARGET_LINK_LIBRARIES (msgviewer
+        MessageServiceD
+        MessageLoggerD
+        ParameterSetD
+        UtilitiesD
+        ExtensionsD
+        boost_thread
+        boost_filesystem
+        ddsdatabase
+        dcpsgapi
+        dcpssacpp
+        ddsos
+        ${QT_LIBRARIES}
+        )
+
+  ENDIF (QT_WRAP_UI) 
+ENDIF (QT_WRAP_CPP)
+
+INSTALL (TARGETS msgviewer
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    ) 
+
