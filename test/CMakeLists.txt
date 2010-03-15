@@ -28,3 +28,8 @@ TARGET_LINK_LIBRARIES (MFTest
     ddsos
     )
 
+INSTALL (FILES
+    ${MessageFacility_SOURCE_DIR}/test/mfexample.cc
+    DESTINATION example
+    )
+
