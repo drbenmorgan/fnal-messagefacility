@@ -13,16 +13,6 @@
   <property name="windowTitle">
    <string>MessageFacility MsgViewer</string>
   </property>
-  <widget class="QTextBrowser" name="msgBrower">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>20</y>
-     <width>491</width>
-     <height>591</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QPushButton" name="btnPause">
    <property name="geometry">
     <rect>
@@ -347,6 +337,25 @@
    </property>
    <property name="text">
     <string>Error</string>
+   </property>
+  </widget>
+  <widget class="QTextEdit" name="txtMessages">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>20</y>
+     <width>501</width>
+     <height>591</height>
+    </rect>
+   </property>
+   <property name="verticalScrollBarPolicy">
+    <enum>Qt::ScrollBarAsNeeded</enum>
+   </property>
+   <property name="readOnly">
+    <bool>true</bool>
    </property>
   </widget>
  </widget>

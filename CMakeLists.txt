@@ -10,12 +10,22 @@ CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
 
 PROJECT (MessageFacility)
 
+# Project include directory
+INCLUDE_DIRECTORIES(
+    ${MessageFacility_SOURCE_DIR}
+    ${MessageFacility_BINARY_DIR}
+    $ENV{BOOST_DIR}/include
+    )
+
+# Project library directory
+LINK_DIRECTORIES(
+    $ENV{BOOST_DIR}/lib
+    )
+
+# Install directory
 SET (CMAKE_INSTALL_PREFIX ${MessageFacility_SOURCE_DIR}/build)
 
 #ADD_DEFINITIONS (-g) 
-
-INCLUDE_DIRECTORIES($ENV{BOOST_DIR}/include)
-LINK_DIRECTORIES($ENV{BOOST_DIR}/lib)
 
 ADD_SUBDIRECTORY (MessageLogger)
 ADD_SUBDIRECTORY (MessageService)

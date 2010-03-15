@@ -1,12 +1,16 @@
+#
+#  MessageLogger/CMakeLists.txt
+#  -------------------------------------------------------------------
+#
+#  CMake build file for library MessageLogger and MessageLoggerD
+#
+
 INCLUDE (src/CMakeLists.txt)
 
 # add all source files in the src/ diretory
 FOREACH (FILE ${FILES})
     SET (srcFiles ${srcFiles} src/${FILE})
 ENDFOREACH (FILE)
-
-# add include directories
-INCLUDE_DIRECTORIES (${MessageFacility_SOURCE_DIR})
 
 ADD_LIBRARY (MessageLoggerD SHARED ${srcFiles})
 ADD_LIBRARY (MessageLogger ${srcFiles})
@@ -39,4 +43,3 @@ INSTALL (TARGETS MessageLogger MessageLoggerD
     ARCHIVE DESTINATION lib
     ) 
 
-ADD_SUBDIRECTORY (bin)

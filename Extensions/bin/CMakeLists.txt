@@ -14,48 +14,62 @@ SET (BIN_DIR
     ${CMAKE_CURRENT_BINARY_DIR}
     )
 
-# Include Qt4 module
-FIND_PACKAGE (Qt4 4.5.2 REQUIRED)
-INCLUDE (${QT_USE_FILE})
-
-# add include directories
-INCLUDE_DIRECTORIES (
-    ${MessageFacility_SOURCE_DIR}
-    ${MessageFacility_BINARY_DIR}
-    ${SRC_DIR}
-    ${BIN_DIR}/..
-    $ENV{OSPL_HOME}/include
-    $ENV{OSPL_HOME}/include/sys
-    $ENV{OSPL_HOME}/include/dcps/C++/SACPP
-    )
-
-LINK_DIRECTORIES (
-    $ENV{OSPL_HOME}/lib
-    )
-
-ADD_EXECUTABLE (MFDDSserver
-    MFDDSserver.cc
-    )
-
-TARGET_LINK_LIBRARIES (MFDDSserver
+SET (MF_PACKAGES
     MessageServiceD
     MessageLoggerD
     ParameterSetD
     UtilitiesD
     ExtensionsD
+    )
+
+SET (BOOST_PACKAGES
+    boost_program_options
     boost_thread
     boost_filesystem
+    )
+
+SET (DDS_PACKAGES
     ddsdatabase
     dcpsgapi
     dcpssacpp
     ddsos
     )
 
-INSTALL (TARGETS MFDDSserver
+ADD_EXECUTABLE (msgserver
+    msgserver.cc
+    )
+
+TARGET_LINK_LIBRARIES (msgserver
+    ${MF_PACKAGES}
+    ${BOOST_PACKAGES}
+    ${DDS_PACKAGES}
+    )
+
+INSTALL (TARGETS msgserver
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
     ) 
+
+ADD_EXECUTABLE (msglogger
+    msglogger.cc
+    )
+
+TARGET_LINK_LIBRARIES (msglogger
+    ${MF_PACKAGES}
+    ${BOOST_PACKAGES}
+    ${DDS_PACKAGES}
+    )
+
+INSTALL (TARGETS msglogger
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    )
+
+# Include Qt4 module
+FIND_PACKAGE (Qt4 4.5.2 REQUIRED)
+INCLUDE (${QT_USE_FILE})
 
 IF (QT_WRAP_CPP)
   IF (QT_WRAP_UI)
@@ -82,17 +96,9 @@ ADD_EXECUTABLE (msgviewer
     )
 
 TARGET_LINK_LIBRARIES (msgviewer
-    MessageServiceD
-    MessageLoggerD
-    ParameterSetD
-    UtilitiesD
-    ExtensionsD
-    boost_thread
-    boost_filesystem
-    ddsdatabase
-    dcpsgapi
-    dcpssacpp
-    ddsos
+    ${MF_PACKAGES}
+    ${BOOST_PACKAGES}
+    ${DDS_PACKAGES}
     ${QT_LIBRARIES}
     )
 

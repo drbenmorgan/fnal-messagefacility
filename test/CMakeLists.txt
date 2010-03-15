@@ -1,6 +1,9 @@
-INCLUDE_DIRECTORIES (
-    ${MessageFacility_SOURCE_DIR}
-    )
+#
+#  Utilities/CMakeLists.txt
+#  -------------------------------------------------------------------
+#
+#  CMake build file for library Utilities and UtilitiesD
+#
 
 LINK_DIRECTORIES (
     $ENV{OSPL_HOME}/lib

@@ -19,7 +19,7 @@
 #include "ParameterSet/interface/ParameterSet.h"
 
 #include "ccpp_dds_dcps.h"
-#include "DDSdest_bld/ccpp_MessageFacility.h"
+#include "Extensions/DDSdest_bld/ccpp_MessageFacility.h"
 
 #include "boost/shared_ptr.hpp"
 

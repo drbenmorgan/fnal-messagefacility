@@ -10,11 +10,10 @@ FILE (GLOB SRC_FILES
     ${MessageFacility_SOURCE_DIR}/Extensions/src/*.cc
     )
 
-FILE (GLOB DDS_FILES 
-    ${MessageFacility_SOURCE_DIR}/Extensions/src/*.cpp
-    ${MessageFacility_BINARY_DIR}/Extensions/DDSdest_bld/*.cpp
-    )
+SET (DDS_UTILITY_FILES
+    ${MessageFacility_SOURCE_DIR}/Extensions/src/CheckStatus.cpp
+    )    
 
-SET (IDLFILES
+SET (DDS_IDL_FILES
     MessageFacility.idl
     )

@@ -15,36 +15,58 @@ SET (BIN_DIR
     ${CMAKE_CURRENT_BINARY_DIR}
     )
 
-# add idl files in the src/ directory
-FOREACH (IDLFILE ${IDLFILES})
-    SET (idlFiles ${idlFiles} ${SRC_DIR}/${IDLFILE})
-ENDFOREACH (IDLFILE)
-
-# add include directories
-INCLUDE_DIRECTORIES (
-    ${MessageFacility_SOURCE_DIR}
-    ${BIN_DIR}
+SET (DDS_INCLUDE_DIR
     $ENV{OSPL_HOME}/include
     $ENV{OSPL_HOME}/include/sys
     $ENV{OSPL_HOME}/include/dcps/C++/SACPP
     )
 
-LINK_DIRECTORIES (
+SET (DDS_LIBRARY_DIR
     $ENV{OSPL_HOME}/lib
     )
 
-ADD_CUSTOM_TARGET (DDSIDL ALL
-    COMMAND $ENV{OSPL_HOME}/bin/idlpp -S -l cpp -d ${BIN_DIR}/DDSdest_bld -I ${SRC_DIR} ${idlFiles}
+# Include directories
+INCLUDE_DIRECTORIES (
+    ${DDS_INCLUDE_DIR}
+    )
+
+# Library directories
+LINK_DIRECTORIES (
+    ${DDS_LIBRARY_DIR}
+    )
+
+# Add DDS IDL files in the src/ directory
+FOREACH (IDLFILE ${DDS_IDL_FILES})
+    GET_FILENAME_COMPONENT (idlName ${IDLFILE} NAME_WE)
+    LIST (APPEND DDS_GENERATED_FILES
+        ${BIN_DIR}/DDSdest_bld/${idlName}.cpp
+        ${BIN_DIR}/DDSdest_bld/${idlName}Dcps.cpp
+        ${BIN_DIR}/DDSdest_bld/${idlName}Dcps_impl.cpp
+        ${BIN_DIR}/DDSdest_bld/${idlName}SplDcps.cpp)
+    LIST (APPEND idlFiles ${SRC_DIR}/${IDLFILE})
+ENDFOREACH (IDLFILE)
+
+# Generate DDS IDL pre-compiling output files
+ADD_CUSTOM_COMMAND (OUTPUT ${DDS_GENERATED_FILES}
+    COMMAND $ENV{OSPL_HOME}/bin/idlpp 
+    ARGS -S -l cpp -d ${BIN_DIR}/DDSdest_bld -I ${SRC_DIR} ${idlFiles}
+    MAIN_DEPENDENCY ${idlFiles}
+    )
+
+ADD_CUSTOM_TARGET (generatedIDL
+    DEPENDS ${DDS_GENERATED_FILES}
     )
 
 ADD_LIBRARY (ExtensionsD SHARED 
     ${SRC_FILES}
-    ${DDS_FILES}
+    ${DDS_UTILITY_FILES}
+    ${DDS_GENERATED_FILES}
     )
   
 ADD_LIBRARY (Extensions   
     ${SRC_FILES}
-    ${DDS_FILES}
+    ${DDS_UTILITY_FILES}
+    ${DDS_GENERATED_FILES}
     )
 
 SET_TARGET_PROPERTIES (ExtensionsD
@@ -54,8 +76,6 @@ SET_TARGET_PROPERTIES (ExtensionsD
 SET_TARGET_PROPERTIES (Extensions
     PROPERTIES OUTPUT_NAME MF_Extensions
     )
-
-ADD_SUBDIRECTORY (bin)
 
 FILE (GLOB includeFiles
     ${MessageFacility_SOURCE_DIR}/Extensions/interface/*.h
@@ -71,3 +91,4 @@ INSTALL (TARGETS Extensions ExtensionsD
     ARCHIVE DESTINATION lib
     ) 
 
+ADD_SUBDIRECTORY (bin)

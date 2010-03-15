@@ -1,12 +1,16 @@
+#
+#  MessageService/CMakeLists.txt
+#  -------------------------------------------------------------------
+#
+#  CMake build file for library MessageService and MessageServiceD
+#
+
 INCLUDE (src/CMakeLists.txt)
 
 # add all source files in the src/ diretory
 FOREACH (FILE ${FILES})
     SET (srcFiles ${srcFiles} src/${FILE})
 ENDFOREACH (FILE)
-
-# add include directories
-INCLUDE_DIRECTORIES (${MessageFacility_SOURCE_DIR})
 
 ADD_LIBRARY (MessageServiceD SHARED ${srcFiles})
 ADD_LIBRARY (MessageService ${srcFiles})
