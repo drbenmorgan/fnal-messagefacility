@@ -42,9 +42,10 @@ int main()
   // Log Debugs
   for(int i=0; i<100; ++i)
   {
-    LogDebug("debug")     << "DEBUG information.";
-    LogDebug("debug")     << "DEBUG information.";
-    LogDebug("debug")     << "DEBUG information.";
+    LogError("catError")     << "Error information.";
+    LogWarning("catWarning") << "Warning information.";
+    LogInfo("catInfo")       << "Info information.";
+    LogDebug("debug")        << "DEBUG information.";
 
     sleep(1);
   }

@@ -1,6 +1,6 @@
 #include <QApplication>
 
-#include "msgviewerdlg.h"
+#include "mvdlg.h"
 
 int main( int argc, char ** argv )
 {

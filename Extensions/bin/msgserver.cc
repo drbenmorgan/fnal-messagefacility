@@ -353,41 +353,15 @@ int main()
     if( z == 300 )  terminated = true;
   }
 
-  //-----------------------------------------------------------------
-  // Non-block receive
-  //-----------------------------------------------------------------
-/*
-  // Read messages from the reader
-  for(int z=0;z<200;z++)
-  {
-    status = reader -> take (
-        msgSeq,
-        infoSeq,
-        LENGTH_UNLIMITED,
-        ANY_SAMPLE_STATE,
-        ANY_VIEW_STATE,
-        ANY_INSTANCE_STATE );
-    checkStatus(status, "take()");
-
-    for(CORBA::ULong i = 0; i < msgSeq->length(); i++)
-    {
-      MFMessage * msg = &(msgSeq[i]);
-      std::cout << msg->process_ << " : " << msg->items_ << std::endl;
-    }
-
-    std::cout << "Round " << z << " msg = " << msgSeq->length() << "\n";
-
-    status = reader -> return_loan(msgSeq, infoSeq);
-    checkStatus(status, "return_loan()");
-      
-    usleep(500000);
-  }
-*/
   // Remove conditions from the waitset
   status = serverWS -> detach_condition( newMsg.in() );
   checkStatus(status, "detach_condition( newMsg )");
   status = serverWS -> detach_condition( newStatus.in() );
   checkStatus(status, "detach_condition( newStatus )");
+  status = serverWS -> detach_condition( cmdline.in() );
+  checkStatus(status, "detach_condition( cmdline )");
+  status = serverWS -> detach_condition( escape.in() );
+  checkStatus(status, "detach_condition( escape )");
 
   // De-allocate type-names
   CORBA::string_free(MFMessageTypeName);

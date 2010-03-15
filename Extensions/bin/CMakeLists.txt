@@ -82,7 +82,8 @@ IF (QT_WRAP_CPP)
 
     QT_WRAP_CPP (msgviewer
         msgviewer_moc_files
-        msgviewerdlg.h
+        mvdlg.h
+        mvlistener.h
         )
 
   ENDIF (QT_WRAP_UI) 
@@ -90,7 +91,8 @@ ENDIF (QT_WRAP_CPP)
 
 ADD_EXECUTABLE (msgviewer
     msgviewer.cc
-    msgviewerdlg.cc
+    mvdlg.cc
+    mvlistener.cc
     ${msgviewer_ui_headers}
     ${msgviewer_moc_files}
     )
