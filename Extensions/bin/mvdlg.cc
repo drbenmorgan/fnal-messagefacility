@@ -32,11 +32,13 @@ void msgViewerDlg::pause()
 void msgViewerDlg::printMessage(const QString & s)
 {
   txtMessages->append(s);
+  //txtMessages->append("<hr width=95%><br>\n");
 }
 
 void msgViewerDlg::printSysMessage(const QString & s)
 {
-  QString msg = "<b><font color=\"#000080\">SYSTEM:" + s + "</font></b><br></br>";
+  QString msg = "<b><font color=\"#000080\">SYSTEM:" 
+      + s + "</font></b><br>";
   txtMessages->append(msg);
 }
 

@@ -115,28 +115,50 @@ void ListenerThread::run()
               continue;
          
           ss.str("");
-          ss << "<p><font face=\"New Courier\" ";
+          ss << "<font face=\"New Courier\" ";
 
           if(sevid==3)       ss << "color='#FF0000'>";
           else if(sevid==2)  ss << "color='#E08000'>";
           else if(sevid==1)  ss << "color='#008000'>";
           else               ss << "color='#505050'>";
 
-          ss << "<b>severity: " << msg->severity_    << "</b><br>";
-          ss << "<b>category: " << msg->id_          << "</b><br>";
-          ss << "date:        " << msg->timestamp_   << "<br>";
-          ss << "host:        " << msg->hostname_ 
-             << " ("            << msg->hostaddr_    << ")<br>";
-          ss << "process:     " << msg->process_ 
-             << " ("            << msg->pid_         << ")<br>";
-          ss << "application: " << msg->application_ << "<br>";
-          ss << "module:      " << msg->module_      << "<br>";
-          ss << "context:     " << msg->context_     << "<br>";
-          ss << "file:        " << msg->file_        
-             << " ("            << msg->line_        << ")<br>";
-          ss << "message: <i> " << msg->items_       << "</i></b><br><br>";
+          ss << "<table border=0 width=95%>";
 
-          ss << "</font></p>";
+          ss << "<tr><td width=18%>severity:</td><td><b>" 
+             << msg->severity_ 
+             << "</b></td></tr>";
+
+          ss << "<tr><td>category:</td><td><b>"
+             << msg->id_ 
+             << "</b></td></tr>";
+
+          ss << "<tr><td>date:</td><td>" 
+             << msg->timestamp_  
+             << "</td></tr>";
+
+          ss << "<tr><td>host:</td><td>" 
+             << msg->hostname_ << " (" << msg->hostaddr_ << ")"
+             << "</td></tr>";
+
+          ss << "<tr><td>process:</td><td>" 
+             << msg->process_  << " (" << msg->pid_      << ")"
+             << "<td></tr>";
+
+          ss << "<tr><td>context:</td><td>" 
+             << msg->application_ << " / "
+             << msg->module_      << " / "
+             << msg->context_
+             << "</td></tr>";
+
+          ss << "<tr><td>file:</td><td>"
+             << msg->file_  << " (" << msg->line_ << ")"
+             << "</td></tr>";
+
+          ss << "<tr><td>message:</td><td><i>"
+             << msg->items_
+             << "</i></td></tr>";
+
+          ss << "</table></font><br>";
 
           emit newMessage(QString(ss.str().c_str()));
         }
