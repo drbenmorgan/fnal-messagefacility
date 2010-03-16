@@ -22,9 +22,10 @@
  ***/
 
 #include "Extensions/interface/CheckStatus.h"
+#include "Utilities/interface/EDMException.h"
 
 /* Array to hold the names for all ReturnCodes. */
-char *RetCodeName[13] = { 
+std::string const RetCodeName[13] = { 
     "DDS_RETCODE_OK",
     "DDS_RETCODE_ERROR",
     "DDS_RETCODE_UNSUPPORTED",
@@ -42,7 +43,7 @@ char *RetCodeName[13] = {
 /**
  * Returns the name of an error code.
  **/
-char *getErrorName(DDS::ReturnCode_t status)
+std::string const & getErrorName(DDS::ReturnCode_t status)
 {
     return RetCodeName[status];
 }
@@ -56,8 +57,9 @@ void checkStatus(
     
 
     if (status != DDS::RETCODE_OK && status != DDS::RETCODE_NO_DATA) {
-        cerr << "Error in " << info << ": " << getErrorName(status) << endl;
-        exit (0);
+        throw mf::Exception( mf::errors::DDSError )
+          << "DDS error in " << info << ": " << getErrorName(status) 
+          << std::endl;
     }
 }
 
@@ -69,7 +71,8 @@ void checkHandle(
     const char *info ) {
      
      if (!handle) {
-        cerr << "Error in " << info << ": Creation failed: invalid handle" << endl;
-        exit (0);
+        throw mf::Exception( mf::errors::DDSError )
+          << "DDS error in " << info << ": Creation failed: invalid handle" 
+          << std::endl;
      }
 }

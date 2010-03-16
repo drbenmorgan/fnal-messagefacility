@@ -34,6 +34,7 @@ namespace mf {
       EDM_MAP_ENTRY_NONS(trans_, ProductDoesNotSupportViews);
       EDM_MAP_ENTRY_NONS(trans_, ProductDoesNotSupportPtr);
       EDM_MAP_ENTRY_NONS(trans_, NotFound);
+      EDM_MAP_ENTRY_NONS(trans_, DDSError);
     }
   }
 

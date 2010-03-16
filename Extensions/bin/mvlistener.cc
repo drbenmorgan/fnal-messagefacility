@@ -50,7 +50,7 @@ void ListenerThread::run()
       QString("MessageFacility msgViewer is up and listening for messages."));
 
   // Start listening
-  ostringstream ss;
+  std::ostringstream ss;
   bool terminated = false;
   while (!terminated)
   {

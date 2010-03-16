@@ -74,8 +74,9 @@
 #include "MessageService/interface/ELcontextSupplier.h"
 #include "MessageService/interface/ELdestMakerMacros.h"
 
-#include "MessageLogger/interface/ErrorObj.h"
+//#include "MessageLogger/interface/ErrorObj.h"
 
+#include "Utilities/interface/EDMException.h"
 #include "Utilities/interface/do_nothing_deleter.h"
 
 
@@ -218,7 +219,17 @@ ELDDSdest::ELDDSdest( const ELDDSdest & orig )
   respondToMostModules  = orig.respondToMostModules;
   ignoreThese           = orig.ignoreThese;
 
-  createDDSConnection();
+
+  try 
+  {
+    createDDSConnection();
+  }
+  catch (cms::Exception & e)
+  {
+    std::cerr << "ELDDSdest caught an Exception:\n"
+              << e.what() << "\n";
+    bConnected = false;
+  }
 
 }  // ELDDSdest()
 
@@ -239,9 +250,9 @@ void ELDDSdest::finish() {
 // ----------------------------------------------------------------------
 // Private method for creating DDS connection 
 // ----------------------------------------------------------------------
-bool ELDDSdest::createDDSConnection()
+void ELDDSdest::createDDSConnection()
 {
-  if(bConnected) return true;
+  if(bConnected) return;
 
   // Create a DomainParticipantFactory and a DomainParticipant
   dpf = DomainParticipantFactory::get_instance();
@@ -308,10 +319,9 @@ bool ELDDSdest::createDDSConnection()
   // DDS Connection has been successfully created
   bConnected = true;
 
-  return bConnected;
 }
 
-void ELDDSdest::destroyDDSConnection()
+void ELDDSdest::destroyDDSConnection() throw()
 {
   if(!bConnected)
     return;
@@ -383,6 +393,13 @@ bool ELDDSdest::log( const mf::ErrorObj & msg )  {
     std::cerr << "    =:=:=: Limits table work done \n";
   #endif
 
+  if(!bConnected)
+  {
+    throw mf::Exception( mf::errors::DDSError )
+      << "No DDS connection available while logging to a remote DDS server\n";
+    return false;
+  }
+
   // Build an IDL object from ErrorObj
   //
   DDSmsg.timestamp_  = CORBA::string_dup( formatTime(msg.timestamp())        );
@@ -439,7 +456,16 @@ bool ELDDSdest::log( const mf::ErrorObj & msg )  {
 
   DDSmsg.items_       = CORBA::string_dup(items.c_str());
 
-  flush();
+  try
+  {
+    flush();
+  }
+  catch(cms::Exception & e)
+  {
+    throw cms::Exception( e )
+      << "DDS connection was gone while logging messages:\n";
+    return false;
+  }
 
   return true;
 

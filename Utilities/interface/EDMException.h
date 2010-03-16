@@ -64,7 +64,9 @@ namespace mf {
        ProductDoesNotSupportViews = 8024,
        ProductDoesNotSupportPtr = 8025,
 
-       NotFound = 8026
+       NotFound = 8026,
+
+       DDSError = 8027
     };
 
   }

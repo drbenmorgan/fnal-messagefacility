@@ -26,13 +26,12 @@
 
 #include "ccpp_dds_dcps.h"
 #include <iostream>
-
-using namespace std;
+#include <string>
 
 /**
  * Returns the name of an error code.
  **/
-char *getErrorName(DDS::ReturnCode_t status);
+std::string const & getErrorName(DDS::ReturnCode_t status);
 
 /**
  * Check the return status for errors. If there is an error, then terminate.

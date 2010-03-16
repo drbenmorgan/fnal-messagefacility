@@ -165,8 +165,8 @@ private:
   char                          * MFMessageTypeName;
 
   // DDS connection initialzation code
-  bool createDDSConnection();
-  void destroyDDSConnection();
+  void createDDSConnection();
+  void destroyDDSConnection() throw();
 
 };  // ELDDSdest
 
