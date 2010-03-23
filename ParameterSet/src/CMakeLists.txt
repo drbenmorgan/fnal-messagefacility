@@ -9,4 +9,5 @@ SET (FILES
     Registry.cc
     types.cc
     VParameterSetEntry.cc
+    ParameterSetParser.cc
     )

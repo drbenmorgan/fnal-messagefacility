@@ -22,7 +22,7 @@ int main()
   // Start MessageFacility Service
   mf::StartMessageFacility(
       mf::MessageFacilityService::MultiThread, 
-      mf::MessageFacilityService::logCFS());
+      mf::MessageFacilityService::logConsole());
 
   // Set module name for the main thread
   mf::SetApplicationName("MessageFacility");
@@ -40,7 +40,7 @@ int main()
   mf::SetContext("pro-event");
 
   // Log Debugs
-  for(int i=0; i<100; ++i)
+  //for(int i=0; i<100; ++i)
   {
     LogError("catError")     << "Error information.";
     LogWarning("catWarning") << "Warning information.";

@@ -1,7 +1,7 @@
 #include "MessageLogger/interface/MessageLogger.h"
 #include "MessageLogger/interface/MessageDrop.h"
 
-#include "ParameterSet/interface/ParameterSet.h"
+#include "ParameterSet/interface/ParameterSetParser.h"
 #include "ParameterSet/interface/Entry.h"
 #include "ParameterSet/interface/ParameterSetEntry.h"
 
@@ -159,6 +159,15 @@ MessageFacilityService & MessageFacilityService::instance()
   return mfs;
 }
 
+// Read configurations from MessageFacility.cfg file
+ParameterSet MessageFacilityService::ConfigurationFile(std::string const & filename)
+{
+  ParameterSet pset;
+  ParameterSetParser::Parse(filename, pset);
+  return pset;
+}
+
+
 ParameterSet MessageFacilityService::commonPSet()
 {
   // Prepare a common ParameterSet object
@@ -186,6 +195,7 @@ ParameterSet MessageFacilityService::commonPSet()
 
 ParameterSet MessageFacilityService::logConsole()
 {
+#if 0
   ParameterSet pset = commonPSet();
 
   // Customize destinations
@@ -194,6 +204,11 @@ ParameterSet MessageFacilityService::logConsole()
   Entry evd("entry_destinations", vd, false);
   pset.insert(true, "destinations", evd);
 
+  return pset;
+#endif
+
+  ParameterSet pset;
+  ParameterSetParser::Parse("MessageFacility.cfg", pset);
   return pset;
 }
 

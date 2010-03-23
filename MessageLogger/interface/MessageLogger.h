@@ -465,6 +465,7 @@ private:
 public:
   static MessageFacilityService & instance();
 
+  static ParameterSet ConfigurationFile(std::string const & filename = "MessageFacility.cfg");
   static ParameterSet logConsole();
   static ParameterSet logServer();
   static ParameterSet logFile(std::string const & filename = "logfile");
@@ -500,7 +501,7 @@ public:
 
   void StartMessageFacility(
       std::string const & mode,
-      ParameterSet const & pset = MessageFacilityService::logCF());
+      ParameterSet const & pset = MessageFacilityService::ConfigurationFile());
 
   void SetApplicationName(std::string const & application);
   void SetModuleName(std::string const & modulename);
