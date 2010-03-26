@@ -35,11 +35,15 @@ PSetParser<Iterator>::PSetParser()
   using qi::lexeme;
   using ascii::char_;
 
-  doc    =  *(assign [phoenix::bind(&PSetParser::insertPrimaryEntry, this,_1)]);
+  doc    =  *(unnamed_assign 
+                  [phoenix::bind(&PSetParser::insertPrimaryEntry, this,_1)]);
 
-  assign =  key >> lit('=') >> expr ;
+  unnamed_assign =  -(key >> '=') >> expr ;
+
+  assign =  key >> '=' >> expr ;
 
   expr   =  int_      [_val = _1]    
+         |  qi::bool_     [_val = _1]
          |  str       [_val = _1]    
          |  pset      [_val = _1]
          |  array     [_val = _1]
@@ -65,36 +69,8 @@ PSetParser<Iterator>::PSetParser()
     >> ( lit("@file") | lit("@DB") )
         ;
 
-  key   = char_("a-zA-Z_") >> *char_("a-zA-Z_0-9");
+  key   = lexeme[char_("a-zA-Z_") >> *char_("a-zA-Z_0-9")];
   str  %= lexeme['"' >> +(char_ - '"') >> '"'];
-}
-
-template<typename Iterator>
-boost::any 
-PSetParser<Iterator>::findArrayElement(boost::any const & object, int idx)
-{
-  std::vector<boost::any> array 
-      = boost::any_cast<std::vector<boost::any> >(object);
-
-  if(idx<array.size())
-    return array[idx];
-
-  std::cout<<"invalid array index!\n";
-  return boost::any();
-}
-
-template<typename Iterator>
-boost::any 
-PSetParser<Iterator>::findPSetEntry(boost::any const & object, std::string const & name)
-{
-  ParameterSet pset = boost::any_cast<ParameterSet>(object);
-
-  boost::any def;
-  boost::any obj;
-
-  obj = pset.getParameterObj(name);
-
-  return obj;
 }
 
 template<typename Iterator>
@@ -111,6 +87,28 @@ PSetParser<Iterator>::findPrimaryEntry(std::string const & name)
   }
 
   std::cout<<"symbol not defined!\n";
+  return boost::any();
+}
+
+template<typename Iterator>
+boost::any 
+PSetParser<Iterator>::findPSetEntry(boost::any const & object, std::string const & name)
+{
+  ParameterSet pset = boost::any_cast<ParameterSet>(object);
+  return pset.getParameterObj(name);
+}
+
+template<typename Iterator>
+boost::any 
+PSetParser<Iterator>::findArrayElement(boost::any const & object, int idx)
+{
+  std::vector<boost::any> array 
+      = boost::any_cast<std::vector<boost::any> >(object);
+
+  if(idx<array.size())
+    return array[idx];
+
+  std::cout<<"invalid array index!\n";
   return boost::any();
 }
 
@@ -142,6 +140,8 @@ bool ParameterSetParser::Parse(std::string const & fname, ParameterSet & pset)
     namespace qi = boost::spirit::qi;
     namespace ascii = boost::spirit::ascii;
 
+    using boost::spirit::eol;
+
     std::ifstream in(fname.c_str(), std::ios_base::in);
 
     if (!in)
@@ -164,19 +164,24 @@ bool ParameterSetParser::Parse(std::string const & fname, ParameterSet & pset)
     std::string::iterator iter = storage.begin();
     std::string::iterator end  = storage.end();
 
-    if (qi::phrase_parse(iter, end, p, ascii::space))
+    bool r = qi::phrase_parse(
+                 iter, 
+                 end, 
+                 p, 
+                 ascii::space 
+                   | qi::lit('#') >>*(qi::char_ - eol) >> eol
+                   | qi::lit("//")>>*(qi::char_ - eol) >> eol 
+             );
+
+    if (r && (iter==end) )
     {
-        //std::cout << "-------------------------\n";
         std::cout << "Parsing succeeded\n";
-        //std::cout << "-------------------------\n";
         pset = p.getPSet("MF");
         return true;
     }
     else
     {
-        //std::cout << "-------------------------\n";
-        std::cout << "Parsing failed\n";
-        //std::cout << "-------------------------\n";
+        std::cout << "Parsing failed!\n";
         return false;
     }
 }

@@ -32,3 +32,5 @@ INSTALL (FILES
     ${MessageFacility_SOURCE_DIR}/test/mfexample.cc
     DESTINATION example
     )
+
+
