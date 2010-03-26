@@ -2,8 +2,8 @@
 #include "MessageLogger/interface/MessageDrop.h"
 
 #include "ParameterSet/interface/ParameterSetParser.h"
-#include "ParameterSet/interface/Entry.h"
-#include "ParameterSet/interface/ParameterSetEntry.h"
+//#include "ParameterSet/interface/Entry.h"
+//#include "ParameterSet/interface/ParameterSetEntry.h"
 
 #include "MessageService/interface/MessageServicePresence.h"
 #include "MessageService/interface/ELadministrator.h"
@@ -172,7 +172,7 @@ ParameterSet MessageFacilityService::commonPSet()
 {
   // Prepare a common ParameterSet object
   ParameterSet pset;
-
+/*
   // Common threshold
   std::string com_threshold("DEBUG");
   Entry ecomthreshold("entry_threshold", com_threshold, false);
@@ -189,7 +189,7 @@ ParameterSet MessageFacilityService::commonPSet()
   vstats.push_back("stats");
   Entry evstats("entry_statistics", vstats, false);
   pset.insert(true, "statistics", evstats);
-
+*/
   return pset;
 }
 
@@ -215,75 +215,75 @@ ParameterSet MessageFacilityService::logConsole()
 ParameterSet MessageFacilityService::logServer()
 {
   ParameterSet pset = commonPSet();
-
+/*
   // Customize destinations
   std::vector<std::string> vd;
   vd.push_back("DDS|test");
   Entry evd("entry_destinations", vd, false);
   pset.insert(true, "destinations", evd);
-
+*/
   return pset;
 }
 
 ParameterSet MessageFacilityService::logFile(std::string const & filename)
 {
   ParameterSet pset = commonPSet();
-
+/*
   // Customize destinations
   std::vector<std::string> vd;
   vd.push_back(filename);
   Entry evd("entry_destinations", vd, false);
   pset.insert(true, "destinations", evd);
-
+*/
   return pset;
 }
 
 ParameterSet MessageFacilityService::logCS()
 {
   ParameterSet pset = commonPSet();
-
+/*
   // Customize destinations
   std::vector<std::string> vd;
   vd.push_back("cout");
   vd.push_back("DDS|test");
   Entry evd("entry_destinations", vd, false);
   pset.insert(true, "destinations", evd);
-
+*/
   return pset;
 }
 
 ParameterSet MessageFacilityService::logCF(std::string const & filename)
 {
   ParameterSet pset = commonPSet();
-
+/*
   // Customize destinations
   std::vector<std::string> vd;
   vd.push_back("cout");
   vd.push_back(filename);
   Entry evd("entry_destinations", vd, false);
   pset.insert(true, "destinations", evd);
-
+*/
   return pset;
 }
 
 ParameterSet MessageFacilityService::logFS(std::string const & filename)
 {
   ParameterSet pset = commonPSet();
-
+/*
   // Customize destinations
   std::vector<std::string> vd;
   vd.push_back(filename);
   vd.push_back("DDS|test");
   Entry evd("entry_destinations", vd, false);
   pset.insert(true, "destinations", evd);
-
+*/
   return pset;
 }
 
 ParameterSet MessageFacilityService::logCFS(std::string const & filename)
 {
   ParameterSet pset = commonPSet();
-
+/*
   // Customize destinations
   std::vector<std::string> vd;
   vd.push_back("cout");
@@ -291,20 +291,20 @@ ParameterSet MessageFacilityService::logCFS(std::string const & filename)
   vd.push_back("DDS|test");
   Entry evd("entry_destinations", vd, false);
   pset.insert(true, "destinations", evd);
-
+*/
   return pset;
 }
 
 ParameterSet MessageFacilityService::logArchive(std::string const & filename)
 {
   ParameterSet pset = commonPSet();
-
+/*
   // Customize destinations
   std::vector<std::string> vd;
   vd.push_back("ARCHIVE|"+filename);
   Entry evd("entry_destinations", vd, false);
   pset.insert(true, "destinations", evd);
-
+*/
   return pset;
 }
 

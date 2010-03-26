@@ -5,14 +5,14 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "ParameterSet/interface/ParameterSetParser.h"
-#include "ParameterSet/interface/ParameterSetEntry.h"
-#include "ParameterSet/interface/VParameterSetEntry.h"
+
+#include <boost/spirit/include/phoenix_core.hpp>
+#include <boost/spirit/include/phoenix_operator.hpp>
+#include <boost/spirit/include/phoenix_bind.hpp>
 
 #include <iostream>
 #include <fstream>
 #include <utility>
-#include <string>
-#include <list>
 
 namespace mf 
 {
@@ -23,11 +23,8 @@ namespace phoenix = boost::phoenix;
 
 template<typename Iterator>  
 PSetParser<Iterator>::PSetParser() 
-  : PSetParser::base_type(pset)
-  , PSetList ()
-  , PSetNameList ()
-  , PSetMap ()
-  , vpset_holder ()
+  : PSetParser::base_type(doc)
+  , PrimaryValues ()
 {
   using qi::int_;
   using qi::_1;
@@ -38,182 +35,106 @@ PSetParser<Iterator>::PSetParser()
   using qi::lexeme;
   using ascii::char_;
 
-  pset   =  lit('{')  [phoenix::bind(&PSetParser::newPSet, this)]
-         >> *(assign) 
-         >> lit('}')  
-         ;
+  doc    =  *(assign [phoenix::bind(&PSetParser::insertPrimaryEntry, this,_1)]);
 
-  assign = ( key      [_a=_1] 
-             >> lit('=') 
-             >> expr(_a) )
-         |  id        [phoenix::bind(&PSetParser::insertPSetFromMap, this, _1)]
-         ;
+  assign =  key >> lit('=') >> expr ;
 
-  expr   =  int_      [phoenix::bind(&PSetParser::insertInt,   this, _r1, _1)]
-         |  str       [phoenix::bind(&PSetParser::insertStr,   this, _r1, _1)]
-         |  pset      [phoenix::bind(&PSetParser::insertPSet,  this, _r1)]
-         |  vstr      [phoenix::bind(&PSetParser::insertVStr,  this, _r1, _1)]
-         |  vpset     [phoenix::bind(&PSetParser::insertVPSet, this, _r1)]
-        ;
- 
-  vstr  %= lit('[')    
-        >> -( str     
-              % ',' ) 
-        >> ']'
+  expr   =  int_      [_val = _1]    
+         |  str       [_val = _1]    
+         |  pset      [_val = _1]
+         |  array     [_val = _1]
+         |  reference [_val = _1]
         ;
 
-  vpset = lit('[')    [phoenix::bind(&PSetParser::prepareVPSet, this)]
-       >> ((( key     [_a = _1]
-              >> '='
-              >> pset [phoenix::bind(&PSetParser::appendVPSet, this, _a)]
-            )
-           | id       [phoenix::bind(&PSetParser::appendVPSetFromMap, this, _1)]
-           )
-          % ',' 
-          ) 
-       >> ']'
-       ;
+  pset   =  
+         lit('{')  
+      >> *( assign [phoenix::bind(&PSetParser::insertPSetEntry, this,_val,_1)]) 
+      >> lit('}')  
+        ;
 
-  id = lit('$')
-        >> key         
+  array %= lit('[') >> -( expr % ',') >> ']' ;
+
+  reference = 
+       key      [_val=phoenix::bind(&PSetParser::findPrimaryEntry,this,_1)] 
+    >> *(  '.' 
+        >> key  [_val=phoenix::bind(&PSetParser::findPSetEntry   ,this,_val,_1)]
+        )
+    >> *(lit('[') 
+        >> int_ [_val=phoenix::bind(&PSetParser::findArrayElement,this,_val,_1)]
+        >> ']')
+    >> ( lit("@file") | lit("@DB") )
         ;
 
   key   = char_("a-zA-Z_") >> *char_("a-zA-Z_0-9");
-  str %= lexeme['"' >> +(char_ - '"') >> '"'];
+  str  %= lexeme['"' >> +(char_ - '"') >> '"'];
 }
 
 template<typename Iterator>
-void PSetParser<Iterator>::newPSet()
+boost::any 
+PSetParser<Iterator>::findArrayElement(boost::any const & object, int idx)
 {
-  //std::cout<<"\n";
-  //tab(PSetList.size()*4);
-  //std::cout<<"{ <- List.push_front(new pset)\n";
+  std::vector<boost::any> array 
+      = boost::any_cast<std::vector<boost::any> >(object);
 
-  boost::shared_ptr<mf::ParameterSet> sp (new mf::ParameterSet);
-  PSetList.push_front(sp);
+  if(idx<array.size())
+    return array[idx];
+
+  std::cout<<"invalid array index!\n";
+  return boost::any();
 }
 
 template<typename Iterator>
-void PSetParser<Iterator>::insertPSet(std::string const & name)
+boost::any 
+PSetParser<Iterator>::findPSetEntry(boost::any const & object, std::string const & name)
 {
-  PSetMap.insert( std::make_pair(name, PSetList.front()) );
+  ParameterSet pset = boost::any_cast<ParameterSet>(object);
 
-  ParameterSetEntry epset(*PSetList.front(), false);
-  PSetList.pop_front();
+  boost::any def;
+  boost::any obj;
 
-  PSetList.front()->insertParameterSet(true, name, epset);
+  obj = pset.getParameterObj(name);
 
-  // print
-  //tab((PSetList.size())*4);
-  //std::cout<<"}PSet: "<<name<<" -> List.front().next(); "
-  //         <<"List.pop_front()\n\n";
+  return obj;
 }
 
 template<typename Iterator>
-void PSetParser<Iterator>::insertPSetFromMap(std::string const & name)
+boost::any 
+PSetParser<Iterator>::findPrimaryEntry(std::string const & name)
 {
-  PSetParser<Iterator>::psetmap::iterator it = PSetMap.find(name);
+  std::vector<std::pair<std::string, boost::any> >::iterator it
+      = PrimaryValues.begin();
 
-  if(it!=PSetMap.end())
+  for(; it!=PrimaryValues.end(); ++it)
   {
-    //tab((PSetList.size())*4);
-    //std::cout<<"PSet: "<<name<<" (from id table)  -> List.front()\n";
-
-    ParameterSetEntry epset(*(it->second), false);
-    PSetList.front()->insertParameterSet(true, name, epset);
+    if(it->first == name)
+      return it->second;
   }
-}
 
-
-template<typename Iterator>
-void PSetParser<Iterator>::insertInt(std::string const & name, int i)
-{
-  Entry eint(name, i, false);
-  PSetList.front()->insert(true, name, eint);
-
-  // print
-  //tab((PSetList.size())*4);
-  //std::cout<<name<<" = "<<i<<" -> List.front()\n";
+  std::cout<<"symbol not defined!\n";
+  return boost::any();
 }
 
 template<typename Iterator>
-void PSetParser<Iterator>::insertStr(std::string const & name, std::string const & str)
+void PSetParser<Iterator>::insertPSetEntry(
+     ParameterSet & pset, 
+     std::pair<std::string, boost::any> const & pair)
 {
-  Entry estr(name, str, false);
-  PSetList.front()->insert(true, name, estr);
-
-  // print
-  //tab((PSetList.size())*4);
-  //std::cout<<name<<" = "<<str<<" -> List.front()\n";
+  pset.insertEntryObj(pair);
 }
 
 template<typename Iterator>
-void PSetParser<Iterator>::insertVStr(std::string const & name, std::vector<std::string> const & vstr)
+void PSetParser<Iterator>::insertPrimaryEntry(
+     std::pair<std::string, boost::any> const & value)
 {
-  Entry evstr(name, vstr, false);
-  PSetList.front()->insert(true, name, evstr);
-
-  // print
-  //tab((PSetList.size())*4);
-  //std::cout<<name<<" = ";
-  //for(int i=0;i<vstr.size();++i)
-  //  std::cout<<vstr[i]<<", ";
-  //std::cout<<"  ->  List.front()\n";
+  PrimaryValues.push_back(value);
 }
 
 template<typename Iterator>
-void PSetParser<Iterator>::prepareVPSet()
+ParameterSet PSetParser<Iterator>::getPSet(std::string const & name)
 {
-  vpset_holder.clear();
-
-  // print
-  //tab((PSetList.size())*4);
-  //std::cout<<"vpset [\n";
-}
-
-template<typename Iterator>
-void PSetParser<Iterator>::appendVPSet(std::string const & name)
-{
-  vpset_holder.push_back(*(PSetList.front()));
-  PSetList.pop_front();
-
-  // print
-  //tab((PSetList.size())*4);
-  //std::cout<<"} PSet: "<<name<<"  -> vpset_holder; "
-  //         <<"List.pop_front()\n\n";
-}
-
-template<typename Iterator>
-void PSetParser<Iterator>::appendVPSetFromMap(std::string const & name)
-{
-  PSetParser<Iterator>::psetmap::iterator it = PSetMap.find(name);
-
-  if(it!=PSetMap.end())
-  {
-    //tab((PSetList.size())*4);
-    //std::cout<<"PSet: "<<name<<" (from id table)  -> vpset_holder\n";
-
-    vpset_holder.push_back(*(it->second));
-  }
-}
-
-template<typename Iterator>
-void PSetParser<Iterator>::insertVPSet(std::string const & name)
-{
-  Entry evpset(name, vpset_holder, false);
-  PSetList.front()->insert(true, name, evpset);
-
-  // print
-  //std::cout<<"\n";
-  //tab((PSetList.size())*4);
-  //std::cout<<"] "<<name<<" = vpset_holder  ->  List.front(); "
-  //         <<"vpset_holder cleared\n";
-}
-
-template<typename Iterator>
-ParameterSet PSetParser<Iterator>::getPSet()
-{
-  return *(PSetList.front());
+  boost::any obj = findPrimaryEntry(name);
+  ParameterSet pset = boost::any_cast<ParameterSet>(obj);
+  return pset;
 }
 
 bool ParameterSetParser::Parse(std::string const & fname, ParameterSet & pset)
@@ -248,7 +169,7 @@ bool ParameterSetParser::Parse(std::string const & fname, ParameterSet & pset)
         //std::cout << "-------------------------\n";
         std::cout << "Parsing succeeded\n";
         //std::cout << "-------------------------\n";
-        pset = p.getPSet();
+        pset = p.getPSet("MF");
         return true;
     }
     else

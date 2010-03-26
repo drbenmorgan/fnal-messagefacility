@@ -115,21 +115,21 @@ MessageLogger( ParameterSet const & iPS
   try {								// change log 13
     // decide whether a summary should be placed in job report
     fjrSummaryRequested_ = 
-    	  iPS.getUntrackedParameter<bool>("messageSummaryToJobReport", false);
+    	  iPS.getUntrackedParameter<bool>(std::string("messageSummaryToJobReport"), false);
 
     // grab list of debug-enabled modules
     debugModules = 
-    	  iPS.getUntrackedParameter<vString>("debugModules", empty_vString);
+    	  iPS.getUntrackedParameter<vString>(std::string("debugModules"), empty_vString);
 
     // grab lists of suppressLEVEL modules
     suppressDebug = 
-    	  iPS.getUntrackedParameter<vString>("suppressDebug", empty_vString);
+    	  iPS.getUntrackedParameter<vString>(std::string("suppressDebug"), empty_vString);
 
     suppressInfo = 
-    	  iPS.getUntrackedParameter<vString>("suppressInfo", empty_vString);
+    	  iPS.getUntrackedParameter<vString>(std::string("suppressInfo"), empty_vString);
 
     suppressWarning = 
-    	  iPS.getUntrackedParameter<vString>("suppressWarning", empty_vString);
+    	  iPS.getUntrackedParameter<vString>(std::string("suppressWarning"), empty_vString);
   } catch (cms::Exception& e) {					// change log 13
   }
   

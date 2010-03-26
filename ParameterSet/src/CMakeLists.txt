@@ -2,12 +2,12 @@
 #MESSAGE (${srcFiles})
 
 SET (FILES
-    Entry.cc
-    FileInPath.cc
+#    Entry.cc
+#    FileInPath.cc
     ParameterSet.cc
-    ParameterSetEntry.cc
-    Registry.cc
-    types.cc
-    VParameterSetEntry.cc
+#    ParameterSetEntry.cc
+#    Registry.cc
+#    types.cc
+#    VParameterSetEntry.cc
     ParameterSetParser.cc
     )
