@@ -3,6 +3,8 @@
 
 #include "ParameterSet/interface/ParameterSet.h"
 
+#include "boost/lexical_cast.hpp"
+
 namespace mf {
 
 typedef std::map<std::string, boost::any>   valuemap;
@@ -97,10 +99,15 @@ double ParameterSet::getDouble(
   {
     try
     {
-      double t = boost::any_cast<double>(it->second);
-      return t;
+      std::string t = boost::any_cast<std::string>(it->second);
+      double v = boost::lexical_cast<double>(t);
+      return v;
     }
     catch(const boost::bad_any_cast &)
+    {
+      return def;
+    }
+    catch(const boost::bad_lexical_cast &)
     {
       return def;
     }
@@ -122,17 +129,22 @@ vdouble ParameterSet::getVDouble(
       std::vector<boost::any> va 
           = boost::any_cast<std::vector<boost::any> >(it->second);
 
-      std::vector<double> v;
+      std::vector<double> vd;
 
       for(std::vector<boost::any>::iterator it=va.begin(); it!=va.end(); ++it)
       {
-        double t = boost::any_cast<double>(*it);
-        v.push_back(t);
+        std::string t = boost::any_cast<std::string>(*it);
+        double  v = boost::lexical_cast<double>(t);
+        vd.push_back(v);
       }
 
-      return v;
+      return vd;
     }
     catch(const boost::bad_any_cast &)
+    {
+      return def;
+    }
+    catch(const boost::bad_lexical_cast &)
     {
       return def;
     }

@@ -68,14 +68,14 @@ private:
     return false;
   }
     
-
-public:
   template <typename T>
   void insertEntry(std::string const & name, T const & val) 
   {
     PSetMap.insert(std::make_pair(name, val));
   }
 
+
+public:
   template <typename T>
   T getUntrackedParameter(std::string const & name, T const & def) const
   {
@@ -112,8 +112,8 @@ public:
   std::string getString (std::string const &, std::string const &) const;
   vstring     getVString(std::string const &, vstring const &) const;
   ParameterSet getPSet(std::string const &, ParameterSet const &) const;
-  vParameterSet getVPSet(std::string const &, vParameterSet const &) const;
   ParameterSet getParameterSet(std::string const &, ParameterSet const &) const;
+  vParameterSet getVPSet(std::string const &, vParameterSet const &) const;
   vParameterSet getVParameterSet(std::string const &, vParameterSet const &) const;
   
  

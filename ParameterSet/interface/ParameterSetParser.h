@@ -64,6 +64,8 @@ private:
   qi::rule<Iterator, std::pair<std::string, boost::any>(), skipper_type> assign;
   qi::rule<Iterator, std::pair<std::string, boost::any>(), skipper_type> unnamed_assign;
 
+  qi::rule<Iterator, std::string() , skipper_type> double_literal;
+  qi::rule<Iterator> space;
 };
 
 class ParameterSetParser
