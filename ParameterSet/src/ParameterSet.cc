@@ -45,10 +45,15 @@ int ParameterSet::getInt(
   {
     try
     {
-      int t = boost::any_cast<int>(it->second);
-      return t;
+      std::string t = boost::any_cast<std::string>(it->second);
+      int v = boost::lexical_cast<int>(t);
+      return v;
     }
     catch(const boost::bad_any_cast &)
+    {
+      return def;
+    }
+    catch(const boost::bad_lexical_cast &)
     {
       return def;
     }
@@ -70,17 +75,22 @@ vint ParameterSet::getVInt(
       std::vector<boost::any> va 
           = boost::any_cast<std::vector<boost::any> >(it->second);
 
-      std::vector<int> v;
+      std::vector<int> vi;
 
       for(std::vector<boost::any>::iterator it=va.begin(); it!=va.end(); ++it)
       {
-        int t = boost::any_cast<int>(*it);
-        v.push_back(t);
+        std::string t = boost::any_cast<std::string>(*it);
+        int v = boost::lexical_cast<int>(t);
+        vi.push_back(v);
       }
 
-      return v;
+      return vi;
     }
     catch(const boost::bad_any_cast &)
+    {
+      return def;
+    }
+    catch(const boost::bad_lexical_cast &)
     {
       return def;
     }

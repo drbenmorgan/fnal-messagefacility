@@ -41,14 +41,11 @@ struct PSetParser
 
 private:
 
-  boost::any findPrimaryEntry(std::string const &);
+  boost::any findPrimaryEntry(std::pair<std::string, int> const &);
   boost::any findPSetEntry(boost::any const &, std::string const &);
   boost::any findArrayElement(boost::any const &, int);
 
-  void insertPrimaryEntry(std::pair<std::string, boost::any> const &);
-  void insertPSetEntry(
-           ParameterSet &, 
-           std::pair<std::string, boost::any> const&);
+  void insertPSetEntry(ParameterSet &, std::pair<std::string, boost::any> const&);
 
   // data structure for primary entries
   std::vector<std::pair<std::string, boost::any> > PrimaryValues;
@@ -63,8 +60,10 @@ private:
   qi::rule<Iterator, std::vector<boost::any>(), skipper_type> array;
   qi::rule<Iterator, std::pair<std::string, boost::any>(), skipper_type> assign;
   qi::rule<Iterator, std::pair<std::string, boost::any>(), skipper_type> unnamed_assign;
-
+  qi::rule<Iterator, std::pair<std::string, int>(), skipper_type> primary_key;
   qi::rule<Iterator, std::string() , skipper_type> double_literal;
+  qi::rule<Iterator, std::string() , skipper_type> int_literal;
+  qi::rule<Iterator, int() , skipper_type> last_literal;
   qi::rule<Iterator> space;
 };
 

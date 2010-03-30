@@ -9,6 +9,7 @@
 #include <boost/spirit/include/phoenix_core.hpp>
 #include <boost/spirit/include/phoenix_operator.hpp>
 #include <boost/spirit/include/phoenix_bind.hpp>
+#include <boost/spirit/include/phoenix_container.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -31,14 +32,14 @@ PSetParser<Iterator>::PSetParser()
   using qi::lit;
 
   doc    =  *(unnamed_assign 
-                   [phoenix::bind(&PSetParser::insertPrimaryEntry, this,_1)] );
+                   [phoenix::push_back(phoenix::ref(PrimaryValues), _1)] );
 
   unnamed_assign =  -(key >> ':') >> expr >> +space ;
 
-  assign =  key >> ':' >> expr >> +space ;
+  assign =  key >> ':' >> expr ;
 
   expr   =  double_literal   [_val = _1]
-         |  qi::int_         [_val = _1]
+         |  int_literal      [_val = _1]
          |  qi::bool_        [_val = _1]
          |  str              [_val = _1]    
          |  pset             [_val = _1]
@@ -48,45 +49,69 @@ PSetParser<Iterator>::PSetParser()
 
   pset   =  
          lit('{')  
-      >> *( assign [phoenix::bind(&PSetParser::insertPSetEntry, this,_val,_1)]) 
+      >> -( assign [phoenix::bind(&PSetParser::insertPSetEntry, this,_val,_1)]
+              % ',' ) 
       >> lit('}')  
         ;
 
   array %= lit('[') >> -( expr % ',') >> ']' ;
 
   reference = 
-       key      [_val=phoenix::bind(&PSetParser::findPrimaryEntry,this,_1)] 
+        primary_key [_val=phoenix::bind(&PSetParser::findPrimaryEntry,this,_1)]
     >> *(  '.' 
-        >> key  [_val=phoenix::bind(&PSetParser::findPSetEntry,this,_val,_1)]
+        >> key    [_val=phoenix::bind(&PSetParser::findPSetEntry,this,_val,_1)]
         )
     >> *(lit('[') 
-        >> qi::int_ [_val=phoenix::bind(&PSetParser::findArrayElement,this,_val,_1)]
+        >> qi::int_ 
+                [_val=phoenix::bind(&PSetParser::findArrayElement,this,_val,_1)]
         >> ']')
     >> ( lit("@file") | lit("@DB") )
         ;
 
+  primary_key = key >> -( lit('(') >> ( qi::int_ | last_literal ) >> ')' ) ;
+
   key   = qi::lexeme[ascii::char_("a-zA-Z_") >> *ascii::char_("a-zA-Z_0-9")];
   str  %= qi::lexeme['"' >> +(ascii::char_ - '"') >> '"'];
-  double_literal = boost::spirit::raw[qi::double_]; 
-
   space = lit(' ') | lit('\t') | lit('\n');
+
+  double_literal = boost::spirit::raw[qi::double_]; 
+  int_literal    = boost::spirit::raw[qi::int_]; 
+  last_literal   = lit("last") [_val=-1];
 
 }
 
 template<typename Iterator>
 boost::any 
-PSetParser<Iterator>::findPrimaryEntry(std::string const & name)
+PSetParser<Iterator>::findPrimaryEntry(std::pair<std::string, int> const & pair)
 {
-  std::vector<std::pair<std::string, boost::any> >::iterator it
-      = PrimaryValues.begin();
+  std::string name = pair.first;
+  int         ver  = pair.second;
 
-  for(; it!=PrimaryValues.end(); ++it)
+  if(ver>=0)
   {
-    if(it->first == name)
-      return it->second;
+    std::vector<std::pair<std::string, boost::any> >::iterator it
+        = PrimaryValues.begin();
+
+    for(; it!=PrimaryValues.end(); ++it)
+    {
+      if(it->first == name)
+      {
+        if(ver == 0)  return it->second;
+        else          --ver;
+      }
+    }
+  }
+  else
+  {
+    std::vector<std::pair<std::string, boost::any> >::reverse_iterator rit
+        = PrimaryValues.rbegin();
+
+    for(; rit!=PrimaryValues.rend(); ++rit)
+      if(rit->first == name)
+        return rit->second;
   }
 
-  std::cout<<"symbol "<<name<<" not defined!\n";
+  std::cout<<"Symbol "<<name<<" not defined!\n";
   return boost::any();
 }
 
@@ -105,18 +130,10 @@ PSetParser<Iterator>::findArrayElement(boost::any const & object, int idx)
   std::vector<boost::any> array 
       = boost::any_cast<std::vector<boost::any> >(object);
 
-  if(idx<array.size())
-    return array[idx];
+  if(idx<array.size())   return array[idx];
 
-  std::cout<<"invalid array index!\n";
+  std::cout<<"Invalid array index!\n";
   return boost::any();
-}
-
-template<typename Iterator>
-void PSetParser<Iterator>::insertPrimaryEntry(
-     std::pair<std::string, boost::any> const & value)
-{
-  PrimaryValues.push_back(value);
 }
 
 template<typename Iterator>
@@ -130,7 +147,7 @@ void PSetParser<Iterator>::insertPSetEntry(
 template<typename Iterator>
 ParameterSet PSetParser<Iterator>::getPSet(std::string const & name)
 {
-  boost::any obj = findPrimaryEntry(name);
+  boost::any obj = findPrimaryEntry(std::make_pair(name,0));
   ParameterSet pset = boost::any_cast<ParameterSet>(obj);
   return pset;
 }
@@ -176,8 +193,6 @@ bool ParameterSetParser::Parse(std::string const & fname, ParameterSet & pset)
     {
         std::cout << "Parsing succeeded\n";
         pset = p.getPSet("MF");
-        double b = pset.getDouble("f", 0.5);
-        std::cout<<b<<"\n";
         return true;
     }
     else
