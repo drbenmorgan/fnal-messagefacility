@@ -11,6 +11,8 @@
 #include <vector>
 #include <map>
 
+#include <iostream>
+
 namespace mf {
 
 class ParameterSet
@@ -40,7 +42,8 @@ private:
     if(it!=PSetMap.end())
       return &(it->second);
 
-    return &empty_obj;
+    insertEntryObj(std::make_pair(name, boost::any()));
+    return getParameterObjPtr(name);
   }
 
   boost::any  
@@ -74,6 +77,18 @@ private:
     PSetMap.insert(std::make_pair(name, val));
   }
 
+  static bool isBool(boost::any const & obj)
+       { return obj.type() == typeid(bool); }
+  static bool isPSet(boost::any const & obj)
+       { return obj.type() == typeid(ParameterSet); }
+  static bool isPrimitive(boost::any const & obj)
+       { return obj.type() == typeid(std::string); }
+  static bool isVector(boost::any const & obj)
+       { return obj.type() == typeid(std::vector<boost::any>); }
+
+  static void tab(int indent) { for(int i=0;i<indent;++i) std::cout<<' ';}
+
+  static void printElement(boost::any const &, int indent=0);
 
 public:
   template <typename T>
@@ -103,6 +118,8 @@ public:
     T t;
     return t;
   }
+
+  void print(int indent=0) const;
  
   bool        getBool   (std::string const &, bool const &) const;
   int         getInt    (std::string const &, int const &) const;

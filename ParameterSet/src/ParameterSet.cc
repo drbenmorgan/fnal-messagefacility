@@ -285,5 +285,58 @@ vParameterSet ParameterSet::getVPSet(
   return getVParameterSet(name, def);
 }
 
+void ParameterSet::print(int indent) const
+{
+  valuemap::const_iterator it = PSetMap.begin();
+
+  for(; it!=PSetMap.end(); ++it)
+  {
+    std::string name = it->first;
+    boost::any obj   = it->second;
+
+    tab(indent);
+    std::cout<<name<<" : ";
+    printElement(obj, indent);
+    std::cout<<"\n";
+  }
+
+}
+
+void ParameterSet::printElement(boost::any const & obj, int indent)
+{
+  if(isBool(obj))
+  {
+    std::cout << (boost::any_cast<bool>(obj) ? "TRUE" : "FALSE");
+  }
+  else if(isPrimitive(obj))
+  {
+    std::cout << boost::any_cast<std::string>(obj);
+  }
+  else if(isVector(obj))
+  {
+    std::vector<boost::any> v = boost::any_cast<std::vector<boost::any> >(obj);
+    std::vector<boost::any>::const_iterator it = v.begin();
+
+    std::cout << "[";
+
+    for(; it!=v.end(); ++it)
+    {
+      printElement(*it);
+      if(it<v.end()-1)
+        std::cout << ", ";
+    }
+
+    std::cout << "]";
+  }
+  else if(isPSet(obj))
+  {
+    std::cout << "\n";
+    tab(indent);
+    std::cout << "{\n";
+    boost::any_cast<ParameterSet>(obj).print(indent+4);
+    tab(indent);
+    std::cout << "}";
+  }
+}
 
 } // namespace
