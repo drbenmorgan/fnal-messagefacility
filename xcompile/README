@@ -8,9 +8,7 @@ Cross-compile Message Facility for LinuxPPC on novatest01
 5. cd bin
 6. cmake -DCMAKE_TOOLCHAIN_FILE=../xcompile/novaLinuxPPC.cmake ..
 7. setup osdds -f Linux64bit+2.6-2.5
-8. make generateIDL
-9. setup osdds -f LinuxPPC -q GCC_4_1_0
-10. make
-11. make install
+8. make
+9. make install
 
 The LinuxPPC version of MessagFacility is now in ~/messagefacility/build/.

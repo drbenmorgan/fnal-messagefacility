@@ -30,17 +30,7 @@ SET (BOOST_PACKAGES
     )
 
 SET (DDS_PACKAGES
-    ddsdatabase
-    dcpsgapi
     dcpssacpp
-    ddsos
-    ddsutil
-    ddsserialization
-    ddskernel
-    ddsuser
-    ddsosnet
-    ddsconf
-    ddsconfparser
     )
 
 ADD_EXECUTABLE (msgserver
@@ -74,6 +64,8 @@ INSTALL (TARGETS msglogger
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
     )
+
+MESSAGE(${CMAKE_CROSSCOMPILING})
 
 # Include Qt4 module
 IF (NOT CMAKE_CROSSCOMPILING)
