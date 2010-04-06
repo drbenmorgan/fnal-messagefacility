@@ -21,7 +21,6 @@ TARGET_LINK_LIBRARIES (MFTest
     ExtensionsD
     boost_thread
     boost_filesystem
-    pthread
     ddsdatabase
     dcpsgapi
     dcpssacpp
@@ -29,8 +28,12 @@ TARGET_LINK_LIBRARIES (MFTest
     )
 
 INSTALL (FILES
-    ${MessageFacility_SOURCE_DIR}/test/mfexample.cc
+    mfexample.cc
     DESTINATION example
     )
 
-
+INSTALL (FILES
+    CMakeLists.txt
+    MFTest.cc
+    DESTINATION src/test
+    )

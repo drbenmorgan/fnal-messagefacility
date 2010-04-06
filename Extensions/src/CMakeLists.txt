@@ -6,14 +6,15 @@
 #  ExtensionsD 
 #
 
-FILE (GLOB SRC_FILES 
-    ${MessageFacility_SOURCE_DIR}/Extensions/src/*.cc
+SET (SRCFILES 
+    ELDDSdest.cc
+    ELarchive.cc
     )
 
-SET (DDS_UTILITY_FILES
-    ${MessageFacility_SOURCE_DIR}/Extensions/src/CheckStatus.cpp
+SET (DDSUTILITYFILES
+    CheckStatus.cpp
     )    
 
-SET (DDS_IDL_FILES
+SET (DDSIDLFILES
     MessageFacility.idl
     )

@@ -23,12 +23,33 @@ SET_TARGET_PROPERTIES (ParameterSet
     PROPERTIES OUTPUT_NAME MF_ParameterSet
     )
 
+#install files
 FILE (GLOB includeFiles
     ${MessageFacility_SOURCE_DIR}/ParameterSet/interface/*.h
     )
 
+LIST (APPEND srcFiles
+    src/CMakeLists.txt
+    )
+
+FILE (GLOB cmakeFiles
+    ${MessageFacility_SOURCE_DIR}/ParameterSet/CMakeLists.txt
+    )
+
 INSTALL (FILES ${includeFiles}
     DESTINATION include/ParameterSet/interface
+    )
+
+INSTALL (FILES ${includeFiles}
+    DESTINATION src/ParameterSet/interface
+    )
+
+INSTALL (FILES ${srcFiles}
+    DESTINATION src/ParameterSet/src
+    )
+
+INSTALL (FILES ${cmakeFiles}
+    DESTINATION src/ParameterSet
     )
 
 INSTALL (TARGETS ParameterSet ParameterSetD 

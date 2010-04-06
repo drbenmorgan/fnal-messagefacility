@@ -23,12 +23,33 @@ SET_TARGET_PROPERTIES (Utilities
     PROPERTIES OUTPUT_NAME MF_Utilities
     )
 
+# install files
 FILE (GLOB includeFiles
     ${MessageFacility_SOURCE_DIR}/Utilities/interface/*.h
     )
 
+LIST (APPEND srcFiles
+    src/CMakeLists.txt
+    )
+
+FILE (GLOB cmakeFiles
+    ${MessageFacility_SOURCE_DIR}/Utilities/CMakeLists.txt
+    )
+
 INSTALL (FILES ${includeFiles}
     DESTINATION include/Utilities/interface
+    )
+
+INSTALL (FILES ${includeFiles}
+    DESTINATION src/Utilities/interface
+    )
+
+INSTALL (FILES ${srcFiles}
+    DESTINATION src/Utilities/src
+    )
+
+INSTALL (FILES ${cmakeFiles}
+    DESTINATION src/Utilities
     )
 
 INSTALL (TARGETS Utilities UtilitiesD

@@ -110,3 +110,13 @@ INSTALL (TARGETS msgviewer
     ARCHIVE DESTINATION lib
     ) 
 
+FILE (GLOB binFiles
+    CMakeLists.txt
+    *.cc
+    *.h
+    *.ui
+    )
+    
+INSTALL (FILES ${binFiles}
+    DESTINATION src/Extensions/bin
+    )

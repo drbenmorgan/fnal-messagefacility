@@ -23,9 +23,18 @@ SET_TARGET_PROPERTIES (MessageLogger
     PROPERTIES OUTPUT_NAME MF_MessageLogger
     )
 
+# install files
 FILE (GLOB includeFiles
     ${MessageFacility_SOURCE_DIR}/MessageLogger/interface/*.h
     ${MessageFacility_SOURCE_DIR}/MessageLogger/interface/*.icc
+    )
+
+LIST (APPEND srcFiles
+    src/CMakeLists.txt
+    )
+
+FILE (GLOB cmakeFiles
+    ${MessageFacility_SOURCE_DIR}/MessageLogger/CMakeLists.txt
     )
 
 INSTALL (FILES ${includeFiles}
@@ -35,6 +44,18 @@ INSTALL (FILES ${includeFiles}
 INSTALL (FILES
     ${MessageFacility_SOURCE_DIR}/MessageLogger/interface/MessageLogger.h
     DESTINATION include
+    )
+
+INSTALL (FILES ${includeFiles}
+    DESTINATION src/MessageLogger/interface
+    )
+
+INSTALL (FILES ${srcFiles}
+    DESTINATION src/MessageLogger/src
+    )
+
+INSTALL (FILES ${cmakeFiles}
+    DESTINATION src/MessageLogger
     )
 
 INSTALL (TARGETS MessageLogger MessageLoggerD

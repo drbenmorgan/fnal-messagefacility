@@ -15,6 +15,14 @@ SET (BIN_DIR
     ${CMAKE_CURRENT_BINARY_DIR}
     )
 
+FOREACH (FILE ${SRCFILES})
+    LIST (APPEND SRC_FILES ${SRC_DIR}/${FILE})
+ENDFOREACH (FILE)
+
+FOREACH (FILE ${DDSUTILITYFILES})
+    LIST (APPEND DDS_UTILITY_FILES ${SRC_DIR}/${FILE})
+ENDFOREACH (FILE)
+
 SET (DDS_INCLUDE_DIR
     $ENV{OSPL_HOME}/include
     $ENV{OSPL_HOME}/include/sys
@@ -36,20 +44,20 @@ LINK_DIRECTORIES (
     )
 
 # Add DDS IDL files in the src/ directory
-FOREACH (IDLFILE ${DDS_IDL_FILES})
+FOREACH (IDLFILE ${DDSIDLFILES})
     GET_FILENAME_COMPONENT (idlName ${IDLFILE} NAME_WE)
     LIST (APPEND DDS_GENERATED_FILES
         ${BIN_DIR}/DDSdest_bld/${idlName}.cpp
         ${BIN_DIR}/DDSdest_bld/${idlName}Dcps.cpp
         ${BIN_DIR}/DDSdest_bld/${idlName}Dcps_impl.cpp
         ${BIN_DIR}/DDSdest_bld/${idlName}SplDcps.cpp)
-    LIST (APPEND idlFiles ${SRC_DIR}/${IDLFILE})
+    LIST (APPEND DDS_IDL_FILES ${SRC_DIR}/${IDLFILE})
 ENDFOREACH (IDLFILE)
 
 # Generate DDS IDL pre-compiling output files
 ADD_CUSTOM_COMMAND (OUTPUT ${DDS_GENERATED_FILES}
     COMMAND $ENV{OSPL_HOME}/bin/idlpp 
-    ARGS -S -l cpp -d ${BIN_DIR}/DDSdest_bld -I ${SRC_DIR} ${idlFiles}
+    ARGS -S -l cpp -d ${BIN_DIR}/DDSdest_bld -I ${SRC_DIR} ${DDS_IDL_FILES}
     MAIN_DEPENDENCY ${idlFiles}
     )
 
@@ -77,12 +85,36 @@ SET_TARGET_PROPERTIES (Extensions
     PROPERTIES OUTPUT_NAME MF_Extensions
     )
 
+# install files
 FILE (GLOB includeFiles
     ${MessageFacility_SOURCE_DIR}/Extensions/interface/*.h
     )
 
+SET (srcFiles
+    src/CMakeLists.txt
+    ${SRC_FILES}
+    ${DDS_UTILITY_FILES}
+    ${DDS_IDL_FILES}
+    )
+
+FILE (GLOB cmakeFiles
+    ${MessageFacility_SOURCE_DIR}/Extensions/CMakeLists.txt
+    )
+
 INSTALL (FILES ${includeFiles}
     DESTINATION include/Extensions/interface
+    )
+
+INSTALL (FILES ${includeFiles}
+    DESTINATION src/Extensions/interface
+    )
+
+INSTALL (FILES ${srcFiles}
+    DESTINATION src/Extensions/src
+    )
+
+INSTALL (FILES ${cmakeFiles}
+    DESTINATION src/Extensions
     )
 
 INSTALL (TARGETS Extensions ExtensionsD
