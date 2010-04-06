@@ -56,12 +56,12 @@ ENDFOREACH (IDLFILE)
 
 # Generate DDS IDL pre-compiling output files
 ADD_CUSTOM_COMMAND (OUTPUT ${DDS_GENERATED_FILES}
-    COMMAND $ENV{OSPL_HOME}/bin/idlpp 
+    COMMAND $ENV{OSPL_HOME}/bin/idlpp
     ARGS -S -l cpp -d ${BIN_DIR}/DDSdest_bld -I ${SRC_DIR} ${DDS_IDL_FILES}
     MAIN_DEPENDENCY ${idlFiles}
     )
 
-ADD_CUSTOM_TARGET (generatedIDL
+ADD_CUSTOM_TARGET (generateIDL
     DEPENDS ${DDS_GENERATED_FILES}
     )
 

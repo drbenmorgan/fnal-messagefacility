@@ -26,11 +26,19 @@ TARGET_LINK_LIBRARIES (MFTest
     UtilitiesD
     ExtensionsD
     boost_thread
+    boost_system
     boost_filesystem
     ddsdatabase
     dcpsgapi
     dcpssacpp
     ddsos
+    ddsutil
+    ddsserialization
+    ddskernel
+    ddsuser
+    ddsosnet
+    ddsconf
+    ddsconfparser
     )
 
 INSTALL (FILES

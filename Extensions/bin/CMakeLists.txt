@@ -25,6 +25,7 @@ SET (MF_PACKAGES
 SET (BOOST_PACKAGES
     boost_program_options
     boost_thread
+    boost_system
     boost_filesystem
     )
 
@@ -33,6 +34,13 @@ SET (DDS_PACKAGES
     dcpsgapi
     dcpssacpp
     ddsos
+    ddsutil
+    ddsserialization
+    ddskernel
+    ddsuser
+    ddsosnet
+    ddsconf
+    ddsconfparser
     )
 
 ADD_EXECUTABLE (msgserver
@@ -68,47 +76,50 @@ INSTALL (TARGETS msglogger
     )
 
 # Include Qt4 module
-FIND_PACKAGE (Qt4 4.5.2 REQUIRED)
-INCLUDE (${QT_USE_FILE})
+IF (NOT CMAKE_CROSSCOMPILING)
+    FIND_PACKAGE (Qt4 4.5.2 REQUIRED)
+    INCLUDE (${QT_USE_FILE})
 
-IF (QT_WRAP_CPP)
-  IF (QT_WRAP_UI)
+    IF (QT_WRAP_CPP)
+      IF (QT_WRAP_UI)
 
-    QT_WRAP_UI (msgviewer
-        msgviewer_ui_headers
-        msgviewer_ui_sources
-        msgviewerdlgui.ui
+        QT_WRAP_UI (msgviewer
+            msgviewer_ui_headers
+            msgviewer_ui_sources
+            msgviewerdlgui.ui
+            )
+
+        QT_WRAP_CPP (msgviewer
+            msgviewer_moc_files
+            mvdlg.h
+            mvlistener.h
+            )
+
+      ENDIF (QT_WRAP_UI) 
+    ENDIF (QT_WRAP_CPP)
+
+    ADD_EXECUTABLE (msgviewer
+        msgviewer.cc
+        mvdlg.cc
+        mvlistener.cc
+        ${msgviewer_ui_headers}
+        ${msgviewer_moc_files}
         )
 
-    QT_WRAP_CPP (msgviewer
-        msgviewer_moc_files
-        mvdlg.h
-        mvlistener.h
+    TARGET_LINK_LIBRARIES (msgviewer
+        ${MF_PACKAGES}
+        ${BOOST_PACKAGES}
+        ${DDS_PACKAGES}
+        ${QT_LIBRARIES}
         )
 
-  ENDIF (QT_WRAP_UI) 
-ENDIF (QT_WRAP_CPP)
+    INSTALL (TARGETS msgviewer
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        ) 
+ENDIF (NOT CMAKE_CROSSCOMPILING)
 
-ADD_EXECUTABLE (msgviewer
-    msgviewer.cc
-    mvdlg.cc
-    mvlistener.cc
-    ${msgviewer_ui_headers}
-    ${msgviewer_moc_files}
-    )
-
-TARGET_LINK_LIBRARIES (msgviewer
-    ${MF_PACKAGES}
-    ${BOOST_PACKAGES}
-    ${DDS_PACKAGES}
-    ${QT_LIBRARIES}
-    )
-
-INSTALL (TARGETS msgviewer
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-    ) 
 
 FILE (GLOB binFiles
     CMakeLists.txt
