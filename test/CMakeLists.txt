@@ -9,6 +9,12 @@ LINK_DIRECTORIES (
     $ENV{OSPL_HOME}/lib
     )
 
+CONFIGURE_FILE (
+    ${CMAKE_CURRENT_SOURCE_DIR}/MessageFacility.cfg
+    ${CMAKE_CURRENT_BINARY_DIR}/MessageFacility.cfg
+    COPYONLY
+    )
+
 ADD_EXECUTABLE (MFTest
     MFTest.cc
     )
