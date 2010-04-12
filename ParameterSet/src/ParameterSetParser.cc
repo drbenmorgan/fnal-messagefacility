@@ -52,9 +52,10 @@ PSetParser<Iterator>::PSetParser()
 
   assign =  key >> ':' >> expr ;
 
-  expr   =  double_literal   [_val = _1]
+  expr   =  nil              [_val = _1]
+         |  double_literal   [_val = _1]
          |  int_literal      [_val = _1]
-         |  qi::bool_        [_val = _1]
+         |  ( lit('.') >> qi::bool_ )       [_val = _1]
          |  str              [_val = _1]    
          |  pset             [_val = _1]
          |  array            [_val = _1]
@@ -99,6 +100,7 @@ PSetParser<Iterator>::PSetParser()
   double_literal = boost::spirit::raw[qi::double_]; 
   int_literal    = boost::spirit::raw[qi::int_]; 
   last_literal   = lit("last") [_val=-1];
+  nil            = lit('.') >> ascii::no_case["nil"];
 
 }
 
@@ -106,7 +108,7 @@ template<typename Iterator>
 boost::any *
 PSetParser<Iterator>::findPrimaryPtr(std::string const & name)
 {
-  std::cout<<"looking for "<<name<<"......";
+  //std::cout<<"looking for "<<name<<"......";
 
   std::vector<std::pair<std::string, boost::any> >::iterator it
       = PrimaryValues.begin();
@@ -115,7 +117,7 @@ PSetParser<Iterator>::findPrimaryPtr(std::string const & name)
   {
     if(it->first == name)
     {
-      std::cout<<"found!\n";
+      //std::cout<<"found!\n";
       return &(it->second);
     }
   }
@@ -128,12 +130,12 @@ template<typename Iterator>
 boost::any *
 PSetParser<Iterator>::findPSetPtr(boost::any * object, std::string const & name)
 {
-  std::cout<<"looking for "<<name<<"......";
+  //std::cout<<"looking for "<<name<<"......";
 
   boost::any * obj = 
       boost::any_cast<ParameterSet &>(*object).getParameterObjPtr(name);
 
-  std::cout<<"found!\n";
+  //std::cout<<"found!\n";
 
   return obj;
 }
@@ -142,13 +144,14 @@ template<typename Iterator>
 boost::any *
 PSetParser<Iterator>::findArrayElementPtr(boost::any * object, int idx)
 {
-  std::cout<<"looking for "<<idx<<"......\n";
+  //std::cout<<"looking for "<<idx<<"......\n";
 
   std::vector<boost::any> & array 
       = boost::any_cast<std::vector<boost::any> & >(*object);
 
+  // fill the missing elements with NIL object (boost::any())
   if(idx >= array.size())
-    array.resize(idx+1, boost::any(std::string()));
+    array.resize(idx+1, boost::any());
 
   return &array[idx];
 }

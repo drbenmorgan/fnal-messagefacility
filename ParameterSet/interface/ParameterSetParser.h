@@ -64,6 +64,7 @@ private:
   qi::rule<Iterator, std::string() , skipper_type> key;
   qi::rule<Iterator, std::string() , skipper_type> str;
   qi::rule<Iterator, boost::any()  , skipper_type> expr;
+  qi::rule<Iterator, boost::any()  , skipper_type> nil;
   qi::rule<Iterator, boost::any()  , skipper_type> reference;
   qi::rule<Iterator, std::vector<boost::any>(), skipper_type> array;
   qi::rule<Iterator, std::pair<std::string, boost::any>(), skipper_type> assign;
