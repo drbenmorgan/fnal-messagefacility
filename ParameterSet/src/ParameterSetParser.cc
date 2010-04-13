@@ -26,166 +26,86 @@ template<typename Iterator>
 PSetParser<Iterator>::PSetParser() 
   : PSetParser::base_type(doc)
   , PrimaryValues ()
+  , nilObj (ParameterSet::nil_obj)
+  , errs ()
 {
   using qi::_1;
   using qi::_a;
   using qi::_val;
   using qi::lit;
+  using qi::char_;
+  using qi::int_;
   using boost::spirit::eol;
+  using boost::spirit::raw;
 
-  doc    =  *(   unnamed_assign 
-                   [phoenix::push_back(phoenix::ref(PrimaryValues), _1)]
-               | re_assign );
+  doc = *(re_assign);
 
-  unnamed_assign =  -(key >> ':') >> expr >> +space ;
-
-  re_assign      =
-             key        [_a=phoenix::bind(&PSetParser::findPrimaryPtr,this,_1)]
-    >> *( '.' >> key    [_a=phoenix::bind(&PSetParser::findPSetPtr,this,_a,_1)])
-    >> *( '[' >> qi::int_ 
-                [_a=phoenix::bind(&PSetParser::findArrayElementPtr,this,_a,_1)]
-              >> ']')
-    >> ':' 
-    >> expr             [phoenix::bind(&PSetParser::replaceObj,this,_a, _1)]
-    >> +space
-    ;
+  re_assign =  -( ref_literal [_a=_1] >> ':' )    
+              >> expr     [phoenix::bind(&PSetParser::setObjFromName,this,_a,_1)]
+              >> +space ;
 
   assign =  key >> ':' >> expr ;
 
-  expr   =  nil              [_val = _1]
-         |  double_literal   [_val = _1]
-         |  int_literal      [_val = _1]
-         |  ( lit('.') >> qi::bool_ )       [_val = _1]
-         |  str              [_val = _1]    
-         |  pset             [_val = _1]
-         |  array            [_val = _1]
-         |  reference        [_val = _1]
+  expr   =  nil                          [_val = _1]
+         |  double_literal               [_val = _1]
+         |  int_literal                  [_val = _1]
+         |  ( lit('.') >> qi::bool_ )    [_val = _1]
+         |  str                          [_val = _1]    
+         |  pset                         [_val = _1]
+         |  array                        [_val = _1]
+         |  reference                    [_val = _1]
         ;
 
-  pset   =  
-         lit('{')  
-      >> -( assign [phoenix::bind(&PSetParser::insertPSetEntry, this,_val,_1)]
-              % ',' ) 
-      >> lit('}')  
-        ;
+  pset   =   lit('{')  
+       >> -( assign [phoenix::bind(&PSetParser::insertPSetEntry,this,_val,_1)] % ',' ) 
+       >>    lit('}') ;
 
   array %= lit('[') >> -( expr % ',') >> ']' ;
 
-  reference = 
-        // support for version feature of primary names
-        // multiple entries with duplicated name are allowed
-        //primary_key 
-        //        [_val=phoenix::bind(&PSetParser::findPrimaryEntryVer,this,_1)]
+  reference = refver_literal [_a=_1]
+       >> (lit("@file") [_val=phoenix::bind(&PSetParser::getObjFromName,this,_a)] );
 
-        // always find the first primary entry with matched name
-        key       [_val=phoenix::bind(&PSetParser::findPrimaryEntry,this,_1)]
-    >> *(  '.' 
-        >> key    [_val=phoenix::bind(&PSetParser::findPSetEntry,this,_val,_1)]
-        )
-    >> *(lit('[') 
-        >> qi::int_ 
-                [_val=phoenix::bind(&PSetParser::findArrayElement,this,_val,_1)]
-        >> ']')
-    >> ( lit("@file") | lit("@DB") )
-        ;
+  ref_literal = raw[key >> *( char_('.')>>key ) >> *( char_('[')>>int_>>char_(']'))];
+  
+  refver_literal = 
+        raw[primary_key >> *( char_('.')>>key ) >> *( char_('[')>>int_>>char_(']'))];
 
-  primary_key = key >> -( lit('(') >> ( qi::int_ | last_literal ) >> ')' ) ;
+  primary_key = raw[key || ( char_('(') >> ( int_ | last_literal ) >> char_(')') )];
 
   key   = qi::lexeme[ascii::char_("a-zA-Z_") >> *ascii::char_("a-zA-Z_0-9")];
   str  %= qi::lexeme['"' >> +(ascii::char_ - '"') >> '"'];
-  space = lit(' ') | lit('\t') | lit('\n')
-        | qi::lit("//")>>*(qi::char_ - eol) >> eol 
-        | qi::lit('#') >>*(qi::char_ - eol) >> eol;
 
   double_literal = boost::spirit::raw[qi::double_]; 
   int_literal    = boost::spirit::raw[qi::int_]; 
   last_literal   = lit("last") [_val=-1];
-  nil            = lit('.') >> ascii::no_case["nil"];
+  nil            = lit('.') >> ascii::no_case["nil"] [_val=phoenix::ref(nilObj)];
 
+  space = lit(' ') | lit('\t') | lit('\n')
+        | lit("//")>> *( char_ - eol ) >> eol 
+        | lit('#') >> *( char_ - eol ) >> eol;
 }
 
 template<typename Iterator>
 boost::any *
-PSetParser<Iterator>::findPrimaryPtr(std::string const & name)
+PSetParser<Iterator>::findPrimaryPtr(
+    std::pair<std::string, int> const & pair, 
+    bool bInsert)
 {
-  //std::cout<<"looking for "<<name<<"......";
-
-  std::vector<std::pair<std::string, boost::any> >::iterator it
-      = PrimaryValues.begin();
-
-  for(; it!=PrimaryValues.end(); ++it)
-  {
-    if(it->first == name)
-    {
-      //std::cout<<"found!\n";
-      return &(it->second);
-    }
-  }
-
-  std::cout<<"reference \""<<name<<"\" not defined!\n";
-  return &empty_obj;
+  return findPrimaryPtr(pair.first, pair.second, bInsert);
 }
 
 template<typename Iterator>
 boost::any *
-PSetParser<Iterator>::findPSetPtr(boost::any * object, std::string const & name)
+PSetParser<Iterator>::findPrimaryPtr(
+    std::string const & name, 
+    int ver,
+    bool bInsert)
 {
-  //std::cout<<"looking for "<<name<<"......";
+  //std::cout<<"looking for "<<name<<"("<<ver<<")......\n";
 
-  boost::any * obj = 
-      boost::any_cast<ParameterSet &>(*object).getParameterObjPtr(name);
+  int v = ver;
 
-  //std::cout<<"found!\n";
-
-  return obj;
-}
-
-template<typename Iterator>
-boost::any *
-PSetParser<Iterator>::findArrayElementPtr(boost::any * object, int idx)
-{
-  //std::cout<<"looking for "<<idx<<"......\n";
-
-  std::vector<boost::any> & array 
-      = boost::any_cast<std::vector<boost::any> & >(*object);
-
-  // fill the missing elements with NIL object (boost::any())
-  if(idx >= array.size())
-    array.resize(idx+1, boost::any());
-
-  return &array[idx];
-}
-
-template<typename Iterator>
-void PSetParser<Iterator>::replaceObj(boost::any * dest, boost::any & src)
-{
-  dest->swap(src);
-  std::cout<<(dest->type().name())<<"\n";
-}
-
-
-template<typename Iterator>
-boost::any 
-PSetParser<Iterator>::findPrimaryEntry(std::string const & name)
-{
-  std::vector<std::pair<std::string, boost::any> >::iterator it
-      = PrimaryValues.begin();
-
-  for(; it!=PrimaryValues.end(); ++it)
-    if(it->first == name)
-      return it->second;
-
-  return empty_obj;
-}
-
-template<typename Iterator>
-boost::any 
-PSetParser<Iterator>::findPrimaryEntryVer(std::pair<std::string, int> const & pair)
-{
-  std::string name = pair.first;
-  int         ver  = pair.second;
-
-  if(ver>=0)
+  if(v>=0)
   {
     std::vector<std::pair<std::string, boost::any> >::iterator it
         = PrimaryValues.begin();
@@ -194,8 +114,8 @@ PSetParser<Iterator>::findPrimaryEntryVer(std::pair<std::string, int> const & pa
     {
       if(it->first == name)
       {
-        if(ver == 0)  return it->second;
-        else          --ver;
+        if(v==0)   return &(it->second);
+        else       --v;
       }
     }
   }
@@ -205,33 +125,172 @@ PSetParser<Iterator>::findPrimaryEntryVer(std::pair<std::string, int> const & pa
         = PrimaryValues.rbegin();
 
     for(; rit!=PrimaryValues.rend(); ++rit)
+    {
       if(rit->first == name)
-        return rit->second;
+      {
+        if(v==-1)  return &(rit->second);
+        else       ++v;
+      }
+    }
   }
+    
+  if(bInsert)
+  {
+    PrimaryValues.push_back(std::make_pair(name, nilObj));
+    return findPrimaryPtr(name, 0, false);
+  }
+  else
+  {
+    std::ostringstream ss;
+    ss << "reference name \"" << name << "(" << ver << ")\" "
+       << "has not been defined in primary entries";
 
-  std::cout<<"Symbol "<<name<<" not defined!\n";
-  return boost::any();
+    errs.push_back(ss.str());
+    throw std::runtime_error("parse error: " + ss.str());
+  }
 }
 
 template<typename Iterator>
-boost::any 
-PSetParser<Iterator>::findPSetEntry(boost::any const & object, std::string const & name)
+boost::any *
+PSetParser<Iterator>::findPSetPtr(
+    boost::any * object, 
+    std::string const & name,
+    bool bInsert)
 {
-  ParameterSet pset = boost::any_cast<ParameterSet>(object);
-  return pset.getParameterObj(name);
+  //std::cout<<"looking for "<<name<<"......\n";
+
+  try 
+  {
+    ParameterSet & pset = boost::any_cast<ParameterSet &>(*object);
+    boost::any * obj = pset.getParameterObjPtr(name, bInsert);
+    return obj;
+  }
+  catch(const boost::bad_any_cast &)
+  {
+    std::string err = "The left to \"" + name + "\" is not a ParameterSet entry";
+    errs.push_back(err);
+    throw std::runtime_error("parse error: " + err);
+  }
 }
 
 template<typename Iterator>
-boost::any 
-PSetParser<Iterator>::findArrayElement(boost::any const & object, int idx)
+boost::any *
+PSetParser<Iterator>::findArrayElementPtr(
+    boost::any * object, 
+    int idx,
+    bool bInsert)
 {
-  std::vector<boost::any> array 
-      = boost::any_cast<std::vector<boost::any> >(object);
+  //std::cout<<"looking for "<<idx<<"......\n";
+  
+  try
+  {
+    std::vector<boost::any> & array 
+        = boost::any_cast<std::vector<boost::any> & >(*object);
 
-  if(idx<array.size())   return array[idx];
+    // fill the missing elements with NIL object (boost::any())
+    if(idx >= array.size())
+    {
+      if(bInsert)
+      {
+        array.resize(idx+1, nilObj);
+        return &array[idx];
+      }
+      else
+      {
+        std::string err = "Invalid array index";
+        errs.push_back(err);
+        throw std::runtime_error("parse error: " + err);
+      }
+    }
 
-  std::cout<<"Invalid array index!\n";
-  return boost::any();
+    return &array[idx];
+  }
+  catch(const boost::bad_any_cast &)
+  {
+    std::string err = "The left to [] is not an array object";
+    errs.push_back(err);
+    throw std::runtime_error("parse error: " + err);
+  }
+}
+
+template<typename Iterator>
+boost::any PSetParser<Iterator>::getObjFromName(std::string & name)
+{
+  //std::cout << "REF: " << name << "\n";
+  boost::any * obj = parseRef(name, false);
+  return *obj;
+}
+
+template<typename Iterator>
+void PSetParser<Iterator>::setObjFromName(std::string & name, boost::any & obj)
+{
+  //std::cout << "REASSIGN: " << name << "\n";
+  boost::any * pobj = parseRef(name, true);
+  pobj->swap(obj);
+}
+
+template<typename Iterator>
+boost::any * PSetParser<Iterator>::parseRef(
+              std::string & str,
+              bool bInsert)
+{
+  // if an empty string is passed in look for nil name entry in the primary values
+  if(str.empty())
+    return findPrimaryPtr("", 0, bInsert);
+
+  std::string::iterator first = str.begin();
+  std::string::iterator last  = str.end();
+
+  using qi::int_;
+  using qi::_val;
+  using qi::_1;
+  using qi::_a;
+  using qi::_b;
+  using qi::lit;
+
+  boost::any * obj;
+
+  typedef BOOST_TYPEOF(ascii::space 
+      | qi::lit('#') >>*(qi::char_ - boost::spirit::eol) >> boost::spirit::eol 
+      | qi::lit("//")>>*(qi::char_ - boost::spirit::eol) >> boost::spirit::eol
+  ) skipper_type;
+
+  qi::rule<std::string::iterator, void(), skipper_type> ref;
+  qi::rule<std::string::iterator, std::pair<std::string, int>(), skipper_type>
+          version_key;
+
+  version_key = key || ('(' >> ( qi::int_ | last_literal) >> ')');
+
+  ref =  version_key       [phoenix::ref(obj)=phoenix::bind(
+                           &PSetParser::findPrimaryPtr,this,_1,phoenix::ref(bInsert))] 
+   >> *(  lit('.') >> key  [phoenix::ref(obj)=phoenix::bind(
+                                 &PSetParser::findPSetPtr, this,
+                                 phoenix::ref(obj), _1, phoenix::ref(bInsert))]
+       )
+   >> *(  lit('[') >> int_ [phoenix::ref(obj)=phoenix::bind(
+                                 &PSetParser::findArrayElementPtr, this,
+                                 phoenix::ref(obj), _1, phoenix::ref(bInsert))]
+                   >> lit(']') 
+       ) ;
+
+  bool r = qi::phrase_parse(
+      first,
+      last,
+      ref,
+      ascii::space 
+      | lit('#') >>*(qi::char_ - boost::spirit::eol) >> boost::spirit::eol 
+      | lit("//")>>*(qi::char_ - boost::spirit::eol) >> boost::spirit::eol
+  );
+
+  if(r && first==last)
+  {
+    return obj;
+  }
+  else
+  {
+    std::string err = "reference parse error when parsing \"" + str + "\"";
+    throw std::runtime_error("reference parsing error: " + err);
+  }
 }
 
 template<typename Iterator>
@@ -264,18 +323,13 @@ void PSetParser<Iterator>::print()
 template<typename Iterator>
 ParameterSet PSetParser<Iterator>::getPSet(std::string const & name)
 {
-  boost::any obj = findPrimaryEntry(name);
-  ParameterSet pset = boost::any_cast<ParameterSet>(obj);
+  boost::any * obj = findPrimaryPtr(name);
+  ParameterSet pset = boost::any_cast<ParameterSet>(*obj);
   return pset;
 }
 
 bool ParameterSetParser::Parse(std::string const & fname, ParameterSet & pset)
 {
-    namespace qi = boost::spirit::qi;
-    namespace ascii = boost::spirit::ascii;
-
-    using boost::spirit::eol;
-
     std::ifstream in(fname.c_str(), std::ios_base::in);
 
     if (!in)
@@ -292,10 +346,24 @@ bool ParameterSetParser::Parse(std::string const & fname, ParameterSet & pset)
         std::istream_iterator<char>(),
         std::back_inserter(storage));
 
+    // parse the configuration string
+    ParseString(storage, pset);
+}
+
+
+bool ParameterSetParser::ParseString(std::string & str, ParameterSet & pset)
+{
+    str += ' '; // make sure the string ends with a white space
+
+    namespace qi = boost::spirit::qi;
+    namespace ascii = boost::spirit::ascii;
+
+    using boost::spirit::eol;
+
     PSetParser<std::string::iterator> p;
 
-    std::string::iterator iter = storage.begin();
-    std::string::iterator end  = storage.end();
+    std::string::iterator iter = str.begin();
+    std::string::iterator end  = str.end();
 
     bool r = qi::phrase_parse(
                  iter, 
@@ -309,13 +377,16 @@ bool ParameterSetParser::Parse(std::string const & fname, ParameterSet & pset)
     if (r && (iter==end) )
     {
         std::cout << "Parsing succeeded\n";
-        pset = p.getPSet("MF");
-        p.print();
+        pset = p.getPSet("MessageFacility");
+        //p.print();
         return true;
     }
     else
     {
         std::cout << "Parsing failed! "<< *iter << *(iter+1) << "\n";
+        std::vector<std::string> errs = p.getErrorMsgs();
+        for(int i=0;i<errs.size();++i)
+          std::cout << errs[i] << "\n";
         return false;
     }
 }

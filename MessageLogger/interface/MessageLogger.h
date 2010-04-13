@@ -487,7 +487,7 @@ public:
   boost::mutex m;
 
 private:
-  static ParameterSet commonPSet();
+  static std::string commonPSet();
 };
 
 class MFSdestroyer

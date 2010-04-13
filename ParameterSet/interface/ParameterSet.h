@@ -12,6 +12,7 @@
 #include <map>
 
 #include <iostream>
+#include <stdexcept>
 
 namespace mf {
 
@@ -25,7 +26,7 @@ typedef std::vector<std::string>            vstring;
 typedef std::vector<ParameterSet>           vParameterSet;
 
 public:
-  ParameterSet() : PSetMap(), empty_obj() {}
+  ParameterSet() : PSetMap() {}
   ~ParameterSet() {}
 
 private:
@@ -35,15 +36,22 @@ private:
   }
 
   boost::any * 
-  getParameterObjPtr(std::string const & name)
+  getParameterObjPtr(std::string const & name, bool bInsert)
   {
     valuemap::iterator it = PSetMap.find(name);
 
     if(it!=PSetMap.end())
       return &(it->second);
 
-    insertEntryObj(std::make_pair(name, boost::any()));
-    return getParameterObjPtr(name);
+    if(bInsert)
+    {
+      insertEntryObj(std::make_pair(name, boost::any()));
+      return getParameterObjPtr(name, false);
+    }
+    else
+    {
+      throw std::runtime_error("Entry " + name + " not found!");
+    }
   }
 
   boost::any  
@@ -54,7 +62,7 @@ private:
     if(it!=PSetMap.end())
       return it->second;
 
-    return empty_obj;
+    return nil_obj;
   }
 
   bool
@@ -136,7 +144,7 @@ public:
  
 private:
   valuemap  PSetMap;
-  boost::any empty_obj;
+  static boost::any nil_obj;
 
   // Make the PSetParser class friend to allow the access of private members
   template<typename Iterator> friend class PSetParser;

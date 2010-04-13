@@ -21,8 +21,8 @@ int main()
 
   // Start MessageFacility Service
   mf::StartMessageFacility(
-      mf::MessageFacilityService::MultiThread, 
-      mf::MessageFacilityService::logConsole());
+      mf::MessageFacilityService::MultiThread);
+      //mf::MessageFacilityService::logCF("logfile"));
 
   // Set module name for the main thread
   mf::SetApplicationName("MessageFacility");

@@ -10,7 +10,7 @@ LINK_DIRECTORIES (
     )
 
 CONFIGURE_FILE (
-    ${CMAKE_CURRENT_SOURCE_DIR}/MessageFacility.cfg
+    ${CMAKE_CURRENT_SOURCE_DIR}/MessageFacilityTest.cfg
     ${CMAKE_CURRENT_BINARY_DIR}/MessageFacility.cfg
     COPYONLY
     )
@@ -32,6 +32,7 @@ TARGET_LINK_LIBRARIES (MFTest
 
 INSTALL (FILES
     mfexample.cc
+    MessageFacility.cfg
     DESTINATION example
     )
 

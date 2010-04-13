@@ -21,8 +21,7 @@ int main()
 
   // Start MessageFacility Service
   mf::StartMessageFacility(
-      mf::MessageFacilityService::MultiThread, 
-      mf::MessageFacilityService::logCFS());
+      mf::MessageFacilityService::MultiThread);
 
   // Set application name (use process name by default)
   mf::SetApplicationName("MF_Example");

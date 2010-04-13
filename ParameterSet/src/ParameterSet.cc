@@ -13,6 +13,8 @@ typedef std::vector<double>                 vdouble;
 typedef std::vector<std::string>            vstring;
 typedef std::vector<ParameterSet>           vParameterSet;
 
+boost::any ParameterSet::nil_obj;
+
 bool ParameterSet::getBool(
     std::string const & name, 
     bool const & def) const
