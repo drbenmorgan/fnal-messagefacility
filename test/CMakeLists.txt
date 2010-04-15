@@ -5,12 +5,6 @@
 #  CMake build file for library Utilities and UtilitiesD
 #
 
-INCLUDE_DIRECTORIES (
-    $ENV{OSPL_HOME}/include
-    $ENV{OSPL_HOME}/include/sys
-    $ENV{OSPL_HOME}/include/dcps/C++/SACPP
-    )
-
 LINK_DIRECTORIES (
     $ENV{OSPL_HOME}/lib
     )
@@ -35,34 +29,6 @@ TARGET_LINK_LIBRARIES (MFTest
     boost_filesystem
     dcpssacpp
     )
-
-ADD_EXECUTABLE (mfsend
-    mfsend.cc
-    CheckStatus.cpp
-    bld/testDcps.cpp
-    bld/testDcps_impl.cpp
-    bld/test.cpp
-    bld/testSplDcps.cpp
-    )
-
-TARGET_LINK_LIBRARIES (mfsend 
-    dcpssacpp
-    )
-
-ADD_EXECUTABLE (mfrecv
-    mfrecv.cc
-    CheckStatus.cpp
-    bld/testDcps.cpp
-    bld/testDcps_impl.cpp
-    bld/test.cpp
-    bld/testSplDcps.cpp
-    )
-
-TARGET_LINK_LIBRARIES (mfrecv
-    boost_thread
-    dcpssacpp
-    )
-
 
 INSTALL (FILES
     mfexample.cc

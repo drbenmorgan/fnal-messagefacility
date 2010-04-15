@@ -1,4 +1,5 @@
 //#define NDEBUG
+#define ML_DEBUG    // always enable debug
 
 #include <iostream>
 
