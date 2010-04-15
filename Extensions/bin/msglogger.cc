@@ -200,10 +200,7 @@ int main(int ac, char* av[])
   }
 
   // start up message facility service
-  //mf::StartMessageFacility( mf::MessageFacilityService::SingleThread, pset );
-  mf::StartMessageFacility( 
-      mf::MessageFacilityService::SingleThread, 
-      mf::MessageFacilityService::logCS() );
+  mf::StartMessageFacility( mf::MessageFacilityService::SingleThread, pset );
   mf::SetApplicationName("msgLogger");
   
   // logging message...
