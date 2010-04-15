@@ -176,7 +176,7 @@ int main()
   status = MFSubscriber -> copy_from_topic_qos (
       message_qos, reliable_topic_qos );
   checkStatus(status, "copy_from_topic_qos()");
-  //message_qos.history.kind = KEEP_ALL_HISTORY_QOS;
+  message_qos.history.kind = KEEP_ALL_HISTORY_QOS;
 
   // Create a DataReader for the topic
   parentReader = MFSubscriber -> create_datareader (
@@ -341,7 +341,7 @@ int main()
           mf::LogErrorObj(eo_p);
         }
 
-        //if(bDisplayMsg)
+        if(bDisplayMsg)
             std::cout << "Recevied messages " << z << "\n\n";
 
         status = reader -> return_loan(msgSeq, infoSeq);
