@@ -465,7 +465,6 @@ private:
 public:
   static MessageFacilityService & instance();
 
-  static ParameterSet ConfigurationFile(std::string const & filename = "MessageFacility.cfg");
   static ParameterSet logConsole();
   static ParameterSet logServer();
   static ParameterSet logFile(std::string const & filename = "logfile");
@@ -473,8 +472,11 @@ public:
   static ParameterSet logCF(std::string const & filename = "logfile");
   static ParameterSet logFS(std::string const & filename = "logfile");
   static ParameterSet logCFS(std::string const & filename = "logfile");
-
   static ParameterSet logArchive(std::string const & filename = "msgarchive");
+
+  static ParameterSet ConfigurationFile(
+               std::string const & filename = "MessageFacility.cfg",
+               ParameterSet const & def = logCF());
 
   static std::string SingleThread;
   static std::string MultiThread;

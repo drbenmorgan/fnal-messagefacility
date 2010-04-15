@@ -347,7 +347,7 @@ bool ParameterSetParser::Parse(std::string const & fname, ParameterSet & pset)
         std::back_inserter(storage));
 
     // parse the configuration string
-    ParseString(storage, pset);
+    return ParseString(storage, pset);
 }
 
 
@@ -376,7 +376,7 @@ bool ParameterSetParser::ParseString(std::string & str, ParameterSet & pset)
 
     if (r && (iter==end) )
     {
-        std::cout << "Parsing succeeded\n";
+        //std::cout << "Parsing succeeded\n";
         pset = p.getPSet("MessageFacility");
         //p.print();
         return true;

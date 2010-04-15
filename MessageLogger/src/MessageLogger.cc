@@ -158,18 +158,63 @@ MessageFacilityService & MessageFacilityService::instance()
 }
 
 // Read configurations from MessageFacility.cfg file
-ParameterSet MessageFacilityService::ConfigurationFile(std::string const & filename)
+ParameterSet MessageFacilityService::ConfigurationFile(
+    std::string const & filename,
+    ParameterSet const & def)
 {
+  size_t sub_start = filename.find("${");
+  size_t sub_end   = filename.find("}");
+
+  const size_t npos = std::string::npos;
+
+  if(    (sub_start==npos && sub_end!=npos)
+      || (sub_start!=npos && sub_end==npos)
+      || (sub_start > sub_end) )
+  {
+    std::cout << "Unrecognized configuration file. "
+              << "Use default configuration instead.\n";
+    return def;
+  }
+
+  std::string fname;
+
+  if(sub_start!=npos && sub_end!=npos)
+  {
+    std::string env = filename.substr(sub_start+2, sub_end-sub_start-2);
+    char *penv = getenv(env.c_str());
+    std::string envstr = std::string(penv ? penv : "");
+
+    fname = filename.substr(0, sub_start)
+                      + envstr
+                      + filename.substr(sub_end+1, filename.size()-sub_end-1); 
+  } 
+  else
+  {
+    fname = filename;
+  }
+
   ParameterSet pset;
-  ParameterSetParser::Parse(filename, pset);
-  return pset;
+
+  if (ParameterSetParser::Parse(fname, pset))
+  {
+    return pset;
+  }
+  else
+  {
+    std::cout << "Configuration file \"" << fname << "\" "
+              << "could not be found or parsing failed.\n"
+              << "Default configuration will be used instead.\n";
+    return def;
+  }
 }
 
 
 std::string MessageFacilityService::commonPSet()
 {
-  std::string pset = 
-        "MessageFacility:{threshold:\"DEBUG\", debugModules:[\"*\"], statistics:[\"stats\"], ";
+  std::string pset = "MessageFacility : { \
+          threshold:\"DEBUG\",  \
+          debugModules:[\"*\"], \
+          statistics:[\"stats\"], ";
 
   return pset;
 }

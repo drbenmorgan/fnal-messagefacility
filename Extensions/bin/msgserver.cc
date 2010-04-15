@@ -176,7 +176,7 @@ int main()
   status = MFSubscriber -> copy_from_topic_qos (
       message_qos, reliable_topic_qos );
   checkStatus(status, "copy_from_topic_qos()");
-  message_qos.history.kind = KEEP_ALL_HISTORY_QOS;
+  //message_qos.history.kind = KEEP_ALL_HISTORY_QOS;
 
   // Create a DataReader for the topic
   parentReader = MFSubscriber -> create_datareader (
@@ -206,9 +206,9 @@ int main()
   checkHandle(newMsg, "create_readcondition()");
 
   // Create a waitset and add the condition
-  newStatus = reader -> get_statuscondition();
-  newStatus -> set_enabled_statuses (DATA_AVAILABLE_STATUS);
-  checkHandle(newStatus, "get_statuscondition()");
+  //newStatus = reader -> get_statuscondition();
+  //newStatus -> set_enabled_statuses (DATA_AVAILABLE_STATUS);
+  //checkHandle(newStatus, "get_statuscondition()");
 
   // Create a command line guard that will be used to trigger the 
   // command line interface
@@ -221,19 +221,19 @@ int main()
   serverWS = new WaitSet();
   status = serverWS -> attach_condition( newMsg.in() );
   checkStatus(status, "attach_condition( newMsg )");
-  status = serverWS -> attach_condition( newStatus.in() );
-  checkStatus(status, "attach_condition( newStatus )");
+  //status = serverWS -> attach_condition( newStatus.in() );
+  //checkStatus(status, "attach_condition( newStatus )");
   status = serverWS -> attach_condition( cmdline.in() );
   checkStatus(status, "attach_condition( cmdline )");
   status = serverWS -> attach_condition( escape.in() );
   checkStatus(status, "attach_condition( escape )");
 
   // Initialize the guardList to obtain the triggered conditions
-  guardList.length(4);
+  guardList.length(3);
 
   // Start MessageFacility Service
   mf::StartMessageFacility(
-      mf::MessageFacilityService::SingleThread,
+      mf::MessageFacilityService::MultiThread,
       mf::MessageFacilityService::logArchive("msg_archive"));
 
   // Start the thread for triggering the command line interface
@@ -250,7 +250,7 @@ int main()
     checkStatus(status, "WaitSet::wait()");
 
     // walk over all guards
-    for(CORBA::ULong gi = 0; gi < guardList.length(); gi++)
+    for(CORBA::ULong gi = 0; gi < guardList.length(); ++gi)
     {
       if(guardList[gi] == escape.in())
       {
@@ -283,12 +283,14 @@ int main()
 
         z += msgSeq->length();
 
-        for(CORBA::ULong i = 0; i < msgSeq->length(); i++)
+        for(CORBA::ULong i = 0; i < msgSeq->length(); ++i)
         {
-          if(infoSeq[i].instance_state == NOT_ALIVE_DISPOSED_INSTANCE_STATE)
+          if(infoSeq[i].sample_state == NOT_READ_SAMPLE_STATE
+             && infoSeq[i].view_state == NOT_NEW_VIEW_STATE
+             && infoSeq[i].instance_state == NOT_ALIVE_DISPOSED_INSTANCE_STATE)
           {
             --z;
-            std::cout << "One logger exits.\n";
+            //std::cout << "One logger exits.\n";
             continue;
           }
 
@@ -341,7 +343,7 @@ int main()
           mf::LogErrorObj(eo_p);
         }
 
-        if(bDisplayMsg)
+        //if(bDisplayMsg)
             std::cout << "Recevied messages " << z << "\n\n";
 
         status = reader -> return_loan(msgSeq, infoSeq);
@@ -349,15 +351,13 @@ int main()
      
       }
     }
-    
-    if( z == 300 )  terminated = true;
   }
 
   // Remove conditions from the waitset
   status = serverWS -> detach_condition( newMsg.in() );
   checkStatus(status, "detach_condition( newMsg )");
-  status = serverWS -> detach_condition( newStatus.in() );
-  checkStatus(status, "detach_condition( newStatus )");
+  //status = serverWS -> detach_condition( newStatus.in() );
+  //checkStatus(status, "detach_condition( newStatus )");
   status = serverWS -> detach_condition( cmdline.in() );
   checkStatus(status, "detach_condition( cmdline )");
   status = serverWS -> detach_condition( escape.in() );

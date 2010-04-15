@@ -93,11 +93,13 @@ void ListenerThread::run()
 
         for(CORBA::ULong i = 0; i < msgSeq->length(); i++)
         {
-          if(infoSeq[i].instance_state==NOT_ALIVE_DISPOSED_INSTANCE_STATE)
+          if(infoSeq[i].sample_state == NOT_READ_SAMPLE_STATE
+             && infoSeq[i].view_state == NOT_NEW_VIEW_STATE
+             && infoSeq[i].instance_state == NOT_ALIVE_DISPOSED_INSTANCE_STATE)
           {
             --nMsgs;
             //std::cout << "One logger exits.\n";
-            emit sysMessage(QString("One logger exits."));
+            //emit sysMessage(QString("One logger exits."));
             continue;
           }
 
