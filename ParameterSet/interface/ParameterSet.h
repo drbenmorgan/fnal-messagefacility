@@ -99,6 +99,7 @@ private:
   static void printElement(boost::any const &, int indent=0);
 
 public:
+#if 0
   template <typename T>
   T getUntrackedParameter(std::string const & name, T const & def) const
   {
@@ -126,6 +127,7 @@ public:
     T t;
     return t;
   }
+#endif
 
   void print(int indent=0) const;
  
