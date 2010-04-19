@@ -72,7 +72,7 @@ PSetParser<Iterator>::PSetParser()
 
   primary_key = raw[key || ( char_('(') >> ( int_ | last_literal ) >> char_(')') )];
 
-  key   = qi::lexeme[ascii::char_("a-zA-Z_") >> *ascii::char_("a-zA-Z_0-9")];
+  key   = qi::lexeme[ascii::char_("a-zA-Z_") >> *ascii::char_("a-zA-Z_0-9|")];
   str  %= qi::lexeme['"' >> +(ascii::char_ - '"') >> '"'];
 
   double_literal = boost::spirit::raw[qi::double_]; 
