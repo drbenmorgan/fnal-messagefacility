@@ -49,7 +49,7 @@ PSetParser<Iterator>::PSetParser()
   expr   =  nil                          [_val = _1]
          |  double_literal               [_val = _1]
          |  int_literal                  [_val = _1]
-         |  ( lit('.') >> qi::bool_ )    [_val = _1]
+         |  qi::bool_                    [_val = _1]
          |  str                          [_val = _1]    
          |  pset                         [_val = _1]
          |  array                        [_val = _1]
@@ -72,13 +72,14 @@ PSetParser<Iterator>::PSetParser()
 
   primary_key = raw[key || ( char_('(') >> ( int_ | last_literal ) >> char_(')') )];
 
-  key   = qi::lexeme[ascii::char_("a-zA-Z_") >> *ascii::char_("a-zA-Z_0-9|")];
+  key   = qi::lexeme[ascii::char_("a-zA-Z_") >> *ascii::char_("a-zA-Z_0-9")]
+          - ( lit("nil") | lit("null") | lit("true") | lit("false") );
   str  %= qi::lexeme['"' >> +(ascii::char_ - '"') >> '"'];
 
   double_literal = boost::spirit::raw[qi::double_]; 
   int_literal    = boost::spirit::raw[qi::int_]; 
   last_literal   = lit("last") [_val=-1];
-  nil            = lit('.') >> ascii::no_case["nil"] [_val=phoenix::ref(nilObj)];
+  nil            = lit("nil")  [_val=phoenix::ref(nilObj)];
 
   space = lit(' ') | lit('\t') | lit('\n')
         | lit("//")>> *( char_ - eol ) >> eol 
