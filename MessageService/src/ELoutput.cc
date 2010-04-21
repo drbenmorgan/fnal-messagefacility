@@ -92,31 +92,65 @@ namespace service {
 // ----------------------------------------------------------------------
 
 
-static char * formatTime( const time_t t )  {
+static char * formatTime( const timeb t, bool milli )  {
 
+static char tm[] = "dd-Mon-yyyy hh:mm:ss.mmm TZN     ";
 static char ts[] = "dd-Mon-yyyy hh:mm:ss TZN     ";
 
-
 #ifdef AN_ALTERNATIVE_FOR_TIMEZONE
-  char * c  = ctime( &t );                      // 6/14/99 mf Can't be static!
-  strncpy( ts+ 0, c+ 8, 2 );  // dd
-  strncpy( ts+ 3, c+ 4, 3 );  // Mon
-  strncpy( ts+ 7, c+20, 4 );  // yyyy
-  strncpy( ts+12, c+11, 8 );  // hh:mm:ss
-  strncpy( ts+21, tzname[localtime(&t)->tm_isdst], 8 );  // CST
+  char * c  = ctime( &t.time );                      // 6/14/99 mf Can't be static!
+  if(milli)
+  {
+    char m[10];
+    sprintf(m, "%03d", t.millitm);
+    strncpy( tm+ 0, c+ 8, 2 );  // dd
+    strncpy( tm+ 3, c+ 4, 3 );  // Mon
+    strncpy( tm+ 7, c+20, 4 );  // yyyy
+    strncpy( tm+12, c+11, 8 );  // hh:mm:ss
+    strncpy( tm+21, m   , 3 );  // mmm
+    strncpy( tm+25, tzname[localtime(&t)->tm_isdst], 8 );  // CST
+  }
+  else
+  {
+    strncpy( ts+ 0, c+ 8, 2 );  // dd
+    strncpy( ts+ 3, c+ 4, 3 );  // Mon
+    strncpy( ts+ 7, c+20, 4 );  // yyyy
+    strncpy( ts+12, c+11, 8 );  // hh:mm:ss
+    strncpy( ts+21, tzname[localtime(&t)->tm_isdst], 8 );  // CST
+  }
 #endif
-
-  strftime( ts, strlen(ts)+1, "%d-%b-%Y %H:%M:%S %Z", localtime(&t) );
+  if(milli)
+  {
+    char tc[35];
+    strftime( tc, 30, "%d-%b-%Y %H:%M:%S %Z", localtime(&t.time) );
+    char m[10];
+    sprintf(m, "%03d", t.millitm);
+    strncpy( tm+0,  tc+0 , 20 );
+    strncpy( tm+21, m +0 , 3  );
+    strncpy( tm+25, tc+21, 8  );
+  }
+  else
+  {  
+    strftime( ts, strlen(ts)+1, "%d-%b-%Y %H:%M:%S %Z", localtime(&t.time) );
                 // mf 4-9-04
+  }
 
 #ifdef STRIP_TRAILING_BLANKS_IN_TIMEZONE
   // strip trailing blanks that would come when the time zone is not as
   // long as the maximum allowed - probably not worth the time 
-  unsigned int b = strlen(ts);
-  while (ts[--b] == ' ') {ts[b] = 0;}
+  if(milli)
+  {
+    unsigned int b = strlen(tm);
+    while (tm[--b] == ' ') {tm[b] = 0;}
+  }
+  else
+  {
+    unsigned int b = strlen(ts);
+    while (ts[--b] == ' ') {ts[b] = 0;}
+  }
 #endif 
 
-  return ts;
+  return milli ? tm : ts;
 
 }  // formatTime()
 
@@ -131,6 +165,7 @@ ELoutput::ELoutput()
 , charsOnLine         ( 0          )
 , xid                 (            )
 , wantTimestamp       ( true       )
+, wantMillisecond     ( false      )
 , wantModule          ( true       )
 , wantSubroutine      ( true       )
 , wantText            ( true       )
@@ -158,6 +193,7 @@ ELoutput::ELoutput( std::ostream & os_ , bool emitAtStart )
 , charsOnLine         ( 0     )
 , xid                 (       )
 , wantTimestamp       ( true  )
+, wantMillisecond     ( false )
 , wantModule          ( true  )
 , wantSubroutine      ( true  )
 , wantText            ( true  )
@@ -191,6 +227,7 @@ ELoutput::ELoutput( const ELstring & fileName, bool emitAtStart )
 , charsOnLine         ( 0     )
 , xid                 (       )
 , wantTimestamp       ( true  )
+, wantMillisecond     ( false )
 , wantModule          ( true  )
 , wantSubroutine      ( true  )
 , wantText            ( true  )
@@ -241,7 +278,10 @@ ELoutput::ELoutput( const ELstring & fileName, bool emitAtStart )
     }
   }
   if (emitAtStart) {
-    emit( formatTime(time(0)), true );
+    timeb tp;
+    ftime(&tp);
+    //emit( formatTime(time(0)), true );
+    emit( formatTime(tp, false), true );
     emit( "\n=======================================================\n",
                                                                 true );
   }
@@ -260,6 +300,7 @@ ELoutput::ELoutput( const ELoutput & orig )
 , charsOnLine         ( orig.charsOnLine          )
 , xid                 ( orig.xid                  )
 , wantTimestamp       ( orig.wantTimestamp        )
+, wantMillisecond     ( orig.wantMillisecond      )
 , wantModule          ( orig.wantModule           )
 , wantSubroutine      ( orig.wantSubroutine       )
 , wantText            ( orig.wantText             )
@@ -416,7 +457,7 @@ bool ELoutput::log( const mf::ErrorObj & msg )  {
 	needAspace = false;
       }
       if (needAspace) { emit(ELstring(" ")); needAspace = false; }
-      emit( formatTime(msg.timestamp()) + ELstring(" ") );
+      emit( formatTime(msg.timestamp(), wantMillisecond) + ELstring(" ") );
     }
   }
   
@@ -621,6 +662,9 @@ void ELoutput::emit( const ELstring & s, bool nl )  {
 void ELoutput::includeTime()   { wantTimestamp = true;  }
 void ELoutput::suppressTime()  { wantTimestamp = false; }
 
+void ELoutput::includeMillisecond()   { wantMillisecond = true;  }
+void ELoutput::suppressMillisecond()  { wantMillisecond = false; }
+
 void ELoutput::includeModule()   { wantModule = true;  }
 void ELoutput::suppressModule()  { wantModule = false; }
 
@@ -686,17 +730,23 @@ void ELoutput::summarization(
 
 void ELoutput::changeFile (std::ostream & os_) {
   os.reset(&os_, do_nothing_deleter());
+  timeb tp;
+  ftime(&tp);
   emit( "\n=======================================================", true );
   emit( "\nError Log changed to this stream\n" );
-  emit( formatTime(time(0)), true );
+  //emit( formatTime(time(0)), true );
+  emit( formatTime(tp, false), true );
   emit( "\n=======================================================\n", true );
 }
 
 void ELoutput::changeFile (const ELstring & filename) {
   os.reset(new std::ofstream( filename.c_str(), std::ios/*_base*/::app), close_and_delete());
+  timeb tp;
+  ftime(&tp);
   emit( "\n=======================================================", true );
   emit( "\nError Log changed to this file\n" );
-  emit( formatTime(time(0)), true );
+  //emit( formatTime(time(0)), true );
+  emit( formatTime(tp, false), true );
   emit( "\n=======================================================\n", true );
 }
 

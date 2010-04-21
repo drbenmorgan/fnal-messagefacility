@@ -131,19 +131,20 @@ public:
 
   void print(int indent=0) const;
  
-  bool        getBool   (std::string const &, bool const &) const;
-  int         getInt    (std::string const &, int const &) const;
-  vint        getVInt   (std::string const &, vint const &) const;
-  double      getDouble (std::string const &, double const &) const;
-  vdouble     getVDouble(std::string const &, vdouble const &) const;
-  std::string getString (std::string const &, std::string const &) const;
-  vstring     getVString(std::string const &, vstring const &) const;
-  ParameterSet getPSet(std::string const &, ParameterSet const &) const;
-  ParameterSet getParameterSet(std::string const &, ParameterSet const &) const;
-  vParameterSet getVPSet(std::string const &, vParameterSet const &) const;
-  vParameterSet getVParameterSet(std::string const &, vParameterSet const &) const;
+  bool empty() const { return PSetMap.empty(); }
+
+  bool        getBool   (std::string const &, bool const & def=false) const;
+  int         getInt    (std::string const &, int const & def=0) const;
+  vint        getVInt   (std::string const &, vint const & def=vint()) const;
+  double      getDouble (std::string const &, double const & def=0.0) const;
+  vdouble     getVDouble(std::string const &, vdouble const & def=vdouble()) const;
+  std::string getString (std::string const &, std::string const & def=std::string()) const;
+  vstring     getVString(std::string const &, vstring const & def=vstring()) const;
+  ParameterSet getPSet(std::string const &, ParameterSet const & def=ParameterSet()) const;
+  ParameterSet getParameterSet(std::string const &, ParameterSet const & def=ParameterSet()) const;
+  vParameterSet getVPSet(std::string const &, vParameterSet const & def=vParameterSet()) const;
+  vParameterSet getVParameterSet(std::string const &, vParameterSet const & def=vParameterSet()) const;
   
- 
 private:
   valuemap  PSetMap;
   static boost::any nil_obj;

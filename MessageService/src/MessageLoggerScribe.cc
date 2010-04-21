@@ -738,6 +738,15 @@ void
     dest_ctrl.suppressTime();
   }
 
+  // enable to disable millisecond in the timestamp
+  bool millisecondTimestamp_default
+        = default_pset.getBool ("useMilliseconds", false);
+  bool millisecondTimestamp
+        = dest_pset.getBool ("useMilliseconds", millisecondTimestamp_default);
+  if (millisecondTimestamp) {
+    dest_ctrl.includeMillisecond();
+  }
+
 }  // MessageLoggerScribe::configure_dest()
 
 void

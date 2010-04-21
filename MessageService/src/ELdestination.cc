@@ -228,6 +228,9 @@ void ELdestination::includeSubroutine()   { ; }
 void ELdestination::suppressTime()  { ; }
 void ELdestination::includeTime()   { ; }
 
+void ELdestination::suppressMillisecond()  { ; }
+void ELdestination::includeMillisecond()   { ; }
+
 void ELdestination::suppressContext()  { ; }
 void ELdestination::includeContext()   { ; }
 

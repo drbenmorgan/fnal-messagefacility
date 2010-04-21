@@ -87,6 +87,7 @@ protected:
   virtual void emit( const ELstring & s, bool nl=false );
 
   virtual void suppressTime();        virtual void includeTime();
+  virtual void suppressMillisecond(); virtual void includeMillisecond();
   virtual void suppressModule();      virtual void includeModule();
   virtual void suppressSubroutine();  virtual void includeSubroutine();
   virtual void suppressText();        virtual void includeText();
@@ -111,6 +112,7 @@ protected:
   mf::ELextendedID   xid;
 
   bool wantTimestamp
+  ,    wantMillisecond
   ,    wantModule
   ,    wantSubroutine
   ,    wantText

@@ -97,7 +97,7 @@ namespace service {
 // Useful function:
 // ----------------------------------------------------------------------
 
-
+#if 0
 static char * formatTime( const time_t t )  {
 
 static char ts[] = "dd-Mon-yyyy hh:mm:ss TZN     ";
@@ -125,6 +125,71 @@ static char ts[] = "dd-Mon-yyyy hh:mm:ss TZN     ";
   return ts;
 
 }  // formatTime()
+#endif
+
+static char * formatTime( const timeb t, bool milli )  {
+
+static char tm[] = "dd-Mon-yyyy hh:mm:ss.mmm TZN     ";
+static char ts[] = "dd-Mon-yyyy hh:mm:ss TZN     ";
+
+#ifdef AN_ALTERNATIVE_FOR_TIMEZONE
+  char * c  = ctime( &t.time );                      // 6/14/99 mf Can't be static!
+  if(milli)
+  {
+    char m[10];
+    sprintf(m, "%03d", t.millitm);
+    strncpy( tm+ 0, c+ 8, 2 );  // dd
+    strncpy( tm+ 3, c+ 4, 3 );  // Mon
+    strncpy( tm+ 7, c+20, 4 );  // yyyy
+    strncpy( tm+12, c+11, 8 );  // hh:mm:ss
+    strncpy( tm+21, m   , 3 );  // mmm
+    strncpy( tm+25, tzname[localtime(&t)->tm_isdst], 8 );  // CST
+  }
+  else
+  {
+    strncpy( ts+ 0, c+ 8, 2 );  // dd
+    strncpy( ts+ 3, c+ 4, 3 );  // Mon
+    strncpy( ts+ 7, c+20, 4 );  // yyyy
+    strncpy( ts+12, c+11, 8 );  // hh:mm:ss
+    strncpy( ts+21, tzname[localtime(&t)->tm_isdst], 8 );  // CST
+  }
+#endif
+  if(milli)
+  {
+    char tc[35];
+    strftime( tc, 30, "%d-%b-%Y %H:%M:%S %Z", localtime(&t.time) );
+    char m[10];
+    sprintf(m, "%03d", t.millitm);
+    strncpy( tm+0,  tc+0 , 20 );
+    strncpy( tm+21, m +0 , 3  );
+    strncpy( tm+25, tc+21, 8  );
+  }
+  else
+  {  
+    strftime( ts, strlen(ts)+1, "%d-%b-%Y %H:%M:%S %Z", localtime(&t.time) );
+                // mf 4-9-04
+  }
+
+#ifdef STRIP_TRAILING_BLANKS_IN_TIMEZONE
+  // strip trailing blanks that would come when the time zone is not as
+  // long as the maximum allowed - probably not worth the time 
+  if(milli)
+  {
+    unsigned int b = strlen(tm);
+    while (tm[--b] == ' ') {tm[b] = 0;}
+  }
+  else
+  {
+    unsigned int b = strlen(ts);
+    while (ts[--b] == ' ') {ts[b] = 0;}
+  }
+#endif 
+
+  return milli ? tm : ts;
+
+}  // formatTime()
+
+
 
 // ----------------------------------------------------------------------
 // Class registeration:
@@ -153,6 +218,7 @@ ELDDSdest::ELDDSdest(std::string const & name_, ParameterSet const & pset_)
 , MFMessageTS         (            )
 , talker              (            )
 , wantTimestamp       ( true       )
+, wantMillisecond     ( false      )
 , wantModule          ( true       )
 , wantSubroutine      ( true       )
 , wantText            ( true       )
@@ -191,6 +257,7 @@ ELDDSdest::ELDDSdest( const ELDDSdest & orig )
 , MFMessageTS         ( orig.MFMessageTS          )
 , talker              ( orig.talker               )
 , wantTimestamp       ( orig.wantTimestamp        )
+, wantMillisecond     ( orig.wantMillisecond      )
 , wantModule          ( orig.wantModule           )
 , wantSubroutine      ( orig.wantSubroutine       )
 , wantText            ( orig.wantText             )
@@ -402,7 +469,7 @@ bool ELDDSdest::log( const mf::ErrorObj & msg )  {
 
   // Build an IDL object from ErrorObj
   //
-  DDSmsg.timestamp_  = CORBA::string_dup( formatTime(msg.timestamp())        );
+  DDSmsg.timestamp_  = CORBA::string_dup( formatTime(msg.timestamp(), wantMillisecond) );
 
   DDSmsg.hostname_   = CORBA::string_dup( xid.hostname.c_str()               );
   DDSmsg.hostaddr_   = CORBA::string_dup( xid.hostaddr.c_str()               );
@@ -489,6 +556,9 @@ void ELDDSdest::emit( const ELstring & s, bool nl )  {
 
 void ELDDSdest::includeTime()   { wantTimestamp = true;  }
 void ELDDSdest::suppressTime()  { wantTimestamp = false; }
+
+void ELDDSdest::includeMillisecond()   { wantMillisecond = true;  }
+void ELDDSdest::suppressMillisecond()  { wantMillisecond = false; }
 
 void ELDDSdest::includeModule()   { wantModule = true;  }
 void ELDDSdest::suppressModule()  { wantModule = false; }

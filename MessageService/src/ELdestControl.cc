@@ -136,6 +136,9 @@ void ELdestControl::includeSubroutine()   { if (d) d->includeSubroutine();  }
 void ELdestControl::suppressTime()  { if (d) d->suppressTime(); }
 void ELdestControl::includeTime()   { if (d) d->includeTime();  }
 
+void ELdestControl::suppressMillisecond()  { if (d) d->suppressMillisecond(); }
+void ELdestControl::includeMillisecond()   { if (d) d->includeMillisecond();  }
+
 void ELdestControl::suppressContext()  { if (d) d->suppressContext(); }
 void ELdestControl::includeContext()   { if (d) d->includeContext();  }
 

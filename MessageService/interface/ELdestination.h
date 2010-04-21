@@ -111,6 +111,7 @@ private:
   virtual void suppressModule();         virtual void includeModule();
   virtual void suppressSubroutine();     virtual void includeSubroutine();
   virtual void suppressTime();           virtual void includeTime();
+  virtual void suppressMillisecond();    virtual void includeMillisecond();
   virtual void suppressContext();        virtual void includeContext();
   virtual void suppressSerial();         virtual void includeSerial();
   virtual void useFullContext();         virtual void useContext();

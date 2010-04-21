@@ -125,7 +125,8 @@ ErrorObj::~ErrorObj()  {
 int                   ErrorObj::serial()     const  { return mySerial; }
 const ELextendedID &  ErrorObj::xid()        const  { return myXid; }
 const ELstring &      ErrorObj::idOverflow() const  { return myIdOverflow; }
-time_t                ErrorObj::timestamp()  const  { return myTimestamp; }
+//time_t                ErrorObj::timestamp()  const  { return myTimestamp; }
+timeb                 ErrorObj::timestamp()  const  { return myTimestamp; }
 const ELlist_string & ErrorObj::items()      const  { return myItems; }
 bool                  ErrorObj::reactedTo()  const  { return myReactedTo; }
 bool                  ErrorObj::is_verbatim()const  { return verbatim; }
@@ -245,7 +246,8 @@ void ErrorObj::set( const ELseverityLevel & sev, const ELstring & id )  {
 
   clear();
 
-  myTimestamp = time( 0 );
+  //myTimestamp = time( 0 );
+  ftime( &myTimestamp );
   mySerial = ++ ourSerial;
 
   setID( id );
@@ -259,7 +261,9 @@ void ErrorObj::clear()  {
   mySerial     = 0;
   myXid.clear();
   myIdOverflow = "";
-  myTimestamp  = 0;
+  //myTimestamp  = 0;
+  myTimestamp.time  = 0;
+  myTimestamp.millitm = 0;
   myItems.erase( myItems.begin(), myItems.end() );  // myItems.clear();
   myReactedTo  = false;
 

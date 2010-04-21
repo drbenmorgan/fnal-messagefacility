@@ -31,6 +31,8 @@
 #include <sstream>
 #include <string>
 
+#include <sys/timeb.h>
+
 namespace mf {       
 
 
@@ -64,7 +66,8 @@ public:
   int                    serial() const;
   const ELextendedID &   xid() const;
   const ELstring &       idOverflow() const;
-  time_t                 timestamp() const;
+  //time_t                 timestamp() const;
+  timeb                  timestamp() const;
   const ELlist_string &  items() const;
   bool                   reactedTo() const;
   ELstring               fullText() const;
@@ -112,7 +115,8 @@ private:
   int            mySerial;
   ELextendedID   myXid;
   ELstring       myIdOverflow;
-  time_t         myTimestamp;
+  //time_t         myTimestamp;
+  timeb          myTimestamp;
   ELlist_string  myItems;
   bool           myReactedTo;
   ELstring       myContext;
