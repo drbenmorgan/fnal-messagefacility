@@ -30,109 +30,23 @@ public:
   ~ParameterSet() {}
 
 private:
-  void insertEntryObj(std::pair<std::string, boost::any> const & pair)
-  {
-    PSetMap.insert(pair);
-  }
 
-  boost::any * 
-  getParameterObjPtr(std::string const & name, bool bInsert)
-  {
-    valuemap::iterator it = PSetMap.find(name);
-
-    if(it!=PSetMap.end())
-      return &(it->second);
-
-    if(bInsert)
-    {
-      insertEntryObj(std::make_pair(name, boost::any()));
-      return getParameterObjPtr(name, false);
-    }
-    else
-    {
-      throw std::runtime_error("Entry " + name + " not found!");
-    }
-  }
-
-  boost::any  
-  getParameterObj(std::string const & name)
-  {
-    valuemap::iterator it = PSetMap.find(name);
-
-    if(it!=PSetMap.end())
-      return it->second;
-
-    return nil_obj;
-  }
-
-  bool
-  getUntrackedParameterObj(std::string const & name, boost::any & obj) const
-  {
-    valuemap::const_iterator it = PSetMap.find(name);
-
-    if(it!=PSetMap.end())
-    {
-      obj = it->second;
-      return true;
-    }
-
-    return false;
-  }
-    
   template <typename T>
-  void insertEntry(std::string const & name, T const & val) 
-  {
-    PSetMap.insert(std::make_pair(name, val));
-  }
+  void insertEntry(std::string const & name, T const & val);
+  void insertEntryObj(std::pair<std::string, boost::any> const & pair);
 
-  static bool isBool(boost::any const & obj)
-       { return obj.type() == typeid(bool); }
-  static bool isPSet(boost::any const & obj)
-       { return obj.type() == typeid(ParameterSet); }
-  static bool isPrimitive(boost::any const & obj)
-       { return obj.type() == typeid(std::string); }
-  static bool isVector(boost::any const & obj)
-       { return obj.type() == typeid(std::vector<boost::any>); }
-
-  static void tab(int indent) { for(int i=0;i<indent;++i) std::cout<<' ';}
+  boost::any * getParameterObjPtr(std::string const & name, bool bInsert);
+  boost::any   getParameterObj(std::string const & name);
 
   static void printElement(boost::any const &, int indent=0);
 
 public:
-#if 0
-  template <typename T>
-  T getUntrackedParameter(std::string const & name, T const & def) const
-  {
-    valuemap::const_iterator it = PSetMap.find(name);
-
-    if(it!=PSetMap.end())
-    {
-      try
-      {
-        T t = boost::any_cast<T>(it->second);
-        return t;
-      }
-      catch(const boost::bad_any_cast &)
-      {
-        return def;
-      }
-    }
-
-    return def;
-  }
-  
-  template <typename T>
-  T getParameter(std::string const & name) const
-  {
-    T t;
-    return t;
-  }
-#endif
 
   void print(int indent=0) const;
  
   bool empty() const { return PSetMap.empty(); }
 
+  // returns the parameter value as the specified type
   bool        getBool   (std::string const &, bool const & def=false) const;
   int         getInt    (std::string const &, int const & def=0) const;
   vint        getVInt   (std::string const &, vint const & def=vint()) const;
@@ -144,6 +58,10 @@ public:
   ParameterSet getParameterSet(std::string const &, ParameterSet const & def=ParameterSet()) const;
   vParameterSet getVPSet(std::string const &, vParameterSet const & def=vParameterSet()) const;
   vParameterSet getVParameterSet(std::string const &, vParameterSet const & def=vParameterSet()) const;
+
+  // returns the list of parameter names
+  vstring getNameList     () const;
+  vstring getPSetNameList () const;
   
 private:
   valuemap  PSetMap;

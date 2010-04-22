@@ -15,6 +15,94 @@ typedef std::vector<ParameterSet>           vParameterSet;
 
 boost::any ParameterSet::nil_obj;
 
+namespace {
+
+  bool isBool(boost::any const & obj)
+       { return obj.type() == typeid(bool); }
+
+  bool isPSet(boost::any const & obj)
+       { return obj.type() == typeid(ParameterSet); }
+
+  bool isPrimitive(boost::any const & obj)
+       { return obj.type() == typeid(std::string); }
+
+  bool isVector(boost::any const & obj)
+       { return obj.type() == typeid(std::vector<boost::any>); }
+
+  void tab(int indent) 
+       { for(int i=0;i<indent;++i) std::cout<<' ';}
+}
+
+void ParameterSet::insertEntryObj(std::pair<std::string, boost::any> const & pair)
+{
+  PSetMap.insert(pair);
+}
+
+boost::any * 
+ParameterSet::getParameterObjPtr(std::string const & name, bool bInsert)
+{
+  valuemap::iterator it = PSetMap.find(name);
+
+  if(it!=PSetMap.end())
+    return &(it->second);
+
+  if(bInsert)
+  {
+    insertEntryObj(std::make_pair(name, boost::any()));
+    return getParameterObjPtr(name, false);
+  }
+  else
+  {
+    throw std::runtime_error("Entry " + name + " not found!");
+  }
+}
+
+boost::any  
+ParameterSet::getParameterObj(std::string const & name)
+{
+  valuemap::iterator it = PSetMap.find(name);
+
+  if(it!=PSetMap.end())
+    return it->second;
+
+  return nil_obj;
+}
+    
+template <typename T>
+void ParameterSet::insertEntry(std::string const & name, T const & val) 
+{
+  PSetMap.insert(std::make_pair(name, val));
+}
+
+vstring ParameterSet::getNameList() const
+{
+  vstring names;
+
+  valuemap::const_iterator it = PSetMap.begin();
+  while(it!=PSetMap.end())
+  {
+    names.push_back(it->first);
+    ++it;
+  }
+
+  return names;    
+}
+
+vstring ParameterSet::getPSetNameList() const
+{
+  vstring names;
+
+  valuemap::const_iterator it = PSetMap.begin();
+  while(it!=PSetMap.end())
+  {
+    if(isPSet(it->second))  names.push_back(it->first);
+    ++it;
+  }
+
+  return names;
+}
+
+
 bool ParameterSet::getBool(
     std::string const & name, 
     bool const & def) const
