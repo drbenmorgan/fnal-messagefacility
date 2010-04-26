@@ -128,7 +128,8 @@ private:
   void  configure_ordinary_destinations( );			// Change Log 3
   void  configure_statistics( );				// Change Log 3
   void  configure_dest( ELdestControl & dest_ctrl		
-                      , String const &  filename
+                      , String const & dest_pset_name 
+                      , ParameterSet const & dest_pset
 		      );
   void  configure_default_fwkJobReport( ELdestControl & dest_ctrl); //ChangeLog 4
   void  configure_external_dests( );

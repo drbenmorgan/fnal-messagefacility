@@ -513,7 +513,8 @@ void
 
 void
   MessageLoggerScribe::configure_dest( ELdestControl & dest_ctrl
-                                     , String const &  filename
+                                     , String const & dest_pset_name 
+                                     , ParameterSet const & dest_pset
 				     )
 {
   static const int NO_VALUE_SET = -45654;			// change log 2
@@ -530,15 +531,167 @@ void
   char const*  severity_array[] = {"WARNING", "INFO", "ERROR", "DEBUG"};
   vString const  severities(severity_array+0, severity_array+4);
 
+  // grab the pset for category list for this destination
+  PSet cats_pset = dest_pset.getPSet("categories");
+
   // grab list of categories
-  vString  categories
-     = job_pset_p->getVString("categories", empty_vString);
+  vString  categories = cats_pset.getPSetNameList();
+  vString::iterator it = categories.begin();
+  while(it!=categories.end()) { 
+    if(*it == "default") it=categories.erase(it); 
+    else ++it;
+  }
+
+  // grab list of hardwired categories (hardcats) -- these are to be added
+  // to the list of categories -- change log 24
+  {
+    std::vector<std::string> hardcats = messageLoggerDefaults->categories;
+  // combine the lists, not caring about possible duplicates (for now)
+    copy_all( hardcats, std::back_inserter(categories) );
+  }  // no longer need hardcats
+
+  // See if this is just a placeholder			// change log 9
+  bool is_placeholder 
+      = dest_pset.getBool("placeholder", false);
+  if (is_placeholder) return;
+  
+  // default threshold for the destination
+  String default_threshold = empty_String;
+
+  // grab this destination's default limit/interval/timespan:
+  PSet  category_default_pset = cats_pset.getPSet("default", empty_PSet);
+  
+  int  dest_default_limit 
+         = category_default_pset.getInt("limit", COMMON_DEFAULT_LIMIT);
+  int  dest_default_interval 
+         = category_default_pset.getInt("reportEvery", COMMON_DEFAULT_INTERVAL);
+  int  dest_default_timespan 
+         = category_default_pset.getInt("timespan", COMMON_DEFAULT_TIMESPAN);
+
+  if ( dest_default_limit != NO_VALUE_SET ) 
+  {
+    if ( dest_default_limit < 0 ) dest_default_limit = 2000000000;
+    dest_ctrl.setLimit("*", dest_default_limit );
+  } 						// change log 1b, 2a, 2b
+  if ( dest_default_interval != NO_VALUE_SET ) 
+  {  // change log 6
+    dest_ctrl.setInterval("*", dest_default_interval );
+  } 						
+  if ( dest_default_timespan != NO_VALUE_SET ) 
+  {
+    if ( dest_default_timespan < 0 ) dest_default_timespan = 2000000000;
+    dest_ctrl.setTimespan("*", dest_default_timespan );
+  } 						// change log 1b, 2a, 2b
+    						  
+  // establish this destination's threshold:
+  String dest_threshold = dest_pset.getString("threshold", default_threshold);
+
+  if (dest_threshold == empty_String) {  
+    dest_threshold = default_threshold;
+  }
+  if (dest_threshold == empty_String) {
+    dest_threshold = messageLoggerDefaults->threshold(dest_pset_name);
+  }
+  if (dest_threshold == empty_String) {
+    dest_threshold = COMMON_DEFAULT_THRESHOLD;
+  }
+
+  ELseverityLevel  threshold_sev(dest_threshold);
+  dest_ctrl.setThreshold(threshold_sev);
+
+  // establish this destination's limit/interval/timespan for each category:
+  PSet default_category_pset = cats_pset.getPSet("default");
+
+  for( vString::const_iterator id_it = categories.begin()
+     ; id_it != categories.end()
+     ; ++id_it
+     )
+  {
+    String  msgID = *id_it;
+
+    PSet category_pset
+       = cats_pset.getPSet(msgID, default_category_pset);
+
+    int  category_default_limit 
+       = default_category_pset.getInt("limit", NO_VALUE_SET);
+    int  limit
+       = category_pset.getInt("limit", category_default_limit);
+    if (limit == NO_VALUE_SET) limit = dest_default_limit;
+       								// change log 7 
+    int  category_default_interval 
+       = default_category_pset.getInt("reportEvery", NO_VALUE_SET);
+    int  interval
+       = category_pset.getInt("reportEvery",category_default_interval);
+    if (interval == NO_VALUE_SET) interval = dest_default_interval;
+      						// change log 6  and then 7
+    int  category_default_timespan 
+       = default_category_pset.getInt("timespan", NO_VALUE_SET);
+    int  timespan
+       = category_pset.getInt("timespan", category_default_timespan);
+    if (timespan == NO_VALUE_SET) timespan = dest_default_timespan;
+       								// change log 7 
+
+    std::string category = msgID;
+    if ( limit     == NO_VALUE_SET )  {				// change log 24
+       limit = messageLoggerDefaults->limit(dest_pset_name,category);
+    }  
+    if ( interval     == NO_VALUE_SET )  {			// change log 24
+       interval = messageLoggerDefaults->reportEvery(dest_pset_name,category);
+    }  
+    if ( timespan     == NO_VALUE_SET )  {			// change log 24
+       timespan = messageLoggerDefaults->timespan(dest_pset_name,category);
+    }  
+     
+    if( limit     != NO_VALUE_SET )  {
+      if ( limit < 0 ) limit = 2000000000;  
+      dest_ctrl.setLimit(msgID, limit);
+    }  						// change log 2a, 2b
+    if( interval  != NO_VALUE_SET )  {
+      dest_ctrl.setInterval(msgID, interval);
+    }  						// change log 6
+    if( timespan  != NO_VALUE_SET )  {
+      if ( timespan < 0 ) timespan = 2000000000;  
+      dest_ctrl.setTimespan(msgID, timespan);
+    }						// change log 2a, 2b
+						
+  }  // for
+
+  // establish this destination's linebreak policy:
+  bool noLineBreaks 
+  	= dest_pset.getBool ("noLineBreaks", false); 
+  if (noLineBreaks) {
+    dest_ctrl.setLineLength(32000);
+  }
+  else {
+    int  lenDef = 80;
+    int  lineLen = dest_pset.getInt ("lineLength", lenDef);
+    if (lineLen != lenDef) {
+      dest_ctrl.setLineLength(lineLen);
+    }
+  }
+
+  // if indicated, suppress time stamps in this destination's output
+  bool suppressTime 
+  	= dest_pset.getBool ("noTimeStamps", false);
+  if (suppressTime) {
+    dest_ctrl.suppressTime();
+  }
+
+  // enable or disable milliseconds in the timestamp
+  bool millisecondTimestamp
+        = dest_pset.getBool ("useMilliseconds", false);
+  if (millisecondTimestamp) {
+    dest_ctrl.includeMillisecond();
+  }
+
+#if 0
+  // grab list of categories
+  vString  categories = job_pset_p->getVString("categories", empty_vString);
 
   // grab list of messageIDs -- these are a synonym for categories
   // Note -- the use of messageIDs is deprecated in favor of categories
   {
-    vString  messageIDs
-      = job_pset_p->getVString("messageIDs", empty_vString);
+    vString  messageIDs = job_pset_p->getVString("messageIDs", empty_vString);
 
   // combine the lists, not caring about possible duplicates (for now)
     copy_all( messageIDs, std::back_inserter(categories) );
@@ -553,8 +706,7 @@ void
   }  // no longer need hardcats
 
   // grab default threshold common to all destinations
-  String default_threshold
-     = job_pset_p->getString("threshold", empty_String);
+  String default_threshold = job_pset_p->getString("threshold", empty_String);
      						// change log 3a
 						// change log 24
 
@@ -573,7 +725,7 @@ void
   String default_pset_threshold				
      = default_pset.getString("threshold", default_threshold);
      						// change log 34
-					
+			
   // grab all of this destination's parameters:
   PSet  dest_pset = job_pset_p->getPSet(filename, empty_PSet);
 
@@ -746,7 +898,7 @@ void
   if (millisecondTimestamp) {
     dest_ctrl.includeMillisecond();
   }
-
+#endif
 }  // MessageLoggerScribe::configure_dest()
 
 void
@@ -861,7 +1013,7 @@ void
     stream_ps[actual_filename] = os_sp.get();
 
     // now configure this destination:
-    configure_dest(dest_ctrl, psetname);	
+    configure_dest(dest_ctrl, psetname, fjr_pset);	
 
   }  // for [it = fwkJobReports.begin() to end()]
 
@@ -892,6 +1044,196 @@ void
   String   empty_String;
   PSet     empty_PSet;
 
+  // grab list of destinations:
+  PSet dests = job_pset_p->getPSet("destinations");
+  vString  destinations = dests.getPSetNameList();
+
+  // exclude statistic destinations:
+  {
+    vString::iterator it = destinations.begin();
+    while(it!=destinations.end()) { 
+      if(*it == "statistics") it=destinations.erase(it); 
+      else ++it;
+    }
+  }
+
+  // Use the default list of destinations if and only if the grabbed list is
+  // empty						 	// change log 24
+  if (destinations.empty()) {
+    destinations = messageLoggerDefaults->destinations;
+  }
+  
+  // dial down the early destination if other dest's are supplied:
+  if( ! destinations.empty() )
+    early_dest.setThreshold(ELhighestSeverity);
+
+  // establish each destination:
+  for( vString::const_iterator it = destinations.begin()
+     ; it != destinations.end()
+     ; ++it
+     )
+  {
+    String psetname = *it;
+    String filename = psetname;
+    
+    // Retrieve the destination pset object
+    PSet  dest_pset = dests.getPSet(psetname, empty_PSet);
+
+    // check that this destination is not just a placeholder // change log 11
+    bool is_placeholder 
+	= dest_pset.getBool("placeholder", false);
+    if (is_placeholder) continue;
+
+    // Modify the file name if extension or name is explicitly specified
+    // change log 14 
+
+    // Although for an ordinary destination there is no output attribute
+    // for the cfg (you can use filename instead) we provide output() for
+    // uniformity with the statistics destinations.  The "right way" to
+    // work this would have been to provide a filename() method, along with 
+    // an extension() method.  We recognize the potential name confusion here
+    // (filename(filename))!
+    
+    // grab the destination type
+    String dest_type = dest_pset.getString("type", "file");
+
+    // Determine the destination file name to use if no explicit filename is
+    // supplied in the cfg.
+    String filename_default = dest_pset.getString("output", empty_String);
+
+    if ( filename_default == empty_String ) {
+      filename_default = messageLoggerDefaults->output(psetname); 
+                                   // change log 31
+      if (filename_default  == empty_String) {
+        filename_default  = filename;
+      }        
+    }
+
+    String explicit_filename 
+        = dest_pset.getString("filename", filename_default);
+    String explicit_extension 
+        = dest_pset.getString("extension", empty_String);
+
+    filename = explicit_filename;
+
+    if (explicit_extension != empty_String) 
+    {
+      if (explicit_extension[0] == '.')
+	filename = filename + explicit_extension;             
+      else
+	filename = filename + "." + explicit_extension;   
+    }
+
+    // Attach a default extension of .log if there is no extension on a file
+    if (filename.find('.') == std::string::npos)
+        filename += ".log";
+
+    // Make up a stream_id for duplication checking
+    std::string stream_id;
+
+    if(dest_type == "file")         stream_id = filename;
+    else if(dest_type == "cout")    stream_id = std::string("cout");
+    else if(dest_type == "cerr")    stream_id = std::string("cerr");
+    else                            stream_id = dest_type + "_" + psetname;
+    
+    // Check that this is not a duplicate name			// change log 18
+    if ( stream_ps.find(stream_id)!=stream_ps.end() ) {        
+      if (clean_slate_configuration) {				// change log 22
+//        throw mf::Exception ( mf::errors::Configuration )   
+        LogError("duplicateDestination")			// change log 35
+        <<"Duplicate name for a MessageLogger Destination: " 
+        << stream_id
+        << "\n" << "Only the first configuration instructions are used";
+	continue;
+      } else {
+        LogWarning("duplicateDestination")
+        <<"Duplicate name for a MessageLogger Destination: " 
+        << stream_id
+        << "\n" << "Only original configuration instructions are used";
+        continue;
+      }
+    } 
+    
+    // push the stream_id to ordinary dest filename 
+    if(dest_type=="file" || dest_type=="cout" || dest_type=="cerr")
+      ordinary_destination_filenames.push_back(stream_id);
+
+    // attach the current destination, keeping a control handle to it:
+    ELdestControl dest_ctrl;
+    std::ostream* os_p;
+    if( dest_type == "cout" )  
+    {
+      os_p = &std::cout;
+      dest_ctrl = admin_p->attach( ELoutput(std::cout) );
+      stream_ps["cout"] = &std::cout;
+    }
+    else if( dest_type == "cerr" )  
+    {
+      os_p = &std::cerr;
+      early_dest.setThreshold(ELzeroSeverity); 
+      dest_ctrl = early_dest;
+      stream_ps["cerr"] = &std::cerr;
+    }
+    else if( dest_type == "file" ) 
+    {
+      boost::shared_ptr<std::ofstream> 
+          os_sp(new std::ofstream(filename.c_str()));
+      file_ps.push_back(os_sp);
+      os_p = os_sp.get();
+      dest_ctrl = admin_p->attach( ELoutput(*os_sp) );
+      stream_ps[filename] = os_sp.get();
+    }
+    else  
+    {
+      // destinations from Extension package
+      boost::scoped_ptr<ELdestination> dest_sp(
+          ELdestinationFactory::createInstance(
+              dest_type, filename, dest_pset) );
+
+      if(dest_sp.get() == 0) 
+      {
+        LogError("ExtensionNotFound")
+            << "The destination of type \"" 
+            << dest_type
+            << "\" does not exist!";
+        continue;
+      }
+
+      dest_ctrl = admin_p->attach( *dest_sp );
+    } 
+
+    // now configure this destination:
+    configure_dest(dest_ctrl, psetname, dest_pset);
+
+    // check if this destination outputs the statistics
+    bool output_stat = dest_pset.getBool("outputStatistics", false);
+
+    // build and configure statistic destinations
+    if( output_stat )
+    {
+      if( dest_type == "cout" || dest_type == "cerr" || dest_type == "file" )
+      {
+        ELdestControl stat_ctrl;
+        stat_ctrl = admin_p->attach( ELstatistics(*os_p) );
+
+        statisticsDestControls.push_back(stat_ctrl);
+        statisticsResets.push_back( dest_pset.getBool("reset", false) );
+
+        configure_dest(stat_ctrl, psetname, dest_pset);
+
+        stat_ctrl.noTerminationSummary();
+      }
+      else
+      {
+        // statistic destination for extension types not supported yet
+      }
+    }
+
+    //(*errorlog_p)( ELinfo, "added_dest") << filename << endmsg;
+
+  }  // for [it = destinations.begin() to end()]
+
+#if 0
   // grab list of destinations:
   vString  destinations
      = job_pset_p->getVString("destinations", empty_vString);
@@ -1047,6 +1389,7 @@ void
     configure_dest(dest_ctrl, psetname);
 
   }  // for [it = destinations.begin() to end()]
+#endif
 
 } // configure_ordinary_destinations
 
@@ -1058,6 +1401,170 @@ void
   String   empty_String;
   PSet     empty_PSet;
 
+  // grab list of statistics destinations:
+  PSet     dests      = job_pset_p->getPSet("destinations");
+  PSet     stats      = dests.getPSet("statistics");
+  vString  statistics = stats.getPSetNameList();
+  
+  bool no_statistics_configured = statistics.empty();		// change log 24
+  
+  if ( no_statistics_configured ) {
+    // Read the list of staistics destinations from hardwired defaults,
+    // but only if there is also no list of ordinary destinations.
+    // (If a cfg specifies destinations, and no statistics, assume that
+    // is what the user wants.)
+    vString  destinations = dests.getPSetNameList();
+    if (destinations.empty()) { 
+      statistics = messageLoggerDefaults->statistics;
+      no_statistics_configured = statistics.empty();
+    }
+  }
+
+   // establish each statistics destination:
+  for( vString::const_iterator it = statistics.begin()
+     ; it != statistics.end()
+     ; ++it
+     )
+  {
+    String psetname = *it;
+    String filename = psetname;
+
+    PSet stat_pset = stats.getPSet(psetname, empty_PSet);
+
+    // check that this destination is not just a placeholder // change log 20
+    bool is_placeholder 
+	= stat_pset.getBool("placeholder", false);
+    if (is_placeholder) continue;
+
+    // grab the statistic destination type
+    String dest_type = stat_pset.getString("type", "file");
+
+    // Determine the destination file name to use if no explicit filename is
+    // supplied in the cfg.
+    String filename_default = stat_pset.getString("output", empty_String);
+
+    if ( filename_default == empty_String ) {
+      filename_default = messageLoggerDefaults->output(psetname); 
+      if (filename_default  == empty_String) {
+        filename_default  = filename;
+      }        
+    }
+
+    String explicit_filename 
+        = stat_pset.getString("filename", filename_default);
+    String explicit_extension 
+        = stat_pset.getString("extension", empty_String);
+
+    filename = explicit_filename;
+
+    if (explicit_extension != empty_String) 
+    {
+      if (explicit_extension[0] == '.')
+	filename = filename + explicit_extension;             
+      else
+	filename = filename + "." + explicit_extension;   
+    }
+
+    // Attach a default extension of .log if there is no extension on a file
+    if (filename.find('.') == std::string::npos)
+        filename += ".log";
+
+    // Make up a stream_id for duplication checking
+    std::string stream_id;
+
+    if(dest_type == "file")         stream_id = filename;
+    else if(dest_type == "cout")    stream_id = std::string("cout");
+    else if(dest_type == "cerr")    stream_id = std::string("cerr");
+    else                            stream_id = dest_type + "_" + psetname;
+ 
+
+    // Check that this is not a duplicate name - 
+    // unless it is an ordinary destination (which stats can share)
+    if ( !search_all(ordinary_destination_filenames, stream_id) )
+    {
+      if ( stream_ps.find(stream_id)!=stream_ps.end() ) 
+      {        
+        if (clean_slate_configuration) 
+        {			// change log 22
+          throw mf::Exception ( mf::errors::Configuration ) 
+          <<"Duplicate name for a MessageLogger Statistics Destination: " 
+          << stream_id
+          << "\n";
+        } 
+        else 
+        {
+          LogWarning("duplicateDestination")
+          <<"Duplicate name for a MessageLogger Statistics Destination: " 
+          << stream_id
+          << "\n" << "Only original configuration instructions are used";
+          continue;
+        } 
+      }
+    }
+    
+    // create (if statistics file does not match any destination file name)
+    // or note (if statistics file matches a destination file name) the ostream.
+    // But if no statistics destinations were provided in the config, do not
+    // create a new destination for this hardwired statistics - only act if
+    // it is matches a destination.  (shange log 24)
+    bool statistics_destination_is_real = !no_statistics_configured;
+
+    std::ostream* os_p;
+
+    if ( stream_ps.find(stream_id) == stream_ps.end() ) 
+    {
+      if ( dest_type == "cout" ) 
+      {
+        os_p = &std::cout;
+      } 
+      else if ( dest_type == "cerr" ) 
+      {
+        os_p = &std::cerr;
+      } 
+      else if ( dest_type == "file" )
+      {
+        boost::shared_ptr<std::ofstream> 
+            os_sp(new std::ofstream(stream_id.c_str()));
+	file_ps.push_back(os_sp);
+        os_p = os_sp.get();
+      }
+      else   // all other extension types
+      {
+        throw mf::Exception ( mf::errors::Configuration )
+              << "Not supported statistic destination type \""
+              << dest_type
+              << "\"\n";
+      }
+
+      stream_ps[stream_id] = os_p;
+
+    } 
+    else 
+    { 
+      statistics_destination_is_real = true;			// change log 24
+      os_p = stream_ps[stream_id];
+    }
+       
+    if (statistics_destination_is_real)	{			// change log 24
+      // attach the statistics destination, keeping a control handle to it:
+      ELdestControl dest_ctrl;
+      dest_ctrl = admin_p->attach( ELstatistics(*os_p) );
+      statisticsDestControls.push_back(dest_ctrl);
+      bool reset = stat_pset.getBool("reset", false);
+      statisticsResets.push_back(reset);
+    
+      // now configure this destination:
+      configure_dest(dest_ctrl, psetname, stat_pset);
+
+      // and suppress the desire to do an extra termination summary just because
+      // of end-of-job info messages
+      dest_ctrl.noTerminationSummary();
+    }
+     
+  }  // for [it = statistics.begin() to end()]
+
+
+#if 0
   // grab list of statistics destinations:
   vString  statistics 
      = job_pset_p->getVString("statistics", empty_vString);
@@ -1189,6 +1696,7 @@ void
     }
      
   }  // for [it = statistics.begin() to end()]
+#endif
 
 } // configure_statistics
 
@@ -1211,7 +1719,7 @@ void
     ELdestControl  dest_ctrl = admin_p->attach( *dest_p );
 
     // configure the newly-attached destination:
-    configure_dest( dest_ctrl, (*it)->name() );
+    //configure_dest( dest_ctrl, (*it)->name() );
     delete *it;  // dispose of our (copy of the) NamedDestination
   }
   extern_dests.clear();
