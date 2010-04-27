@@ -41,10 +41,10 @@ PSetParser<Iterator>::PSetParser()
   doc = *(re_assign);
 
   re_assign =  -( ref_literal [_a=_1] >> ':' )    
-              >> expr     [phoenix::bind(&PSetParser::setObjFromName,this,_a,_1)]
+              >> expr    [phoenix::bind(&PSetParser::setObjFromName,this,_a,_1)]
               >> +space ;
 
-  assign =  key >> ':' >> expr ;
+  assign =  valid_key >> ':' >> expr ;
 
   expr   =  nil                          [_val = _1]
          |  double_literal               [_val = _1]
@@ -57,7 +57,8 @@ PSetParser<Iterator>::PSetParser()
         ;
 
   pset   =   lit('{')  
-       >> -( assign [phoenix::bind(&PSetParser::insertPSetEntry,this,_val,_1)] % ',' ) 
+       >> -( assign [phoenix::bind(&PSetParser::insertPSetEntry,this,_val,_1)]
+                % ',' ) 
        >>    lit('}') ;
 
   array %= lit('[') >> -( expr % ',') >> ']' ;
@@ -65,15 +66,27 @@ PSetParser<Iterator>::PSetParser()
   reference = refver_literal [_a=_1]
        >> (lit("@file") [_val=phoenix::bind(&PSetParser::getObjFromName,this,_a)] );
 
-  ref_literal = raw[key >> *( char_('.')>>key ) >> *( char_('[')>>int_>>char_(']'))];
+  ref_literal    = raw[    valid_key 
+                        >> *( char_('.') >> valid_key ) 
+                        >> *( char_('[') >> int_ >> char_(']') )
+                      ];
   
-  refver_literal = 
-        raw[primary_key >> *( char_('.')>>key ) >> *( char_('[')>>int_>>char_(']'))];
+  refver_literal = raw[    primary_key 
+                        >> *( char_('.') >> valid_key ) 
+                        >> *( char_('[') >> int_ >> char_(']') )
+                      ];
 
-  primary_key = raw[key || ( char_('(') >> ( int_ | last_literal ) >> char_(')') )];
+  primary_key    = raw[    valid_key 
+                        || ( char_('(') >> (int_|last_literal) >> char_(')') )
+                      ];
 
-  key   = qi::lexeme[ascii::char_("a-zA-Z_") >> *ascii::char_("a-zA-Z_0-9")]
-          - ( lit("nil") | lit("null") | lit("true") | lit("false") );
+  valid_key = !keywords >> key;
+
+  key   = qi::lexeme[ascii::char_("a-zA-Z_") >> *ascii::char_("a-zA-Z_0-9")];
+  
+  keywords = ( lit("nil") | lit("null") | lit("true") | lit("false") ) 
+             >> !ascii::char_("a-zA-Z_0-9") ;
+
   str  %= qi::lexeme['"' >> +(ascii::char_ - '"') >> '"'];
 
   double_literal = boost::spirit::raw[qi::double_]; 
@@ -379,7 +392,7 @@ bool ParameterSetParser::ParseString(std::string & str, ParameterSet & pset)
     {
         //std::cout << "Parsing succeeded\n";
         pset = p.getPSet("MessageFacility");
-        //p.print();
+        p.print();
         return true;
     }
     else

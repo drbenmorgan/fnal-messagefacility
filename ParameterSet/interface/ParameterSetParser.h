@@ -58,6 +58,8 @@ private:
   qi::rule<Iterator, skipper_type> doc;
   qi::rule<Iterator, ParameterSet(), skipper_type> pset;
   qi::rule<Iterator, std::string() , skipper_type> key;
+  qi::rule<Iterator, std::string() , skipper_type> valid_key;
+  qi::rule<Iterator, void()        , skipper_type> keywords;
   qi::rule<Iterator, std::string() , skipper_type> str;
   qi::rule<Iterator, boost::any()  , skipper_type> expr;
   qi::rule<Iterator, boost::any()  , skipper_type> nil;
