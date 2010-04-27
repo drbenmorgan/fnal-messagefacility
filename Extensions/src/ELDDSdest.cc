@@ -194,7 +194,7 @@ static char ts[] = "dd-Mon-yyyy hh:mm:ss TZN     ";
 // ----------------------------------------------------------------------
 // Class registeration:
 // ----------------------------------------------------------------------
-REG_DESTINATION(DDS, ELDDSdest)
+REG_DESTINATION(dds, ELDDSdest)
 
 // ----------------------------------------------------------------------
 // Constructors:

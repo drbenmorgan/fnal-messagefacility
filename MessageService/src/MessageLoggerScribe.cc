@@ -1188,7 +1188,7 @@ void
       // destinations from Extension package
       boost::scoped_ptr<ELdestination> dest_sp(
           ELdestinationFactory::createInstance(
-              dest_type, filename, dest_pset) );
+              dest_type, psetname, dest_pset) );
 
       if(dest_sp.get() == 0) 
       {

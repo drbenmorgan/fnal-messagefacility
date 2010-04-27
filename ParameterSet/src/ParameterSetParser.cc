@@ -424,7 +424,7 @@ bool ParameterSetParser::ParseString(std::string & str, ParameterSet & pset)
     {
         //std::cout << "Parsing succeeded\n";
         pset = p.getPSet("MessageFacility");
-        p.print();
+        //p.print();
         return true;
     }
     else

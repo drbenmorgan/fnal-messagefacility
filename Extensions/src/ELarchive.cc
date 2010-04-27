@@ -189,7 +189,7 @@ static char ts[] = "dd-Mon-yyyy hh:mm:ss TZN     ";
 // ----------------------------------------------------------------------
 // Class registeration:
 // ----------------------------------------------------------------------
-REG_DESTINATION(ARCHIVE, ELarchive)
+REG_DESTINATION(archive, ELarchive)
 
 // ----------------------------------------------------------------------
 // Constructors:
@@ -327,7 +327,7 @@ ELarchive::ELarchive( const ELstring & fileName, bool emitAtStart )
 
 ELarchive::ELarchive( std::string const & name_, ParameterSet const & pset_ )
 : ELdestination       (       )
-, os                  ( new std::ofstream( name_.c_str() , std::ios/*_base*/::app), close_and_delete())
+//, os                  ( new std::ofstream( name_.c_str() , std::ios/*_base*/::app), close_and_delete())
 , charsOnLine         ( 0     )
 , xid                 (       )
 , wantTimestamp       ( true  )
@@ -345,6 +345,41 @@ ELarchive::ELarchive( std::string const & name_, ParameterSet const & pset_ )
   #ifdef ELarchiveCONSTRUCTOR_TRACE
     std::cerr << "Constructor for ELarchive( " << fileName << " )\n";
   #endif
+
+  // build output filename from pset object
+  std::string filename = name_;
+
+  // Determine the destination file name to use if no explicit filename is
+  // supplied in the cfg.
+  std::string empty_String;
+  std::string filename_default = pset_.getString("output", empty_String);
+
+  if ( filename_default == empty_String )
+      filename_default  = filename;
+
+  std::string explicit_filename 
+      = pset_.getString("filename", filename_default);
+  std::string explicit_extension 
+      = pset_.getString("extension", empty_String);
+
+  filename = explicit_filename;
+
+  if (explicit_extension != empty_String) 
+  {
+    if (explicit_extension[0] == '.')
+      filename = filename + explicit_extension;             
+    else
+      filename = filename + "." + explicit_extension;   
+  }
+
+  // Attach a default extension of .log if there is no extension on a file
+  if (filename.find('.') == std::string::npos)
+      filename += ".log";
+
+  // now initialize the os
+  os.reset( new std::ofstream(filename.c_str() , std::ios/*_base*/::app), 
+            close_and_delete());
+
 
   bool tprm = preambleMode;
   preambleMode = true;

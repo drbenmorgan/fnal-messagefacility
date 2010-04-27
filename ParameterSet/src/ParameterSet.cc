@@ -396,11 +396,11 @@ void ParameterSet::printElement(boost::any const & obj, int indent)
 {
   if(obj.empty())
   {
-    std::cout << ".NIL";
+    std::cout << "nil";
   }
   else if(isBool(obj))
   {
-    std::cout << (boost::any_cast<bool>(obj) ? ".TRUE" : ".FALSE");
+    std::cout << (boost::any_cast<bool>(obj) ? "true" : "false");
   }
   else if(isPrimitive(obj))
   {

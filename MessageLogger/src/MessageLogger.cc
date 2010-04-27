@@ -212,7 +212,6 @@ ParameterSet MessageFacilityService::ConfigurationFile(
 std::string MessageFacilityService::commonPSet()
 {
   std::string pset = "MessageFacility : { \
-          threshold:\"DEBUG\",  \
           debugModules:[\"*\"], \
           statistics:[\"stats\"], ";
 
@@ -222,7 +221,8 @@ std::string MessageFacilityService::commonPSet()
 ParameterSet MessageFacilityService::logConsole()
 {
   std::string pstr = commonPSet();
-  pstr +=   " destinations : [\"cout\"] }";
+  pstr +=   " destinations : { console : { type : \"cout\", \
+                                           threshold : \"DEBUG\" } } }";
 
   ParameterSet pset;
   ParameterSetParser::ParseString(pstr, pset);
@@ -232,7 +232,8 @@ ParameterSet MessageFacilityService::logConsole()
 ParameterSet MessageFacilityService::logServer()
 {
   std::string pstr = commonPSet();
-  pstr +=   " destinations : [\"DDS|test\"] }";
+  pstr +=   " destinations : { server : { type : \"dds\", \
+                                          threshold : \"DEBUG\" } } }";
 
   ParameterSet pset;
   ParameterSetParser::ParseString(pstr, pset);
@@ -242,7 +243,9 @@ ParameterSet MessageFacilityService::logServer()
 ParameterSet MessageFacilityService::logFile(std::string const & filename)
 {
   std::string pstr = commonPSet();
-  pstr +=   " destinations : [\"" + filename + "\"] }";
+  pstr +=   " destinations : { file : { type : \"file\", \
+                                        threshold : \"DEBUG\", \
+                                        filename :\"" + filename + "\"} } }";
 
   ParameterSet pset;
   ParameterSetParser::ParseString(pstr, pset);
@@ -252,7 +255,10 @@ ParameterSet MessageFacilityService::logFile(std::string const & filename)
 ParameterSet MessageFacilityService::logCS()
 {
   std::string pstr = commonPSet();
-  pstr +=   " destinations : [\"cout\", \"DDS|test\"] }";
+  pstr +=   " destinations : { console : { type : \"cout\", \
+                                           threshold : \"DEBUG\" }, \
+                               server  : { type : \"dds\", \
+                                           threshold : \"DEBUG\" } } }";
 
   ParameterSet pset;
   ParameterSetParser::ParseString(pstr, pset);
@@ -262,7 +268,11 @@ ParameterSet MessageFacilityService::logCS()
 ParameterSet MessageFacilityService::logCF(std::string const & filename)
 {
   std::string pstr = commonPSet();
-  pstr +=   " destinations : [\"cout\", \""+ filename + "\"] }";
+  pstr +=   " destinations : { console : { type : \"cout\", \
+                                           threshold : \"DEBUG\" }, \
+                               file : { type : \"file\", \
+                                        threshold : \"DEBUG\", \
+                                        filename : \""+ filename + "\" } } }";
 
   ParameterSet pset;
   ParameterSetParser::ParseString(pstr, pset);
@@ -272,7 +282,11 @@ ParameterSet MessageFacilityService::logCF(std::string const & filename)
 ParameterSet MessageFacilityService::logFS(std::string const & filename)
 {
   std::string pstr = commonPSet();
-  pstr +=   " destinations : [\"DDS|test\", \""+filename+"\"] }";
+  pstr +=   " destinations : { server : { type : \"dds\", \
+                                          threshold : \"DEBUG\" }, \
+                               file : { type : \"file\", \
+                                        threshold : \"DEBUG\", \
+                                        filename : \""+filename+"\" } } }";
 
   ParameterSet pset;
   ParameterSetParser::ParseString(pstr, pset);
@@ -282,7 +296,13 @@ ParameterSet MessageFacilityService::logFS(std::string const & filename)
 ParameterSet MessageFacilityService::logCFS(std::string const & filename)
 {
   std::string pstr = commonPSet();
-  pstr +=   " destinations : [\"cout\", \"DDS|test\", \""+filename+"\"] }";
+  pstr +=   " destinations : { console : { type : \"cout\", \
+                                           threshold : \"DEBUG\" }, \
+                               server  : { type : \"dds\", \
+                                           threshold : \"DEBUG\" }, \
+                               file : { type : \"file\", \
+                                        threshold : \"DEBUG\", \
+                                        filename : \""+filename+"\" } } }";
 
   ParameterSet pset;
   ParameterSetParser::ParseString(pstr, pset);
@@ -292,7 +312,9 @@ ParameterSet MessageFacilityService::logCFS(std::string const & filename)
 ParameterSet MessageFacilityService::logArchive(std::string const & filename)
 {
   std::string pstr = commonPSet();
-  pstr +=   " destinations : [\"ARCHIVE|"+filename+"\"] }";
+  pstr +=   " destinations : { archive : { type : \"archive\", \
+                                           threshold : \"DEBUG\", \
+                                           filename : \""+filename+"\" } } }";
 
   ParameterSet pset;
   ParameterSetParser::ParseString(pstr, pset);
