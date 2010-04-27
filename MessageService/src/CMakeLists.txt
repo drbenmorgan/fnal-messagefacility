@@ -22,6 +22,7 @@ SET (FILES
     MessageServicePresence.cc
 #    MessageServicePSetValidation.cc
     MsgContext.cc
+    Presence.cc
     SingleThreadMSPresence.cc
     ThreadQueue.cc
     )

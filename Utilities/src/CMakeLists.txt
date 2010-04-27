@@ -9,7 +9,6 @@ SET (FILES
     Hash.cc
     md5.c
     Parse.cc
-    Presence.cc
     SingleConsumerQ.cc
     tinyxml.cc
     tinyxmlerror.cc

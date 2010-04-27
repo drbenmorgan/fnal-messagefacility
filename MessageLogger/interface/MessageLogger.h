@@ -104,7 +104,7 @@
 #include "MessageLogger/interface/ErrorObj.h"
 #include "Utilities/interface/EDMException.h"		// Change log 8
 
-#include "Utilities/interface/Presence.h"
+#include "MessageService/interface/Presence.h"
 #include "MessageService/interface/MessageLogger.h"
 #include "ParameterSet/interface/ParameterSet.h"
 

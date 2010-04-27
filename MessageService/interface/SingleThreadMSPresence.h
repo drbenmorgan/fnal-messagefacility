@@ -2,7 +2,7 @@
 #define MessageFacility_MessageService_SingleThreadMSPresence_h
 
 #include "boost/thread/thread.hpp"
-#include "Utilities/interface/Presence.h"
+#include "MessageService/interface/Presence.h"
 #include "MessageService/interface/MessageLoggerScribe.h"
 #include "MessageLogger/interface/AbstractMLscribe.h"
 

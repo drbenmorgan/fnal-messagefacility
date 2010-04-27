@@ -1,7 +1,7 @@
 #ifndef MessageFacility_MessageService_MessageServicePresence_h
 #define MessageFacility_MessageService_MessageServicePresence_h
 
-#include "Utilities/interface/Presence.h"
+#include "MessageService/interface/Presence.h"
 #include "MessageService/interface/MainThreadMLscribe.h"
 
 #include "boost/thread/thread.hpp"
