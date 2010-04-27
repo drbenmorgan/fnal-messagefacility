@@ -50,7 +50,7 @@ private:
 
   boost::any getObjFromName(std::string & name);
   void       setObjFromName(std::string & name, boost::any & obj);
-  boost::any * parseRef(std::string &, bool);
+  boost::any * parseRef(std::string &, bool, bool bTopLvl=true, ParameterSet * pset=NULL);
 
   void insertPSetEntry(ParameterSet &, std::pair<std::string, boost::any> const&);
 
