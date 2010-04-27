@@ -1217,7 +1217,7 @@ void
         stat_ctrl = admin_p->attach( ELstatistics(*os_p) );
 
         statisticsDestControls.push_back(stat_ctrl);
-        statisticsResets.push_back( dest_pset.getBool("reset", false) );
+        statisticsResets.push_back( dest_pset.getBool("resetStatistics", false) );
 
         configure_dest(stat_ctrl, psetname, dest_pset);
 
