@@ -64,8 +64,8 @@ PSetParser<Iterator>::PSetParser()
 
   array %= lit('[') >> -( expr % ',') >> ']' ;
 
-  reference = refver_literal [_a=_1]
-       >> (lit("@file") [_val=phoenix::bind(&PSetParser::getObjFromName,this,_a)] );
+  reference      = refver_literal [_a=_1] >> lit("@local") 
+                    [_val=phoenix::bind(&PSetParser::getObjFromName,this,_a)];
 
   ref_literal    = raw[    valid_key 
                         >> *( char_('.') >> valid_key ) 
