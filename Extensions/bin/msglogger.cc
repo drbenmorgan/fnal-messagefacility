@@ -145,7 +145,7 @@ int main(int ac, char* av[])
   it = vcat.begin();
   while(it!=vcat.end())
   {
-    cat += *it + "|";
+    cat += *it + ((it==vcat.end()-1) ? "" : "|");
     ++it;
   }
 
