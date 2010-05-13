@@ -69,6 +69,8 @@ public:
   // -----  mutator:
   //
   void setSubroutine( const ELstring & subName );
+  void switchChannel( const ELstring & channelName );
+        // switchChannel is only meant for remote msg logging
 
   // -----  logging operations:
   //

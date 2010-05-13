@@ -68,6 +68,8 @@ public:
 
   virtual bool log( const mf::ErrorObj & msg );
 
+  virtual void switchChannel( const mf::ELstring & channelName );
+
   virtual void finish();
 
   // ---  Methods invoked through the ELdestControl handle:

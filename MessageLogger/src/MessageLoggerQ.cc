@@ -49,6 +49,8 @@
 //      Special control of standAlone message logging
 // 14 - 8/12/09 mf, cdj
 //      Better ownership management of standAlone or other scribe
+// 15 - 05/12/10 ql
+//      Addition of SWC command, to be used by SwithChannel
 
 using namespace mf;
 
@@ -247,6 +249,11 @@ void
   handshakedCommand(FJR_SUMMARY, sum_p, "JRS" );
 }  // MessageLoggerQ::CFG()
 
+void
+  MessageLoggerQ::MLqSWC( std::string * chanl_p )
+{
+  handshakedCommand(SWITCH_CHANNEL, static_cast<void *>(chanl_p), "SWC");
+}  // MessageLoggerQ::SWC()
 
 bool
   MessageLoggerQ::handshaked(MessageLoggerQ::OpCode const & op)  // changeLog 9

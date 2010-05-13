@@ -76,6 +76,8 @@ public:
 
   virtual ELstring getNewline() const;
 
+  virtual void switchChannel( const mf::ELstring & channelName );
+
   virtual void finish();
 
   // -----  Methods invoked through the ELdestControl handle:

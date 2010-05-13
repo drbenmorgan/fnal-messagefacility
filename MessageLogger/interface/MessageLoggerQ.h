@@ -38,6 +38,7 @@ public:
   , FLUSH_LOG_Q    // FLS -- handshaked
   , GROUP_STATS    // GRP
   , FJR_SUMMARY    // JRS -- handshaked
+  , SWITCH_CHANNEL // SWG
   };  // OpCode
 
   // ---  birth via a surrogate:
@@ -55,6 +56,7 @@ public:
   static  void  MLqFLS();
   static  void  MLqGRP(std::string * cat_p);
   static  void  MLqJRS(std::map<std::string, double> * sum_p);
+  static  void  MLqSWC(std::string * chanl_p);
 
   // ---  bookkeeping for single-thread mode
   static  void  setMLscribe_ptr

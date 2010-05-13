@@ -157,6 +157,14 @@ void ErrorLog::setSubroutine( const ELstring & subName )  {
 
 }  // setSubroutine()
 
+void ErrorLog::switchChannel( const ELstring & channelName ) {
+
+  std::list<boost::shared_ptr<ELdestination> >::iterator d;
+  for ( d = a->sinks().begin();  d != a->sinks().end();  ++d )
+    (*d) -> switchChannel( channelName );
+  
+}
+
 static inline void msgexit(int s) {
   std::ostringstream os;
   os << "msgexit - MessageLogger Log requested to exit with status " << s;

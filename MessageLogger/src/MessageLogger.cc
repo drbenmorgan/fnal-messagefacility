@@ -404,7 +404,6 @@ void SetModuleName(std::string const & modulename)
     drop -> debugEnabled = true;
   else
     drop -> debugEnabled = false;
-
 }
 
 // Set the run/event context
@@ -414,6 +413,22 @@ void SetContext(std::string const & context)
     return;
 
   MessageDrop::instance() -> runEvent = context;
+}
+
+// Switch dds partition / channel
+void SwitchChannel(int c)
+{
+  if( c<0 || c>4 )
+  {
+    LogWarning("RemoteMsg") << "Specified channel dose not exist";
+    return;
+  }
+
+  std::stringstream ss;
+  ss << "Partition" << c;
+
+  std::string * chanl = new std::string(ss.str());
+  mf::MessageLoggerQ::MLqSWC(chanl);
 }
 
 }  // namespace mf

@@ -509,6 +509,7 @@ public:
   void SetModuleName(std::string const & modulename);
   void SetContext(std::string const & context);
 
+  void SwitchChannel(int c);
 
 }  // namespace mf
 

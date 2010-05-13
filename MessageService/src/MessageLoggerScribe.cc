@@ -449,6 +449,13 @@ void
 	break;
       }
     }
+    case MessageLoggerQ::SWITCH_CHANNEL:  {
+      std::string * chanl_p = 
+              static_cast<std::string*>(operand);
+      errorlog_p -> switchChannel( *chanl_p );
+      delete chanl_p;
+      break;
+    }
   }  // switch
 
 }  // MessageLoggerScribe::runCommand(opcode, operand)

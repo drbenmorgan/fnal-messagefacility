@@ -42,6 +42,8 @@ int main()
   // Switch context
   mf::SetContext("pro-event");
 
+  mf::SwitchChannel(2);
+
   // Log Debugs
   for(int i=0; i<1; ++i)
   {

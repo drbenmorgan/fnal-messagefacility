@@ -79,6 +79,8 @@ ELdestination::~ELdestination()  {
 
 bool ELdestination::log( const mf::ErrorObj & msg )  { return false; }
 
+void ELdestination::switchChannel( const mf::ELstring & channelName ) { }
+
 
 // ----------------------------------------------------------------------
 // Methods invoked through the ELdestControl handle:
@@ -280,7 +282,11 @@ void close_and_delete::operator()(std::ostream* os) const {
   delete os;
 }
 
+
+// ---------------------------------------------------------------------
 // Destination factory
+// ---------------------------------------------------------------------
+
 ELdestinationFactory::map_type * ELdestinationFactory::map;
 
 void ELdestinationFactory::reg(std::string type_str, 

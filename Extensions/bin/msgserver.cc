@@ -6,11 +6,15 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
+#include <boost/program_options.hpp>
+
 #include <iostream>
 #include <string>
 
 using namespace DDS;
 using namespace MessageFacility;
+
+namespace po = boost::program_options;
 
 // required by all threads
 static GuardCondition_var       cmdline;
@@ -21,6 +25,7 @@ boost::thread                   trigger;
 boost::thread                   cmdHandler;
 
 bool bDisplayMsg;
+int PartitionNumber = 0;
 int  z;
 
 void cmdLineTrigger()
@@ -64,12 +69,19 @@ void cmdLineInterface()
     {
       std::cout << "Total " << z << " messages has been received.\n";
     }
+    else if(cmd == "partition" || cmd == "p")
+    {
+      std::cout << "Please enter a partition number (0-4): \n";
+      getline(std::cin, cmd);
+      std::cout << "Switched to partition " << cmd << "\n";
+    }
     else if(cmd == "help" || cmd == "h")
     {
       std::cout << "MessageFacility DDS server available commands:\n"
                 << "  (h)elp          display this help message\n"
                 << "  (s)tat          summary of received messages\n"
                 << "  (r)esume        resume to message listening mode\n"
+                << "  (p)artition     listen to a new partition\n"
                 << "  (q)uit          exit MessageFacility DDS server\n"
                 << "  ... more interactive commands on the way.\n";
     }
@@ -87,8 +99,50 @@ void cmdLineInterface()
 }
 
 
-int main()
+int main(int argc, char * argv[])
 {
+  // checking options
+  std::string filename;
+
+  try {
+    po::options_description cmdopt("Allowed options");
+    cmdopt.add_options()
+      ("help,h", "display help message")
+      ("partition,p", 
+        po::value<int>(&PartitionNumber)->default_value(0), 
+        "Partition number the msgserver will listen to (0 - 4)")
+      ("filename,f",
+        po::value<std::string>(&filename)->default_value("msgarchive"),
+        "specify the message archive file name");
+
+    po::options_description desc;
+    desc.add(cmdopt);
+
+    po::variables_map vm;
+    po::store(po::command_line_parser(argc, argv).options(desc).run(), vm);
+    po::notify(vm);
+
+    if(vm.count("help"))
+    {
+      std::cout << "Usage: msglogger [options] <message text>\n";
+      std::cout << cmdopt;
+      return 0;
+    }
+  } 
+  catch(std::exception & e)
+  {
+    std::cerr << "error: " << e.what() << "\n";
+    return 1;
+  }
+  catch(...) {
+    std::cerr << "Exception of unknown type!\n";
+    return 1;
+  }
+
+  // Generate the Partition name string
+  std::stringstream ss;
+  ss << "Partition" << PartitionNumber;
+ 
   // Generic DDS entities
   DomainParticipantFactory_var    dpf;
   DomainParticipant_var           participant;
@@ -118,7 +172,6 @@ int main()
 
   // Others
   char                          * MFMessageTypeName = NULL;
-  const char                    * partitionName = "MessageFacility";
 
   // Create DomainParticipantFactory and a Participant
   dpf = DomainParticipantFactory::get_instance();
@@ -163,7 +216,7 @@ int main()
   status = participant -> get_default_subscriber_qos( sub_qos );
   checkStatus(status, "get_default_subscriber_qos()");
   sub_qos.partition.name.length(1);
-  sub_qos.partition.name[0] = partitionName;
+  sub_qos.partition.name[0] = ss.str().c_str();
 
   // Create a subscriber for the MF
   MFSubscriber = participant -> create_subscriber (
@@ -191,7 +244,8 @@ int main()
   checkHandle(reader.in(), "narrow()");
 
   // Indicate Server is up...
-  std::cout << "MessageFacility DDS server is up and listening for messages\n"
+  std::cout << "MessageFacility DDS server is up and listening for messages "
+            << "in partition " << PartitionNumber << "\n"
             << "(press enter then \"quit\" to exit listening)...\n";
 
   //-----------------------------------------------------------------
@@ -328,7 +382,7 @@ int main()
           eo_p -> setHostName   ( std::string(msg->hostname_)    );
           eo_p -> setHostAddr   ( std::string(msg->hostaddr_)    );
           eo_p -> setProcess    ( std::string(msg->process_)     );
-          eo_p -> setPID        ( (long)      msg->pid_          );
+          eo_p -> setPID        (      (long)(msg->pid_)         );
           eo_p -> setApplication( std::string(msg->application_) );
           eo_p -> setModule     ( std::string(msg->module_)      );
           eo_p -> setContext    ( std::string(msg->context_)     );
