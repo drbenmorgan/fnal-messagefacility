@@ -76,7 +76,7 @@ public:
 
   virtual ELstring getNewline() const;
 
-  virtual void switchChannel( const mf::ELstring & channelName );
+  virtual bool switchChannel( const mf::ELstring & channelName );
 
   virtual void finish();
 

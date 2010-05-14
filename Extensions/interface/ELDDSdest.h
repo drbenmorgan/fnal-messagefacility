@@ -68,7 +68,7 @@ public:
 
   virtual bool log( const mf::ErrorObj & msg );
 
-  virtual void switchChannel( const mf::ELstring & channelName );
+  virtual bool switchChannel( const mf::ELstring & channelName );
 
   virtual void finish();
 
@@ -165,7 +165,7 @@ private:
   // others
   bool                            bMsgRegistered;
   bool                            bConnected;
-  const char                    * partitionName;
+  std::string                     partitionName;
   char                          * MFMessageTypeName;
 
   // DDS connection initialzation code

@@ -79,7 +79,7 @@ ELdestination::~ELdestination()  {
 
 bool ELdestination::log( const mf::ErrorObj & msg )  { return false; }
 
-void ELdestination::switchChannel( const mf::ELstring & channelName ) { }
+bool ELdestination::switchChannel( const mf::ELstring & channelName ) { return false; }
 
 
 // ----------------------------------------------------------------------

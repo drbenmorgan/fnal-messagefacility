@@ -23,10 +23,47 @@ static GuardCondition_var       escape;
 // boost::thread
 boost::thread                   trigger;
 boost::thread                   cmdHandler;
+ 
+// Generic DDS entities
+DomainParticipantFactory_var    dpf;
+DomainParticipant_var           participant;
+Topic_var                       MFMessageTopic;
+Subscriber_var                  MFSubscriber;
+DataReader_ptr                  parentReader;
+  
+WaitSet_var                     serverWS;
+ReadCondition_var               newMsg;
+StatusCondition_var             newStatus;
+ConditionSeq                    guardList;
 
-bool bDisplayMsg;
-int PartitionNumber = 0;
-int  z;
+// Type-specific DDS entities
+MFMessageTypeSupport_var        MFMessageTS;
+MFMessageDataReader_var         reader;
+MFMessageSeq_var                msgSeq = new MFMessageSeq();
+SampleInfoSeq_var               infoSeq = new SampleInfoSeq();
+
+// QoSPolicy holders
+TopicQos                        reliable_topic_qos;
+SubscriberQos                   sub_qos;
+DataReaderQos                   message_qos;
+
+// DDS Identifiers
+DomainId_t                      domain = NULL;
+ReturnCode_t                    status;
+
+// Others
+char                          * MFMessageTypeName = NULL;
+bool                            bConnected = false;
+
+
+bool bDisplayMsg = true;
+int  PartitionNumber = 0;
+int  z = 0;
+
+// Methods
+bool switchChannel( const std::string & channelName);
+void cmdLineTrigger();
+void cmdLineInterface();
 
 void cmdLineTrigger()
 {
@@ -60,20 +97,36 @@ void cmdLineInterface()
       std::cout << "Resumed to message monitoring mode.\n";
       bDisplayMsg = true;
 
-      // listening for trigger
+      // listening for the trigger
       trigger = boost::thread(cmdLineTrigger);
 
       return;
     }
     else if(cmd == "stat" || cmd == "s")
     {
-      std::cout << "Total " << z << " messages has been received.\n";
+      std::cout << "Currently listening in partition "
+                << "\"Partition" << PartitionNumber << "\".\n"
+                << "Total " << z << " messages has been received.\n";
     }
     else if(cmd == "partition" || cmd == "p")
     {
-      std::cout << "Please enter a partition number (0-4): \n";
+      std::cout << "Please enter a partition number (0-4): ";
+
       getline(std::cin, cmd);
-      std::cout << "Switched to partition " << cmd << "\n";
+      std::istringstream ss(cmd);
+
+      if( ss >> PartitionNumber )
+      {
+        std::string partition("Partition"+cmd);
+        if( switchChannel(partition) )
+          std::cout << "Switched to partition \"" << partition << "\"\n";
+        else
+          std::cout << "Failed to switched partition!\n";
+      }
+      else
+      {
+        std::cout << "Please use an integer value for the partition!\n";
+      }
     }
     else if(cmd == "help" || cmd == "h")
     {
@@ -90,12 +143,29 @@ void cmdLineInterface()
     }
     else
     {
-      std::cout << "Command "<< cmd << " not found. "
+      std::cout << "Command " << cmd << " not found. "
                 << "Type \"help\" for a list of available commands.\n";
     }
   }
 
   return;
+}
+
+
+// SwitchChannel -> switch partition in the same dds domain
+bool switchChannel( const std::string & channelName) 
+{
+  if(!bConnected)  return false;
+
+  status = participant -> get_default_subscriber_qos (sub_qos);
+  checkStatus(status, "get_default_subscriber_qos()");
+  sub_qos.partition.name.length(1);
+  sub_qos.partition.name[0]=channelName.c_str();
+
+  status = MFSubscriber -> set_qos(sub_qos);
+  checkStatus(status, "set_qos()");
+
+  return true;
 }
 
 
@@ -142,36 +212,6 @@ int main(int argc, char * argv[])
   // Generate the Partition name string
   std::stringstream ss;
   ss << "Partition" << PartitionNumber;
- 
-  // Generic DDS entities
-  DomainParticipantFactory_var    dpf;
-  DomainParticipant_var           participant;
-  Topic_var                       MFMessageTopic;
-  Subscriber_var                  MFSubscriber;
-  DataReader_ptr                  parentReader;
-  
-  WaitSet_var                     serverWS;
-  ReadCondition_var               newMsg;
-  StatusCondition_var             newStatus;
-  ConditionSeq                    guardList;
-
-  // Type-specific DDS entities
-  MFMessageTypeSupport_var        MFMessageTS;
-  MFMessageDataReader_var         reader;
-  MFMessageSeq_var                msgSeq = new MFMessageSeq();
-  SampleInfoSeq_var               infoSeq = new SampleInfoSeq();
-
-  // QoSPolicy holders
-  TopicQos                        reliable_topic_qos;
-  SubscriberQos                   sub_qos;
-  DataReaderQos                   message_qos;
-
-  // DDS Identifiers
-  DomainId_t                      domain = NULL;
-  ReturnCode_t                    status;
-
-  // Others
-  char                          * MFMessageTypeName = NULL;
 
   // Create DomainParticipantFactory and a Participant
   dpf = DomainParticipantFactory::get_instance();
@@ -247,6 +287,9 @@ int main(int argc, char * argv[])
   std::cout << "MessageFacility DDS server is up and listening for messages "
             << "in partition " << PartitionNumber << "\n"
             << "(press enter then \"quit\" to exit listening)...\n";
+
+  // indicating the connection has be established
+  bConnected = true;
 
   //-----------------------------------------------------------------
   // Blocked receive using wait-condition
@@ -425,6 +468,8 @@ int main(int argc, char * argv[])
   // Remove the DomainParticipant
   status = dpf -> delete_participant( participant.in() );
   checkStatus(status, "delete_participant()");
+
+  bConnected = false;
 
   return 0;
 }

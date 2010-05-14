@@ -466,12 +466,12 @@ public:
   static MessageFacilityService & instance();
 
   static ParameterSet logConsole();
-  static ParameterSet logServer();
+  static ParameterSet logServer(int partition = 0);
   static ParameterSet logFile(std::string const & filename = "logfile");
-  static ParameterSet logCS();
+  static ParameterSet logCS(int partition = 0);
   static ParameterSet logCF(std::string const & filename = "logfile");
-  static ParameterSet logFS(std::string const & filename = "logfile");
-  static ParameterSet logCFS(std::string const & filename = "logfile");
+  static ParameterSet logFS(std::string const & filename = "logfile", int partition = 0);
+  static ParameterSet logCFS(std::string const & filename = "logfile", int partition = 0);
   static ParameterSet logArchive(std::string const & filename = "msgarchive");
 
   static ParameterSet ConfigurationFile(

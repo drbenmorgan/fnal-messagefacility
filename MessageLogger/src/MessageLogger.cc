@@ -220,103 +220,152 @@ std::string MessageFacilityService::commonPSet()
 
 ParameterSet MessageFacilityService::logConsole()
 {
-  std::string pstr = commonPSet();
-  pstr +=   " destinations : { console : { type : \"cout\", \
-                                           threshold : \"DEBUG\" } } }";
+  std::ostringstream ss;
+  ss << commonPSet()
+     << "  destinations : { "
+     << "    console : { type : \"cout\", threshold : \"DEBUG\" } "
+     << "  } "
+     << "} ";
 
   ParameterSet pset;
+  std::string pstr(ss.str());
   ParameterSetParser::ParseString(pstr, pset);
   return pset;
 }
 
-ParameterSet MessageFacilityService::logServer()
+ParameterSet MessageFacilityService::logServer(int partition)
 {
-  std::string pstr = commonPSet();
-  pstr +=   " destinations : { server : { type : \"dds\", \
-                                          threshold : \"DEBUG\" } } }";
+  std::ostringstream ss;
+  ss << commonPSet()
+     << "  destinations : { "
+     << "    server : { "
+     << "      type : \"dds\", threshold : \"DEBUG\", "
+     << "      partition : " << partition << " "
+     << "    } "
+     << "  } "
+     << "} ";
 
   ParameterSet pset;
+  std::string pstr(ss.str());
   ParameterSetParser::ParseString(pstr, pset);
   return pset;
 }
 
 ParameterSet MessageFacilityService::logFile(std::string const & filename)
 {
-  std::string pstr = commonPSet();
-  pstr +=   " destinations : { file : { type : \"file\", \
-                                        threshold : \"DEBUG\", \
-                                        filename :\"" + filename + "\"} } }";
+  std::ostringstream ss;
+  ss << commonPSet()
+     << "  destinations : { "
+     << "    file : { "
+     << "      type : \"file\", threshold : \"DEBUG\", "
+     << "      filename : \"" << filename << "\" "
+     << "    } "
+     << "  } "
+     << "} ";
 
   ParameterSet pset;
+  std::string pstr(ss.str());
   ParameterSetParser::ParseString(pstr, pset);
   return pset;
 }
 
-ParameterSet MessageFacilityService::logCS()
+ParameterSet MessageFacilityService::logCS(int partition)
 {
-  std::string pstr = commonPSet();
-  pstr +=   " destinations : { console : { type : \"cout\", \
-                                           threshold : \"DEBUG\" }, \
-                               server  : { type : \"dds\", \
-                                           threshold : \"DEBUG\" } } }";
+  std::ostringstream ss;
+  ss << commonPSet()
+     << "  destinations : { "
+     << "    console : { type : \"cout\", threshold : \"DEBUG\" }, "
+     << "    server : { " 
+     << "      type : \"dds\", threshold : \"DEBUG\", " 
+     << "      partition : " << partition << " "
+     << "    } "
+     << "  } "
+     << "} ";
 
   ParameterSet pset;
+  std::string pstr(ss.str());
   ParameterSetParser::ParseString(pstr, pset);
   return pset;
 }
 
 ParameterSet MessageFacilityService::logCF(std::string const & filename)
 {
-  std::string pstr = commonPSet();
-  pstr +=   " destinations : { console : { type : \"cout\", \
-                                           threshold : \"DEBUG\" }, \
-                               file : { type : \"file\", \
-                                        threshold : \"DEBUG\", \
-                                        filename : \""+ filename + "\" } } }";
+  std::ostringstream ss;
+  ss << commonPSet()
+     << "  destinations : { "
+     << "    console : { type : \"cout\", threshold : \"DEBUG\" }, "
+     << "    file : { "
+     << "      type : \"file\", threshold : \"DEBUG\", "
+     << "      filename : \"" << filename << "\" "
+     << "    } "
+     << "  } "
+     << "} ";
 
   ParameterSet pset;
+  std::string pstr(ss.str());
   ParameterSetParser::ParseString(pstr, pset);
   return pset;
 }
 
-ParameterSet MessageFacilityService::logFS(std::string const & filename)
+ParameterSet MessageFacilityService::logFS(std::string const & filename, int partition)
 {
-  std::string pstr = commonPSet();
-  pstr +=   " destinations : { server : { type : \"dds\", \
-                                          threshold : \"DEBUG\" }, \
-                               file : { type : \"file\", \
-                                        threshold : \"DEBUG\", \
-                                        filename : \""+filename+"\" } } }";
+  std::ostringstream ss;
+  ss << commonPSet()
+     << "  destinations : { "
+     << "    file : { "
+     << "      type : \"file\", threshold : \"DEBUG\", "
+     << "      filename : \"" << filename << "\" "
+     << "    }, "
+     << "    server : { "
+     << "      type : \"dds\", threshold : \"DEBUG\", "
+     << "      partition : " << partition << " "
+     << "    } "
+     << "  } "
+     << "} ";
 
   ParameterSet pset;
+  std::string pstr(ss.str());
   ParameterSetParser::ParseString(pstr, pset);
   return pset;
 }
 
-ParameterSet MessageFacilityService::logCFS(std::string const & filename)
+ParameterSet MessageFacilityService::logCFS(std::string const & filename, int partition)
 {
-  std::string pstr = commonPSet();
-  pstr +=   " destinations : { console : { type : \"cout\", \
-                                           threshold : \"DEBUG\" }, \
-                               server  : { type : \"dds\", \
-                                           threshold : \"DEBUG\" }, \
-                               file : { type : \"file\", \
-                                        threshold : \"DEBUG\", \
-                                        filename : \""+filename+"\" } } }";
+  std::ostringstream ss;
+  ss << commonPSet()
+     << "  destinations : { "
+     << "    console : { type : \"cout\", threshold : \"DEBUG\" }, "
+     << "    file : { "
+     << "      type : \"file\", threshold : \"DEBUG\", "
+     << "      filename : \"" << filename << "\" "
+     << "    }, "
+     << "    server : { "
+     << "      type : \"dds\", threshold : \"DEBUG\", "
+     << "      partition : " << partition << " "
+     << "    } "
+     << "  } "
+     << "} ";
 
   ParameterSet pset;
+  std::string pstr(ss.str());
   ParameterSetParser::ParseString(pstr, pset);
   return pset;
 }
 
 ParameterSet MessageFacilityService::logArchive(std::string const & filename)
 {
-  std::string pstr = commonPSet();
-  pstr +=   " destinations : { archive : { type : \"archive\", \
-                                           threshold : \"DEBUG\", \
-                                           filename : \""+filename+"\" } } }";
+  std::ostringstream ss;
+  ss << commonPSet()
+     << "  destinations : { "
+     << "    archive : { "
+     << "      type : \"archive\", threshold : \"DEBUG\", "
+     << "      filename : \"" << filename << "\" "
+     << "    } "
+     << "  } "
+     << "} ";
 
   ParameterSet pset;
+  std::string pstr(ss.str());
   ParameterSetParser::ParseString(pstr, pset);
   return pset;
 }

@@ -233,6 +233,12 @@ ELDDSdest::ELDDSdest(std::string const & name_, ParameterSet const & pset_)
     std::cerr << "Constructor for ELDDSdest()\n";
   #endif
 
+  // Extract partition number from pset object
+  int partitionNumber = pset_.getInt("partition", 0);
+  std::stringstream ss;
+  ss << "Partition" << partitionNumber;
+  partitionName = ss.str();
+
   emit( "\n=================================================", true );
   emit( "\nMessage Log File written by MessageLogger service \n" );
   emit( "\n=================================================\n", true );
@@ -361,7 +367,7 @@ void ELDDSdest::createDDSConnection()
   status = participant -> get_default_publisher_qos(pub_qos);
   checkStatus(status, "get_default_publisher_qos()");
   pub_qos.partition.name.length(1);
-  pub_qos.partition.name[0] = partitionName;
+  pub_qos.partition.name[0] = partitionName.c_str();
 
   // Create a publisher for the MessageFacility
   MFPublisher = participant -> create_publisher (
@@ -426,60 +432,19 @@ void ELDDSdest::destroyDDSConnection() throw()
 }
 
 // SwitchChannel -> switch partition in the same dds domain
-void ELDDSdest::switchChannel( const ELstring & channelName) {
+bool ELDDSdest::switchChannel( const ELstring & channelName) {
 
-  std::cout<<"Changing DDS partition to \""<<channelName<<"\"...\n";
+  if(!bConnected)  return false;
 
-  if(bConnected)
-  {
-    // Leave the partition by disposing and unregistering the message instance
-    if(bMsgRegistered)
-    {
-      status = talker -> dispose(DDSmsg, userHandle);
-      checkStatus(status, "talker->dispose()");
-
-      status = talker -> unregister_instance(DDSmsg, userHandle);
-      checkStatus(status, "talker->unregister_instance()");
-    }
-
-    // Remove the DataWriters
-    status = MFPublisher -> delete_datawriter( talker );
-    checkStatus(status, "delete_datawriter()");
-
-    // Remove the Publisher
-    status = participant -> delete_publisher( MFPublisher );
-    checkStatus(status, "delete_publisher()");
-  }
-
-  // Adpat the default PublisherQos to write into the "MessageFacility" part
-  status = participant -> get_default_publisher_qos(pub_qos);
-  checkStatus(status, "get_default_publisher_qos()");
+  status = participant -> get_default_publisher_qos (pub_qos);
+  checkStatus(status, "get_default_subscriber_qos()");
   pub_qos.partition.name.length(1);
-  pub_qos.partition.name[0] = channelName.c_str();
+  pub_qos.partition.name[0]=channelName.c_str();
 
-  // Create a publisher for the MessageFacility
-  MFPublisher = participant -> create_publisher (
-      pub_qos, NULL, ANY_STATUS);
-  checkHandle(MFPublisher, "create_publisher()");
+  status = MFPublisher -> set_qos(pub_qos);
+  checkStatus(status, "set_qos()");
 
-  // Create a datawriter for the MFMessage Topic
-  parentWriter = MFPublisher -> create_datawriter (
-      MFMessageTopic,
-      DATAWRITER_QOS_USE_TOPIC_QOS,
-      NULL,
-      ANY_STATUS);
-  checkHandle(parentWriter, "create_datawriter()");
-
-  // Narrow the abstract parent into its typed representative
-  talker = MFMessageDataWriter::_narrow(parentWriter);
-  checkHandle(talker, "narrow()");
-
-  // Actual message has not yet registered
-  bMsgRegistered = false;
-
-  // DDS Connection has been successfully created
-  bConnected = true;
-
+  return true;
 }
 
 // ----------------------------------------------------------------------
