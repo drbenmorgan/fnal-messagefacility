@@ -56,6 +56,8 @@ int main(int ac, char* av[])
   string         dest;
   string         filename;
 
+  int            partition;
+
   vector<string> messages;
   vector<string> vcat;
   vector<string> vdest;
@@ -79,6 +81,9 @@ int main(int ac, char* av[])
       ("destination,d", 
         po::value< vector<string> >(&vdest)->default_value(vdest_def, "stdout"),
         "logging destination(s) of the message (stdout, file, server)")
+      ("partition,p",
+        po::value<int>(&partition)->default_value(0),
+        "partition of the message, applicable only when a sever destination is specified (0 - 4)")
       ("filename,f",
         po::value<string>(&filename)->default_value("logfile"),
         "specify the log file name");
@@ -184,16 +189,16 @@ int main(int ac, char* av[])
       pset = mf::MessageFacilityService::logCF(filename);
       break;
     case 0x04:
-      pset = mf::MessageFacilityService::logServer();
+      pset = mf::MessageFacilityService::logServer(partition);
       break;
     case 0x05:
       pset = mf::MessageFacilityService::logCS();
       break;
     case 0x06:
-      pset = mf::MessageFacilityService::logFS(filename);
+      pset = mf::MessageFacilityService::logFS(filename, partition);
       break;
     case 0x07:
-      pset = mf::MessageFacilityService::logCFS(filename);
+      pset = mf::MessageFacilityService::logCFS(filename, partition);
       break;
     default:
       pset = mf::MessageFacilityService::logConsole();
