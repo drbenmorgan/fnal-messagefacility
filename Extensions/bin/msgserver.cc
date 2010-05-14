@@ -182,7 +182,7 @@ int main(int argc, char * argv[])
         po::value<int>(&PartitionNumber)->default_value(0), 
         "Partition number the msgserver will listen to (0 - 4)")
       ("filename,f",
-        po::value<std::string>(&filename)->default_value("msgarchive"),
+        po::value<std::string>(&filename)->default_value("msg_archive"),
         "specify the message archive file name");
 
     po::options_description desc;
@@ -331,7 +331,7 @@ int main(int argc, char * argv[])
   // Start MessageFacility Service
   mf::StartMessageFacility(
       mf::MessageFacilityService::MultiThread,
-      mf::MessageFacilityService::logArchive("msg_archive"));
+      mf::MessageFacilityService::logArchive(filename));
 
   // Start the thread for triggering the command line interface
   trigger = boost::thread(cmdLineTrigger);
