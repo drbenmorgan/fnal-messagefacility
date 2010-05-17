@@ -21,6 +21,10 @@ public slots:
   void changeSeverity(int sev);
   void printMessage(QString const & s);
   void printSysMessage(QString const & s);
+  void switchChannel();
+
+protected:
+  void closeEvent(QCloseEvent *event);
 
 private:
   ListenerThread lthread;

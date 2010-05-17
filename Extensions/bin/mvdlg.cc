@@ -11,6 +11,8 @@ msgViewerDlg::msgViewerDlg(QDialog * parent)
   connect(btnPause, SIGNAL( clicked() ), this, SLOT(pause()) );
   connect(btnExit,  SIGNAL( clicked() ), this, SLOT(exit())  );
 
+  connect(btnSwitchChannel, SIGNAL( clicked() ), this, SLOT(switchChannel()) );
+
   connect(vsSeverity, SIGNAL( valueChanged(int) ), 
           this, SLOT(changeSeverity(int)) );
 
@@ -18,6 +20,8 @@ msgViewerDlg::msgViewerDlg(QDialog * parent)
           this, SLOT(printMessage(const QString &)) );
   connect(&lthread, SIGNAL(sysMessage(const QString &)),
           this, SLOT(printSysMessage(const QString &)) );
+
+  label_Partition->setText("Partition 0");
 
   // Start lisenter thread
   lthread.startListener();
@@ -44,12 +48,37 @@ void msgViewerDlg::printSysMessage(const QString & s)
 
 void msgViewerDlg::exit()
 {
-  printSysMessage("Closing DDS connection.");
-  lthread.stopListener();
   close();
 }
 
 void msgViewerDlg::changeSeverity(int sev)
 {
   lthread.changeSeverity(sev);
+}
+
+void msgViewerDlg::switchChannel()
+{
+  bool ok;
+  int partition = QInputDialog::getInteger(this, 
+    "Partition", 
+    "Please enter a partition number:",
+    lthread.getPartition(),
+    -1, 9, 1, &ok);
+
+  if(ok)
+  {
+    if( lthread.switchPartition(partition) )
+    {
+      QString partStr = "Partition " + QString::number(partition);
+      label_Partition->setText(partStr);
+    }
+  }
+
+}
+
+void msgViewerDlg::closeEvent(QCloseEvent *event)
+{
+  printSysMessage("Closing DDS connection.");
+  lthread.stopListener();
+  event->accept();
 }

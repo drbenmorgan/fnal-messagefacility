@@ -15,9 +15,10 @@ ListenerThread::ListenerThread(QObject *parent)
 , infoSeq           ( new SampleInfoSeq() )
 , domain            ( NULL                )
 , MFMessageTypeName ( NULL                )
-, partitionName     ( "MessageFacility"   )
+, partitionName     ( "Partition0"        )
 , nMsgs             ( 0                   )
 , severityThreshold ( 0                   )
+, partitionNumber   ( 0                   )
 {
 }
 
@@ -40,6 +41,18 @@ void ListenerThread::stopListener()
 void ListenerThread::changeSeverity(int sev)
 {
   severityThreshold = sev;
+}
+
+bool ListenerThread::switchPartition(int p)
+{
+  partitionNumber = p;
+  cmdline -> set_trigger_value(TRUE);
+  return true;
+}
+
+int ListenerThread::getPartition()
+{
+  return partitionNumber;
 }
 
 void ListenerThread::run()
@@ -76,6 +89,28 @@ void ListenerThread::run()
         
         // spawn command handling thread
         //cmdHandler = boost::thread(cmdLineInterface);
+
+        // switching partition
+        status = participant -> get_default_subscriber_qos (sub_qos);
+        checkStatus(status, "get_default_subscriber_qos()");
+
+        std::ostringstream oss;
+        oss << "Partition" << partitionNumber;
+
+        sub_qos.partition.name.length(1);
+        sub_qos.partition.name[0]=oss.str().c_str();
+
+        status = MFSubscriber -> set_qos(sub_qos);
+        checkStatus(status, "set_qos()");
+
+        // emit system message
+        QString part(oss.str().c_str());
+        emit sysMessage(QString(
+             "Partition has been changed to \"" + part + "\"."));
+
+        // reset the trigger
+        status = cmdline->set_trigger_value(FALSE);
+        checkStatus(status, "reset trigger..");
       }
       else if(guardList[gi] == newMsg.in())
       {
@@ -163,6 +198,10 @@ void ListenerThread::run()
           emit newMessage(QString(ss.str().c_str()));
         }
 
+        //emit sysMessage(QString("Received " 
+        //                  + QString::number(nMsgs)
+        //                  + " messages."));
+        
         //std::cout << "Recevied messages " << nMsgs << "\n\n";
 
         status = reader -> return_loan(msgSeq, infoSeq);

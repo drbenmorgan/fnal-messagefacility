@@ -43,7 +43,7 @@
    <property name="geometry">
     <rect>
      <x>530</x>
-     <y>70</y>
+     <y>160</y>
      <width>16</width>
      <height>141</height>
     </rect>
@@ -68,7 +68,7 @@
    <property name="geometry">
     <rect>
      <x>530</x>
-     <y>30</y>
+     <y>120</y>
      <width>91</width>
      <height>21</height>
     </rect>
@@ -88,7 +88,7 @@
    <property name="geometry">
     <rect>
      <x>570</x>
-     <y>190</y>
+     <y>280</y>
      <width>91</width>
      <height>21</height>
     </rect>
@@ -145,7 +145,7 @@
    <property name="geometry">
     <rect>
      <x>570</x>
-     <y>150</y>
+     <y>240</y>
      <width>91</width>
      <height>21</height>
     </rect>
@@ -202,7 +202,7 @@
    <property name="geometry">
     <rect>
      <x>570</x>
-     <y>110</y>
+     <y>200</y>
      <width>91</width>
      <height>21</height>
     </rect>
@@ -259,7 +259,7 @@
    <property name="geometry">
     <rect>
      <x>570</x>
-     <y>70</y>
+     <y>160</y>
      <width>91</width>
      <height>21</height>
     </rect>
@@ -356,6 +356,39 @@
    </property>
    <property name="readOnly">
     <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_Partition">
+   <property name="geometry">
+    <rect>
+     <x>530</x>
+     <y>20</y>
+     <width>121</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Partition</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnSwitchChannel">
+   <property name="geometry">
+    <rect>
+     <x>530</x>
+     <y>50</y>
+     <width>121</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Switch</string>
    </property>
   </widget>
  </widget>

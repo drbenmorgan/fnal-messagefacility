@@ -437,7 +437,7 @@ bool ELDDSdest::switchChannel( const ELstring & channelName) {
   if(!bConnected)  return false;
 
   status = participant -> get_default_publisher_qos (pub_qos);
-  checkStatus(status, "get_default_subscriber_qos()");
+  checkStatus(status, "get_default_publisher_qos()");
   pub_qos.partition.name.length(1);
   pub_qos.partition.name[0]=channelName.c_str();
 

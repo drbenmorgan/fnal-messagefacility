@@ -21,6 +21,9 @@ public:
   void changeSeverity(int sev);
   void run();
 
+  bool switchPartition(int p);
+  int  getPartition();
+
 signals:
   void connEstablished(bool flag);
   void connDestroyed(bool flag);
@@ -34,6 +37,8 @@ private:
 private:
   int                                  nMsgs;
   int                                  severityThreshold;
+  int                                  partitionNumber;
+
   // Generic DDS entities
   DDS::DomainParticipantFactory_var    dpf;
   DDS::DomainParticipant_var           participant;
