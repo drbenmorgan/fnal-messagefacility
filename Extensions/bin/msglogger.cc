@@ -51,6 +51,7 @@ void parseDestinations (string const & s, vector<string> & dests)
 int main(int ac, char* av[])
 {
   string         severity;
+  string         application;
   string         message;
   string         cat;
   string         dest;
@@ -78,6 +79,9 @@ int main(int ac, char* av[])
       ("category,c", 
         po::value< vector<string> >(&vcat)->default_value(vcat_def, "null"),
         "message id / categories")
+      ("application,a", 
+        po::value<string>(&application)->default_value(""), 
+        "issuing application name")
       ("destination,d", 
         po::value< vector<string> >(&vdest)->default_value(vdest_def, "stdout"),
         "logging destination(s) of the message (stdout, file, server)")
@@ -126,6 +130,13 @@ int main(int ac, char* av[])
   {
     cout << "Message text is missing!\n";
     cout << "Use \"msglogger --help\" for help messages\n";
+    return 1;
+  }
+
+  if(application.empty())
+  {
+    cout << "Application name is missing!\n";
+    cout << "Message cannot be issued without specifying the application name.\n";
     return 1;
   }
 
@@ -206,7 +217,7 @@ int main(int ac, char* av[])
 
   // start up message facility service
   mf::StartMessageFacility( mf::MessageFacilityService::SingleThread, pset );
-  mf::SetApplicationName("msgLogger");
+  mf::SetApplicationName(application);
   
   // logging message...
   if( severity == "ERROR" )
