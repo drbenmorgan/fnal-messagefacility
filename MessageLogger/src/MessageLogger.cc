@@ -251,14 +251,15 @@ ParameterSet MessageFacilityService::logServer(int partition)
   return pset;
 }
 
-ParameterSet MessageFacilityService::logFile(std::string const & filename)
+ParameterSet MessageFacilityService::logFile(std::string const & filename, bool append)
 {
   std::ostringstream ss;
   ss << commonPSet()
      << "  destinations : { "
      << "    file : { "
      << "      type : \"file\", threshold : \"DEBUG\", "
-     << "      filename : \"" << filename << "\" "
+     << "      filename : \"" << filename << "\", "
+     << "      append : " << (append ? "true" : "false")
      << "    } "
      << "  } "
      << "} ";
@@ -288,7 +289,7 @@ ParameterSet MessageFacilityService::logCS(int partition)
   return pset;
 }
 
-ParameterSet MessageFacilityService::logCF(std::string const & filename)
+ParameterSet MessageFacilityService::logCF(std::string const & filename, bool append)
 {
   std::ostringstream ss;
   ss << commonPSet()
@@ -296,7 +297,8 @@ ParameterSet MessageFacilityService::logCF(std::string const & filename)
      << "    console : { type : \"cout\", threshold : \"DEBUG\" }, "
      << "    file : { "
      << "      type : \"file\", threshold : \"DEBUG\", "
-     << "      filename : \"" << filename << "\" "
+     << "      filename : \"" << filename << "\", "
+     << "      append : " << (append ? "true" : "false")
      << "    } "
      << "  } "
      << "} ";
@@ -307,14 +309,15 @@ ParameterSet MessageFacilityService::logCF(std::string const & filename)
   return pset;
 }
 
-ParameterSet MessageFacilityService::logFS(std::string const & filename, int partition)
+ParameterSet MessageFacilityService::logFS(std::string const & filename, bool append, int partition)
 {
   std::ostringstream ss;
   ss << commonPSet()
      << "  destinations : { "
      << "    file : { "
      << "      type : \"file\", threshold : \"DEBUG\", "
-     << "      filename : \"" << filename << "\" "
+     << "      filename : \"" << filename << "\", "
+     << "      append : " << (append ? "true" : "false")
      << "    }, "
      << "    server : { "
      << "      type : \"dds\", threshold : \"DEBUG\", "
@@ -329,7 +332,7 @@ ParameterSet MessageFacilityService::logFS(std::string const & filename, int par
   return pset;
 }
 
-ParameterSet MessageFacilityService::logCFS(std::string const & filename, int partition)
+ParameterSet MessageFacilityService::logCFS(std::string const & filename, bool append, int partition)
 {
   std::ostringstream ss;
   ss << commonPSet()
@@ -337,7 +340,8 @@ ParameterSet MessageFacilityService::logCFS(std::string const & filename, int pa
      << "    console : { type : \"cout\", threshold : \"DEBUG\" }, "
      << "    file : { "
      << "      type : \"file\", threshold : \"DEBUG\", "
-     << "      filename : \"" << filename << "\" "
+     << "      filename : \"" << filename << "\", "
+     << "      append : " << (append ? "true" : "false")
      << "    }, "
      << "    server : { "
      << "      type : \"dds\", threshold : \"DEBUG\", "
@@ -352,14 +356,15 @@ ParameterSet MessageFacilityService::logCFS(std::string const & filename, int pa
   return pset;
 }
 
-ParameterSet MessageFacilityService::logArchive(std::string const & filename)
+ParameterSet MessageFacilityService::logArchive(std::string const & filename, bool append)
 {
   std::ostringstream ss;
   ss << commonPSet()
      << "  destinations : { "
      << "    archive : { "
      << "      type : \"archive\", threshold : \"DEBUG\", "
-     << "      filename : \"" << filename << "\" "
+     << "      filename : \"" << filename << "\", "
+     << "      append : " << (append ? "true" : "false")
      << "    } "
      << "  } "
      << "} ";

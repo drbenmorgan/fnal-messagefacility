@@ -194,10 +194,10 @@ int main(int ac, char* av[])
       pset = mf::MessageFacilityService::logConsole();
       break;
     case 0x02:
-      pset = mf::MessageFacilityService::logFile(filename);
+      pset = mf::MessageFacilityService::logFile(filename, true);
       break;
     case 0x03:
-      pset = mf::MessageFacilityService::logCF(filename);
+      pset = mf::MessageFacilityService::logCF(filename, true);
       break;
     case 0x04:
       pset = mf::MessageFacilityService::logServer(partition);
@@ -206,10 +206,10 @@ int main(int ac, char* av[])
       pset = mf::MessageFacilityService::logCS();
       break;
     case 0x06:
-      pset = mf::MessageFacilityService::logFS(filename, partition);
+      pset = mf::MessageFacilityService::logFS(filename, true, partition);
       break;
     case 0x07:
-      pset = mf::MessageFacilityService::logCFS(filename, partition);
+      pset = mf::MessageFacilityService::logCFS(filename, true, partition);
       break;
     default:
       pset = mf::MessageFacilityService::logConsole();

@@ -1183,8 +1183,11 @@ void
     }
     else if( dest_type == "file" ) 
     {
+      bool append = dest_pset.getBool("append", false);
       boost::shared_ptr<std::ofstream> 
-          os_sp(new std::ofstream(filename.c_str()));
+          os_sp(new std::ofstream(
+                  filename.c_str(), 
+                  append ? std::ios_base::app : std::ios_base::trunc));
       file_ps.push_back(os_sp);
       os_p = os_sp.get();
       dest_ctrl = admin_p->attach( ELoutput(*os_sp) );
