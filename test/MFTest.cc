@@ -36,16 +36,16 @@ int main()
   boost::thread loggerThread(anotherLogger);
 
   // Issue messages with different severity levels
-  LogError("err1|err2") << "This is an ERROR message.";
-  LogWarning("warning") << "Followed by a WARNING message.";
+  //LogError("err1|err2") << "This is an ERROR message.";
+  //LogWarning("warning") << "Followed by a WARNING message.";
 
   // Switch context
   mf::SetContext("pro-event");
 
-  mf::SwitchChannel(2);
+  //mf::SwitchChannel(2);
 
   // Log Debugs
-  for(int i=0; i<1; ++i)
+  //for(int i=0; i<2500; ++i)
   {
     LogError("catError")     << "Error information.";
     LogWarning("catWarning") << "Warning information.";

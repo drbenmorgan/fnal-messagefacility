@@ -19,6 +19,14 @@ ADD_EXECUTABLE (MFTest
     MFTest.cc
     )
 
+ADD_EXECUTABLE (PSetTest
+    PSetSample.cc
+    )
+
+TARGET_LINK_LIBRARIES (PSetTest
+    ParameterSetD
+    )
+
 TARGET_LINK_LIBRARIES (MFTest 
     MessageServiceD
     MessageLoggerD
