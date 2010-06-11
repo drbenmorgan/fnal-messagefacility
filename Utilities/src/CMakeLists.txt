@@ -6,6 +6,7 @@ SET (FILES
     Digest.cc
     EDMException.cc
     Exception.cc
+    FormatTime.cc
     Hash.cc
     md5.c
     Parse.cc

@@ -16,6 +16,9 @@ module MessageFacility {
     struct MFMessage {
         long      serial_;          // serial
         string    timestamp_;       // timestamp
+        
+        long long    time_sec;
+        long long    time_usec;
 
         string    items_;           // a combined string for all items
 

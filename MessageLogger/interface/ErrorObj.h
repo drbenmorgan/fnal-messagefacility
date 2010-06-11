@@ -31,7 +31,7 @@
 #include <sstream>
 #include <string>
 
-#include <sys/timeb.h>
+#include <sys/time.h>
 
 namespace mf {       
 
@@ -66,8 +66,7 @@ public:
   int                    serial() const;
   const ELextendedID &   xid() const;
   const ELstring &       idOverflow() const;
-  //time_t                 timestamp() const;
-  timeb                  timestamp() const;
+  timeval                timestamp() const;
   const ELlist_string &  items() const;
   bool                   reactedTo() const;
   ELstring               fullText() const;
@@ -86,6 +85,7 @@ public:
   virtual void  setHostAddr  ( const ELstring & hostaddr );
   virtual void  setApplication(const ELstring & application );
   virtual void  setPID       ( long             pid );
+  virtual void  setTimestamp ( const timeval & t );
 		//-| process is always determined through ErrorLog or
 		//-| an ELdestControl, both of which talk to ELadministrator.
 
@@ -115,8 +115,7 @@ private:
   int            mySerial;
   ELextendedID   myXid;
   ELstring       myIdOverflow;
-  //time_t         myTimestamp;
-  timeb          myTimestamp;
+  timeval        myTimestamp;
   ELlist_string  myItems;
   bool           myReactedTo;
   ELstring       myContext;

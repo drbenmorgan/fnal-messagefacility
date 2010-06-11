@@ -78,6 +78,7 @@
 
 #include "Utilities/interface/EDMException.h"
 #include "Utilities/interface/do_nothing_deleter.h"
+#include "Utilities/interface/FormatTime.h"
 
 
 // Possible Traces:
@@ -125,7 +126,6 @@ static char ts[] = "dd-Mon-yyyy hh:mm:ss TZN     ";
   return ts;
 
 }  // formatTime()
-#endif
 
 static char * formatTime( const timeb t, bool milli )  {
 
@@ -188,6 +188,7 @@ static char ts[] = "dd-Mon-yyyy hh:mm:ss TZN     ";
   return milli ? tm : ts;
 
 }  // formatTime()
+#endif
 
 
 
@@ -511,6 +512,9 @@ bool ELDDSdest::log( const mf::ErrorObj & msg )  {
   DDSmsg.file_       = CORBA::string_dup( ""                                 );
   DDSmsg.line_       = CORBA::string_dup( ""                                 );
   
+  DDSmsg.time_sec    = msg.timestamp().tv_sec;
+  DDSmsg.time_usec   = msg.timestamp().tv_usec;
+
   std::string items;
 
   ELlist_string::const_iterator it;

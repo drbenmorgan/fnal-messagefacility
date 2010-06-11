@@ -12,6 +12,7 @@ SET (FILES
     JobReport.cc
     LoggedErrorsSummary.cc
     MessageDrop.cc
+    MessageFacilityMsg.cc
     MessageLogger.cc
     MessageLoggerQ.cc
     MessageSender.cc
