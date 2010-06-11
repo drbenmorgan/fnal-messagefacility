@@ -422,6 +422,9 @@ int main(int argc, char * argv[])
               mf::ELseverityLevel(std::string(msg->severity_)), 
               std::string(msg->id_) );
 
+          timeval tv = { msg->time_sec, msg->time_usec };
+
+          eo_p -> setTimestamp  ( tv );
           eo_p -> setHostName   ( std::string(msg->hostname_)    );
           eo_p -> setHostAddr   ( std::string(msg->hostaddr_)    );
           eo_p -> setProcess    ( std::string(msg->process_)     );
