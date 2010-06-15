@@ -2,7 +2,6 @@
 
 #include <QtGui>
 
-#include "boost/bind.hpp"
 #include "mvdlg.h"
 
 msgViewerDlg::msgViewerDlg(QDialog * parent)
@@ -11,42 +10,41 @@ msgViewerDlg::msgViewerDlg(QDialog * parent)
 , mfmessages  ( std::vector<mf::MessageFacilityMsg>(BUFFER_SIZE) )
 , hostmap     ( )
 , appmap      ( )
-//, dds         ( 0
-//		      , boost::bind(&msgViewerDlg::onNewMsg, this, _1)
-//              , boost::bind(&msgViewerDlg::onNewSysMsg, this, _1, _2) )
+, qtdds       ( )
 {
   setupUi(this);
 
-  connect(btnPause, SIGNAL( clicked() ), this, SLOT(pause()) );
-  connect(btnExit,  SIGNAL( clicked() ), this, SLOT(exit())  );
+  connect( btnPause, SIGNAL( clicked() ), this, SLOT(pause()) );
+  connect( btnExit,  SIGNAL( clicked() ), this, SLOT(exit())  );
+  connect( btnSwitchChannel, SIGNAL( clicked() ), this, SLOT(switchChannel()) );
 
-  connect(btnSwitchChannel, SIGNAL( clicked() ), this, SLOT(switchChannel()) );
+  connect( vsSeverity
+         , SIGNAL( valueChanged(int) )
+         , this
+         , SLOT(changeSeverity(int)) );
 
-  //connect(vsSeverity, SIGNAL( valueChanged(int) ),
-  //        this, SLOT(changeSeverity(int)) );
+  connect( &qtdds
+         , SIGNAL(newMessage(mf::MessageFacilityMsg const & ))
+         , this
+         , SLOT(onNewMsg(mf::MessageFacilityMsg const & )) );
 
-  connect(&lthread, SIGNAL(newMessage(const QString &)),
-          this, SLOT(printMessage(const QString &)) );
-  connect(&lthread, SIGNAL(sysMessage(const QString &)),
-          this, SLOT(printSysMessage(const QString &)) );
+  connect( &qtdds
+         , SIGNAL(newSysMessage(mf::DDSReceiver::SysMsgCode, std::string const & ))
+         , this
+         , SLOT(onNewSysMsg(mf::DDSReceiver::SysMsgCode, std::string const & )) );
 
   label_Partition->setText("Partition 0");
 
-  // Start lisenter thread
-  //lthread.startListener();
 
-  if(true) std::cout<<mfmessages.size()<<" empty\n\n";
+  //if(true) std::cout<<mfmessages.size()<<" empty\n\n";
 
 }
 
 void msgViewerDlg::onNewMsg(mf::MessageFacilityMsg const & mfmsg) {
-	//txtMessages->append(QString(mfmsg.message().c_str()));
-	sleep(5);
-	txtMessages->append("hahaha");
-	std::cout << "\nexit\n";
+	txtMessages->append(QString(mfmsg.message().c_str()));
 }
 
-void msgViewerDlg::onNewSysMsg(mf::DDSReceiver::SysMsgCode, std::string const & msg) {
+void msgViewerDlg::onNewSysMsg(mf::DDSReceiver::SysMsgCode syscode, std::string const & msg) {
 	txtMessages->append(QString(msg.c_str()));
 }
 
@@ -76,38 +74,30 @@ void msgViewerDlg::exit()
 
 void msgViewerDlg::changeSeverity(int sev)
 {
-  //lthread.changeSeverity(sev);
+  qtdds.setSeverityThreshold(mf::QtDDSReceiver::getSeverityCode(sev));
 }
 
 void msgViewerDlg::switchChannel()
 {
-#if 0
   bool ok;
   int partition = QInputDialog::getInteger(this, 
     "Partition", 
     "Please enter a partition number:",
-    lthread.getPartition(),
+    qtdds.getPartition(),
     -1, 9, 1, &ok);
 
   if(ok)
   {
-    if( lthread.switchPartition(partition) )
-    {
-      QString partStr = "Partition " + QString::number(partition);
-      label_Partition->setText(partStr);
-    }
+    qtdds.switchPartition(partition);
+
+    QString partStr = "Partition " + QString::number(qtdds.getPartition());
+    label_Partition->setText(partStr);
   }
-#endif
 
 }
 
 void msgViewerDlg::closeEvent(QCloseEvent *event)
 {
-	//dds.stop();
+	qtdds.stop();
 	event->accept();
-#if 0
-  printSysMessage("Closing DDS connection.");
-  lthread.stopListener();
-  event->accept();
-#endif
 }

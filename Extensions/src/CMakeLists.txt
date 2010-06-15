@@ -12,6 +12,10 @@ SET (SRCFILES
     ELarchive.cc
     )
 
+SET (QTSRCFILES
+    QtDDSReceiver.cc
+    )
+
 SET (DDSUTILITYFILES
     CheckStatus.cpp
     )    

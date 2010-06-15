@@ -19,6 +19,10 @@ FOREACH (FILE ${SRCFILES})
     LIST (APPEND SRC_FILES ${SRC_DIR}/${FILE})
 ENDFOREACH (FILE)
 
+FOREACH (FILE ${QTSRCFILES})
+    LIST (APPEND QT_SRC_FILES ${SRC_DIR}/${FILE})
+ENDFOREACH (FILE)
+
 FOREACH (FILE ${DDSUTILITYFILES})
     LIST (APPEND DDS_UTILITY_FILES ${SRC_DIR}/${FILE})
 ENDFOREACH (FILE)
@@ -65,17 +69,56 @@ ADD_CUSTOM_TARGET (generateIDL
     DEPENDS ${DDS_GENERATED_FILES}
     )
 
-ADD_LIBRARY (ExtensionsD SHARED 
-    ${SRC_FILES}
-    ${DDS_UTILITY_FILES}
-    ${DDS_GENERATED_FILES}
-    )
+IF (NOT CMAKE_CROSSCOMPILING)
+
+    FIND_PACKAGE (Qt4 4.5.2 REQUIRED)
+    INCLUDE (${QT_USE_FILE})
+    
+    IF (QT_WRAP_CPP)
+
+        QT_WRAP_CPP (qtreceiver
+            qtreceiver_moc_files
+            interface/QtDDSReceiver.h
+            )
+
+    ENDIF (QT_WRAP_CPP)
+        
+    ADD_LIBRARY (ExtensionsD SHARED 
+        ${SRC_FILES}
+        ${QT_SRC_FILES}
+        ${qtreceiver_moc_files}
+        ${DDS_UTILITY_FILES}
+        ${DDS_GENERATED_FILES}
+        )
+
+    TARGET_LINK_LIBRARIES(ExtensionsD
+        ${QT_LIBRARIES}
+        )    
   
-ADD_LIBRARY (Extensions   
-    ${SRC_FILES}
-    ${DDS_UTILITY_FILES}
-    ${DDS_GENERATED_FILES}
-    )
+    ADD_LIBRARY (Extensions   
+        ${SRC_FILES}
+        ${QT_SRC_FILES}
+        ${qtreceiver_moc_files}
+        ${DDS_UTILITY_FILES}
+        ${DDS_GENERATED_FILES}
+        )
+
+ELSE (NOT CMAKE_CROSSCOMPILING)
+
+    ADD_LIBRARY (ExtensionsD SHARED 
+        ${SRC_FILES}
+        ${DDS_UTILITY_FILES}
+        ${DDS_GENERATED_FILES}
+        )
+  
+    ADD_LIBRARY (Extensions   
+        ${SRC_FILES}
+        ${DDS_UTILITY_FILES}
+        ${DDS_GENERATED_FILES}
+        )
+
+ENDIF (NOT CMAKE_CROSSCOMPILING)
+
 
 SET_TARGET_PROPERTIES (ExtensionsD
     PROPERTIES OUTPUT_NAME MF_Extensions

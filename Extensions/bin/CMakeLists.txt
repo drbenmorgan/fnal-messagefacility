@@ -82,7 +82,6 @@ IF (NOT CMAKE_CROSSCOMPILING)
         QT_WRAP_CPP (msgviewer
             msgviewer_moc_files
             mvdlg.h
-            mvlistener.h
             )
 
       ENDIF (QT_WRAP_UI) 
@@ -91,7 +90,6 @@ IF (NOT CMAKE_CROSSCOMPILING)
     ADD_EXECUTABLE (msgviewer
         msgviewer.cc
         mvdlg.cc
-        mvlistener.cc
         ${msgviewer_ui_headers}
         ${msgviewer_moc_files}
         )

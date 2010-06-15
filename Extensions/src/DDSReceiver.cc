@@ -16,6 +16,24 @@ using namespace MessageFacility;
 
 namespace mf {
 
+// Static methods
+DDSReceiver::SeverityCode DDSReceiver::getSeverityCode(int sev) {
+	if( sev == 0 )      return DEBUG;
+	else if( sev == 1 ) return INFO;
+	else if( sev == 2 ) return WARNING;
+	else if( sev == 3 ) return ERROR;
+	else                return DEBUG;
+}
+
+DDSReceiver::SeverityCode DDSReceiver::getSeverityCode(std::string const & sev) {
+	if( sev ==  "DEBUG" )       return DEBUG;
+	else if( sev == "INFO"    ) return INFO;
+	else if( sev == "WARNING" ) return WARNING;
+	else if( sev == "ERROR"   ) return ERROR;
+	else                        return DEBUG;
+}
+
+
 DDSReceiver::DDSReceiver(int partition, msgcall mc, syscall sc)
 : bConnected        ( false               )
 , msgSeq            ( new MFMessageSeq () )
@@ -146,6 +164,10 @@ void DDSReceiver::run(msgcall mc, syscall sc) {
 
   // Send system message
   sc(DDS_CONNECTION_DESTROYED, "DDS connection has been destroyed.");
+}
+
+int DDSReceiver::getPartition() {
+	return partitionNumber;
 }
 
 void DDSReceiver::switchPartition(int partition) {

@@ -46,9 +46,17 @@ public:
 	DDSReceiver(int partition, msgcall mc, syscall sc);
 	~DDSReceiver();
 
+	// Operations
 	void switchPartition(int partition);
 	void setSeverityThreshold(SeverityCode severity);
 	void stop();
+
+	// Get methods
+	int getPartition();
+
+	// Static methods
+	static SeverityCode getSeverityCode(int sev);
+	static SeverityCode getSeverityCode(std::string const & sev);
 
 private:
 	void createDDSConnection();
