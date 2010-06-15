@@ -19,24 +19,28 @@ class QtDDSReceiver : public QThread {
 	Q_OBJECT
 
 public:
+	// Forwarding enum types to QtDDSReceiver
+	typedef DDSReceiver::SysMsgCode SysMsgCode;
+	typedef DDSReceiver::SeverityCode SeverityCode;
+
 	QtDDSReceiver(QObject *parent = 0);
 	~QtDDSReceiver();
 
 	// Operations
 	void switchPartition(int partition);
-	void setSeverityThreshold(mf::DDSReceiver::SeverityCode severity);
+	void setSeverityThreshold(SeverityCode severity);
 	void stop();
 
 	// Get methods
 	int getPartition();
 
 	// Static methods
-	static DDSReceiver::SeverityCode getSeverityCode(int sev);
-	static DDSReceiver::SeverityCode getSeverityCode(std::string const & sev);
+	static SeverityCode getSeverityCode(int sev);
+	static SeverityCode getSeverityCode(std::string const & sev);
 
 signals:
   void newMessage(mf::MessageFacilityMsg const &);
-  void newSysMessage(mf::DDSReceiver::SysMsgCode const &, std::string const &);
+  void newSysMessage(mf::QtDDSReceiver::SysMsgCode const &, std::string const &);
 
 private:
 

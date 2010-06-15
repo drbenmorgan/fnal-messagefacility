@@ -11,12 +11,14 @@
 namespace mf {
 
 MessageFacilityMsg::MessageFacilityMsg(ErrorObj errorobj)
-: eo(errorobj)
+: eo     ( errorobj )
+, empty_ ( false )
 {
 }
 
 MessageFacilityMsg::MessageFacilityMsg()
-: eo(ELseverityLevel("INFO"), "")
+: eo     ( ELseverityLevel("INFO"), "" )
+, empty_ ( true )
 {
 }
 
@@ -25,16 +27,55 @@ MessageFacilityMsg::~MessageFacilityMsg() {
 
 
 // Set methods
-void MessageFacilityMsg::setTimestamp(timeval const & tv)           { eo.setTimestamp(tv); }
-void MessageFacilityMsg::setSeverity (std::string const & severity) { eo.setSeverity(mf::ELseverityLevel(std::string(severity))); }
-void MessageFacilityMsg::setCategory (std::string const & category) { eo.setID(category); }
-void MessageFacilityMsg::setHostname (std::string const & hostname) { eo.setHostName(hostname); }
-void MessageFacilityMsg::setHostaddr (std::string const & hostaddr) { eo.setHostAddr(hostaddr); }
-void MessageFacilityMsg::setProcess  (std::string const & process)  { eo.setProcess(process); }
-void MessageFacilityMsg::setPid      (long pid)                     { eo.setPID(pid); }
-void MessageFacilityMsg::setApplication(std::string const & app)    { eo.setApplication(app); }
-void MessageFacilityMsg::setModule   (std::string const & module)   { eo.setModule(module); }
-void MessageFacilityMsg::setContext  (std::string const & context)  { eo.setContext(context); }
+void MessageFacilityMsg::setTimestamp(timeval const & tv)           {
+	eo.setTimestamp(tv);
+	empty_ = false;
+}
+
+void MessageFacilityMsg::setSeverity (std::string const & severity) {
+	eo.setSeverity(mf::ELseverityLevel(std::string(severity)));
+	empty_ = false;
+}
+
+void MessageFacilityMsg::setCategory (std::string const & category) {
+	eo.setID(category);
+	empty_ = false;
+}
+
+void MessageFacilityMsg::setHostname (std::string const & hostname) {
+	eo.setHostName(hostname);
+	empty_ = false;
+}
+
+void MessageFacilityMsg::setHostaddr (std::string const & hostaddr) {
+	eo.setHostAddr(hostaddr);
+	empty_ = false;
+}
+
+void MessageFacilityMsg::setProcess  (std::string const & process)  {
+	eo.setProcess(process);
+	empty_ = false;
+}
+
+void MessageFacilityMsg::setPid      (long pid)                     {
+	eo.setPID(pid);
+	empty_ = false;
+}
+
+void MessageFacilityMsg::setApplication(std::string const & app)    {
+	eo.setApplication(app);
+	empty_ = false;
+}
+
+void MessageFacilityMsg::setModule   (std::string const & module)   {
+	eo.setModule(module);
+	empty_ = false;
+}
+
+void MessageFacilityMsg::setContext  (std::string const & context)  {
+	eo.setContext(context);
+	empty_ = false;
+}
 
 void MessageFacilityMsg::setMessage  (
 		std::string const & file
@@ -42,22 +83,24 @@ void MessageFacilityMsg::setMessage  (
 	  , std::string const & message )
 {
 	eo << " " << file << ":" << line << "\n" << message;
+	empty_ = false;
 }
 
 
 // Get methods
+bool        MessageFacilityMsg::empty()       const { return empty_; }
 ErrorObj    MessageFacilityMsg::ErrorObject() const { return eo; }
-timeval     MessageFacilityMsg::timestamp() const { return eo.timestamp(); }
-std::string MessageFacilityMsg::timestr()   const { return formatTime(eo.timestamp(), false); }
-std::string MessageFacilityMsg::severity()  const { return eo.xid().severity.getInputStr(); }
-std::string MessageFacilityMsg::category()  const { return eo.xid().id; }
-std::string MessageFacilityMsg::hostname()  const { return eo.xid().hostname; }
-std::string MessageFacilityMsg::hostaddr()  const { return eo.xid().hostaddr; }
-std::string MessageFacilityMsg::process()   const { return eo.xid().process; }
-long        MessageFacilityMsg::pid()       const { return eo.xid().pid; }
-std::string MessageFacilityMsg::application()  const { return eo.xid().application; }
-std::string MessageFacilityMsg::module()    const { return eo.xid().module; }
-std::string MessageFacilityMsg::context()   const { return eo.context(); }
+timeval     MessageFacilityMsg::timestamp()   const { return eo.timestamp(); }
+std::string MessageFacilityMsg::timestr()     const { return formatTime(eo.timestamp(), false); }
+std::string MessageFacilityMsg::severity()    const { return eo.xid().severity.getInputStr(); }
+std::string MessageFacilityMsg::category()    const { return eo.xid().id; }
+std::string MessageFacilityMsg::hostname()    const { return eo.xid().hostname; }
+std::string MessageFacilityMsg::hostaddr()    const { return eo.xid().hostaddr; }
+std::string MessageFacilityMsg::process()     const { return eo.xid().process; }
+long        MessageFacilityMsg::pid()         const { return eo.xid().pid; }
+std::string MessageFacilityMsg::application() const { return eo.xid().application; }
+std::string MessageFacilityMsg::module()      const { return eo.xid().module; }
+std::string MessageFacilityMsg::context()     const { return eo.context(); }
 
 std::string MessageFacilityMsg::file() const {
 

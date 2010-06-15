@@ -11,14 +11,16 @@
 
 namespace mf {
 
-DDSReceiver::SeverityCode QtDDSReceiver::getSeverityCode(int sev) {
+// Static methods
+QtDDSReceiver::SeverityCode QtDDSReceiver::getSeverityCode(int sev) {
 	return DDSReceiver::getSeverityCode(sev);
 }
 
-DDSReceiver::SeverityCode QtDDSReceiver::getSeverityCode(std::string const & sev) {
+QtDDSReceiver::SeverityCode QtDDSReceiver::getSeverityCode(std::string const & sev) {
 	return DDSReceiver::getSeverityCode(sev);
 }
 
+// C'tor & D'tor
 QtDDSReceiver::QtDDSReceiver(QObject *parent)
 : QThread ( parent )
 , dds     ( 0
@@ -26,7 +28,7 @@ QtDDSReceiver::QtDDSReceiver(QObject *parent)
           , boost::bind(&QtDDSReceiver::sysMsg, this, _1, _2) )
 {
   qRegisterMetaType<mf::MessageFacilityMsg>( "mf::MessageFacilityMsg" );
-  qRegisterMetaType<mf::DDSReceiver::SysMsgCode>( "mf::DDSReceiver::SysMsgCode" );
+  qRegisterMetaType<mf::QtDDSReceiver::SysMsgCode>( "mf::QtDDSReceiver::SysMsgCode" );
   qRegisterMetaType<std::string>( "std::string" );
 }
 
@@ -51,7 +53,7 @@ void QtDDSReceiver::switchPartition(int partition) {
 	dds.switchPartition(partition);
 }
 
-void QtDDSReceiver::setSeverityThreshold(mf::DDSReceiver::SeverityCode severity) {
+void QtDDSReceiver::setSeverityThreshold(QtDDSReceiver::SeverityCode severity) {
 	dds.setSeverityThreshold(severity);
 }
 

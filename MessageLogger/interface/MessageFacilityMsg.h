@@ -38,6 +38,7 @@ public:
 
 
 	// Get methods
+	bool        empty()       const;
 	ErrorObj    ErrorObject() const;
 	timeval     timestamp()   const;
 	std::string timestr()     const;
@@ -56,6 +57,7 @@ public:
 
 private:
 	ErrorObj eo;
+	bool empty_;
 };
 
 }

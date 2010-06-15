@@ -29,22 +29,18 @@ msgViewerDlg::msgViewerDlg(QDialog * parent)
          , SLOT(onNewMsg(mf::MessageFacilityMsg const & )) );
 
   connect( &qtdds
-         , SIGNAL(newSysMessage(mf::DDSReceiver::SysMsgCode, std::string const & ))
+         , SIGNAL(newSysMessage(mf::QtDDSReceiver::SysMsgCode, std::string const & ))
          , this
-         , SLOT(onNewSysMsg(mf::DDSReceiver::SysMsgCode, std::string const & )) );
+         , SLOT(onNewSysMsg(mf::QtDDSReceiver::SysMsgCode, std::string const & )) );
 
   label_Partition->setText("Partition 0");
-
-
-  //if(true) std::cout<<mfmessages.size()<<" empty\n\n";
-
 }
 
 void msgViewerDlg::onNewMsg(mf::MessageFacilityMsg const & mfmsg) {
 	txtMessages->append(QString(mfmsg.message().c_str()));
 }
 
-void msgViewerDlg::onNewSysMsg(mf::DDSReceiver::SysMsgCode syscode, std::string const & msg) {
+void msgViewerDlg::onNewSysMsg(mf::QtDDSReceiver::SysMsgCode syscode, std::string const & msg) {
 	txtMessages->append(QString(msg.c_str()));
 }
 

@@ -20,7 +20,7 @@ public:
 
 public slots:
   void onNewMsg(mf::MessageFacilityMsg const & mfmsg);
-  void onNewSysMsg(mf::DDSReceiver::SysMsgCode, std::string const & msg);
+  void onNewSysMsg(mf::QtDDSReceiver::SysMsgCode, std::string const & msg);
 
   void pause();
   void exit();
