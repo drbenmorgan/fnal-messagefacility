@@ -1,176 +1,59 @@
-#include "ccpp_dds_dcps.h"
-#include "Extensions/DDSdest_bld/ccpp_MessageFacility.h"
-#include "Extensions/interface/CheckStatus.h"
 
 #include "MessageLogger/interface/MessageLogger.h"
+#include "Extensions/interface/DDSReceiver.h"
 
-#include <boost/shared_ptr.hpp>
-#include <boost/thread.hpp>
 #include <boost/program_options.hpp>
+#include <boost/bind.hpp>
 
 #include <iostream>
 #include <string>
 
-using namespace DDS;
-using namespace MessageFacility;
-
 namespace po = boost::program_options;
 
-// required by all threads
-static GuardCondition_var       cmdline;
-static GuardCondition_var       escape;
-
-// boost::thread
-boost::thread                   trigger;
-boost::thread                   cmdHandler;
- 
-// Generic DDS entities
-DomainParticipantFactory_var    dpf;
-DomainParticipant_var           participant;
-Topic_var                       MFMessageTopic;
-Subscriber_var                  MFSubscriber;
-DataReader_ptr                  parentReader;
-  
-WaitSet_var                     serverWS;
-ReadCondition_var               newMsg;
-StatusCondition_var             newStatus;
-ConditionSeq                    guardList;
-
-// Type-specific DDS entities
-MFMessageTypeSupport_var        MFMessageTS;
-MFMessageDataReader_var         reader;
-MFMessageSeq_var                msgSeq = new MFMessageSeq();
-SampleInfoSeq_var               infoSeq = new SampleInfoSeq();
-
-// QoSPolicy holders
-TopicQos                        reliable_topic_qos;
-SubscriberQos                   sub_qos;
-DataReaderQos                   message_qos;
-
-// DDS Identifiers
-DomainId_t                      domain = NULL;
-ReturnCode_t                    status;
-
-// Others
-char                          * MFMessageTypeName = NULL;
-bool                            bConnected = false;
-
-
-bool bDisplayMsg = true;
+bool cmdline = false;
 int  PartitionNumber = 0;
 int  z = 0;
 
-// Methods
-bool switchChannel( const std::string & channelName);
-void cmdLineTrigger();
-void cmdLineInterface();
-
-void cmdLineTrigger()
+void printmsg(mf::MessageFacilityMsg const & mfmsg)
 {
-  ReturnCode_t status;
+	// No display of received messages in command line mode
+	if(cmdline)  return;
 
-  std::string input;
-  getline(std::cin, input);
+	// First archive the received message
+	// have to do it this way because LogErrorObj() takes a pointer
+	// to ErrorObj and take over the ownership (it will deal with
+	// with deletion), plus the fact ErrorObj doesn't have a copy
+	// assignment operator
+	mf::ErrorObj * eop = new mf::ErrorObj(mfmsg.ErrorObject());
+	mf::LogErrorObj(eop);
 
-  status = cmdline->set_trigger_value(TRUE);
-  checkStatus(status, "triggering command line interface");
+	// Show received message on screen
+    std::cout << "severity:       " << mfmsg.severity()   << "\n";
+    std::cout << "timestamp:      " << mfmsg.timestr()    << "\n";
+    std::cout << "hostname:       " << mfmsg.hostname()   << "\n";
+    std::cout << "hostaddr(ip):   " << mfmsg.hostaddr()   << "\n";
+    std::cout << "process:        " << mfmsg.process()    << "\n";
+    std::cout << "porcess_id:     " << mfmsg.pid()        << "\n";
+    std::cout << "application:    " << mfmsg.application()<< "\n";
+    std::cout << "module:         " << mfmsg.module()     << "\n";
+    std::cout << "context:        " << mfmsg.context()    << "\n";
+    std::cout << "category(id):   " << mfmsg.category()   << "\n";
+    std::cout << "file:           " << mfmsg.file()       << "\n";
+    std::cout << "line:           " << mfmsg.line()       << "\n";
+    std::cout << "message:        " << mfmsg.message()    << "\n";
+    std::cout << std::endl;
 
-  return;
 }
 
-void cmdLineInterface()
+void printsysmsg(mf::DDSReceiver::SysMsgCode syscode, std::string const & msg)
 {
-  std::string cmd;
-
-  while(true)
-  {
-    std::cout << "> ";
-    getline(std::cin, cmd);
-
-    if(cmd == "quit" || cmd == "q")
-    {
-      escape -> set_trigger_value(TRUE);
-      return;
-    }
-    else if(cmd == "resume" || cmd == "r")
-    {
-      std::cout << "Resumed to message monitoring mode.\n";
-      bDisplayMsg = true;
-
-      // listening for the trigger
-      trigger = boost::thread(cmdLineTrigger);
-
-      return;
-    }
-    else if(cmd == "stat" || cmd == "s")
-    {
-      std::cout << "Currently listening in partition "
-                << "\"Partition" << PartitionNumber << "\".\n"
-                << "Total " << z << " messages has been received.\n";
-    }
-    else if(cmd == "partition" || cmd == "p")
-    {
-      std::cout << "Please enter a partition number (0-4): ";
-
-      getline(std::cin, cmd);
-      std::istringstream ss(cmd);
-
-      if( ss >> PartitionNumber )
-      {
-        std::string partition("Partition"+cmd);
-        if( switchChannel(partition) )
-          std::cout << "Switched to partition \"" << partition << "\"\n";
-        else
-          std::cout << "Failed to switched partition!\n";
-      }
-      else
-      {
-        std::cout << "Please use an integer value for the partition!\n";
-      }
-    }
-    else if(cmd == "help" || cmd == "h")
-    {
-      std::cout << "MessageFacility DDS server available commands:\n"
-                << "  (h)elp          display this help message\n"
-                << "  (s)tat          summary of received messages\n"
-                << "  (r)esume        resume to message listening mode\n"
-                << "  (p)artition     listen to a new partition\n"
-                << "  (q)uit          exit MessageFacility DDS server\n"
-                << "  ... more interactive commands on the way.\n";
-    }
-    else if(cmd.empty())
-    {
-    }
-    else
-    {
-      std::cout << "Command " << cmd << " not found. "
-                << "Type \"help\" for a list of available commands.\n";
-    }
-  }
-
-  return;
-}
-
-
-// SwitchChannel -> switch partition in the same dds domain
-bool switchChannel( const std::string & channelName) 
-{
-  if(!bConnected)  return false;
-
-  status = participant -> get_default_subscriber_qos (sub_qos);
-  checkStatus(status, "get_default_subscriber_qos()");
-  sub_qos.partition.name.length(1);
-  sub_qos.partition.name[0]=channelName.c_str();
-
-  status = MFSubscriber -> set_qos(sub_qos);
-  checkStatus(status, "set_qos()");
-
-  return true;
+	//std::cout << msg << "\n";
 }
 
 
 int main(int argc, char * argv[])
 {
+
   // checking options
   std::string filename;
 
@@ -209,270 +92,82 @@ int main(int argc, char * argv[])
     return 1;
   }
 
-  // Generate the Partition name string
-  std::stringstream ss;
-  ss << "Partition" << PartitionNumber;
-
-  // Create DomainParticipantFactory and a Participant
-  dpf = DomainParticipantFactory::get_instance();
-  checkHandle(dpf.in(), "DomainParticipantFactory::get_instance()");
-
-  participant = dpf -> create_participant (
-     domain,
-     PARTICIPANT_QOS_DEFAULT,
-     NULL,
-     ANY_STATUS);
-  checkHandle(dpf.in(), "create participant()");
-
-  // Register the required datatype for MFMessage
-  MFMessageTS = new MFMessageTypeSupport();
-  checkHandle(MFMessageTS.in(), "MFMessageTypeSupport()");
-
-  MFMessageTypeName = MFMessageTS -> get_type_name();
-  status = MFMessageTS -> register_type (
-      participant.in(),
-      MFMessageTypeName);
-  checkStatus(status, "register_type()");
-
-  // Set the ReliabilityQosPolicy to RELIABLE
-  status = participant -> get_default_topic_qos( reliable_topic_qos );
-  checkStatus(status, "get_default_topic_qos()");
-  reliable_topic_qos.reliability.kind = DDS::RELIABLE_RELIABILITY_QOS;
-
-  // make the tailored Qos the new default
-  status = participant -> set_default_topic_qos( reliable_topic_qos );
-  checkStatus(status, "set_default_topic_qos()");
-
-  // Use the changed poilicy when defining the MFMessage topic
-  MFMessageTopic = participant -> create_topic (
-      "MessageFacility_Message",
-      MFMessageTypeName,
-      reliable_topic_qos,
-      NULL,
-      ANY_STATUS);
-  checkHandle(MFMessageTopic.in(), "create_topic()");
-
-  // Adapt the default SubscriberQos to read from the partition
-  status = participant -> get_default_subscriber_qos( sub_qos );
-  checkStatus(status, "get_default_subscriber_qos()");
-  sub_qos.partition.name.length(1);
-  sub_qos.partition.name[0] = ss.str().c_str();
-
-  // Create a subscriber for the MF
-  MFSubscriber = participant -> create_subscriber (
-      sub_qos, NULL, ANY_STATUS);
-  checkHandle(MFSubscriber.in(), "create_subscriber()");
-
-  // Adapt the DataReaderQoS to keep track of all messages
-  status = MFSubscriber -> get_default_datareader_qos( message_qos );
-  checkStatus(status, "get_default_datareader_qos()");
-  status = MFSubscriber -> copy_from_topic_qos (
-      message_qos, reliable_topic_qos );
-  checkStatus(status, "copy_from_topic_qos()");
-  message_qos.history.kind = KEEP_ALL_HISTORY_QOS;
-
-  // Create a DataReader for the topic
-  parentReader = MFSubscriber -> create_datareader (
-      MFMessageTopic.in(),
-      message_qos,
-      NULL,
-      ANY_STATUS);
-  checkHandle(parentReader, "create_datereader()");
-
-  // Narrow the abstract parent into its typed representative
-  reader = MessageFacility::MFMessageDataReader::_narrow(parentReader);
-  checkHandle(reader.in(), "narrow()");
-
-  // Indicate Server is up...
-  std::cout << "MessageFacility DDS server is up and listening for messages "
-            << "in partition " << PartitionNumber << "\n"
-            << "(press enter then \"quit\" to exit listening)...\n";
-
-  // indicating the connection has be established
-  bConnected = true;
-
-  //-----------------------------------------------------------------
-  // Blocked receive using wait-condition
-  //-----------------------------------------------------------------
-
-  // Create ReadCondition on arrival of new messages
-  newMsg = reader -> create_readcondition (
-      NOT_READ_SAMPLE_STATE,
-      ANY_VIEW_STATE,
-      ANY_INSTANCE_STATE);
-  checkHandle(newMsg, "create_readcondition()");
-
-  // Create a waitset and add the condition
-  //newStatus = reader -> get_statuscondition();
-  //newStatus -> set_enabled_statuses (DATA_AVAILABLE_STATUS);
-  //checkHandle(newStatus, "get_statuscondition()");
-
-  // Create a command line guard that will be used to trigger the 
-  // command line interface
-  cmdline = new GuardCondition();
-
-  // Create a guard that will be used for exit
-  escape  = new GuardCondition();
-
-  // Attaching guardians
-  serverWS = new WaitSet();
-  status = serverWS -> attach_condition( newMsg.in() );
-  checkStatus(status, "attach_condition( newMsg )");
-  //status = serverWS -> attach_condition( newStatus.in() );
-  //checkStatus(status, "attach_condition( newStatus )");
-  status = serverWS -> attach_condition( cmdline.in() );
-  checkStatus(status, "attach_condition( cmdline )");
-  status = serverWS -> attach_condition( escape.in() );
-  checkStatus(status, "attach_condition( escape )");
-
-  // Initialize the guardList to obtain the triggered conditions
-  guardList.length(3);
 
   // Start MessageFacility Service
   mf::StartMessageFacility(
-      mf::MessageFacilityService::MultiThread,
+      mf::MessageFacilityService::SingleThread,
       mf::MessageFacilityService::logArchive(filename));
 
-  // Start the thread for triggering the command line interface
-  trigger = boost::thread(cmdLineTrigger);
+  // Start MessageFacility DDS Receiver
+  mf::DDSReceiver dds(PartitionNumber, printmsg, printsysmsg);
 
-  // Read messages from the reader
-  bDisplayMsg = true;
-  z = 0;
+  // Welcome message
+  std::cout << "Message Facility MsgServer is up and listening in partition "
+            << PartitionNumber << ".\n";
 
-  bool terminated = false;
-  while (!terminated)
-  {
-    status = serverWS -> wait(guardList, DURATION_INFINITE);
-    checkStatus(status, "WaitSet::wait()");
+  // Command line message loop
+  std::string cmd;
 
-    // walk over all guards
-    for(CORBA::ULong gi = 0; gi < guardList.length(); ++gi)
+  while(true) {
+
+	if(cmdline)  std::cout << "> ";
+    getline(std::cin, cmd);
+
+    if(cmd.empty())
     {
-      if(guardList[gi] == escape.in())
+      cmdline = true;
+    }
+    else if( cmdline && (cmd == "r" || cmd == "resume") )
+    {
+      cmdline = false;;
+    }
+    else if( cmdline && (cmd == "q" || cmd == "quit") )
+    {
+      dds.stop();
+      return 0;
+    }
+    else if( cmdline && (cmd == "h" || cmd == "help") )
+    {
+      std::cout << "MessageFacility DDS server available commands:\n"
+                << "  (h)elp          display this help message\n"
+                << "  (s)tat          summary of received messages\n"
+                << "  (r)esume        resume to message listening mode\n"
+                << "  (p)artition     listen to a new partition\n"
+                << "  (q)uit          exit MessageFacility DDS server\n"
+                << "  ... more interactive commands on the way.\n";
+    }
+    else if( cmdline && (cmd == "s" || cmd == "stat") )
+    {
+      std::cout << "Currently listening in partition "
+                << "\"Partition" << PartitionNumber << "\".\n"
+                << "Total " << z << " messages has been received.\n";
+    }
+    else if( cmdline && (cmd == "p" || cmd == "partition") )
+    {
+      std::cout << "Please enter a partition number (0-4): ";
+
+      getline(std::cin, cmd);
+      std::istringstream ss(cmd);
+
+      if( ss >> PartitionNumber )
       {
-        terminated = true;
+        dds.switchPartition(PartitionNumber);
+        cmdline = false;
       }
-      else if(guardList[gi] == cmdline.in())
+      else
       {
-        // set to no message display on stdout
-        // logging to file still going on...
-        bDisplayMsg = false;
-
-        // reset the trigger
-        status = cmdline->set_trigger_value(FALSE);
-        checkStatus(status, "reset trigger..");
-        
-        // spawn command handling thread
-        cmdHandler = boost::thread(cmdLineInterface);
-      }
-      else if(guardList[gi] == newMsg.in())
-      {
-        // new message coming in
-        status = reader -> take (
-            msgSeq,
-            infoSeq,
-            LENGTH_UNLIMITED,
-            ANY_SAMPLE_STATE,
-            ANY_VIEW_STATE,
-            ANY_INSTANCE_STATE );
-        checkStatus(status, "take()");
-
-        z += msgSeq->length();
-
-        for(CORBA::ULong i = 0; i < msgSeq->length(); ++i)
-        {
-          if(!infoSeq[i].valid_data)
-          {
-            --z;
-            //std::cout << "One logger exits.\n";
-            continue;
-          }
-
-          MFMessage * msg = &(msgSeq[i]);
-
-          if(bDisplayMsg)
-          {
-            std::cout << "severity:       " << msg->severity_   << "\n";
-            std::cout << "timestamp:      " << msg->timestamp_  << "\n";
-            std::cout << "hostname:       " << msg->hostname_   << "\n";
-            std::cout << "hostaddr(ip):   " << msg->hostaddr_   << "\n";
-            std::cout << "process:        " << msg->process_    << "\n";
-            std::cout << "porcess_id:     " << msg->pid_        << "\n";
-            std::cout << "application:    " << msg->application_<< "\n";
-            std::cout << "module:         " << msg->module_     << "\n";
-            std::cout << "context:        " << msg->context_    << "\n";
-            std::cout << "category(id):   " << msg->id_         << "\n";
-            std::cout << "file:           " << msg->file_       << "\n";
-            std::cout << "line:           " << msg->line_       << "\n";
-            std::cout << "message:        " << msg->items_      << "\n";
-            //std::cout << "idOverflow:   " << msg->idOverflow_ << "\n";
-            //std::cout << "subroutine:   " << msg->subroutine_ << "\n";
-            std::cout << std::endl;
-
-            //std::cout <<"sample_state =   "<< infoSeq[i].sample_state << "\n";
-            //std::cout <<"view_state =     "<< infoSeq[i].view_state << "\n";
-            //std::cout <<"instance_state = "
-            //          << infoSeq[i].instance_state << "\n";
-
-          }
-
-          // Re-construct the ErrorObject
-          mf::ErrorObj * eo_p = new mf::ErrorObj(
-              mf::ELseverityLevel(std::string(msg->severity_)), 
-              std::string(msg->id_) );
-
-          timeval tv = { msg->time_sec, msg->time_usec };
-
-          eo_p -> setTimestamp  ( tv );
-          eo_p -> setHostName   ( std::string(msg->hostname_)    );
-          eo_p -> setHostAddr   ( std::string(msg->hostaddr_)    );
-          eo_p -> setProcess    ( std::string(msg->process_)     );
-          eo_p -> setPID        (      (long)(msg->pid_)         );
-          eo_p -> setApplication( std::string(msg->application_) );
-          eo_p -> setModule     ( std::string(msg->module_)      );
-          eo_p -> setContext    ( std::string(msg->context_)     );
-          eo_p -> setSubroutine ( std::string(msg->subroutine_)  );
-
-          (*eo_p) << " " << msg->file_
-                  << ":" << msg->line_
-                  << "\n" << msg->items_;
-
-          mf::LogErrorObj(eo_p);
-        }
-
-        if(bDisplayMsg)
-            std::cout << "Recevied messages " << z << "\n\n";
-
-        status = reader -> return_loan(msgSeq, infoSeq);
-        checkStatus(status, "return_loan()");
-     
+        std::cout << "Please use an integer value for the partition!\n";
       }
     }
-  }
+    else if( cmdline )
+    {
+      std::cout << "Command " << cmd << " not found. "
+                << "Type \"help\" or \"h\" for a list of available commands.\n";
+    }
 
-  // Remove conditions from the waitset
-  status = serverWS -> detach_condition( newMsg.in() );
-  checkStatus(status, "detach_condition( newMsg )");
-  //status = serverWS -> detach_condition( newStatus.in() );
-  //checkStatus(status, "detach_condition( newStatus )");
-  status = serverWS -> detach_condition( cmdline.in() );
-  checkStatus(status, "detach_condition( cmdline )");
-  status = serverWS -> detach_condition( escape.in() );
-  checkStatus(status, "detach_condition( escape )");
+  } // end of command line message loop
 
-  // De-allocate type-names
-  CORBA::string_free(MFMessageTypeName);
-
-  // Free all resources
-  status = participant -> delete_contained_entities();
-  checkStatus(status, "delete_contained_entities()");
-
-  // Remove the DomainParticipant
-  status = dpf -> delete_participant( participant.in() );
-  checkStatus(status, "delete_participant()");
-
-  bConnected = false;
 
   return 0;
+
 }

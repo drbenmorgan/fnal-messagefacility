@@ -5,6 +5,7 @@
 #include "mvlistener.h"
 
 #include <sstream>
+#include "boost/bind.hpp"
 
 using namespace DDS;
 using namespace MessageFacility;
@@ -19,6 +20,9 @@ ListenerThread::ListenerThread(QObject *parent)
 , nMsgs             ( 0                   )
 , severityThreshold ( 0                   )
 , partitionNumber   ( 0                   )
+, dds (0
+	  , boost::bind(&ListenerThread::newMFMsg, this, _1)
+      , boost::bind(&ListenerThread::sysMFMsg, this, _1, _2) )
 {
 }
 
@@ -54,6 +58,10 @@ int ListenerThread::getPartition()
 {
   return partitionNumber;
 }
+
+void ListenerThread::newMFMsg(mf::MessageFacilityMsg const & mfmsg) { emit newMessage("hello"); }
+void ListenerThread::sysMFMsg(mf::DDSReceiver::SysMsgCode syscode, std::string const & msg) { emit sysMessage("system"); }
+
 
 void ListenerThread::run()
 {

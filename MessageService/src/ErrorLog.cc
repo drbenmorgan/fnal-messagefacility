@@ -300,7 +300,7 @@ ErrorLog & ErrorLog::emit( const ELstring & s )  {
   if ( ! a->msgIsActive )
     (*this) ( ELunspecified, "..." );
 
-  a->msg.emit( s );
+  a->msg.eo_emit( s );
 
   #ifdef ErrorLogEMIT_TRACE
     std::cout << " =:=:=: ErrorLog emit trace:  return from a->msg.emit()\n";

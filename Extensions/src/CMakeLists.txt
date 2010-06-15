@@ -7,6 +7,7 @@
 #
 
 SET (SRCFILES 
+    DDSReceiver.cc
     ELDDSdest.cc
     ELarchive.cc
     )

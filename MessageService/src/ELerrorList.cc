@@ -101,7 +101,7 @@ bool ELerrorList::log( const mf::ErrorObj & msg )  {
 
   // add a last item to the message:  The fullContext string supplied.
 
-  m.emit(ELadministrator::instance()->getContextSupplier().fullContext());
+  m.eo_emit(ELadministrator::instance()->getContextSupplier().fullContext());
 
   // Now just put m on the list:
 

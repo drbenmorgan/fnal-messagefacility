@@ -212,7 +212,7 @@ void ErrorObj::setPID( long pid ) {
 #endif
 
 
-ErrorObj & ErrorObj::emit( const ELstring & s )  {
+ErrorObj & ErrorObj::eo_emit( const ELstring & s )  {
 
   #ifdef ErrorObj_EMIT_TRACE
     std::cerr << "=:=:=: ErrorObj::emit ( " << s << " )\n";
@@ -282,13 +282,13 @@ ErrorObj::opltlt ( const char s[] ) {
 #ifdef OLD_STYLE_AUTOMATIC_SPACES
   if ( ! myOs.str().empty() ) {
     if ( !verbatim ) {
-      emit( myOs.str() + ' ' );
+      eo_emit( myOs.str() + ' ' );
     } else {
-       emit( myOs.str() );
+       eo_emit( myOs.str() );
     }
   }
 #else
-  if ( ! myOs.str().empty() ) emit( myOs.str() );
+  if ( ! myOs.str().empty() ) eo_emit( myOs.str() );
 #endif
   return *this;
 }

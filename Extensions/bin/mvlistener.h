@@ -6,6 +6,8 @@
 #include "Extensions/DDSdest_bld/ccpp_MessageFacility.h"
 #include "Extensions/interface/CheckStatus.h"
 
+#include "Extensions/interface/DDSReceiver.h"
+
 #include <QThread>
 
 class ListenerThread : public QThread
@@ -23,6 +25,9 @@ public:
 
   bool switchPartition(int p);
   int  getPartition();
+
+  void newMFMsg(mf::MessageFacilityMsg const & mfmsg);
+  void sysMFMsg(mf::DDSReceiver::SysMsgCode syscode, std::string const & msg);
 
 signals:
   void connEstablished(bool flag);
@@ -74,4 +79,5 @@ private:
   DDS::GuardCondition_var              cmdline;
   DDS::GuardCondition_var              escape;
 
+  mf::DDSReceiver dds;
 };

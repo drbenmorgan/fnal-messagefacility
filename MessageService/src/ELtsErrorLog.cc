@@ -186,7 +186,7 @@ void ELtsErrorLog::initiateMsg(const ELseverityLevel& sev, const ELstring& id)
 void ELtsErrorLog::item ( const ELstring & s ) {
   if ( ! msgIsActive )
     initiateMsg ( ELunspecified, "..." );
-  msg.emit( s );
+  msg.eo_emit( s );
 }  // emit()
 
 // ----------------------------------------------------------------------
@@ -204,7 +204,7 @@ void ELtsErrorLog::item ( int n ) {
         << std::hex << std::setw(8) << std::setfill('0')
         << n << "] ";
   }
-  msg.emit ( ost.str() );
+  msg.eo_emit ( ost.str() );
 }
 
 void ELtsErrorLog::item ( unsigned int n )  {
@@ -217,7 +217,7 @@ void ELtsErrorLog::item ( unsigned int n )  {
         << std::hex << std::setw(8) << std::setfill('0')
         << n << "] ";
   }
-  msg.emit ( ost.str() );
+  msg.eo_emit ( ost.str() );
 }
 
 void ELtsErrorLog::item ( long n )  {
@@ -232,7 +232,7 @@ void ELtsErrorLog::item ( long n )  {
         << std::hex << std::setw(width) << std::setfill('0')
         << n << "] ";
   }
-  msg.emit ( ost.str() );
+  msg.eo_emit ( ost.str() );
 }
 
 void ELtsErrorLog::item ( unsigned long n )  {
@@ -247,7 +247,7 @@ void ELtsErrorLog::item ( unsigned long n )  {
         << std::hex << std::setw(width) << std::setfill('0')
         << n << "] ";
   }
-  msg.emit ( ost.str() );
+  msg.eo_emit ( ost.str() );
 }
 
 void ELtsErrorLog::item ( short n )  {
@@ -260,7 +260,7 @@ void ELtsErrorLog::item ( short n )  {
         << std::hex << std::setw(4) << std::setfill('0')
         << n << "] ";
   }
-  msg.emit ( ost.str() );
+  msg.eo_emit ( ost.str() );
 }
 
 void ELtsErrorLog::item ( unsigned short n )  {
@@ -272,7 +272,7 @@ void ELtsErrorLog::item ( unsigned short n )  {
         << std::hex << std::setw(4) << std::setfill('0')
         << n << "] ";
   }
-  msg.emit ( ost.str() );
+  msg.eo_emit ( ost.str() );
 }
 
 // ----------------------------------------------------------------------

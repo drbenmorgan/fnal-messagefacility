@@ -2,10 +2,14 @@
 #define MSGVIEWERDLG_H
 
 #include "Extensions/bin/msgviewerdlgui.h"
+#include "Extensions/interface/DDSReceiver.h"
 
 #include "mvlistener.h"
 
 #include <string>
+#include <vector>
+#include <map>
+#include <list>
 
 
 class msgViewerDlg : public QDialog, private Ui::MsgViewerDlg
@@ -14,6 +18,9 @@ class msgViewerDlg : public QDialog, private Ui::MsgViewerDlg
 
 public:
   msgViewerDlg( QDialog *parent = 0 );
+
+  void onNewMsg(mf::MessageFacilityMsg const & mfmsg);
+  void onNewSysMsg(mf::DDSReceiver::SysMsgCode, std::string const & msg);
 
 public slots:
   void pause();
@@ -27,7 +34,23 @@ protected:
   void closeEvent(QCloseEvent *event);
 
 private:
+
+  const int BUFFER_SIZE;
+
+  // circular buffer head pointer
+  int idx;
+
+  // circular message buffer
+  std::vector<mf::MessageFacilityMsg> mfmessages;
+
+  // map from a hostname to a list of message indices
+  std::map<std::string, std::list<int> > hostmap;
+
+  // map from an appliation name to a list of message indices
+  std::map<std::string, std::list<int> > appmap;
+
   ListenerThread lthread;
+  //mf::DDSReceiver dds;
 
 };
 
