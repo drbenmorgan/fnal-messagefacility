@@ -10,6 +10,8 @@
 
 #include "MessageLogger/interface/ErrorObj.h"
 
+#include "boost/shared_ptr.hpp"
+
 #include <string>
 
 namespace mf {
@@ -56,7 +58,7 @@ public:
 	std::string message()     const;
 
 private:
-	ErrorObj eo;
+	boost::shared_ptr<ErrorObj> ep;
 	bool empty_;
 };
 

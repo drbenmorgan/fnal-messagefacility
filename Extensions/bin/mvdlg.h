@@ -19,8 +19,6 @@ public:
 
 
 public slots:
-  void onNewMsg(mf::MessageFacilityMsg const & mfmsg);
-  void onNewSysMsg(mf::QtDDSReceiver::SysMsgCode, std::string const & msg);
 
   void pause();
   void exit();
@@ -32,8 +30,54 @@ public slots:
 protected:
   void closeEvent(QCloseEvent *event);
 
+private slots:
+
+  void onNewMsg(mf::MessageFacilityMsg const & mfmsg);
+  void onNewSysMsg(mf::QtDDSReceiver::SysMsgCode, std::string const & msg);
+
+  void filterApp(int row);
+  void setFilter();
+  void resetFilter();
+
 private:
 
+  std::list<int> findCommonInLists(
+		  std::list<int> const & l1
+		, std::list<int> const & l2
+		, std::list<int> const & l3 );
+
+  std::list<int> findCommonInLists(
+		  std::list<int> const & l1
+		, std::list<int> const & l2 );
+
+  void displayMsg(mf::MessageFacilityMsg const & mfmsg);
+
+  // Pop the first element from the list pointed by the key. Returns true
+  // if the list becomes empty after the deletion
+  bool deleteFromMap(std::map<std::string, std::list<int> > &, std::string const &);
+
+  // Update the map. Returns true if provided key is a new key in the map
+  bool updateMap(std::map<std::string, std::list<int> > &, std::string const &);
+
+  // Update the list. Returns true if there's a change in the selection
+  // before and after the update. e.g., the selected entry has been deleted
+  // during the process of updateMap(), therefore it returns a false.
+  bool updateList(QListWidget *, std::map<std::string, std::list<int> > &);
+
+
+private:
+
+  // # of received messages
+  int nMsgs;
+
+  // filter strings for hosts, applications, and categories
+  // the value "##DEADBEAF##" indicates no filter condition has
+  // been set
+  std::string hostFilter;
+  std::string appFilter;
+  std::string catFilter;
+
+  // buffer size
   const int BUFFER_SIZE;
 
   // circular buffer head pointer
@@ -45,8 +89,11 @@ private:
   // map from a hostname to a list of message indices
   std::map<std::string, std::list<int> > hostmap;
 
-  // map from an appliation name to a list of message indices
+  // map from an application name to a list of message indices
   std::map<std::string, std::list<int> > appmap;
+
+  // map from a category name to a list of message indices
+  std::map<std::string, std::list<int> > catmap;
 
   // DDSReceiver for Qt
   mf::QtDDSReceiver qtdds;

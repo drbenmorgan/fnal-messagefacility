@@ -45,14 +45,14 @@ int main()
   //mf::SwitchChannel(2);
 
   // Log Debugs
-  //for(int i=0; i<2500; ++i)
+  for(int i=0; i<500; ++i)
   {
     LogError("catError")     << "Error information.";
     LogWarning("catWarning") << "Warning information.";
     LogInfo("catInfo")       << "Info information.";
     LogDebug("debug")        << "DEBUG information.";
 
-    sleep(1);
+    //sleep(1);
   }
 
   // Thread join
