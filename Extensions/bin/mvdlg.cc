@@ -26,7 +26,9 @@ msgViewerDlg::msgViewerDlg(QDialog * parent)
   connect( btnFilter, SIGNAL( clicked() ), this, SLOT( setFilter() ) );
   connect( btnReset,  SIGNAL( clicked() ), this, SLOT( resetFilter() ) );
 
-  connect( lwApplication, SIGNAL( currentRowChanged(int) ), this, SLOT( filterApp(int) ) );
+  connect( btnClearHost, SIGNAL( clicked() ), this, SLOT( clearHostSelection() ) );
+  connect( btnClearApp,  SIGNAL( clicked() ), this, SLOT( clearAppSelection() ) );
+  connect( btnClearCat,  SIGNAL( clicked() ), this, SLOT( clearCatSelection() ) );
 
   connect( vsSeverity
          , SIGNAL( valueChanged(int) )
@@ -45,10 +47,6 @@ msgViewerDlg::msgViewerDlg(QDialog * parent)
 
   label_Partition->setText("Partition 0");
 
-}
-
-void msgViewerDlg::filterApp(int row) {
-	//std::cout << row << "\n";
 }
 
 void msgViewerDlg::onNewMsg(mf::MessageFacilityMsg const & mfmsg) {
@@ -119,7 +117,42 @@ void msgViewerDlg::onNewSysMsg(mf::QtDDSReceiver::SysMsgCode syscode, std::strin
 	}
 }
 
+// display a single message
 void msgViewerDlg::displayMsg(mf::MessageFacilityMsg const & mfmsg) {
+
+	txtMessages->append(QString(generateMsgStr(mfmsg).c_str()));
+}
+
+// display a list of message
+void msgViewerDlg::displayMsg(std::list<int> const & l) {
+
+	std::string str;
+	std::list<int>::const_iterator it = l.begin();
+
+	while(it!=l.end()) {
+		str += generateMsgStr(mfmessages[*it]);
+		++it;
+	}
+
+	txtMessages->append(QString(str.c_str()));
+}
+
+// display all messages in buffer
+void msgViewerDlg::displayMsg() {
+
+	std::string str;
+
+	int i = (idx+1) % BUFFER_SIZE;
+	while (i!=idx) {
+		if(!mfmessages[i].empty())
+			str += generateMsgStr(mfmessages[i]);
+		i = (++i) % BUFFER_SIZE;
+	}
+
+	txtMessages->append(QString(str.c_str()));
+}
+
+std::string msgViewerDlg::generateMsgStr(mf::MessageFacilityMsg const & mfmsg) {
 
     std::string sev = mfmsg.severity();
 
@@ -174,7 +207,7 @@ void msgViewerDlg::displayMsg(mf::MessageFacilityMsg const & mfmsg) {
 
     ss << "</table></font><br>";
 
-	txtMessages->append(QString(ss.str().c_str()));
+    return ss.str();
 }
 
 bool msgViewerDlg::updateMap(std::map<std::string, std::list<int> > & map, std::string const & key) {
@@ -331,11 +364,7 @@ void msgViewerDlg::setFilter() {
 
 	// Update the view
 	txtMessages->clear();
-	std::list<int>::const_iterator lit = result.begin();
-	while(lit!=result.end()) {
-		displayMsg(mfmessages[*lit]);
-		++lit;
-	}
+	displayMsg(result);
 }
 
 void msgViewerDlg::resetFilter() {
@@ -344,13 +373,18 @@ void msgViewerDlg::resetFilter() {
 	appFilter = "##DEADBEAF##";
 	catFilter = "##DEADBEAF##";
 
-	int i = (idx+1) % BUFFER_SIZE;
-	while (i!=idx) {
-		if(!mfmessages[i].empty())
-			displayMsg(mfmessages[i]);
-		i = (++i) % BUFFER_SIZE;
-	}
+	lwHost->setCurrentRow(-1);
+	lwApplication->setCurrentRow(-1);
+	lwCategory->setCurrentRow(-1);
+
+	// Update the view
+	txtMessages->clear();
+	displayMsg();
 }
+
+void msgViewerDlg::clearHostSelection() { lwHost->setCurrentRow(-1); }
+void msgViewerDlg::clearAppSelection()  { lwApplication->setCurrentRow(-1); }
+void msgViewerDlg::clearCatSelection()  { lwCategory->setCurrentRow(-1); }
 
 void msgViewerDlg::pause()
 {

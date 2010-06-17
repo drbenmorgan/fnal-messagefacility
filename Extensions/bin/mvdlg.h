@@ -35,9 +35,12 @@ private slots:
   void onNewMsg(mf::MessageFacilityMsg const & mfmsg);
   void onNewSysMsg(mf::QtDDSReceiver::SysMsgCode, std::string const & msg);
 
-  void filterApp(int row);
   void setFilter();
   void resetFilter();
+
+  void clearHostSelection();
+  void clearAppSelection();
+  void clearCatSelection();
 
 private:
 
@@ -50,7 +53,14 @@ private:
 		  std::list<int> const & l1
 		, std::list<int> const & l2 );
 
+  // Display a single message
   void displayMsg(mf::MessageFacilityMsg const & mfmsg);
+  // Display a list of messages by the list of message indices
+  void displayMsg(std::list<int> const & l);
+  // Display all messages stored in the buffer
+  void displayMsg();
+
+  std::string generateMsgStr(mf::MessageFacilityMsg const & mfmsg);
 
   // Pop the first element from the list pointed by the key. Returns true
   // if the list becomes empty after the deletion
