@@ -16,6 +16,9 @@ msgViewerDlg::msgViewerDlg(QDialog * parent)
 , appmap      ( )
 , catmap      ( )
 , qtdds       ( )
+, msgsPerPage ( 5 )
+, nDisplayMsgs( 0 )
+, currentPage ( 0 )
 {
   setupUi(this);
 
@@ -45,7 +48,7 @@ msgViewerDlg::msgViewerDlg(QDialog * parent)
          , this
          , SLOT(onNewSysMsg(mf::QtDDSReceiver::SysMsgCode, std::string const & )) );
 
-  label_Partition->setText("Partition 0");
+  btnSwitchChannel->setText("Partition 0");
 
 }
 
@@ -96,8 +99,24 @@ void msgViewerDlg::onNewMsg(mf::MessageFacilityMsg const & mfmsg) {
 	bool appMatch  = ( appFilter  == app  );
 	bool catMatch  = ( catFilter  == cat  );
 
-	if( (hostAny || hostMatch) && (appAny || appMatch) && (catAny || catMatch) )
+	// Check to display the message
+	if( (hostAny || hostMatch) && (appAny || appMatch) && (catAny || catMatch) ) {
+#if 0
+		if( currentPage == (nDisplayMsgs + msgsPerPage-1) / msgsPerPage) {
+			// Means its in the latest page
+			if( nDisplayMsgs % msgsPerPage == 0 ) {
+				// Move to next page
+				txtMessages->clear();
+				++currentPage;
+			}
+			// display the message
+			displayMsg(mfmsg);
+		}
+		// no matter what, evolves the nDisplayMsgs
+		++nDisplayMsgs;
+#endif
 		displayMsg(mfmsg);
+	}
 
 	// finally revolve the idx forward by one
 	idx = (++idx) % BUFFER_SIZE;
@@ -110,7 +129,7 @@ void msgViewerDlg::onNewSysMsg(mf::QtDDSReceiver::SysMsgCode syscode, std::strin
 		lcdMsgs->display( nMsgs );
 	}
 	else {
-		QString qtmsg = "<b><font color=\"#000080\">SYSTEM:"
+		QString qtmsg = "<b><font color=\"#000080\">SYSTEM: "
 			  + QString(msg.c_str()) + "</font></b><br>";
 
 		txtMessages->append(qtmsg);
@@ -127,12 +146,20 @@ void msgViewerDlg::displayMsg(mf::MessageFacilityMsg const & mfmsg) {
 void msgViewerDlg::displayMsg(std::list<int> const & l) {
 
 	std::string str;
-	std::list<int>::const_iterator it = l.begin();
+	std::list<int>::const_iterator it;
+
+	//if(l.size()>msgsPerPage) it = l.end()-msgsPerPage;
+	//else					 it = l.begin();
+
+	it = l.begin();
 
 	while(it!=l.end()) {
 		str += generateMsgStr(mfmessages[*it]);
 		++it;
 	}
+
+	//nDisplayMsgs = l.size();
+	//currentPage = (nDisplayMsgs + msgsPerPage-1) / msgsPerPage;
 
 	txtMessages->append(QString(str.c_str()));
 }
@@ -162,6 +189,19 @@ std::string msgViewerDlg::generateMsgStr(mf::MessageFacilityMsg const & mfmsg) {
     //    continue;
 
     std::ostringstream ss;
+#if 0
+    ss << mfmsg.severity() << " / " << mfmsg.category() << "\n"
+       << mfmsg.timestr() << "\n"
+       << mfmsg.hostname() << " (" << mfmsg.hostaddr() << ")" << "\n"
+       << mfmsg.process()  << " (" << mfmsg.pid()      << ")" << "\n"
+       << mfmsg.file()  << " (" << mfmsg.line() << ")" << "\n"
+       << mfmsg.application() << " / "
+       << mfmsg.module()      << " / "
+       << mfmsg.context() << "\n"
+       << mfmsg.message() << "\n\n";
+#endif
+
+#if 0
     ss << "<font face=\"New Courier\" ";
 
     if(sevid==mf::DDSReceiver::ERROR)         ss << "color='#FF0000'>";
@@ -206,6 +246,34 @@ std::string msgViewerDlg::generateMsgStr(mf::MessageFacilityMsg const & mfmsg) {
        << "</i></td></tr>";
 
     ss << "</table></font><br>";
+#endif
+
+    ss << "<font ";
+
+    if(sevid==mf::DDSReceiver::ERROR)         ss << "color='#FF0000'>";
+    else if(sevid==mf::DDSReceiver::WARNING)  ss << "color='#E08000'>";
+    else if(sevid==mf::DDSReceiver::INFO)     ss << "color='#008000'>";
+    else                                      ss << "color='#505050'>";
+
+    ss << "<b>" << mfmsg.severity() << " / " << mfmsg.category() << "</b><br>";
+
+    ss << mfmsg.timestr() << "<br>";
+
+    ss << mfmsg.hostname() << " (" << mfmsg.hostaddr() << ")" << "<br>";
+
+    ss << mfmsg.process()  << " (" << mfmsg.pid()      << ")" << "<br>";
+
+    ss << mfmsg.application() << " / "
+       << mfmsg.module()      << " / "
+       << mfmsg.context()     << "<br>";
+
+    ss << mfmsg.file()  << " (" << mfmsg.line() << ")" << "<br>";
+
+    ss << mfmsg.message() << "<br>";
+
+    ss << "</font><br>";
+
+
 
     return ss.str();
 }
@@ -337,10 +405,8 @@ std::list<int> msgViewerDlg::findCommonInLists(
 			++it1;
 			++it2;
 		}
-		else if(*it1 < *it2)
-			++it1;
 		else
-			++it2;
+			++ ( (*it1 < *it2) ? it1 : it2 );
 	}
 
 	return r;
@@ -391,19 +457,6 @@ void msgViewerDlg::pause()
   QMessageBox::about(this, "About MsgViewer", "pausing...");
 }
 
-void msgViewerDlg::printMessage(const QString & s)
-{
-  txtMessages->append(s);
-  //txtMessages->append("<hr width=95%><br>\n");
-}
-
-void msgViewerDlg::printSysMessage(const QString & s)
-{
-  QString msg = "<b><font color=\"#000080\">SYSTEM:" 
-      + s + "</font></b><br>";
-  txtMessages->append(msg);
-}
-
 void msgViewerDlg::exit()
 {
   close();
@@ -428,7 +481,7 @@ void msgViewerDlg::switchChannel()
     qtdds.switchPartition(partition);
 
     QString partStr = "Partition " + QString::number(qtdds.getPartition());
-    label_Partition->setText(partStr);
+    btnSwitchChannel->setText(partStr);
   }
 
 }

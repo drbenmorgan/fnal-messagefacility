@@ -23,8 +23,6 @@ public slots:
   void pause();
   void exit();
   void changeSeverity(int sev);
-  void printMessage(QString const & s);
-  void printSysMessage(QString const & s);
   void switchChannel();
 
 protected:
@@ -79,6 +77,10 @@ private:
 
   // # of received messages
   int nMsgs;
+
+  const int msgsPerPage;
+  int nDisplayMsgs;
+  int currentPage;
 
   // filter strings for hosts, applications, and categories
   // the value "##DEADBEAF##" indicates no filter condition has
