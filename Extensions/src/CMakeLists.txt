@@ -8,6 +8,7 @@
 
 SET (SRCFILES 
     DDSReceiver.cc
+    DDSReceiverImpl.cc
     ELDDSdest.cc
     ELarchive.cc
     )

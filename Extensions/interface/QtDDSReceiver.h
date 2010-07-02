@@ -8,22 +8,23 @@
 #ifndef QTDDSRECEIVER_H_
 #define QTDDSRECEIVER_H_
 
-#include "Extensions/interface/DDSReceiver.h"
+#include "Extensions/interface/DDSReceiverTypes.h"
 
-#include "QThread"
+#include <QtCore/QThread>
+#include <boost/shared_ptr.hpp>
 
 namespace mf {
 
-class QtDDSReceiver : public QThread {
+class DDSReceiverImpl;
+class MessageFacilityMsg;
+
+class QtDDSReceiver : public QThread, public DDSReceiverTypes {
 
 	Q_OBJECT
 
 public:
-	// Forwarding enum types to QtDDSReceiver
-	typedef DDSReceiver::SysMsgCode SysMsgCode;
-	typedef DDSReceiver::SeverityCode SeverityCode;
 
-	QtDDSReceiver(QObject *parent = 0);
+	QtDDSReceiver(int partition = 0, QObject *parent = 0);
 	~QtDDSReceiver();
 
 	// Operations
@@ -46,9 +47,9 @@ private:
 
   // Callback funcs supplied to DDSReceiver
   void newMsg(mf::MessageFacilityMsg const & mfmsg);
-  void sysMsg(mf::DDSReceiver::SysMsgCode syscode, std::string const & msg);
+  void sysMsg(mf::QtDDSReceiver::SysMsgCode syscode, std::string const & msg);
 
-  DDSReceiver dds;
+  boost::shared_ptr<DDSReceiverImpl> dds;
 };
 
 }

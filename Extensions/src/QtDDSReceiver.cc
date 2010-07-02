@@ -6,6 +6,7 @@
  */
 
 #include "Extensions/interface/QtDDSReceiver.h"
+#include "Extensions/interface/DDSReceiverImpl.h"
 
 #include <QMetaType>
 
@@ -13,19 +14,19 @@ namespace mf {
 
 // Static methods
 QtDDSReceiver::SeverityCode QtDDSReceiver::getSeverityCode(int sev) {
-	return DDSReceiver::getSeverityCode(sev);
+	return DDSReceiverImpl::getSeverityCode(sev);
 }
 
 QtDDSReceiver::SeverityCode QtDDSReceiver::getSeverityCode(std::string const & sev) {
-	return DDSReceiver::getSeverityCode(sev);
+	return DDSReceiverImpl::getSeverityCode(sev);
 }
 
 // C'tor & D'tor
-QtDDSReceiver::QtDDSReceiver(QObject *parent)
+QtDDSReceiver::QtDDSReceiver(int partition, QObject *parent)
 : QThread ( parent )
-, dds     ( 0
+, dds     ( new DDSReceiverImpl( partition
           , boost::bind(&QtDDSReceiver::newMsg, this, _1)
-          , boost::bind(&QtDDSReceiver::sysMsg, this, _1, _2) )
+          , boost::bind(&QtDDSReceiver::sysMsg, this, _1, _2) ) )
 {
   qRegisterMetaType<mf::MessageFacilityMsg>( "mf::MessageFacilityMsg" );
   qRegisterMetaType<mf::QtDDSReceiver::SysMsgCode>( "mf::QtDDSReceiver::SysMsgCode" );
@@ -41,24 +42,24 @@ void QtDDSReceiver::newMsg(mf::MessageFacilityMsg const & mfmsg) {
 	emit newMessage(mfmsg);
 }
 
-void QtDDSReceiver::sysMsg(mf::DDSReceiver::SysMsgCode syscode, std::string const & msg) {
+void QtDDSReceiver::sysMsg(mf::QtDDSReceiver::SysMsgCode syscode, std::string const & msg) {
 	emit newSysMessage(syscode, msg);
 }
 
 int QtDDSReceiver::getPartition() {
-	return dds.getPartition();
+	return dds->getPartition();
 }
 
 void QtDDSReceiver::switchPartition(int partition) {
-	dds.switchPartition(partition);
+	dds->switchPartition(partition);
 }
 
 void QtDDSReceiver::setSeverityThreshold(QtDDSReceiver::SeverityCode severity) {
-	dds.setSeverityThreshold(severity);
+	//dds->setSeverityThreshold(severity);
 }
 
 void QtDDSReceiver::stop() {
-	dds.stop();
+	dds->stop();
 }
 
 

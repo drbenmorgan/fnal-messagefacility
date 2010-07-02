@@ -5,7 +5,7 @@
 #include "mvdlg.h"
 
 msgViewerDlg::msgViewerDlg(QDialog * parent)
-: BUFFER_SIZE ( 1000 )  // size of the circular buffer for received messages
+: BUFFER_SIZE ( 5000 )  // size of the circular buffer for received messages
 , idx         ( 0 )      // index of the head position in the circular buffer
 , mfmessages  ( std::vector<mf::MessageFacilityMsg>(BUFFER_SIZE) )
 , nMsgs       ( 0 )
@@ -124,7 +124,7 @@ void msgViewerDlg::onNewMsg(mf::MessageFacilityMsg const & mfmsg) {
 
 void msgViewerDlg::onNewSysMsg(mf::QtDDSReceiver::SysMsgCode syscode, std::string const & msg) {
 
-	if(syscode == mf::DDSReceiver::NEW_MESSAGE) {
+	if(syscode == mf::QtDDSReceiver::NEW_MESSAGE) {
 		++nMsgs;
 		lcdMsgs->display( nMsgs );
 	}
@@ -248,32 +248,25 @@ std::string msgViewerDlg::generateMsgStr(mf::MessageFacilityMsg const & mfmsg) {
     ss << "</table></font><br>";
 #endif
 
+//#if 0
     ss << "<font ";
 
-    if(sevid==mf::DDSReceiver::ERROR)         ss << "color='#FF0000'>";
-    else if(sevid==mf::DDSReceiver::WARNING)  ss << "color='#E08000'>";
-    else if(sevid==mf::DDSReceiver::INFO)     ss << "color='#008000'>";
+    if(sevid==mf::QtDDSReceiver::ERROR)         ss << "color='#FF0000'>";
+    else if(sevid==mf::QtDDSReceiver::WARNING)  ss << "color='#E08000'>";
+    else if(sevid==mf::QtDDSReceiver::INFO)     ss << "color='#008000'>";
     else                                      ss << "color='#505050'>";
 
     ss << "<b>" << mfmsg.severity() << " / " << mfmsg.category() << "</b><br>";
-
     ss << mfmsg.timestr() << "<br>";
-
     ss << mfmsg.hostname() << " (" << mfmsg.hostaddr() << ")" << "<br>";
-
     ss << mfmsg.process()  << " (" << mfmsg.pid()      << ")" << "<br>";
-
     ss << mfmsg.application() << " / "
        << mfmsg.module()      << " / "
        << mfmsg.context()     << "<br>";
-
     ss << mfmsg.file()  << " (" << mfmsg.line() << ")" << "<br>";
-
     ss << mfmsg.message() << "<br>";
-
     ss << "</font><br>";
-
-
+//#endif
 
     return ss.str();
 }
