@@ -273,13 +273,13 @@
     </font>
    </property>
    <property name="text">
-    <string>Total received message</string>
+    <string>Total received messages</string>
    </property>
   </widget>
   <widget class="QLCDNumber" name="lcdMsgs">
    <property name="geometry">
     <rect>
-     <x>170</x>
+     <x>180</x>
      <y>700</y>
      <width>60</width>
      <height>27</height>
