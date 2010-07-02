@@ -8,17 +8,17 @@
 #ifndef MESSAGEFACILITYMSG_H_
 #define MESSAGEFACILITYMSG_H_
 
-#include "MessageLogger/interface/ErrorObj.h"
-
 #include "boost/shared_ptr.hpp"
 
 #include <string>
 
 namespace mf {
 
+class ErrorObj;
+
 class MessageFacilityMsg {
 public:
-	MessageFacilityMsg(ErrorObj errorobj);
+	MessageFacilityMsg(ErrorObj const & errorobj);
 	MessageFacilityMsg();
 	~MessageFacilityMsg();
 

@@ -1,8 +1,9 @@
 
+#include "mvdlg.h"
 
 #include <QtGui>
 
-#include "mvdlg.h"
+#include <sstream>
 
 msgViewerDlg::msgViewerDlg(QDialog * parent)
 : BUFFER_SIZE ( 5000 )  // size of the circular buffer for received messages
@@ -15,7 +16,7 @@ msgViewerDlg::msgViewerDlg(QDialog * parent)
 , hostmap     ( )
 , appmap      ( )
 , catmap      ( )
-, qtdds       ( )
+, qtdds       ( 0 )      // partition 0
 , msgsPerPage ( 5 )
 , nDisplayMsgs( 0 )
 , currentPage ( 0 )

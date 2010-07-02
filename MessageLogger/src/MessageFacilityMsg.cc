@@ -6,11 +6,13 @@
  */
 
 #include "MessageLogger/interface/MessageFacilityMsg.h"
+#include "MessageLogger/interface/ErrorObj.h"
+
 #include "Utilities/interface/FormatTime.h"
 
 namespace mf {
 
-MessageFacilityMsg::MessageFacilityMsg(ErrorObj errorobj)
+MessageFacilityMsg::MessageFacilityMsg(ErrorObj const & errorobj)
 : ep     ( new ErrorObj(errorobj) )
 , empty_ ( false )
 {
