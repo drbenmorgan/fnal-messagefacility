@@ -20,12 +20,15 @@ msgViewerDlg::msgViewerDlg(QDialog * parent)
 , msgsPerPage ( 5 )
 , nDisplayMsgs( 0 )
 , currentPage ( 0 )
+, simpleRender( false )
 {
   setupUi(this);
 
   connect( btnPause, SIGNAL( clicked() ), this, SLOT(pause()) );
   connect( btnExit,  SIGNAL( clicked() ), this, SLOT(exit())  );
   connect( btnSwitchChannel, SIGNAL( clicked() ), this, SLOT(switchChannel()) );
+
+  connect( btnRMode, SIGNAL( clicked() ), this, SLOT(renderMode()) );
 
   connect( btnFilter, SIGNAL( clicked() ), this, SLOT( setFilter() ) );
   connect( btnReset,  SIGNAL( clicked() ), this, SLOT( resetFilter() ) );
@@ -51,6 +54,14 @@ msgViewerDlg::msgViewerDlg(QDialog * parent)
 
   btnSwitchChannel->setText("Partition 0");
 
+  if(simpleRender) {
+	  btnRMode -> setChecked(true);
+	  btnRMode -> setText("ON");
+  }
+  else {
+	  btnRMode -> setChecked(false);
+	  btnRMode -> setText("OFF");
+  }
 }
 
 void msgViewerDlg::onNewMsg(mf::MessageFacilityMsg const & mfmsg) {
@@ -190,17 +201,37 @@ std::string msgViewerDlg::generateMsgStr(mf::MessageFacilityMsg const & mfmsg) {
     //    continue;
 
     std::ostringstream ss;
-#if 0
-    ss << mfmsg.severity() << " / " << mfmsg.category() << "\n"
-       << mfmsg.timestr() << "\n"
-       << mfmsg.hostname() << " (" << mfmsg.hostaddr() << ")" << "\n"
-       << mfmsg.process()  << " (" << mfmsg.pid()      << ")" << "\n"
-       << mfmsg.file()  << " (" << mfmsg.line() << ")" << "\n"
-       << mfmsg.application() << " / "
-       << mfmsg.module()      << " / "
-       << mfmsg.context() << "\n"
-       << mfmsg.message() << "\n\n";
-#endif
+
+    if(simpleRender) {
+		ss << mfmsg.severity() << " / " << mfmsg.category() << "\n"
+		   << mfmsg.timestr() << "\n"
+		   << mfmsg.hostname() << " (" << mfmsg.hostaddr() << ")" << "\n"
+		   << mfmsg.process()  << " (" << mfmsg.pid()      << ")" << "\n"
+		   << mfmsg.file()  << " (" << mfmsg.line() << ")" << "\n"
+		   << mfmsg.application() << " / "
+		   << mfmsg.module()      << " / "
+		   << mfmsg.context() << "\n"
+		   << mfmsg.message() << "\n\n";
+    }
+    else {
+		ss << "<font ";
+
+		if(sevid==mf::QtDDSReceiver::ERROR)         ss << "color='#FF0000'>";
+		else if(sevid==mf::QtDDSReceiver::WARNING)  ss << "color='#E08000'>";
+		else if(sevid==mf::QtDDSReceiver::INFO)     ss << "color='#008000'>";
+		else                                      ss << "color='#505050'>";
+
+		ss << "<b>" << mfmsg.severity() << " / " << mfmsg.category() << "</b><br>";
+		ss << mfmsg.timestr() << "<br>";
+		ss << mfmsg.hostname() << " (" << mfmsg.hostaddr() << ")" << "<br>";
+		ss << mfmsg.process()  << " (" << mfmsg.pid()      << ")" << "<br>";
+		ss << mfmsg.application() << " / "
+		   << mfmsg.module()      << " / "
+		   << mfmsg.context()     << "<br>";
+		ss << mfmsg.file()  << " (" << mfmsg.line() << ")" << "<br>";
+		ss << mfmsg.message() << "<br>";
+		ss << "</font><br>";
+    }
 
 #if 0
     ss << "<font face=\"New Courier\" ";
@@ -249,25 +280,6 @@ std::string msgViewerDlg::generateMsgStr(mf::MessageFacilityMsg const & mfmsg) {
     ss << "</table></font><br>";
 #endif
 
-//#if 0
-    ss << "<font ";
-
-    if(sevid==mf::QtDDSReceiver::ERROR)         ss << "color='#FF0000'>";
-    else if(sevid==mf::QtDDSReceiver::WARNING)  ss << "color='#E08000'>";
-    else if(sevid==mf::QtDDSReceiver::INFO)     ss << "color='#008000'>";
-    else                                      ss << "color='#505050'>";
-
-    ss << "<b>" << mfmsg.severity() << " / " << mfmsg.category() << "</b><br>";
-    ss << mfmsg.timestr() << "<br>";
-    ss << mfmsg.hostname() << " (" << mfmsg.hostaddr() << ")" << "<br>";
-    ss << mfmsg.process()  << " (" << mfmsg.pid()      << ")" << "<br>";
-    ss << mfmsg.application() << " / "
-       << mfmsg.module()      << " / "
-       << mfmsg.context()     << "<br>";
-    ss << mfmsg.file()  << " (" << mfmsg.line() << ")" << "<br>";
-    ss << mfmsg.message() << "<br>";
-    ss << "</font><br>";
-//#endif
 
     return ss.str();
 }
@@ -478,6 +490,22 @@ void msgViewerDlg::switchChannel()
     btnSwitchChannel->setText(partStr);
   }
 
+}
+
+void msgViewerDlg::renderMode()
+{
+	simpleRender = !simpleRender;
+
+	if(simpleRender) {
+		btnRMode -> setChecked(true);
+		btnRMode -> setText("ON");
+	}
+	else {
+		btnRMode -> setChecked(false);
+		btnRMode -> setText("OFF");
+	}
+
+	resetFilter();
 }
 
 void msgViewerDlg::closeEvent(QCloseEvent *event)

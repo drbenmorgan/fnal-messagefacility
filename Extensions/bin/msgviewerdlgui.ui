@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>680</width>
+    <width>653</width>
     <height>733</height>
    </rect>
   </property>
@@ -16,9 +16,9 @@
   <widget class="QPushButton" name="btnPause">
    <property name="geometry">
     <rect>
-     <x>540</x>
-     <y>650</y>
-     <width>121</width>
+     <x>530</x>
+     <y>660</y>
+     <width>111</width>
      <height>30</height>
     </rect>
    </property>
@@ -29,9 +29,9 @@
   <widget class="QPushButton" name="btnExit">
    <property name="geometry">
     <rect>
-     <x>540</x>
+     <x>530</x>
      <y>690</y>
-     <width>121</width>
+     <width>111</width>
      <height>30</height>
     </rect>
    </property>
@@ -45,10 +45,10 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>10</y>
+     <x>140</x>
+     <y>29</y>
      <width>380</width>
-     <height>690</height>
+     <height>671</height>
     </rect>
    </property>
    <property name="font">
@@ -66,7 +66,7 @@
   <widget class="QPushButton" name="btnSwitchChannel">
    <property name="geometry">
     <rect>
-     <x>250</x>
+     <x>380</x>
      <y>700</y>
      <width>140</width>
      <height>27</height>
@@ -79,7 +79,7 @@
   <widget class="QLabel" name="label_6">
    <property name="geometry">
     <rect>
-     <x>400</x>
+     <x>10</x>
      <y>310</y>
      <width>51</width>
      <height>21</height>
@@ -100,7 +100,7 @@
   <widget class="QLabel" name="label_7">
    <property name="geometry">
     <rect>
-     <x>400</x>
+     <x>10</x>
      <y>520</y>
      <width>111</width>
      <height>21</height>
@@ -121,7 +121,7 @@
   <widget class="QLabel" name="label_8">
    <property name="geometry">
     <rect>
-     <x>400</x>
+     <x>10</x>
      <y>100</y>
      <width>101</width>
      <height>21</height>
@@ -142,37 +142,37 @@
   <widget class="QListWidget" name="lwCategory">
    <property name="geometry">
     <rect>
-     <x>400</x>
+     <x>10</x>
      <y>120</y>
      <width>121</width>
-     <height>161</height>
+     <height>160</height>
     </rect>
    </property>
   </widget>
   <widget class="QListWidget" name="lwHost">
    <property name="geometry">
     <rect>
-     <x>400</x>
+     <x>10</x>
      <y>330</y>
      <width>121</width>
-     <height>161</height>
+     <height>160</height>
     </rect>
    </property>
   </widget>
   <widget class="QListWidget" name="lwApplication">
    <property name="geometry">
     <rect>
-     <x>400</x>
+     <x>10</x>
      <y>540</y>
      <width>121</width>
-     <height>161</height>
+     <height>160</height>
     </rect>
    </property>
   </widget>
   <widget class="QPushButton" name="btnClearCat">
    <property name="geometry">
     <rect>
-     <x>400</x>
+     <x>10</x>
      <y>280</y>
      <width>121</width>
      <height>27</height>
@@ -185,7 +185,7 @@
   <widget class="QPushButton" name="btnClearHost">
    <property name="geometry">
     <rect>
-     <x>400</x>
+     <x>10</x>
      <y>490</y>
      <width>121</width>
      <height>27</height>
@@ -198,7 +198,7 @@
   <widget class="QPushButton" name="btnClearApp">
    <property name="geometry">
     <rect>
-     <x>400</x>
+     <x>10</x>
      <y>700</y>
      <width>121</width>
      <height>27</height>
@@ -211,7 +211,7 @@
   <widget class="QPushButton" name="btnFilter">
    <property name="geometry">
     <rect>
-     <x>400</x>
+     <x>10</x>
      <y>30</y>
      <width>121</width>
      <height>27</height>
@@ -224,7 +224,7 @@
   <widget class="QPushButton" name="btnReset">
    <property name="geometry">
     <rect>
-     <x>400</x>
+     <x>10</x>
      <y>60</y>
      <width>121</width>
      <height>27</height>
@@ -237,7 +237,7 @@
   <widget class="QLabel" name="label_9">
    <property name="geometry">
     <rect>
-     <x>400</x>
+     <x>10</x>
      <y>10</y>
      <width>121</width>
      <height>21</height>
@@ -258,7 +258,7 @@
   <widget class="QLabel" name="label_Partition_2">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>140</x>
      <y>700</y>
      <width>161</width>
      <height>27</height>
@@ -279,7 +279,7 @@
   <widget class="QLCDNumber" name="lcdMsgs">
    <property name="geometry">
     <rect>
-     <x>180</x>
+     <x>310</x>
      <y>700</y>
      <width>60</width>
      <height>27</height>
@@ -301,7 +301,7 @@
   <widget class="QSlider" name="vsSeverity">
    <property name="geometry">
     <rect>
-     <x>550</x>
+     <x>540</x>
      <y>30</y>
      <width>16</width>
      <height>141</height>
@@ -326,7 +326,7 @@
   <widget class="QLabel" name="label_3">
    <property name="geometry">
     <rect>
-     <x>580</x>
+     <x>570</x>
      <y>110</y>
      <width>31</width>
      <height>16</height>
@@ -383,7 +383,7 @@
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>580</x>
+     <x>570</x>
      <y>150</y>
      <width>51</width>
      <height>21</height>
@@ -440,7 +440,7 @@
   <widget class="QLabel" name="label_5">
    <property name="geometry">
     <rect>
-     <x>580</x>
+     <x>570</x>
      <y>20</y>
      <width>41</width>
      <height>41</height>
@@ -524,7 +524,7 @@
   <widget class="QLabel" name="label_4">
    <property name="geometry">
     <rect>
-     <x>580</x>
+     <x>570</x>
      <y>70</y>
      <width>71</width>
      <height>21</height>
@@ -576,6 +576,46 @@
    </property>
    <property name="text">
     <string>Warning</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_10">
+   <property name="geometry">
+    <rect>
+     <x>530</x>
+     <y>570</y>
+     <width>111</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Sans Serif</family>
+     <pointsize>10</pointsize>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Speed Rendering</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnRMode">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>600</y>
+     <width>71</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>ON</string>
+   </property>
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
    </property>
   </widget>
  </widget>

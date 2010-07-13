@@ -36,6 +36,8 @@ private slots:
   void setFilter();
   void resetFilter();
 
+  void renderMode();
+
   void clearHostSelection();
   void clearAppSelection();
   void clearCatSelection();
@@ -81,6 +83,8 @@ private:
   const int msgsPerPage;
   int nDisplayMsgs;
   int currentPage;
+
+  bool simpleRender;
 
   // filter strings for hosts, applications, and categories
   // the value "##DEADBEAF##" indicates no filter condition has
