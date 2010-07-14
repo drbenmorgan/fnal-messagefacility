@@ -15,7 +15,7 @@ class msgViewerDlg : public QDialog, private Ui::MsgViewerDlg
   Q_OBJECT
 
 public:
-  msgViewerDlg( QDialog *parent = 0 );
+  msgViewerDlg( int part = 0, QDialog *parent = 0 );
 
 
 public slots:

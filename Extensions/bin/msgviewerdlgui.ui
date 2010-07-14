@@ -329,7 +329,7 @@
      <x>570</x>
      <y>110</y>
      <width>31</width>
-     <height>16</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="palette">
@@ -441,9 +441,9 @@
    <property name="geometry">
     <rect>
      <x>570</x>
-     <y>20</y>
+     <y>30</y>
      <width>41</width>
-     <height>41</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="palette">
@@ -578,38 +578,17 @@
     <string>Warning</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_10">
-   <property name="geometry">
-    <rect>
-     <x>530</x>
-     <y>570</y>
-     <width>111</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Sans Serif</family>
-     <pointsize>10</pointsize>
-     <weight>50</weight>
-     <bold>false</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>Speed Rendering</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="btnRMode">
    <property name="geometry">
     <rect>
-     <x>550</x>
-     <y>600</y>
-     <width>71</width>
+     <x>530</x>
+     <y>620</y>
+     <width>111</width>
      <height>27</height>
     </rect>
    </property>
    <property name="text">
-    <string>ON</string>
+    <string>Speed Render</string>
    </property>
    <property name="checkable">
     <bool>true</bool>

@@ -5,7 +5,7 @@
 
 #include <sstream>
 
-msgViewerDlg::msgViewerDlg(QDialog * parent)
+msgViewerDlg::msgViewerDlg(int part, QDialog * parent)
 : BUFFER_SIZE ( 5000 )  // size of the circular buffer for received messages
 , idx         ( 0 )      // index of the head position in the circular buffer
 , mfmessages  ( std::vector<mf::MessageFacilityMsg>(BUFFER_SIZE) )
@@ -16,7 +16,7 @@ msgViewerDlg::msgViewerDlg(QDialog * parent)
 , hostmap     ( )
 , appmap      ( )
 , catmap      ( )
-, qtdds       ( 0 )      // partition 0
+, qtdds       ( part )      // partition 0
 , msgsPerPage ( 5 )
 , nDisplayMsgs( 0 )
 , currentPage ( 0 )
@@ -52,15 +52,14 @@ msgViewerDlg::msgViewerDlg(QDialog * parent)
          , this
          , SLOT(onNewSysMsg(mf::QtDDSReceiver::SysMsgCode, std::string const & )) );
 
-  btnSwitchChannel->setText("Partition 0");
+  QString partStr = "Partition " + QString::number(qtdds.getPartition());
+  btnSwitchChannel->setText(partStr);
 
   if(simpleRender) {
 	  btnRMode -> setChecked(true);
-	  btnRMode -> setText("ON");
   }
   else {
 	  btnRMode -> setChecked(false);
-	  btnRMode -> setText("OFF");
   }
 }
 
@@ -498,11 +497,9 @@ void msgViewerDlg::renderMode()
 
 	if(simpleRender) {
 		btnRMode -> setChecked(true);
-		btnRMode -> setText("ON");
 	}
 	else {
 		btnRMode -> setChecked(false);
-		btnRMode -> setText("OFF");
 	}
 
 	resetFilter();
