@@ -587,8 +587,17 @@
      <height>27</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <weight>50</weight>
+     <italic>false</italic>
+     <bold>false</bold>
+     <underline>false</underline>
+     <strikeout>false</strikeout>
+    </font>
+   </property>
    <property name="text">
-    <string>Speed Render</string>
+    <string>Speedy Mode</string>
    </property>
    <property name="checkable">
     <bool>true</bool>
