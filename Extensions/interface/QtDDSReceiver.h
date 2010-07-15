@@ -41,7 +41,7 @@ public:
 
 signals:
   void newMessage(mf::MessageFacilityMsg const &);
-  void newSysMessage(mf::QtDDSReceiver::SysMsgCode const &, std::string const &);
+  void newSysMessage(mf::QtDDSReceiver::SysMsgCode const &, QString const &);
 
 private:
 

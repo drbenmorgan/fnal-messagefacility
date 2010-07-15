@@ -30,7 +30,7 @@ QtDDSReceiver::QtDDSReceiver(int partition, QObject *parent)
 {
   qRegisterMetaType<mf::MessageFacilityMsg>( "mf::MessageFacilityMsg" );
   qRegisterMetaType<mf::QtDDSReceiver::SysMsgCode>( "mf::QtDDSReceiver::SysMsgCode" );
-  qRegisterMetaType<std::string>( "std::string" );
+  //qRegisterMetaType<std::string>( "std::string" );
 }
 
 QtDDSReceiver::~QtDDSReceiver() {
@@ -43,7 +43,7 @@ void QtDDSReceiver::newMsg(mf::MessageFacilityMsg const & mfmsg) {
 }
 
 void QtDDSReceiver::sysMsg(mf::QtDDSReceiver::SysMsgCode syscode, std::string const & msg) {
-	emit newSysMessage(syscode, msg);
+	emit newSysMessage(syscode, QString(msg.c_str()));
 }
 
 int QtDDSReceiver::getPartition() {

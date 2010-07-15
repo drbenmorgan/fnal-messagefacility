@@ -31,7 +31,7 @@ protected:
 private slots:
 
   void onNewMsg(mf::MessageFacilityMsg const & mfmsg);
-  void onNewSysMsg(mf::QtDDSReceiver::SysMsgCode, std::string const & msg);
+  void onNewSysMsg(mf::QtDDSReceiver::SysMsgCode, QString const & msg);
 
   void setFilter();
   void resetFilter();
@@ -60,7 +60,14 @@ private:
   // Display all messages stored in the buffer
   void displayMsg();
 
-  std::string generateMsgStr(mf::MessageFacilityMsg const & mfmsg);
+  // Trim the leading lines of messages in message box to avoid overwhelming
+  void trimDisplayMsgs();
+
+  // Set Message color
+  void setMsgColor(mf::QtDDSReceiver::SeverityCode sev);
+
+  // Generate formatted message string from MFMsg object
+  QString generateMsgStr(mf::MessageFacilityMsg const & mfmsg);
 
   // Pop the first element from the list pointed by the key. Returns true
   // if the list becomes empty after the deletion
@@ -80,8 +87,10 @@ private:
   // # of received messages
   int nMsgs;
 
-  const int msgsPerPage;
+  // # of displaying msgs
   int nDisplayMsgs;
+
+  const int msgsPerPage;
   int currentPage;
 
   bool simpleRender;
@@ -92,6 +101,9 @@ private:
   std::string hostFilter;
   std::string appFilter;
   std::string catFilter;
+
+  // severity threshold
+  mf::QtDDSReceiver::SeverityCode sevThresh;
 
   // buffer size
   const int BUFFER_SIZE;
