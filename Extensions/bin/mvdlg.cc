@@ -6,7 +6,7 @@
 #include <sstream>
 
 msgViewerDlg::msgViewerDlg(int part, QDialog * parent)
-: BUFFER_SIZE ( 2000 )  // size of the circular buffer for received messages
+: BUFFER_SIZE ( 1000 )  // size of the circular buffer for received messages
 , idx         ( 0 )      // index of the head position in the circular buffer
 , mfmessages  ( std::vector<mf::MessageFacilityMsg>(BUFFER_SIZE) )
 , nMsgs       ( 0 )
@@ -22,6 +22,7 @@ msgViewerDlg::msgViewerDlg(int part, QDialog * parent)
 , msgsPerPage ( 5 )
 , currentPage ( 0 )
 , simpleRender( true )
+, timer       ( this )
 {
   setupUi(this);
 
@@ -53,6 +54,8 @@ msgViewerDlg::msgViewerDlg(int part, QDialog * parent)
          , this
          , SLOT(onNewSysMsg(mf::QtDDSReceiver::SysMsgCode, QString const & )) );
 
+  connect( &timer, SIGNAL(timeout()), this, SLOT(trimDisplayMsgs()));
+
   QString partStr = "Partition " + QString::number(qtdds.getPartition());
   btnSwitchChannel->setText(partStr);
 
@@ -60,6 +63,9 @@ msgViewerDlg::msgViewerDlg(int part, QDialog * parent)
   else 				  btnRMode -> setChecked(false);
 
   btnRMode ->setEnabled(false);
+
+  // start the purge timer
+  //timer.start(10000);
 }
 
 void msgViewerDlg::onNewMsg(mf::MessageFacilityMsg const & mfmsg) {
@@ -140,7 +146,7 @@ void msgViewerDlg::onNewSysMsg(mf::QtDDSReceiver::SysMsgCode syscode, QString co
 		lcdMsgs->display( nMsgs );
 	}
 	else {
-		QString qtmsg = "SYSTEM: " + msg;
+		QString qtmsg = "SYSTEM: " + msg + "\n";
 		txtMessages->setTextColor(QColor(0, 0, 128));
 		txtMessages->append(qtmsg);
 	}
@@ -149,10 +155,14 @@ void msgViewerDlg::onNewSysMsg(mf::QtDDSReceiver::SysMsgCode syscode, QString co
 // display a single message
 void msgViewerDlg::displayMsg(mf::MessageFacilityMsg const & mfmsg) {
 
-	setMsgColor(mf::QtDDSReceiver::getSeverityCode(mfmsg.severity()));
-	txtMessages->append( generateMsgStr(mfmsg) );
-	++nDisplayMsgs;
-	trimDisplayMsgs();
+	QString msg = generateMsgStr(mfmsg);
+
+	if(!msg.isEmpty()) {
+		setMsgColor(mf::QtDDSReceiver::getSeverityCode(mfmsg.severity()));
+		txtMessages->append( msg );
+		++nDisplayMsgs;
+		trimDisplayMsgs();
+	}
 }
 
 // display a list of message
@@ -167,9 +177,13 @@ void msgViewerDlg::displayMsg(std::list<int> const & l) {
 	it = l.begin();
 
 	while(it!=l.end()) {
-		setMsgColor(mf::QtDDSReceiver::getSeverityCode(mfmessages[*it].severity()));
-		txtMessages->append( generateMsgStr(mfmessages[*it]) );
-		++nDisplayMsgs;
+		QString msg = generateMsgStr(mfmessages[*it]);
+		if(!msg.isEmpty()) {
+			setMsgColor(mf::QtDDSReceiver::getSeverityCode(mfmessages[*it].severity()));
+			txtMessages->append( msg );
+			++nDisplayMsgs;
+		}
+
 		++it;
 	}
 
@@ -182,50 +196,46 @@ void msgViewerDlg::displayMsg(std::list<int> const & l) {
 // display all messages in buffer
 void msgViewerDlg::displayMsg() {
 
-	int i = (idx+1) % BUFFER_SIZE;
+	int i = idx;
 
-	while (i!=idx) {
+	do {
 		if(!mfmessages[i].empty()) {
-			setMsgColor(mf::QtDDSReceiver::getSeverityCode(mfmessages[i].severity()));
-			txtMessages->append( generateMsgStr(mfmessages[i]) );
-			++nDisplayMsgs;
+			QString msg = generateMsgStr(mfmessages[i]);
+			if(!msg.isEmpty()) {
+				setMsgColor(mf::QtDDSReceiver::getSeverityCode(mfmessages[i].severity()));
+				txtMessages->append( msg );
+				++nDisplayMsgs;
+			}
 		}
 
 		i = (++i) % BUFFER_SIZE;
-	}
+	} while (i != idx);
 
 	trimDisplayMsgs();
 }
 
 void msgViewerDlg::trimDisplayMsgs() {
 
-#if 0
 	if(nDisplayMsgs > BUFFER_SIZE) {
 
 		//int nBlocks = simpleRender ? 9 : 1;
-		int nBlocks = 9;
+		int nBlocks = 8 * (nDisplayMsgs - BUFFER_SIZE);
 
 		// remember current cursor
-		bool buttom = false;
-		QTextCursor tc = txtMessages->textCursor();
 		QScrollBar * sb = txtMessages->verticalScrollBar();
-		if(sb->value() == sb->maximum()) buttom = true;
+		int v = sb->value();
 
 		// trim the leading message
 		txtMessages->moveCursor( QTextCursor::Start, QTextCursor::MoveAnchor );
 		for(int i=0; i<nBlocks; ++i)
-			txtMessages->moveCursor( QTextCursor::Down, QTextCursor::KeepAnchor );
+			txtMessages->moveCursor( QTextCursor::NextBlock, QTextCursor::KeepAnchor );
 		txtMessages->textCursor().removeSelectedText();
 
 		// Restore cursor
-		if(buttom)
-			txtMessages->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor );
-		else
-			txtMessages->setTextCursor(tc);
+		sb->setValue(v);
 
-		--nDisplayMsgs;
+		nDisplayMsgs = BUFFER_SIZE;
 	}
-#endif
 }
 
 void msgViewerDlg::setMsgColor(mf::QtDDSReceiver::SeverityCode sev) {
@@ -247,7 +257,7 @@ QString msgViewerDlg::generateMsgStr(mf::MessageFacilityMsg const & mfmsg) {
     		mf::QtDDSReceiver::getSeverityCode(mfmsg.severity());
 
     if(sevid < sevThresh)
-    	return QString("...\n");
+    	return QString();
 
     std::ostringstream ss;
 
@@ -490,6 +500,7 @@ void msgViewerDlg::setFilter() {
 
 	// Update the view
 	txtMessages->clear();
+	nDisplayMsgs = 0;
 	displayMsg(result);
 }
 
@@ -505,6 +516,7 @@ void msgViewerDlg::resetFilter() {
 
 	// Update the view
 	txtMessages->clear();
+	nDisplayMsgs = 0;
 	displayMsg();
 }
 

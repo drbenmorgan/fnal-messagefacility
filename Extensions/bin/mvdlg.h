@@ -4,6 +4,8 @@
 #include "Extensions/bin/msgviewerdlgui.h"
 #include "Extensions/interface/QtDDSReceiver.h"
 
+#include <QTimer>
+
 #include <string>
 #include <vector>
 #include <map>
@@ -42,6 +44,9 @@ private slots:
   void clearAppSelection();
   void clearCatSelection();
 
+  // Trim the leading lines of messages in message box to avoid overwhelming
+  void trimDisplayMsgs();
+
 private:
 
   std::list<int> findCommonInLists(
@@ -59,9 +64,6 @@ private:
   void displayMsg(std::list<int> const & l);
   // Display all messages stored in the buffer
   void displayMsg();
-
-  // Trim the leading lines of messages in message box to avoid overwhelming
-  void trimDisplayMsgs();
 
   // Set Message color
   void setMsgColor(mf::QtDDSReceiver::SeverityCode sev);
@@ -93,6 +95,7 @@ private:
   const int msgsPerPage;
   int currentPage;
 
+  // Rendering messages in speed mode or full mode
   bool simpleRender;
 
   // filter strings for hosts, applications, and categories
@@ -125,6 +128,9 @@ private:
 
   // DDSReceiver for Qt
   mf::QtDDSReceiver qtdds;
+
+  // Qt timer for purging the over displayed messages
+  QTimer timer;
 
 };
 
