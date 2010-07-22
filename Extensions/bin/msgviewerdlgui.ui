@@ -32,6 +32,12 @@ fx: 0.3, fy: -0.4,
 radius: 1.35, stop: 0 #fff, stop: 1 #888);
 min-width: 80px;
 }
+#topFrame QPushButton:hover {
+background: qradialgradient(cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4, radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
+}
+#topFrame QPushButton:pressed {
+background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #dadbde, stop: 1 #f6f7fa);
+}
 
 #sevFrame {
 border: 0px solid #222;
@@ -55,14 +61,21 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb);
 min-width: 80px;
 }
 
+#mainFrame QPushButton:hover {
+background: qradialgradient(cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4, radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
+}
+#mainFrame QPushButton:pressed {
+background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #dadbde, stop: 1 #f6f7fa);
+}
+
 #mainFrame QListWidget {
 border: 1px solid #aaa;
-background-color:rgb(255, 255, 230);
+background-color: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:0.07, stop:0 rgba(220, 220, 200, 255), stop:1 rgba(255, 255, 230, 255))
 }
 
 #mainFrame QTextEdit {
 border: 1px solid #aaa;
-background-color: #fff;
+background-color: #fff
 }
 
 #btnError {
