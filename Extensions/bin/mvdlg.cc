@@ -39,6 +39,11 @@ msgViewerDlg::msgViewerDlg(int part, QDialog * parent)
   connect( btnClearApp,  SIGNAL( clicked() ), this, SLOT( clearAppSelection() ) );
   connect( btnClearCat,  SIGNAL( clicked() ), this, SLOT( clearCatSelection() ) );
 
+  connect( btnError,     SIGNAL( clicked() ), this, SLOT( setSevError() ) );
+  connect( btnWarning,   SIGNAL( clicked() ), this, SLOT( setSevWarning() ) );
+  connect( btnInfo,      SIGNAL( clicked() ), this, SLOT( setSevInfo() ) );
+  connect( btnDebug,     SIGNAL( clicked() ), this, SLOT( setSevDebug() ) );
+
   connect( vsSeverity
          , SIGNAL( valueChanged(int) )
          , this
@@ -536,7 +541,64 @@ void msgViewerDlg::exit()
 
 void msgViewerDlg::changeSeverity(int sev)
 {
-	sevThresh = mf::QtDDSReceiver::getSeverityCode(sev);
+	mf::QtDDSReceiver::SeverityCode s = mf::QtDDSReceiver::getSeverityCode(sev);
+
+	switch(s) {
+	case mf::QtDDSReceiver::ERROR:
+		setSevError();
+		break;
+	case mf::QtDDSReceiver::WARNING:
+		setSevWarning();
+		break;
+	case mf::QtDDSReceiver::INFO:
+		setSevInfo();
+		break;
+	default:
+		setSevDebug();
+	}
+}
+
+void msgViewerDlg::setSevError()
+{
+	sevThresh = mf::QtDDSReceiver::ERROR;
+	btnError   -> setChecked(true);
+	btnWarning -> setChecked(false);
+	btnInfo    -> setChecked(false);
+	btnDebug   -> setChecked(false);
+	vsSeverity -> setValue(sevThresh);
+	setFilter();
+}
+
+void msgViewerDlg::setSevWarning()
+{
+	sevThresh = mf::QtDDSReceiver::WARNING;
+	btnError   -> setChecked(false);
+	btnWarning -> setChecked(true);
+	btnInfo    -> setChecked(false);
+	btnDebug   -> setChecked(false);
+	vsSeverity -> setValue(sevThresh);
+	setFilter();
+}
+
+void msgViewerDlg::setSevInfo()
+{
+	sevThresh = mf::QtDDSReceiver::INFO;
+	btnError   -> setChecked(false);
+	btnWarning -> setChecked(false);
+	btnInfo    -> setChecked(true);
+	btnDebug   -> setChecked(false);
+	vsSeverity -> setValue(sevThresh);
+	setFilter();
+}
+
+void msgViewerDlg::setSevDebug()
+{
+	sevThresh = mf::QtDDSReceiver::DEBUG;
+	btnError   -> setChecked(false);
+	btnWarning -> setChecked(false);
+	btnInfo    -> setChecked(false);
+	btnDebug   -> setChecked(true);
+	vsSeverity -> setValue(sevThresh);
 	setFilter();
 }
 

@@ -44,6 +44,11 @@ private slots:
   void clearAppSelection();
   void clearCatSelection();
 
+  void setSevError();
+  void setSevWarning();
+  void setSevInfo();
+  void setSevDebug();
+
   // Trim the leading lines of messages in message box to avoid overwhelming
   void trimDisplayMsgs();
 
