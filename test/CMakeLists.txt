@@ -24,18 +24,20 @@ ADD_EXECUTABLE (PSetTest
     )
 
 TARGET_LINK_LIBRARIES (PSetTest
-    ParameterSetD
+#    ParameterSetD
+    FHiCLCpp
     )
 
 TARGET_LINK_LIBRARIES (MFTest 
     MessageServiceD
     MessageLoggerD
-    ParameterSetD
+#    ParameterSetD
     UtilitiesD
     ExtensionsD
     boost_thread
     boost_filesystem
-    dcpssacpp
+#    dcpssacpp
+    FHiCLCpp
     )
 
 INSTALL (FILES

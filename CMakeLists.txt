@@ -17,11 +17,13 @@ INCLUDE_DIRECTORIES(
     ${MessageFacility_SOURCE_DIR}
     ${MessageFacility_BINARY_DIR}
     $ENV{BOOST_DIR}/include
+    $ENV{FHiCLCPP_DIR}/include
     )
 
 # Project library directory
 LINK_DIRECTORIES(
     $ENV{BOOST_DIR}/lib
+    $ENV{FHiCLCPP_DIR}/lib
     )
 
 # Install directory
@@ -42,7 +44,7 @@ INSTALL (FILES
 
 ADD_SUBDIRECTORY (MessageLogger)
 ADD_SUBDIRECTORY (MessageService)
-ADD_SUBDIRECTORY (ParameterSet)
+#ADD_SUBDIRECTORY (ParameterSet)
 ADD_SUBDIRECTORY (Utilities)
 ADD_SUBDIRECTORY (Extensions)
 

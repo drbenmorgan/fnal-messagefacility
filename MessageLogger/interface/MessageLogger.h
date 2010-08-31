@@ -106,7 +106,7 @@
 
 #include "MessageService/interface/Presence.h"
 #include "MessageService/interface/MessageLogger.h"
-#include "ParameterSet/interface/ParameterSet.h"
+#include "ParameterSet.h"
 
 #include "boost/thread/mutex.hpp"
 

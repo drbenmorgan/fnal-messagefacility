@@ -11,7 +11,7 @@
 #include "MessageLogger/interface/MessageLoggerQ.h"
 #include "MessageLogger/interface/AbstractMLscribe.h"
 
-#include "ParameterSet/interface/ParameterSet.h"
+#include "ParameterSet.h"
 
 #include "boost/shared_ptr.hpp"
 #include "boost/scoped_ptr.hpp"

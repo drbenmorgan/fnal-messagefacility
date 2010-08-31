@@ -15,8 +15,6 @@
 #include "MessageService/interface/NamedDestination.h"
 #include "MessageService/interface/MessageLoggerDefaults.h"
 
-//#include "ParameterSet/interface/ParameterSet.h"
-
 #include "boost/shared_ptr.hpp"
 
 #include <iosfwd>

@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "MessageLogger/interface/MessageLogger.h"
-#include "boost/thread.hpp"
+//#include "boost/thread.hpp"
 
 void anotherLogger()
 {
@@ -33,7 +33,7 @@ int main()
   mf::SetContext("pre-event");
 
   // Start up another logger in a seperate thread
-  boost::thread loggerThread(anotherLogger);
+  //boost::thread loggerThread(anotherLogger);
 
   // Issue messages with different severity levels
   LogError("err1|err2") << "This is an ERROR message.";
@@ -56,7 +56,7 @@ int main()
   }
 
   // Thread join
-  loggerThread.join();
+  //loggerThread.join();
 
   mf::LogStatistics();
 

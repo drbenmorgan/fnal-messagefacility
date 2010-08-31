@@ -1,6 +1,6 @@
 #include <iostream>
-#include "ParameterSet/interface/ParameterSet.h"
-#include "ParameterSet/interface/ParameterSetParser.h"
+#include "ParameterSet.h"
+#include "ParameterSetParser.h"
 
 int main()
 {

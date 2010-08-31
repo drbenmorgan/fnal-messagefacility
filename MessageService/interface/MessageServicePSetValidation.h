@@ -31,7 +31,7 @@
 
 // user include files
 
-#include "ParameterSet/interface/ParameterSet.h"
+#include "ParameterSet.h"
 #include "Utilities/interface/Exception.h"
 
 // forward declarations
