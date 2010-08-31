@@ -1,0 +1,11 @@
+#
+#  Extensions/src/CMakeLists.txt
+#  -------------------------------------------------------------------
+#
+#  CMake build file gathering source files for library Extensions and
+#  ExtensionsD 
+#
+
+SET (SRCFILES 
+    Extensions.cc
+    )
