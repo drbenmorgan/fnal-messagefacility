@@ -33,7 +33,7 @@ INCLUDE_DIRECTORIES(
 
 # Project library directory
 LINK_DIRECTORIES(
-    ${Boost_LIBRARY_DIR}
+    ${Boost_LIBRARY_DIRS}
     $ENV{FHiCLCPP_DIR}/lib
     )
 
