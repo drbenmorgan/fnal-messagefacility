@@ -4,7 +4,7 @@
 
 int main()
 {
-  mf::ParameterSet::ParameterSet pset;
+  mf::ParameterSet pset;
 
   // parse a configuration file
   mf::ParameterSetParser::Parse("Sample.cfg", pset);

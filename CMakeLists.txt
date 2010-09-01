@@ -12,17 +12,28 @@ PROJECT (MessageFacility)
 
 #ADD_DEFINITIONS (-g) 
 
+# define the boost envrionment so we don't get system libraries
+set ( BOOST_ROOT       $ENV{BOOST_DIR} )
+set ( BOOST_INCLUDEDIR $ENV{BOOST_INC} )
+set ( BOOST_LIBRARYDIR $ENV{BOOST_LIB} )
+
+find_package (Boost 1.42 REQUIRED 
+                  COMPONENTS
+                  thread
+                  program_options
+             )
+
 # Project include directory
 INCLUDE_DIRECTORIES(
     ${MessageFacility_SOURCE_DIR}
     ${MessageFacility_BINARY_DIR}
-    $ENV{BOOST_DIR}/include
+    ${Boost_INCLUDE_DIR}
     $ENV{FHiCLCPP_DIR}/include
     )
 
 # Project library directory
 LINK_DIRECTORIES(
-    $ENV{BOOST_DIR}/lib
+    ${Boost_LIBRARY_DIR}
     $ENV{FHiCLCPP_DIR}/lib
     )
 
@@ -44,7 +55,6 @@ INSTALL (FILES
 
 ADD_SUBDIRECTORY (MessageLogger)
 ADD_SUBDIRECTORY (MessageService)
-#ADD_SUBDIRECTORY (ParameterSet)
 ADD_SUBDIRECTORY (Utilities)
 ADD_SUBDIRECTORY (Extensions)
 
