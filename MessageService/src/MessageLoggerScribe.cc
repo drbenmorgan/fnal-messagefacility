@@ -297,13 +297,13 @@ void
     }
     case MessageLoggerQ::CONFIGURE:  {			// changelog 17
       if (singleThread) {
-	job_pset_p.reset(static_cast<ParameterSet *>(operand));
+	job_pset_p.reset(static_cast<fhicl::ParameterSet *>(operand));
 	configure_errorlog();
 	break;
       } else {
 	ConfigurationHandshake * h_p = 
 		static_cast<ConfigurationHandshake *>(operand);
-	job_pset_p.reset(static_cast<ParameterSet *>(h_p->p));
+	job_pset_p.reset(static_cast<fhicl::ParameterSet *>(h_p->p));
 	boost::mutex::scoped_lock sl(h_p->m);   // get lock
 	try {
 	  configure_errorlog();
@@ -418,7 +418,7 @@ void
       if (singleThread) return;
       ConfigurationHandshake * h_p = 
 	      static_cast<ConfigurationHandshake *>(operand);
-      job_pset_p.reset(static_cast<ParameterSet *>(h_p->p));
+      job_pset_p.reset(static_cast<fhicl::ParameterSet *>(h_p->p));
       boost::mutex::scoped_lock sl(h_p->m);   // get lock
       h_p->c.notify_all();  // Signal to MessageLoggerQ that we are done
       // finally, release the scoped lock by letting it go out of scope 
@@ -521,7 +521,7 @@ void
 void
   MessageLoggerScribe::configure_dest( ELdestControl & dest_ctrl
                                      , String const & dest_pset_name 
-                                     , ParameterSet const & dest_pset
+                                     , fhicl::ParameterSet const & dest_pset
 				     )
 {
   static const int NO_VALUE_SET = -45654;			// change log 2

@@ -290,7 +290,7 @@ void close_and_delete::operator()(std::ostream* os) const {
 ELdestinationFactory::map_type * ELdestinationFactory::map;
 
 void ELdestinationFactory::reg(std::string type_str, 
-         ELdestination* (*f)(std::string const &, ParameterSet const &)) 
+         ELdestination* (*f)(std::string const &, fhicl::ParameterSet const &)) 
 {
   getMap()->insert(std::make_pair(type_str, f));
 }
@@ -298,7 +298,7 @@ void ELdestinationFactory::reg(std::string type_str,
 ELdestination * 
 ELdestinationFactory::createInstance (std::string const & type_str, 
          std::string const & name,         
-         ParameterSet const & pset )
+         fhicl::ParameterSet const & pset )
 {
   map_type::iterator it = getMap()->find(type_str);
 

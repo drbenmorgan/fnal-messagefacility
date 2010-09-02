@@ -465,39 +465,39 @@ private:
 public:
   static MessageFacilityService & instance();
 
-  static ParameterSet logConsole();
-  static ParameterSet logServer(
+  static fhicl::ParameterSet logConsole();
+  static fhicl::ParameterSet logServer(
                           int partition = 0
                         );
-  static ParameterSet logFile(
+  static fhicl::ParameterSet logFile(
                           std::string const & filename = "logfile"
                         , bool append = false
                         );
-  static ParameterSet logCS(
+  static fhicl::ParameterSet logCS(
                           int partition = 0
                         );
-  static ParameterSet logCF(
+  static fhicl::ParameterSet logCF(
                           std::string const & filename = "logfile"
                         , bool append = false
                         );
-  static ParameterSet logFS(
+  static fhicl::ParameterSet logFS(
                           std::string const & filename = "logfile"
                         , bool append = false
                         , int partition = 0
                         );
-  static ParameterSet logCFS(
+  static fhicl::ParameterSet logCFS(
                           std::string const & filename = "logfile"
                         , bool append = false
                         , int partition = 0
                         );
-  static ParameterSet logArchive(
+  static fhicl::ParameterSet logArchive(
                           std::string const & filename = "msgarchive"
                         , bool append = false
                         );
 
-  static ParameterSet ConfigurationFile(
+  static fhicl::ParameterSet ConfigurationFile(
                std::string const & filename = "MessageFacility.cfg",
-               ParameterSet const & def = logCF());
+               fhicl::ParameterSet const & def = logCF());
 
   static std::string SingleThread;
   static std::string MultiThread;
@@ -524,7 +524,7 @@ public:
 
   void StartMessageFacility(
       std::string const & mode,
-      ParameterSet const & pset = MessageFacilityService::ConfigurationFile());
+      fhicl::ParameterSet const & pset = MessageFacilityService::ConfigurationFile());
 
   void SetApplicationName(std::string const & application);
   void SetModuleName(std::string const & modulename);

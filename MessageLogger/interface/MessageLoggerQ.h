@@ -9,12 +9,16 @@
 #include <map>
 #include <set>
 
+namespace fhicl
+{
+  class ParameterSet;
+}
+
 namespace mf
 {
 
 // --- forward declarations:
 class ErrorObj;
-class ParameterSet;
 class ELdestination;
 namespace service {
 class NamedDestination;
@@ -47,7 +51,7 @@ public:
   // ---  post a message to the queue:
   static  void  MLqEND();
   static  void  MLqLOG( ErrorObj * p );
-  static  void  MLqCFG( ParameterSet * p );
+  static  void  MLqCFG( fhicl::ParameterSet * p );
   static  void  MLqEXT( service::NamedDestination* p );
   static  void  MLqSUM();
   static  void  MLqJOB( std::string * j );

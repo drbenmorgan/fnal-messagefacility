@@ -197,7 +197,7 @@ void
 
 
 void
-  MessageLoggerQ::MLqCFG( ParameterSet * p )
+  MessageLoggerQ::MLqCFG( fhicl::ParameterSet * p )
 {
   handshakedCommand(CONFIGURE, p, "CFG" );
 }  // MessageLoggerQ::CFG()

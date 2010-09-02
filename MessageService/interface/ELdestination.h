@@ -158,15 +158,15 @@ struct close_and_delete {
 // Destination factory for loading destinations dynamically
 struct ELdestinationFactory
 {
-  typedef std::map<std::string, ELdestination*(*)(std::string const &, ParameterSet const &)> map_type;
+  typedef std::map<std::string, ELdestination*(*)(std::string const &, fhicl::ParameterSet const &)> map_type;
 
 public:
   static void reg( std::string type_str, 
-      ELdestination* (*f)(std::string const &, ParameterSet const &));
+      ELdestination* (*f)(std::string const &, fhicl::ParameterSet const &));
 
   static ELdestination * createInstance ( std::string const & type,
       std::string const & name,
-      ParameterSet const & pset );
+      fhicl::ParameterSet const & pset );
 
 private:
   ELdestinationFactory() {};

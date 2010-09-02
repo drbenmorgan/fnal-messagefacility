@@ -158,9 +158,9 @@ MessageFacilityService & MessageFacilityService::instance()
 }
 
 // Read configurations from MessageFacility.cfg file
-ParameterSet MessageFacilityService::ConfigurationFile(
+fhicl::ParameterSet MessageFacilityService::ConfigurationFile(
     std::string const & filename,
-    ParameterSet const & def)
+    fhicl::ParameterSet const & def)
 {
   size_t sub_start = filename.find("${");
   size_t sub_end   = filename.find("}");
@@ -193,9 +193,9 @@ ParameterSet MessageFacilityService::ConfigurationFile(
     fname = filename;
   }
 
-  ParameterSet pset;
+  fhicl::ParameterSet pset;
 
-  if (ParameterSetParser::Parse(fname, pset))
+  if (fhicl::Parser::Parse(fname, pset))
   {
     return pset;
   }
@@ -218,7 +218,7 @@ std::string MessageFacilityService::commonPSet()
   return pset;
 }
 
-ParameterSet MessageFacilityService::logConsole()
+fhicl::ParameterSet MessageFacilityService::logConsole()
 {
   std::ostringstream ss;
   ss << commonPSet()
@@ -227,13 +227,13 @@ ParameterSet MessageFacilityService::logConsole()
      << "  } "
      << "} ";
 
-  ParameterSet pset;
+  fhicl::ParameterSet pset;
   std::string pstr(ss.str());
-  ParameterSetParser::ParseString(pstr, pset);
+  fhicl::Parser::ParseString(pstr, pset);
   return pset;
 }
 
-ParameterSet MessageFacilityService::logServer(int partition)
+fhicl::ParameterSet MessageFacilityService::logServer(int partition)
 {
   std::ostringstream ss;
   ss << commonPSet()
@@ -245,13 +245,13 @@ ParameterSet MessageFacilityService::logServer(int partition)
      << "  } "
      << "} ";
 
-  ParameterSet pset;
+  fhicl::ParameterSet pset;
   std::string pstr(ss.str());
-  ParameterSetParser::ParseString(pstr, pset);
+  fhicl::Parser::ParseString(pstr, pset);
   return pset;
 }
 
-ParameterSet MessageFacilityService::logFile(std::string const & filename, bool append)
+fhicl::ParameterSet MessageFacilityService::logFile(std::string const & filename, bool append)
 {
   std::ostringstream ss;
   ss << commonPSet()
@@ -264,13 +264,13 @@ ParameterSet MessageFacilityService::logFile(std::string const & filename, bool 
      << "  } "
      << "} ";
 
-  ParameterSet pset;
+  fhicl::ParameterSet pset;
   std::string pstr(ss.str());
-  ParameterSetParser::ParseString(pstr, pset);
+  fhicl::Parser::ParseString(pstr, pset);
   return pset;
 }
 
-ParameterSet MessageFacilityService::logCS(int partition)
+fhicl::ParameterSet MessageFacilityService::logCS(int partition)
 {
   std::ostringstream ss;
   ss << commonPSet()
@@ -283,13 +283,13 @@ ParameterSet MessageFacilityService::logCS(int partition)
      << "  } "
      << "} ";
 
-  ParameterSet pset;
+  fhicl::ParameterSet pset;
   std::string pstr(ss.str());
-  ParameterSetParser::ParseString(pstr, pset);
+  fhicl::Parser::ParseString(pstr, pset);
   return pset;
 }
 
-ParameterSet MessageFacilityService::logCF(std::string const & filename, bool append)
+fhicl::ParameterSet MessageFacilityService::logCF(std::string const & filename, bool append)
 {
   std::ostringstream ss;
   ss << commonPSet()
@@ -303,13 +303,13 @@ ParameterSet MessageFacilityService::logCF(std::string const & filename, bool ap
      << "  } "
      << "} ";
 
-  ParameterSet pset;
+  fhicl::ParameterSet pset;
   std::string pstr(ss.str());
-  ParameterSetParser::ParseString(pstr, pset);
+  fhicl::Parser::ParseString(pstr, pset);
   return pset;
 }
 
-ParameterSet MessageFacilityService::logFS(std::string const & filename, bool append, int partition)
+fhicl::ParameterSet MessageFacilityService::logFS(std::string const & filename, bool append, int partition)
 {
   std::ostringstream ss;
   ss << commonPSet()
@@ -326,13 +326,13 @@ ParameterSet MessageFacilityService::logFS(std::string const & filename, bool ap
      << "  } "
      << "} ";
 
-  ParameterSet pset;
+  fhicl::ParameterSet pset;
   std::string pstr(ss.str());
-  ParameterSetParser::ParseString(pstr, pset);
+  fhicl::Parser::ParseString(pstr, pset);
   return pset;
 }
 
-ParameterSet MessageFacilityService::logCFS(std::string const & filename, bool append, int partition)
+fhicl::ParameterSet MessageFacilityService::logCFS(std::string const & filename, bool append, int partition)
 {
   std::ostringstream ss;
   ss << commonPSet()
@@ -350,13 +350,13 @@ ParameterSet MessageFacilityService::logCFS(std::string const & filename, bool a
      << "  } "
      << "} ";
 
-  ParameterSet pset;
+  fhicl::ParameterSet pset;
   std::string pstr(ss.str());
-  ParameterSetParser::ParseString(pstr, pset);
+  fhicl::Parser::ParseString(pstr, pset);
   return pset;
 }
 
-ParameterSet MessageFacilityService::logArchive(std::string const & filename, bool append)
+fhicl::ParameterSet MessageFacilityService::logArchive(std::string const & filename, bool append)
 {
   std::ostringstream ss;
   ss << commonPSet()
@@ -369,9 +369,9 @@ ParameterSet MessageFacilityService::logArchive(std::string const & filename, bo
      << "  } "
      << "} ";
 
-  ParameterSet pset;
+  fhicl::ParameterSet pset;
   std::string pstr(ss.str());
-  ParameterSetParser::ParseString(pstr, pset);
+  fhicl::Parser::ParseString(pstr, pset);
   return pset;
 }
 
@@ -389,7 +389,7 @@ MFSdestroyer::~MFSdestroyer()
 // Start MessageFacility service
 void StartMessageFacility(
       std::string const & mode,
-      ParameterSet const & pset)
+      fhicl::ParameterSet const & pset)
 {
   MessageFacilityService & mfs = MessageFacilityService::instance();
 

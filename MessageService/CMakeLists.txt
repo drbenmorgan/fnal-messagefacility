@@ -15,11 +15,19 @@ ENDFOREACH (FILE)
 ADD_LIBRARY (MessageServiceD SHARED ${srcFiles})
 ADD_LIBRARY (MessageService ${srcFiles})
 
-SET_TARGET_PROPERTIES (MessageServiceD
+TARGET_LINK_LIBRARIES ( MessageServiceD
+    fhicl-cpp
+    )
+
+TARGET_LINK_LIBRARIES ( MessageService
+    fhicl-cpp
+    )
+
+SET_TARGET_PROPERTIES ( MessageServiceD
     PROPERTIES OUTPUT_NAME MF_MessageService
     )
 
-SET_TARGET_PROPERTIES (MessageService
+SET_TARGET_PROPERTIES ( MessageService
     PROPERTIES OUTPUT_NAME MF_MessageService
     )
 

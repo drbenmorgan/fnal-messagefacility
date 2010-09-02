@@ -58,7 +58,7 @@
 // system include files
 // user include files
 
-#include "ParameterSet/interface/ParameterSet.h"
+#include "ParameterSet.h"
 
 #include "MessageService/interface/MessageLogger.h"
 //#include "MessageService/interface/MessageServicePSetValidation.h"
@@ -90,7 +90,7 @@ bool mf::service::MessageLogger::fjrSummaryRequested_                = false;
 // constructors and destructor
 //
 mf::service::MessageLogger::
-MessageLogger( ParameterSet const & iPS
+MessageLogger( fhicl::ParameterSet const & iPS
              /*, ActivityRegistry   & iRegistry*/
                             )
 	: curr_module_("BeginningJob")
@@ -184,7 +184,7 @@ MessageLogger( ParameterSet const & iPS
   std::string * jm_p = new std::string(jm);
   MessageLoggerQ::MLqMOD( jm_p ); 				// change log 9
   
-  MessageLoggerQ::MLqCFG( new ParameterSet(iPS) );		// change log 9
+  MessageLoggerQ::MLqCFG( new fhicl::ParameterSet(iPS) );		// change log 9
 
 /*
   iRegistry.watchPostBeginJob(this,&MessageLogger::postBeginJob);

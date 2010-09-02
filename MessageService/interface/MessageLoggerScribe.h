@@ -113,7 +113,7 @@ private:
   // --- convenience typedefs
   typedef std::string          String;
   typedef std::vector<String>  vString;
-  typedef ParameterSet         PSet;
+  typedef fhicl::ParameterSet  PSet;
 
   // --- log one consumed message
   void log(ErrorObj * errorobj_p);
@@ -129,7 +129,7 @@ private:
   void  configure_statistics( );				// Change Log 3
   void  configure_dest( ELdestControl & dest_ctrl		
                       , String const & dest_pset_name 
-                      , ParameterSet const & dest_pset
+                      , fhicl::ParameterSet const & dest_pset
 		      );
   void  configure_default_fwkJobReport( ELdestControl & dest_ctrl); //ChangeLog 4
   void  configure_external_dests( );

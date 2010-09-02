@@ -38,15 +38,17 @@
 
 // forward declarations
 
-namespace mf  {
-class ParameterSet;
-namespace service  {
+namespace fhicl {
+  class ParameterSet;
+}
 
+namespace mf  {
+namespace service  {
 
 class MessageLogger
 {
 public:
-  MessageLogger( ParameterSet const & /*, ActivityRegistry & */);
+  MessageLogger( fhicl::ParameterSet const & /*, ActivityRegistry & */);
 
 /*
   void  postBeginJob();
