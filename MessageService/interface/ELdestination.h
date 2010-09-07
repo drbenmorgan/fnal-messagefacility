@@ -36,7 +36,7 @@
 #include "MessageLogger/interface/ErrorObj.h"
 #include "MessageLogger/interface/ELextendedID.h"
 
-#include "ParameterSet.h"
+#include "fhiclcpp/ParameterSet.h"
 
 namespace mf {       
 namespace service {       

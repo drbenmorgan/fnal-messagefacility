@@ -27,7 +27,7 @@ TARGET_LINK_LIBRARIES (MFTest
     boost_thread
     boost_filesystem
 #    dcpssacpp
-    FHiCLCpp
+    fhiclcpp
     )
 
 INSTALL (FILES

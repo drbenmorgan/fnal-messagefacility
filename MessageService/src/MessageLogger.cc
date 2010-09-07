@@ -58,7 +58,7 @@
 // system include files
 // user include files
 
-#include "ParameterSet.h"
+#include "fhiclcpp/ParameterSet.h"
 
 #include "MessageService/interface/MessageLogger.h"
 //#include "MessageService/interface/MessageServicePSetValidation.h"

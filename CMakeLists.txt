@@ -28,13 +28,13 @@ INCLUDE_DIRECTORIES(
     ${MessageFacility_SOURCE_DIR}
     ${MessageFacility_BINARY_DIR}
     ${Boost_INCLUDE_DIR}
-    $ENV{FHICLCPP_DIR}/include
+    $ENV{FHICLCPP_INC}
     )
 
 # Project library directory
 LINK_DIRECTORIES(
     ${Boost_LIBRARY_DIRS}
-    $ENV{FHICLCPP_DIR}/lib
+    $ENV{FHICLCPP_LIB}
     )
 
 # Install directory

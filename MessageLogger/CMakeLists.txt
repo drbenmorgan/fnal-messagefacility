@@ -46,6 +46,11 @@ INSTALL (FILES
     DESTINATION include
     )
 
+INSTALL (FILES
+    ${MessageFacility_SOURCE_DIR}/MessageLogger/interface/MessageLogger.h
+    DESTINATION include/MessageFacility
+    )
+
 INSTALL (FILES ${includeFiles}
     DESTINATION src/MessageLogger/interface
     )
