@@ -1,0 +1,40 @@
+File    = table
+Product = messagefacility
+#*************************************************
+# Starting Group definition
+Group:
+Flavor     = ANY
+Qualifiers = ""
+  Action = setup
+    setupEnv()
+    prodDir()
+    setupRequired(boost @BOOST_VERSION@)
+    setupRequired(fhiclcpp @FHICLCPP_VERSION@)
+    envSet(MESSAGEFACILITY_INC, ${UPS_PROD_DIR}/include )
+    envSet(MESSAGEFACILITY_LIB, ${UPS_PROD_DIR}/lib)
+    envSet(MESSAGEFACILITY_VERSION, @version@)
+    pathAppend(LD_LIBRARY_PATH, ${UPS_PROD_DIR}/lib)
+
+Flavor     = ANY
+Qualifiers = "b42"
+  Action = setup
+    setupEnv()
+    prodDir()
+    setupRequired(boost @BOOST_VERSION@)
+    setupRequired(fhiclcpp @FHICLCPP_VERSION@)
+    envSet(MESSAGEFACILITY_INC, ${UPS_PROD_DIR}/include )
+    envSet(MESSAGEFACILITY_LIB, ${UPS_PROD_DIR}/lib)
+    envSet(MESSAGEFACILITY_VERSION, @version@)
+    pathAppend(LD_LIBRARY_PATH, ${UPS_PROD_DIR}/lib)
+
+Common:
+  Action = setup
+    setupEnv()
+    prodDir()
+    envSet(MESSAGEFACILITY_INC, ${UPS_PROD_DIR}/include )
+    envSet(MESSAGEFACILITY_LIB, ${UPS_PROD_DIR}/lib)
+    envSet(MESSAGEFACILITY_VERSION, @version@)
+    pathAppend(LD_LIBRARY_PATH, ${UPS_PROD_DIR}/lib)
+End:
+# End Group definition
+#*************************************************

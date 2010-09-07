@@ -9,6 +9,7 @@
 CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
 
 PROJECT (MessageFacility)
+SET (version 1.3.0)
 
 #ADD_DEFINITIONS (-g) 
 
@@ -16,12 +17,20 @@ PROJECT (MessageFacility)
 set ( BOOST_ROOT       $ENV{BOOST_DIR} )
 set ( BOOST_INCLUDEDIR $ENV{BOOST_INC} )
 set ( BOOST_LIBRARYDIR $ENV{BOOST_LIB} )
+set ( BOOST_VERSION    $ENV{BOOST_VERSION} )
 
+# Check boost library
 find_package (Boost 1.42 REQUIRED 
                   COMPONENTS
                   thread
                   program_options
              )
+
+# Check FHiCL-Cpp library
+SET ( FHICLCPP_VERSION $ENV{FHICLCPP_VERSION} )
+IF (NOT FHICLCPP)
+    MESSAGE (FATAL "FHiCL-Cpp package has not been set")
+ENDIF ()
 
 # Project include directory
 INCLUDE_DIRECTORIES(
@@ -60,3 +69,4 @@ ADD_SUBDIRECTORY (Extensions)
 
 ADD_SUBDIRECTORY (test)
 ADD_SUBDIRECTORY (xcompile)
+ADD_SUBDIRECTORY (ups)
