@@ -9,7 +9,7 @@
 CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
 
 PROJECT (MessageFacility)
-SET (version 1.3.0)
+SET (version v1_3_0)
 
 #ADD_DEFINITIONS (-g) 
 
@@ -28,8 +28,8 @@ find_package (Boost 1.42 REQUIRED
 
 # Check FHiCL-Cpp library
 SET ( FHICLCPP_VERSION $ENV{FHICLCPP_VERSION} )
-IF (NOT FHICLCPP)
-    MESSAGE (FATAL "FHiCL-Cpp package has not been set")
+IF (NOT FHICLCPP_VERSION)
+    MESSAGE (FATAL_ERROR "FHiCL-Cpp package has not been set")
 ENDIF ()
 
 # Project include directory
@@ -53,7 +53,7 @@ IF (CMAKE_CROSSCOMPILING)
     SET (FLAVOR ${CMAKE_SYSTEM_NAME}.${CMAKE_SYSTEM_PROCESSOR})
 ENDIF (CMAKE_CROSSCOMPILING)
 
-SET (CMAKE_INSTALL_PREFIX ${MessageFacility_SOURCE_DIR}/install/${FLAVOR})
+SET (CMAKE_INSTALL_PREFIX ${MessageFacility_BINARY_DIR}/install/${FLAVOR})
 
 INSTALL (FILES
     CMakeLists.txt
