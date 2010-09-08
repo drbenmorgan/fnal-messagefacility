@@ -130,7 +130,7 @@
 //  25 - 7/24/07 mf - in run() 
 //	 A command SHUT_UP to deactivate, and in the LOG_A_MESSGE case, response to 
 //	 that command.  This allows supression of the generator info in case of a
-//	 completely .cfg-less cmsRun command.  
+//	 completely .cfg-less cetRun command.  
 //
 //  26 - 8/7/07 mf - in run()
 //	 A command FLUSH_LOG_Q to consume the entire queue, processing each 
@@ -271,11 +271,11 @@ void
       try {
 	if(active && !purge_mode) log (errorobj_p);        
       }
-      catch(cms::Exception& e)
+      catch(cet::Exception& e)
       {
 	  ++count;
 	  std::cerr << "MessageLoggerScribe caught " << count
-	       << " cms::Exceptions, text = \n"
+	       << " cet::Exceptions, text = \n"
 	       << e.what() << "\n";
 
 	  if(count > 25)
@@ -333,9 +333,9 @@ void
 	extern_dests.push_back( static_cast<NamedDestination *>(operand) );
 	configure_external_dests();
       }
-      catch(cms::Exception& e)				// change log 21
+      catch(cet::Exception& e)				// change log 21
 	{
-	  std::cerr << "MessageLoggerScribe caught a cms::Exception "
+	  std::cerr << "MessageLoggerScribe caught a cet::Exception "
 	       << "during extern dest configuration:\n"
 	       << e.what() << "\n"
 	       << "This is a serious problem, and the extern dest " 
@@ -357,7 +357,7 @@ void
       try {
 	triggerStatisticsSummaries();
       }
-      catch(cms::Exception& e)
+      catch(cet::Exception& e)
 	{
 	  std::cerr << "MessageLoggerScribe caught exception "
 	       << "during summarize:\n"
@@ -376,9 +376,9 @@ void
       try {
 	jobReportOption = *jobReportOption_p;
       }
-      catch(cms::Exception& e)
+      catch(cet::Exception& e)
 	{
-	  std::cerr << "MessageLoggerScribe caught a cms::Exception "
+	  std::cerr << "MessageLoggerScribe caught a cet::Exception "
 	       << "during processing of --jobReport option:\n"
 	       << e.what() << "\n"
 	       << "This likely will affect or prevent the job report.\n"

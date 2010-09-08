@@ -1,7 +1,7 @@
 
 #include "Utilities/interface/Exception.h"
 
-namespace cms {
+namespace cet {
 
   Exception::Exception(std::string const& aCategory) :
     std::exception(),

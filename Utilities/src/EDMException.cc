@@ -56,22 +56,22 @@ namespace mf {
 
 
   Exception::Exception(errors::ErrorCodes aCategory):
-    cms::Exception(codeToString(aCategory)),
+    cet::Exception(codeToString(aCategory)),
     category_(aCategory) {
   }
 
   Exception::Exception(errors::ErrorCodes aCategory, std::string const& message):
-    cms::Exception(codeToString(aCategory),message),
+    cet::Exception(codeToString(aCategory),message),
     category_(aCategory) {
   }
 
-  Exception::Exception(errors::ErrorCodes aCategory, std::string const& message, cms::Exception const& another):
-    cms::Exception(codeToString(aCategory),message,another),
+  Exception::Exception(errors::ErrorCodes aCategory, std::string const& message, cet::Exception const& another):
+    cet::Exception(codeToString(aCategory),message,another),
     category_(aCategory) {
   }
 
   Exception::Exception(Exception const& other):
-    cms::Exception(other),
+    cet::Exception(other),
     category_(other.category_) {
   }
 

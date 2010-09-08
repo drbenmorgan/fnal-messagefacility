@@ -31,7 +31,7 @@ namespace mf {
     // If you add a new entry to the set of values, make sure to
     // update the translation map in EDMException.cc, the actions
     // table in FWCore/Framework/src/Actions.cc, and the configuration
-    // fragment FWCore/Framework/test/cmsExceptionsFatalOption.cff.
+    // fragment FWCore/Framework/test/cetExceptionsFatalOption.cff.
 
     enum ErrorCodes {
        OtherCMS = 8001,
@@ -71,7 +71,7 @@ namespace mf {
 
   }
 
-  class Exception : public cms::Exception {
+  class Exception : public cet::Exception {
   public:
     typedef errors::ErrorCodes Code;
 
@@ -79,7 +79,7 @@ namespace mf {
 
     Exception(Code category, std::string const& message);
 
-    Exception(Code category, std::string const& message, cms::Exception const& another);
+    Exception(Code category, std::string const& message, cet::Exception const& another);
 
     Exception(Exception const& other);
 

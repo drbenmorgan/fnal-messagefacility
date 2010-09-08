@@ -130,7 +130,7 @@ MessageLogger( fhicl::ParameterSet const & iPS
 
     suppressWarning = 
           iPS.getVString(std::string("suppressWarning"), empty_vString);
-  } catch (cms::Exception& e) {					// change log 13
+  } catch (cet::Exception& e) {					// change log 13
   }
   
   // Use these lists to prepare a map to use in tracking suppression 
