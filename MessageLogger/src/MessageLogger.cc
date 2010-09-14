@@ -32,14 +32,14 @@
 
 namespace mf {
 
-LogInfo_::~LogInfo_() {}
-LogWarning_::~LogWarning_() {}
-LogError_::~LogError_() {}
+LogInfo::~LogInfo() {}
+LogWarning::~LogWarning() {}
+LogError::~LogError() {}
 LogAbsolute::~LogAbsolute() {}
 LogSystem::~LogSystem() {}
 LogVerbatim::~LogVerbatim() {}
-LogDebug_::~LogDebug_() {}
-LogTrace_::~LogTrace_() {}
+LogDebug::~LogDebug() {}
+LogTrace::~LogTrace() {}
 LogPrint::~LogPrint() {}
 LogProblem::~LogProblem() {}
 LogImportant::~LogImportant() {}
@@ -97,7 +97,7 @@ std::string stripLeadingDirectoryTree(const std::string & file)
 }
 
 // LogWarning
-mf::LogWarning_::LogWarning_( std::string const & id, std::string const & file, int line )
+mf::LogWarning::LogWarning( std::string const & id, std::string const & file, int line )
     : ap ( mf::MessageDrop::instance()->warningEnabled ? 
            new MessageSender(ELwarning,id) : 0 )
 { 
@@ -107,7 +107,7 @@ mf::LogWarning_::LogWarning_( std::string const & id, std::string const & file, 
 }
 
 // LogError
-mf::LogError_::LogError_( std::string const & id, std::string const & file, int line )
+mf::LogError::LogError( std::string const & id, std::string const & file, int line )
     : ap( new MessageSender(ELerror,id) )
 { 
   *this << " "
@@ -116,7 +116,7 @@ mf::LogError_::LogError_( std::string const & id, std::string const & file, int 
 }
 
 // LogInfo
-mf::LogInfo_::LogInfo_( std::string const & id, std::string const & file, int line )
+mf::LogInfo::LogInfo( std::string const & id, std::string const & file, int line )
     : ap ( mf::MessageDrop::instance()->infoEnabled ? 
            new MessageSender(ELinfo,id) : 0 )
 { 
@@ -126,7 +126,7 @@ mf::LogInfo_::LogInfo_( std::string const & id, std::string const & file, int li
 }
 
 // LogDebug
-mf::LogDebug_::LogDebug_( std::string const & id, std::string const & file, int line )
+mf::LogDebug::LogDebug( std::string const & id, std::string const & file, int line )
   : ap( new MessageSender(ELsuccess,id) ), debugEnabled(true)
 { *this
         << " "
@@ -134,7 +134,7 @@ mf::LogDebug_::LogDebug_( std::string const & id, std::string const & file, int 
         << ":" << line << "\n"; }
 
 // LogTrace
-mf::LogTrace_::LogTrace_( std::string const & id )
+mf::LogTrace::LogTrace( std::string const & id, std::string const & file, int line )
   : ap( new MessageSender(ELsuccess,id,true) )
   , debugEnabled(true)
   {  }

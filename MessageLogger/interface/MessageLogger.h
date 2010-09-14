@@ -113,59 +113,61 @@
 
 namespace mf  {
 
-class LogWarning_
+class LogWarning
 {
 public:
-  explicit LogWarning_( std::string const & id, std::string const & file, int line);
-  ~LogWarning_();						// Change log 13
+  explicit LogWarning( std::string const & id, std::string const & file="", int line=0);
+  ~LogWarning();						// Change log 13
 
   template< class T >
-    LogWarning_ & 
+    LogWarning & 
     operator<< (T const & t)  { if(ap.get()) (*ap) << t; return *this; }
-  LogWarning_ & 
+  LogWarning & 
   operator<< ( std::ostream&(*f)(std::ostream&))  
 				      { if(ap.get()) (*ap) << f; return *this; }
-  LogWarning_ & 
+  LogWarning & 
   operator<< ( std::ios_base&(*f)(std::ios_base&) )  
 				      { if(ap.get()) (*ap) << f; return *this; }     
 private:
   std::auto_ptr<MessageSender> ap; 
-  LogWarning_( LogWarning_ const& );				// Change log 9
+  LogWarning( LogWarning const& );				// Change log 9
    
 };  // LogWarning_
 
-#define LogWarning(id)  mf::LogWarning_(id, __FILE__, __LINE__)
+//#define LogWarning(id)  ::mf::LogWarning_(id, __FILE__, __LINE__)
+#define LOG_WARNING(id)  ::mf::LogWarning(id, __FILE__, __LINE__)
 
 
-class LogError_
+class LogError
 {
 public:
-  explicit LogError_( std::string const & id, std::string const & file, int line);
-  ~LogError_();							// Change log 13
+  explicit LogError( std::string const & id, std::string const & file="", int line=0);
+  ~LogError();							// Change log 13
 
   template< class T >
-    LogError_ & 
+    LogError & 
     operator<< (T const & t)  { (*ap) << t; return *this; }
-  LogError_ & 
+  LogError & 
   operator<< ( std::ostream&(*f)(std::ostream&))  
 				      { (*ap) << f; return *this; }
-  LogError_ & 
+  LogError & 
   operator<< ( std::ios_base&(*f)(std::ios_base&) )  
 				      { (*ap) << f; return *this; }     
 
 private:
   std::auto_ptr<MessageSender> ap; 
-  LogError_( LogError_ const& );				// Change log 9
+  LogError( LogError const& );				// Change log 9
 
 };  // LogError
 
-#define LogError(id)  mf::LogError_(id, __FILE__, __LINE__)
+//#define LogError(id)  ::mf::LogError_(id, __FILE__, __LINE__)
+#define LOG_ERROR(id)  ::mf::LogError(id, __FILE__, __LINE__)
 
 
 class LogSystem
 {
 public:
-  explicit LogSystem( std::string const & id ) 
+  explicit LogSystem( std::string const & id, std::string const & file="", int line=0 ) 
     : ap( new MessageSender(ELsevere,id) )
   { }
   ~LogSystem();							// Change log 13
@@ -186,36 +188,39 @@ private:
 
 };  // LogSystem
 
-class LogInfo_				
+#define LOG_SYSTEM(id)  ::mf::LogSystem(id, __FILE__, __LINE__)
+
+class LogInfo				
 {
 public:
-  explicit LogInfo_( std::string const & id, std::string const & file, int line);
-  ~LogInfo_();							// Change log 13
+  explicit LogInfo( std::string const & id, std::string const & file="", int line=0);
+  ~LogInfo();							// Change log 13
 
   template< class T >
-    LogInfo_ & 
+    LogInfo & 
     operator<< (T const & t)  { if(ap.get()) (*ap) << t; return *this; }
-  LogInfo_ & 
+  LogInfo & 
   operator<< ( std::ostream&(*f)(std::ostream&))  
 				      { if(ap.get()) (*ap) << f; return *this; }
-  LogInfo_ & 
+  LogInfo & 
   operator<< ( std::ios_base&(*f)(std::ios_base&) )  
 				      { if(ap.get()) (*ap) << f; return *this; }     
 
 private:
   std::auto_ptr<MessageSender> ap; 
-  LogInfo_( LogInfo_ const& );					// Change log 9
+  LogInfo( LogInfo const& );					// Change log 9
   
 };  // LogInfo
 
-#define LogInfo(id)  mf::LogInfo_(id, __FILE__, __LINE__)
+//#define LogInfo(id)  ::mf::LogInfo_(id, __FILE__, __LINE__)
+#define LOG_INFO(id)  ::mf::LogInfo(id, __FILE__, __LINE__)
 
 
 // verbatim version of LogInfo
 class LogVerbatim						// change log 2
 {
 public:
-  explicit LogVerbatim( std::string const & id ) 
+  explicit LogVerbatim( std::string const & id, std::string const & file="", int line=0 ) 
     : ap ( mf::MessageDrop::instance()->infoEnabled ?		// change log 16
       new MessageSender(ELinfo,id,true) : 0 ) // the true is the verbatim arg 
   { }
@@ -238,11 +243,13 @@ private:
   
 };  // LogVerbatim
 
+#define LOG_VERBATIM(id)  ::mf::LogVerbatim(id, __FILE__, __LINE__)
+
 // verbatim version of LogWarning
 class LogPrint							// change log 3
 {
 public:
-  explicit LogPrint( std::string const & id ) 
+  explicit LogPrint( std::string const & id, std::string const & file="", int line=0 ) 
     : ap ( mf::MessageDrop::instance()->warningEnabled ?	// change log 16
       new MessageSender(ELwarning,id,true) : 0 ) // the true is the Print arg 
   { }
@@ -265,12 +272,13 @@ private:
   
 };  // LogPrint
 
+#define LOG_PRINT(id)  ::mf::LogPrint(id, __FILE__, __LINE__)
 
 // verbatim version of LogError
 class LogProblem						// change log 4
 {
 public:
-  explicit LogProblem( std::string const & id ) 
+  explicit LogProblem( std::string const & id, std::string const & file="", int line=0 ) 
     : ap( new MessageSender(ELerror,id,true) )
   { }
   ~LogProblem();						// Change log 13
@@ -291,11 +299,13 @@ private:
 
 };  // LogProblem
 
+#define LOG_PROBLEM(id)  ::mf::LogProblem(id, __FILE__, __LINE__)
+
 // less judgemental verbatim version of LogError
 class LogImportant						// change log 11
 {
 public:
-  explicit LogImportant( std::string const & id ) 
+  explicit LogImportant( std::string const & id, std::string const & file="", int line=0 ) 
     : ap( new MessageSender(ELerror,id,true) )
   { }
   ~LogImportant();						 // Change log 13
@@ -316,11 +326,13 @@ private:
 
 };  // LogImportant
 
+#define LOG_IMPORTANT(id)  ::mf::LogImportant(id, __FILE__, __LINE__)
+
 // verbatim version of LogSystem
 class LogAbsolute						// change log 4
 {
 public:
-  explicit LogAbsolute( std::string const & id ) 
+  explicit LogAbsolute( std::string const & id, std::string const & file="", int line=0 ) 
     : ap( new MessageSender(ELsevere,id,true) )
   { }
   ~LogAbsolute();						// Change log 13
@@ -341,6 +353,8 @@ private:
 
 };  // LogAbsolute
 
+#define LOG_ABSOLUTE(id)  ::mf::LogAbsolute(id, __FILE__, __LINE__)
+
 std::string stripLeadingDirectoryTree(const std::string & file);
 
 // change log 10:  removed onlyLowestDirectory()
@@ -348,29 +362,29 @@ std::string stripLeadingDirectoryTree(const std::string & file);
 void LogStatistics(); 
 void LogErrorObj(ErrorObj * eo_p);
 
-class LogDebug_
+class LogDebug
 {
 public:
-  explicit LogDebug_( std::string const & id, std::string const & file, int line ); // Change log 17
-  explicit LogDebug_()  : ap(), debugEnabled(false) {}		// Change log 8	
-  ~LogDebug_(); 
+  explicit LogDebug( std::string const & id, std::string const & file="", int line=0 ); // Change log 17
+  explicit LogDebug()  : ap(), debugEnabled(false) {}		// Change log 8	
+  ~LogDebug(); 
 
   template< class T >
-    LogDebug_ & 
+    LogDebug & 
     operator<< (T const & t)  
     { if (!debugEnabled) return *this;				// Change log 8
       if (ap.get()) (*ap) << t; 
       else Exception::throwThis
        (mf::errors::LogicError,"operator << to stale copied LogDebug_ object"); 
       return *this; }
-  LogDebug_ & 
+  LogDebug & 
   operator<< ( std::ostream&(*f)(std::ostream&))  
     { if (!debugEnabled) return *this;				// Change log 8
       if (ap.get()) (*ap) << f; 
       else Exception::throwThis
        (mf::errors::LogicError,"operator << to stale copied LogDebug_ object"); 
       return *this; }
-  LogDebug_ & 
+  LogDebug & 
   operator<< ( std::ios_base&(*f)(std::ios_base&) )  
     { if (!debugEnabled) return *this;				// Change log 8
       if (ap.get()) (*ap) << f; 
@@ -384,31 +398,31 @@ private:
   bool debugEnabled;
   //std::string stripLeadingDirectoryTree (const std::string & file) const;
 								// change log 10
-};  // LogDebug_
+};  // LogDebug
 
-class LogTrace_
+class LogTrace
 {
 public:
-  explicit LogTrace_( std::string const & id );			// Change log 13
-  explicit LogTrace_()  : ap(), debugEnabled(false) {}		// Change log 8	
-  ~LogTrace_(); 
+  explicit LogTrace( std::string const & id, std::string const & file="", int line=0);			// Change log 13
+  explicit LogTrace()  : ap(), debugEnabled(false) {}		// Change log 8	
+  ~LogTrace(); 
 
   template< class T >
-    LogTrace_ & 
+    LogTrace & 
     operator<< (T const & t)  
     { if (!debugEnabled) return *this;				// Change log 8
       if (ap.get()) (*ap) << t; 
       else Exception::throwThis
        (mf::errors::LogicError,"operator << to stale copied LogTrace_ object"); 
       return *this; }
-  LogTrace_ & 
+  LogTrace & 
   operator<< ( std::ostream&(*f)(std::ostream&))  
     { if (!debugEnabled) return *this;				// Change log 8
       if (ap.get()) (*ap) << f; 
       else Exception::throwThis
        (mf::errors::LogicError,"operator << to stale copied LogTrace_ object"); 
       return *this; }
-  LogTrace_ & 
+  LogTrace & 
   operator<< ( std::ios_base&(*f)(std::ios_base&) )  
     { if (!debugEnabled) return *this;				// Change log 8
       if (ap.get()) (*ap) << f; 
@@ -421,10 +435,10 @@ private:
   std::auto_ptr<MessageSender> ap; 
   bool debugEnabled;
   
-};  // LogTrace_
+};  // LogTrace
 
-extern LogDebug_ dummyLogDebugObject_;
-extern LogTrace_ dummyLogTraceObject_;
+extern LogDebug dummyLogDebugObject_;
+extern LogTrace dummyLogTraceObject_;
 
 class Suppress_LogDebug_ 
 { 
@@ -549,17 +563,17 @@ public:
 #endif
 
 #ifdef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG 
-#define LogDebug(id) mf::Suppress_LogDebug_()
-#define LogTrace(id) mf::Suppress_LogDebug_()
+#define LOG_DEBUG(id) ::mf::Suppress_LogDebug_()
+#define LOG_TRACE(id) ::mf::Suppress_LogDebug_()
 #else
-#define LogDebug(id)                                 \
-  ( !mf::MessageDrop::instance()->debugEnabled )    \
-    ?  mf::LogDebug_()                              \
-    :  mf::LogDebug_(id, __FILE__, __LINE__)
-#define LogTrace(id)                                 \
-  ( !mf::MessageDrop::instance()->debugEnabled )    \
-    ?  mf::LogTrace_()                              \
-    :  mf::LogTrace_(id)
+#define LOG_DEBUG(id)                                 \
+  ( !::mf::MessageDrop::instance()->debugEnabled )    \
+    ?  ::mf::LogDebug()                              \
+    :  ::mf::LogDebug(id, __FILE__, __LINE__)
+#define LOG_TRACE(id)                                 \
+  ( !::mf::MessageDrop::instance()->debugEnabled )    \
+    ?  ::mf::LogTrace()                              \
+    :  ::mf::LogTrace(id)
 #endif
 #undef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
 							// change log 1, 2
