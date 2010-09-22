@@ -45,7 +45,7 @@ int main()
   //mf::SwitchChannel(2);
 
   // Log Debugs
-  for(int i=0; i<500; ++i)
+  for(int i=0; i<5; ++i)
   {
     mf::LogError("catError")     << "Error information.";
     mf::LogWarning("catWarning") << "Warning information.";

@@ -197,6 +197,8 @@
 #include <string>
 #include <signal.h>
 
+#include <dlfcn.h> //dlopen
+
 using std::cerr;
 
 namespace mf {
@@ -507,6 +509,12 @@ void
     	<< "The message logger has been configured multiple times"; 
     clean_slate_configuration = false;				// Change Log 22
   }
+
+  void *hndl = dlopen("libMF_Extensions.so", RTLD_NOW );
+  if(hndl == NULL) {
+    LogError("preconfiguration") << dlerror();
+  }  
+
   configure_fwkJobReports();					// Change Log 16
   configure_ordinary_destinations();				// Change Log 16
   configure_statistics();					// Change Log 16

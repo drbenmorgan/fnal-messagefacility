@@ -17,10 +17,12 @@ ADD_LIBRARY (MessageService ${srcFiles})
 
 TARGET_LINK_LIBRARIES ( MessageServiceD
     fhiclcpp
+    dl
     )
 
 TARGET_LINK_LIBRARIES ( MessageService
     fhiclcpp
+    dl
     )
 
 SET_TARGET_PROPERTIES ( MessageServiceD
