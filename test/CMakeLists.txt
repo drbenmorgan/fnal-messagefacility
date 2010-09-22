@@ -23,12 +23,9 @@ TARGET_LINK_LIBRARIES (MFTest
     MessageServiceD
     MessageLoggerD
     UtilitiesD
-    ExtensionsD
     boost_thread
     boost_filesystem
-#    dcpssacpp
     fhiclcpp
-#    MF_Extensions
     dl
     )
 

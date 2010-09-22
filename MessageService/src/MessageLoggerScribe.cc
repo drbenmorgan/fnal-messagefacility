@@ -510,7 +510,7 @@ void
     clean_slate_configuration = false;				// Change Log 22
   }
 
-  void *hndl = dlopen("libMF_Extensions.so", RTLD_NOW );
+  void *hndl = dlopen("libMF_ExtModules.so", RTLD_NOW );
   if(hndl == NULL) {
     LogError("preconfiguration") << dlerror();
   }  

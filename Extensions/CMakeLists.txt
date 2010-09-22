@@ -2,7 +2,7 @@
 #  Extensions/CMakeLists.txt
 #  -------------------------------------------------------------------
 #
-#  CMake build file for library Extensions and ExtensionsD
+#  CMake build file for library Extensions
 #
 
 INCLUDE (src/CMakeLists.txt)
@@ -19,20 +19,12 @@ FOREACH (FILE ${SRCFILES})
     LIST (APPEND SRC_FILES ${SRC_DIR}/${FILE})
 ENDFOREACH (FILE)
        
-    ADD_LIBRARY (ExtensionsD SHARED 
-        ${SRC_FILES}
-        )
-  
-    ADD_LIBRARY (Extensions   
-        ${SRC_FILES}
-        )
-
-SET_TARGET_PROPERTIES (ExtensionsD
-    PROPERTIES OUTPUT_NAME MF_Extensions
+ADD_LIBRARY (Extensions MODULE
+    ${SRC_FILES}
     )
 
-SET_TARGET_PROPERTIES (Extensions
-    PROPERTIES OUTPUT_NAME MF_Extensions
+SET_TARGET_PROPERTIES (Extensions 
+    PROPERTIES OUTPUT_NAME MF_ExtModules
     )
 
 # install files
@@ -65,7 +57,7 @@ INSTALL (FILES ${cmakeFiles}
     DESTINATION src/Extensions
     )
 
-INSTALL (TARGETS Extensions ExtensionsD
+INSTALL (TARGETS Extensions
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
