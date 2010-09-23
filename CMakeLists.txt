@@ -4,22 +4,42 @@
 #
 #  CMake build file for project MessageFacility
 #
+#   cmake [-DCMAKE_INSTALL_PREFIX=/install/path] 
+#         [-DCMAKE_TOOLCHAIN_FILE=/path/to/toolchain/file]
+#         /path/to/source/code
+
 
 
 CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
 
 PROJECT (MessageFacility)
-SET (version v1_3_0)
+SET (version v1_4_0)
+SET (qualifier a1)
+
+IF (CMAKE_CROSSCOMPILING)
+  SET (flavor ${CMAKE_SYSTEM_PROCESSOR})
+ELSE (CMAKE_CROSSCOMPILING)
+  SET (flavor ${CMAKE_HOST_SYSTEM_PROCESSOR})
+ENDIF (CMAKE_CROSSCOMPILING)
+
+SET (flavorqual sl5.${flavor}.${qualifier})
+SET (flavorqual_dir ${version}/${flavorqual})
 
 #ADD_DEFINITIONS (-g) 
 
-# define the boost envrionment so we don't get system libraries
+# Check if the boost library has been set
+SET ( BOOST_VERS $ENV{BOOST_VERSION} )
+IF (NOT BOOST_VERS)
+    MESSAGE (FATAL_ERROR "Boost library has not been setup")
+ENDIF()
+SET ( BOOST_STRING $ENV{SETUP_BOOST} )
+STRING( REGEX REPLACE ".*(-q.*)" "\\1" BOOST_QUAL "${BOOST_STRING}" )
+message(STATUS "Boost version and qualifier are ${BOOST_VERS} ${BOOST_QUAL}" )
+
+# Define the boost envrionment so we don't get system libraries
 set ( BOOST_ROOT       $ENV{BOOST_DIR} )
 set ( BOOST_INCLUDEDIR $ENV{BOOST_INC} )
 set ( BOOST_LIBRARYDIR $ENV{BOOST_LIB} )
-set ( BOOST_VERSION    $ENV{BOOST_VERSION} )
-
-# Check boost library
 find_package (Boost 1.42 REQUIRED 
                   COMPONENTS
                   thread
@@ -27,10 +47,13 @@ find_package (Boost 1.42 REQUIRED
              )
 
 # Check FHiCL-Cpp library
-SET ( FHICLCPP_VERSION $ENV{FHICLCPP_VERSION} )
-IF (NOT FHICLCPP_VERSION)
+SET ( FHICLCPP_VERS $ENV{FHICLCPP_VERSION} )
+IF (NOT FHICLCPP_VERS)
     MESSAGE (FATAL_ERROR "FHiCL-Cpp package has not been set")
 ENDIF ()
+SET ( FHICLCPP_STRING $ENV{SETUP_FHICLCPP} )
+STRING( REGEX REPLACE ".*(-q.*)" "\\1" FHICLCPP_QUAL "${FHICLCPP_STRING}" )
+message(STATUS "FHiCLCpp version and qualifier are ${FHICLCPP_VERS} ${FHICLCPP_QUAL}" )
 
 # Project include directory
 INCLUDE_DIRECTORIES(
@@ -47,19 +70,13 @@ LINK_DIRECTORIES(
     )
 
 # Install directory
-SET (FLAVOR ${CMAKE_HOST_SYSTEM_NAME}.${CMAKE_HOST_SYSTEM_PROCESSOR})
-
-IF (CMAKE_CROSSCOMPILING)
-    SET (FLAVOR ${CMAKE_SYSTEM_NAME}.${CMAKE_SYSTEM_PROCESSOR})
-ENDIF (CMAKE_CROSSCOMPILING)
-
-SET (CMAKE_INSTALL_PREFIX ${MessageFacility_BINARY_DIR}/install/${FLAVOR})
+#SET (CMAKE_INSTALL_PREFIX ${MessageFacility_BINARY_DIR}/install)
 
 INSTALL (FILES
     CMakeLists.txt
     CMakeLists.general
     CMakeLists.nova
-    DESTINATION src
+    DESTINATION ${version}/src
     )
 
 ADD_SUBDIRECTORY (MessageLogger)

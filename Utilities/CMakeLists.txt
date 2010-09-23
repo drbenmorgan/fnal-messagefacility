@@ -37,24 +37,24 @@ FILE (GLOB cmakeFiles
     )
 
 INSTALL (FILES ${includeFiles}
-    DESTINATION include/Utilities/interface
+    DESTINATION ${version}/include/Utilities/interface
     )
 
 INSTALL (FILES ${includeFiles}
-    DESTINATION src/Utilities/interface
+    DESTINATION ${version}/src/Utilities/interface
     )
 
 INSTALL (FILES ${srcFiles}
-    DESTINATION src/Utilities/src
+    DESTINATION ${version}/src/Utilities/src
     )
 
 INSTALL (FILES ${cmakeFiles}
-    DESTINATION src/Utilities
+    DESTINATION ${version}/src/Utilities
     )
 
 INSTALL (TARGETS Utilities UtilitiesD
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION ${flavorqual_dir}/bin
+    LIBRARY DESTINATION ${flavorqual_dir}/lib
+    ARCHIVE DESTINATION ${flavorqual_dir}/lib
     ) 
 

@@ -42,24 +42,24 @@ FILE (GLOB cmakeFiles
     )
 
 INSTALL (FILES ${includeFiles}
-    DESTINATION include/Extensions/interface
+    DESTINATION ${version}/include/Extensions/interface
     )
 
 INSTALL (FILES ${includeFiles}
-    DESTINATION src/Extensions/interface
+    DESTINATION ${version}/src/Extensions/interface
     )
 
 INSTALL (FILES ${srcFiles}
-    DESTINATION src/Extensions/src
+    DESTINATION ${version}/src/Extensions/src
     )
 
 INSTALL (FILES ${cmakeFiles}
-    DESTINATION src/Extensions
+    DESTINATION ${version}/src/Extensions
     )
 
 INSTALL (TARGETS Extensions
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION ${flavorqual_dir}/bin
+    LIBRARY DESTINATION ${flavorqual_dir}/lib
+    ARCHIVE DESTINATION ${flavorqual_dir}/lib
     ) 
 

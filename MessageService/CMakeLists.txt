@@ -48,24 +48,24 @@ FILE (GLOB cmakeFiles
     )
 
 INSTALL (FILES ${includeFiles}
-    DESTINATION include/MessageService/interface
+    DESTINATION ${version}/include/MessageService/interface
     )
 
 INSTALL (FILES ${includeFiles}
-    DESTINATION src/MessageService/interface
+    DESTINATION ${version}/src/MessageService/interface
     )
 
 INSTALL (FILES ${srcFiles}
-    DESTINATION src/MessageService/src
+    DESTINATION ${version}/src/MessageService/src
     )
 
 INSTALL (FILES ${cmakeFiles}
-    DESTINATION src/MessageService
+    DESTINATION ${version}/src/MessageService
     )
 
 INSTALL (TARGETS MessageService MessageServiceD
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION ${flavorqual_dir}/bin
+    LIBRARY DESTINATION ${flavorqual_dir}/lib
+    ARCHIVE DESTINATION ${flavorqual_dir}/lib
     ) 
 
