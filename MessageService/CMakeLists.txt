@@ -16,13 +16,11 @@ ADD_LIBRARY (MessageServiceD SHARED ${srcFiles})
 ADD_LIBRARY (MessageService ${srcFiles})
 
 TARGET_LINK_LIBRARIES ( MessageServiceD
-    boost_thread
     fhiclcpp
     dl
     )
 
 TARGET_LINK_LIBRARIES ( MessageService
-    boost_thread
     fhiclcpp
     dl
     )
