@@ -17,12 +17,11 @@ SET (version v1_4_0)
 SET (qualifier a1)
 
 IF (CMAKE_CROSSCOMPILING)
-  SET (flavor ${CMAKE_SYSTEM_PROCESSOR})
+  SET (flavorqual sl5.${CMAKE_SYSTEM_PROCESSOR}.${qualifier})
 ELSE (CMAKE_CROSSCOMPILING)
-  SET (flavor ${CMAKE_HOST_SYSTEM_PROCESSOR})
+  SET (flavorqual sl5.${CMAKE_HOST_SYSTEM_PROCESSOR}.${qualifier})
 ENDIF (CMAKE_CROSSCOMPILING)
 
-SET (flavorqual sl5.${flavor}.${qualifier})
 SET (flavorqual_dir ${version}/${flavorqual})
 
 #ADD_DEFINITIONS (-g) 
