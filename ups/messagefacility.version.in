@@ -1,0 +1,63 @@
+FILE = version
+PRODUCT = messagefacility
+VERSION = @version@
+
+FLAVOR = Linux64bit+2.6-2.5
+QUALIFIERS = @qualifier@
+  DECLARER = qlu
+  DECLARED = @datime@
+  MODIFIER = qlu
+  MODIFIED = @datime@
+  PROD_DIR = messagefacility/@version@
+  UPS_DIR = ups
+  TABLE_FILE = messagefacility.table
+
+FLAVOR = LinuxPPC
+QUALIFIERS = @qualifier@
+  DECLARER = qlu
+  DECLARED = @datime@
+  MODIFIER = qlu
+  MODIFIED = @datime@
+  PROD_DIR = messagefacility/@version@
+  UPS_DIR = ups
+  TABLE_FILE = messagefacility.table
+
+FLAVOR = Linuxppc
+QUALIFIERS = @qualifier@
+  DECLARER = qlu
+  DECLARED = @datime@
+  MODIFIER = qlu
+  MODIFIED = @datime@
+  PROD_DIR = messagefacility/@version@
+  UPS_DIR = ups
+  TABLE_FILE = messagefacility.table
+
+FLAVOR = Linux+2.6-2.5
+QUALIFIERS = @qualifier@
+  DECLARER = qlu
+  DECLARED = @datime@
+  MODIFIER = qlu
+  MODIFIED = @datime@
+  PROD_DIR = messagefacility/@version@
+  UPS_DIR = ups
+  TABLE_FILE = messagefacility.table
+
+FLAVOR = Linux64bit+2.6-2.3.4
+QUALIFIERS = @qualifier@
+  DECLARER = qlu
+  DECLARED = @datime@
+  MODIFIER = qlu
+  MODIFIED = @datime@
+  PROD_DIR = messagefacility/@version@
+  UPS_DIR = ups
+  TABLE_FILE = messagefacility.table
+
+FLAVOR = Linux+2.6-2.3.4
+QUALIFIERS = @qualifier@
+  DECLARER = qlu
+  DECLARED = @datime@
+  MODIFIER = qlu
+  MODIFIED = @datime@
+  PROD_DIR = messagefacility/@version@
+  UPS_DIR = ups
+  TABLE_FILE = messagefacility.table
