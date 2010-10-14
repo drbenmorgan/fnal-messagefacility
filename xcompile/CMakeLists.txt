@@ -1,4 +1,4 @@
 INSTALL (FILES
-    novaLinuxPPC.cmake
-    DESTINATION ${version}/src/xcompile
+    LinuxPPC.cmake
+    DESTINATION ${product}/${version}/source/xcompile
     )

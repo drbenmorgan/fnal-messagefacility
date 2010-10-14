@@ -38,29 +38,24 @@ FILE (GLOB cmakeFiles
     )
 
 INSTALL (FILES ${includeFiles}
-    DESTINATION ${version}/include/MessageLogger/interface
+    DESTINATION ${product}/${version}/include/MessageLogger/interface
     )
 
 INSTALL (FILES
     ${MessageFacility_SOURCE_DIR}/MessageLogger/interface/MessageLogger.h
-    DESTINATION ${version}/include
-    )
-
-INSTALL (FILES
-    ${MessageFacility_SOURCE_DIR}/MessageLogger/interface/MessageLogger.h
-    DESTINATION ${version}/include/MessageFacility
+    DESTINATION ${product}/${version}/include/MessageFacility
     )
 
 INSTALL (FILES ${includeFiles}
-    DESTINATION ${version}/src/MessageLogger/interface
+    DESTINATION ${product}/${version}/source/MessageLogger/interface
     )
 
 INSTALL (FILES ${srcFiles}
-    DESTINATION ${version}/src/MessageLogger/src
+    DESTINATION ${product}/${version}/source/MessageLogger/src
     )
 
 INSTALL (FILES ${cmakeFiles}
-    DESTINATION ${version}/src/MessageLogger
+    DESTINATION ${product}/${version}/source/MessageLogger
     )
 
 INSTALL (TARGETS MessageLogger MessageLoggerD

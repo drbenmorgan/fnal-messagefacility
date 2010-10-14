@@ -48,19 +48,19 @@ FILE (GLOB cmakeFiles
     )
 
 INSTALL (FILES ${includeFiles}
-    DESTINATION ${version}/include/MessageService/interface
+    DESTINATION ${product}/${version}/include/MessageService/interface
     )
 
 INSTALL (FILES ${includeFiles}
-    DESTINATION ${version}/src/MessageService/interface
+    DESTINATION ${product}/${version}/source/MessageService/interface
     )
 
 INSTALL (FILES ${srcFiles}
-    DESTINATION ${version}/src/MessageService/src
+    DESTINATION ${product}/${version}/source/MessageService/src
     )
 
 INSTALL (FILES ${cmakeFiles}
-    DESTINATION ${version}/src/MessageService
+    DESTINATION ${product}/${version}/source/MessageService
     )
 
 INSTALL (TARGETS MessageService MessageServiceD

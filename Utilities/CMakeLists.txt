@@ -37,19 +37,19 @@ FILE (GLOB cmakeFiles
     )
 
 INSTALL (FILES ${includeFiles}
-    DESTINATION ${version}/include/Utilities/interface
+    DESTINATION ${product}/${version}/include/Utilities/interface
     )
 
 INSTALL (FILES ${includeFiles}
-    DESTINATION ${version}/src/Utilities/interface
+    DESTINATION ${product}/${version}/source/Utilities/interface
     )
 
 INSTALL (FILES ${srcFiles}
-    DESTINATION ${version}/src/Utilities/src
+    DESTINATION ${product}/${version}/source/Utilities/src
     )
 
 INSTALL (FILES ${cmakeFiles}
-    DESTINATION ${version}/src/Utilities
+    DESTINATION ${product}/${version}/source/Utilities
     )
 
 INSTALL (TARGETS Utilities UtilitiesD

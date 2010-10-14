@@ -21,7 +21,7 @@ install (FILES ${MessageFacility_BINARY_DIR}/ups/messagefacility-config.cmake
          DESTINATION ${flavorqual_dir}/lib/messagefacility-${version} )
 
 INSTALL (FILES ${MessageFacility_BINARY_DIR}/ups/messagefacility.table
-         DESTINATION ${version}/ups)
+         DESTINATION ${product}/${version}/ups)
 INSTALL (FILES ${MessageFacility_BINARY_DIR}/ups/${version}.version
-         DESTINATION ${CMAKE_INSTALL_PREFIX} )
+         DESTINATION ${product} )
 

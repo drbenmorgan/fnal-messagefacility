@@ -42,19 +42,19 @@ FILE (GLOB cmakeFiles
     )
 
 INSTALL (FILES ${includeFiles}
-    DESTINATION ${version}/include/Extensions/interface
+    DESTINATION ${product}/${version}/include/Extensions/interface
     )
 
 INSTALL (FILES ${includeFiles}
-    DESTINATION ${version}/src/Extensions/interface
+    DESTINATION ${product}/${version}/source/Extensions/interface
     )
 
 INSTALL (FILES ${srcFiles}
-    DESTINATION ${version}/src/Extensions/src
+    DESTINATION ${product}/${version}/source/Extensions/src
     )
 
 INSTALL (FILES ${cmakeFiles}
-    DESTINATION ${version}/src/Extensions
+    DESTINATION ${product}/${version}/source/Extensions
     )
 
 INSTALL (TARGETS Extensions

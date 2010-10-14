@@ -13,6 +13,7 @@
 CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
 
 PROJECT (MessageFacility)
+SET (product messagefacility)
 SET (version v1_5_0)
 SET (qualifier a1)
 
@@ -22,7 +23,7 @@ ELSE (CMAKE_CROSSCOMPILING)
   SET (flavorqual sl5.${CMAKE_HOST_SYSTEM_PROCESSOR}.${qualifier})
 ENDIF (CMAKE_CROSSCOMPILING)
 
-SET (flavorqual_dir ${version}/${flavorqual})
+SET (flavorqual_dir ${product}/${version}/${flavorqual})
 
 #ADD_DEFINITIONS (-g) 
 
@@ -75,7 +76,7 @@ INSTALL (FILES
     CMakeLists.txt
     CMakeLists.general
     CMakeLists.nova
-    DESTINATION ${version}/src
+    DESTINATION ${product}/${version}/source
     )
 
 ADD_SUBDIRECTORY (MessageLogger)

@@ -32,11 +32,11 @@ TARGET_LINK_LIBRARIES (MFTest
 INSTALL (FILES
     mfexample.cc
     MessageFacility.cfg
-    DESTINATION ${version}/example
+    DESTINATION ${product}/${version}/example
     )
 
 INSTALL (FILES
     CMakeLists.txt
     MFTest.cc
-    DESTINATION ${version}/src/test
+    DESTINATION ${product}/${version}/source/test
     )
