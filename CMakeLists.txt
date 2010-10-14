@@ -13,7 +13,7 @@
 CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
 
 PROJECT (MessageFacility)
-SET (version v1_4_0)
+SET (version v1_5_0)
 SET (qualifier a1)
 
 IF (CMAKE_CROSSCOMPILING)

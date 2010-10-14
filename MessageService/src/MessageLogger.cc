@@ -115,21 +115,21 @@ MessageLogger( fhicl::ParameterSet const & iPS
   try {								// change log 13
     // decide whether a summary should be placed in job report
     fjrSummaryRequested_ = 
-          iPS.getBool(std::string("messageSummaryToJobReport"), false);
+          iPS.get<bool>("messageSummaryToJobReport", false);
 
     // grab list of debug-enabled modules
     debugModules = 
-          iPS.getVString(std::string("debugModules"), empty_vString);
+          iPS.get<std::vector<std::string> >("debugModules"  , empty_vString);
 
     // grab lists of suppressLEVEL modules
     suppressDebug = 
-          iPS.getVString(std::string("suppressDebug"), empty_vString);
+          iPS.get<std::vector<std::string> >("suppressDebug" , empty_vString);
 
     suppressInfo = 
-          iPS.getVString(std::string("suppressInfo"), empty_vString);
+          iPS.get<std::vector<std::string> >("suppressInfo"  , empty_vString);
 
     suppressWarning = 
-          iPS.getVString(std::string("suppressWarning"), empty_vString);
+          iPS.get<std::vector<std::string> >("suppressWarning", empty_vString);
   } catch (cet::Exception& e) {					// change log 13
   }
   

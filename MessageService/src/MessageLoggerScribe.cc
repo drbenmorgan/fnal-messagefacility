@@ -484,7 +484,7 @@ void
   
   // The following is present to test pre-configuration message handling:
   String preconfiguration_message 
-       = job_pset_p->getString
+       = job_pset_p->get<std::string>
        	("generate_preconfiguration_message", empty_String);
   if (preconfiguration_message != empty_String) {
     // To test a preconfiguration message without first going thru the 
@@ -547,7 +547,7 @@ void
   vString const  severities(severity_array+0, severity_array+4);
 
   // grab the pset for category list for this destination
-  PSet cats_pset = dest_pset.getPSet("categories");
+  PSet cats_pset = dest_pset.get<fhicl::ParameterSet>("categories");
 
   // grab list of categories
   vString  categories = cats_pset.getPSetNameList();
@@ -567,21 +567,21 @@ void
 
   // See if this is just a placeholder			// change log 9
   bool is_placeholder 
-      = dest_pset.getBool("placeholder", false);
+      = dest_pset.get<bool>("placeholder", false);
   if (is_placeholder) return;
   
   // default threshold for the destination
   String default_threshold = empty_String;
 
   // grab this destination's default limit/interval/timespan:
-  PSet  category_default_pset = cats_pset.getPSet("default", empty_PSet);
+  PSet  category_default_pset = cats_pset.get<fhicl::ParameterSet>("default", empty_PSet);
   
   int  dest_default_limit 
-         = category_default_pset.getInt("limit", COMMON_DEFAULT_LIMIT);
+         = category_default_pset.get<int>("limit", COMMON_DEFAULT_LIMIT);
   int  dest_default_interval 
-         = category_default_pset.getInt("reportEvery", COMMON_DEFAULT_INTERVAL);
+         = category_default_pset.get<int>("reportEvery", COMMON_DEFAULT_INTERVAL);
   int  dest_default_timespan 
-         = category_default_pset.getInt("timespan", COMMON_DEFAULT_TIMESPAN);
+         = category_default_pset.get<int>("timespan", COMMON_DEFAULT_TIMESPAN);
 
   if ( dest_default_limit != NO_VALUE_SET ) 
   {
@@ -599,7 +599,7 @@ void
   } 						// change log 1b, 2a, 2b
     						  
   // establish this destination's threshold:
-  String dest_threshold = dest_pset.getString("threshold", default_threshold);
+  String dest_threshold = dest_pset.get<std::string>("threshold", default_threshold);
 
   if (dest_threshold == empty_String) {  
     dest_threshold = default_threshold;
@@ -615,7 +615,7 @@ void
   dest_ctrl.setThreshold(threshold_sev);
 
   // establish this destination's limit/interval/timespan for each category:
-  PSet default_category_pset = cats_pset.getPSet("default");
+  PSet default_category_pset = cats_pset.get<fhicl::ParameterSet>("default");
 
   for( vString::const_iterator id_it = categories.begin()
      ; id_it != categories.end()
@@ -625,24 +625,24 @@ void
     String  msgID = *id_it;
 
     PSet category_pset
-       = cats_pset.getPSet(msgID, default_category_pset);
+       = cats_pset.get<fhicl::ParameterSet>(msgID, default_category_pset);
 
     int  category_default_limit 
-       = default_category_pset.getInt("limit", NO_VALUE_SET);
+       = default_category_pset.get<int>("limit", NO_VALUE_SET);
     int  limit
-       = category_pset.getInt("limit", category_default_limit);
+       = category_pset.get<int>("limit", category_default_limit);
     if (limit == NO_VALUE_SET) limit = dest_default_limit;
        								// change log 7 
     int  category_default_interval 
-       = default_category_pset.getInt("reportEvery", NO_VALUE_SET);
+       = default_category_pset.get<int>("reportEvery", NO_VALUE_SET);
     int  interval
-       = category_pset.getInt("reportEvery",category_default_interval);
+       = category_pset.get<int>("reportEvery",category_default_interval);
     if (interval == NO_VALUE_SET) interval = dest_default_interval;
       						// change log 6  and then 7
     int  category_default_timespan 
-       = default_category_pset.getInt("timespan", NO_VALUE_SET);
+       = default_category_pset.get<int>("timespan", NO_VALUE_SET);
     int  timespan
-       = category_pset.getInt("timespan", category_default_timespan);
+       = category_pset.get<int>("timespan", category_default_timespan);
     if (timespan == NO_VALUE_SET) timespan = dest_default_timespan;
        								// change log 7 
 
@@ -673,13 +673,13 @@ void
 
   // establish this destination's linebreak policy:
   bool noLineBreaks 
-  	= dest_pset.getBool ("noLineBreaks", false); 
+  	= dest_pset.get<bool> ("noLineBreaks", false); 
   if (noLineBreaks) {
     dest_ctrl.setLineLength(32000);
   }
   else {
     int  lenDef = 80;
-    int  lineLen = dest_pset.getInt ("lineLength", lenDef);
+    int  lineLen = dest_pset.get<int> ("lineLength", lenDef);
     if (lineLen != lenDef) {
       dest_ctrl.setLineLength(lineLen);
     }
@@ -687,26 +687,26 @@ void
 
   // if indicated, suppress time stamps in this destination's output
   bool suppressTime 
-  	= dest_pset.getBool ("noTimeStamps", false);
+  	= dest_pset.get<bool> ("noTimeStamps", false);
   if (suppressTime) {
     dest_ctrl.suppressTime();
   }
 
   // enable or disable milliseconds in the timestamp
   bool millisecondTimestamp
-        = dest_pset.getBool ("useMilliseconds", false);
+        = dest_pset.get<bool> ("useMilliseconds", false);
   if (millisecondTimestamp) {
     dest_ctrl.includeMillisecond();
   }
 
 #if 0
   // grab list of categories
-  vString  categories = job_pset_p->getVString("categories", empty_vString);
+  vString  categories = job_pset_p->get<std::vector<std::string> >("categories", empty_vString);
 
   // grab list of messageIDs -- these are a synonym for categories
   // Note -- the use of messageIDs is deprecated in favor of categories
   {
-    vString  messageIDs = job_pset_p->getVString("messageIDs", empty_vString);
+    vString  messageIDs = job_pset_p->get<std::vector<std::string> >("messageIDs", empty_vString);
 
   // combine the lists, not caring about possible duplicates (for now)
     copy_all( messageIDs, std::back_inserter(categories) );
@@ -721,44 +721,44 @@ void
   }  // no longer need hardcats
 
   // grab default threshold common to all destinations
-  String default_threshold = job_pset_p->getString("threshold", empty_String);
+  String default_threshold = job_pset_p->get<std::string>("threshold", empty_String);
      						// change log 3a
 						// change log 24
 
   // grab default limit/interval/timespan common to all destinations/categories:
   PSet  default_pset
-     = job_pset_p->getPSet("default", empty_PSet);
+     = job_pset_p->get<fhicl::ParameterSet>("default", empty_PSet);
   int  default_limit
-    = default_pset.getInt("limit", COMMON_DEFAULT_LIMIT);
+    = default_pset.get<int>("limit", COMMON_DEFAULT_LIMIT);
   int  default_interval
-    = default_pset.getInt("reportEvery", COMMON_DEFAULT_INTERVAL);
+    = default_pset.get<int>("reportEvery", COMMON_DEFAULT_INTERVAL);
     						// change log 6, 10
   int  default_timespan
-    = default_pset.getInt("timespan", COMMON_DEFAULT_TIMESPAN);
+    = default_pset.get<int>("timespan", COMMON_DEFAULT_TIMESPAN);
 						// change log 2a
     						// change log 3a
   String default_pset_threshold				
-     = default_pset.getString("threshold", default_threshold);
+     = default_pset.get<std::string>("threshold", default_threshold);
      						// change log 34
 			
   // grab all of this destination's parameters:
-  PSet  dest_pset = job_pset_p->getPSet(filename, empty_PSet);
+  PSet  dest_pset = job_pset_p->get<fhicl::ParameterSet>(filename, empty_PSet);
 
   // See if this is just a placeholder			// change log 9
   bool is_placeholder 
-      = dest_pset.getBool("placeholder", false);
+      = dest_pset.get<bool>("placeholder", false);
   if (is_placeholder) return;
   
   // grab this destination's default limit/interval/timespan:
   PSet  dest_default_pset
-     = dest_pset.getPSet("default", empty_PSet);
+     = dest_pset.get<fhicl::ParameterSet>("default", empty_PSet);
   int  dest_default_limit
-    = dest_default_pset.getInt("limit", default_limit);
+    = dest_default_pset.get<int>("limit", default_limit);
   int  dest_default_interval
-    = dest_default_pset.getInt("reportEvery", default_interval);
+    = dest_default_pset.get<int>("reportEvery", default_interval);
     						// change log 6
   int  dest_default_timespan
-    = dest_default_pset.getInt("timespan", default_timespan);
+    = dest_default_pset.get<int>("timespan", default_timespan);
     						// change log 1a
   if ( dest_default_limit != NO_VALUE_SET ) {
     if ( dest_default_limit < 0 ) dest_default_limit = 2000000000;
@@ -774,7 +774,7 @@ void
     						  
   // establish this destination's threshold:
   String dest_threshold
-     = dest_pset.getString("threshold", default_threshold);
+     = dest_pset.get<std::string>("threshold", default_threshold);
   if (dest_threshold == empty_String) {  
     dest_threshold = default_threshold;
   }
@@ -796,26 +796,26 @@ void
   {
     String  msgID = *id_it;
     PSet default_category_pset 
-       = default_pset.getPSet(msgID, empty_PSet);	// change log 5
+       = default_pset.get<fhicl::ParameterSet>(msgID, empty_PSet);	// change log 5
     PSet  category_pset
-       = dest_pset.getPSet(msgID, default_category_pset);
+       = dest_pset.get<fhicl::ParameterSet>(msgID, default_category_pset);
 
     int  category_default_limit 
-       = default_category_pset.getInt("limit", NO_VALUE_SET);
+       = default_category_pset.get<int>("limit", NO_VALUE_SET);
     int  limit
-      = category_pset.getInt("limit", category_default_limit);
+      = category_pset.get<int>("limit", category_default_limit);
     if (limit == NO_VALUE_SET) limit = dest_default_limit;
        								// change log 7 
     int  category_default_interval 
-       = default_category_pset.getInt("reportEvery", NO_VALUE_SET);
+       = default_category_pset.get<int>("reportEvery", NO_VALUE_SET);
     int  interval
-      = category_pset.getInt("reportEvery",category_default_interval);
+      = category_pset.get<int>("reportEvery",category_default_interval);
     if (interval == NO_VALUE_SET) interval = dest_default_interval;
       						// change log 6  and then 7
     int  category_default_timespan 
-       = default_category_pset.getInt("timespan", NO_VALUE_SET);
+       = default_category_pset.get<int>("timespan", NO_VALUE_SET);
     int  timespan
-      = category_pset.getInt("timespan", category_default_timespan);
+      = category_pset.get<int>("timespan", category_default_timespan);
     if (timespan == NO_VALUE_SET) timespan = dest_default_timespan;
        								// change log 7 
 
@@ -853,22 +853,22 @@ void
     String  sevID = *sev_it;
     ELseverityLevel  severity(sevID);
     PSet  default_sev_pset 
-    	= default_pset.getPSet(sevID, empty_PSet);
+    	= default_pset.get<fhicl::ParameterSet>(sevID, empty_PSet);
     PSet  sev_pset 
-    	= dest_pset.getPSet(sevID, default_sev_pset);
+    	= dest_pset.get<fhicl::ParameterSet>(sevID, default_sev_pset);
 						// change log 5
-    int  limit     = sev_pset.getInt("limit", NO_VALUE_SET);
+    int  limit     = sev_pset.get<int>("limit", NO_VALUE_SET);
     if ( limit     == NO_VALUE_SET )  {				// change log 24
        limit = messageLoggerDefaults->sev_limit(filename,sevID);
     }  
     if( limit    != NO_VALUE_SET )  dest_ctrl.setLimit(severity, limit   );
-    int  interval  = sev_pset.getInt("reportEvery", NO_VALUE_SET);
+    int  interval  = sev_pset.get<int>("reportEvery", NO_VALUE_SET);
     if ( interval     == NO_VALUE_SET )  {			// change log 24
        interval = messageLoggerDefaults->sev_reportEvery(filename,sevID);
     }  
     if( interval != NO_VALUE_SET )  dest_ctrl.setInterval(severity, interval);
 						// change log 2
-    int  timespan  = sev_pset.getInt("timespan", NO_VALUE_SET);
+    int  timespan  = sev_pset.get<int>("timespan", NO_VALUE_SET);
     if ( timespan     == NO_VALUE_SET )  {			// change log 24
        timespan = messageLoggerDefaults->sev_timespan(filename,sevID);
     }  
@@ -878,19 +878,19 @@ void
 
   // establish this destination's linebreak policy:
   bool noLineBreaks_default 
-  	= default_pset.getBool ("noLineBreaks", false);
+  	= default_pset.get<bool> ("noLineBreaks", false);
 						// change log 5
   bool noLineBreaks 
-  	= dest_pset.getBool ("noLineBreaks", noLineBreaks_default);
+  	= dest_pset.get<bool> ("noLineBreaks", noLineBreaks_default);
   if (noLineBreaks) {
     dest_ctrl.setLineLength(32000);
   }
   else {
     int  lenDef = 80;
     int  lineLen_default
-    	 = default_pset.getInt ("lineLength", lenDef);
+    	 = default_pset.get<int> ("lineLength", lenDef);
 						// change log 5
-    int  lineLen = dest_pset.getInt ("lineLength", lineLen_default);
+    int  lineLen = dest_pset.get<int> ("lineLength", lineLen_default);
     if (lineLen != lenDef) {
       dest_ctrl.setLineLength(lineLen);
     }
@@ -898,18 +898,18 @@ void
 
   // if indicated, suppress time stamps in this destination's output
   bool suppressTime_default 
-  	= default_pset.getBool ("noTimeStamps", false);
+  	= default_pset.get<bool> ("noTimeStamps", false);
   bool suppressTime 
-  	= dest_pset.getBool ("noTimeStamps", suppressTime_default);
+  	= dest_pset.get<bool> ("noTimeStamps", suppressTime_default);
   if (suppressTime) {
     dest_ctrl.suppressTime();
   }
 
   // enable to disable millisecond in the timestamp
   bool millisecondTimestamp_default
-        = default_pset.getBool ("useMilliseconds", false);
+        = default_pset.get<bool> ("useMilliseconds", false);
   bool millisecondTimestamp
-        = dest_pset.getBool ("useMilliseconds", millisecondTimestamp_default);
+        = dest_pset.get<bool> ("useMilliseconds", millisecondTimestamp_default);
   if (millisecondTimestamp) {
     dest_ctrl.includeMillisecond();
   }
@@ -957,7 +957,7 @@ void
 
   // grab list of fwkJobReports:
   vString  fwkJobReports
-     = job_pset_p->getVString("fwkJobReports", empty_vString);
+     = job_pset_p->get<std::vector<std::string> >("fwkJobReports", empty_vString);
 
   // Use the default list of fwkJobReports if and only if the grabbed list is
   // empty						 	// change log 24
@@ -975,18 +975,18 @@ void
     String psetname = filename;
 
     // check that this destination is not just a placeholder // change log 20
-    PSet  fjr_pset = job_pset_p->getPSet(psetname, empty_PSet);
+    PSet  fjr_pset = job_pset_p->get<fhicl::ParameterSet>(psetname, empty_PSet);
     bool is_placeholder 
-	= fjr_pset.getBool("placeholder", false);
+	= fjr_pset.get<bool>("placeholder", false);
     if (is_placeholder) continue;
 
     // Modify the file name if extension or name is explicitly specified
     // change log 14 
     String explicit_filename 
-        = fjr_pset.getString("filename", empty_String);
+        = fjr_pset.get<std::string>("filename", empty_String);
     if (explicit_filename != empty_String) filename = explicit_filename;
     String explicit_extension 
-        = fjr_pset.getString("extension", empty_String);
+        = fjr_pset.get<std::string>("extension", empty_String);
     if (explicit_extension != empty_String) {
       if (explicit_extension[0] == '.') {
 	filename += explicit_extension;             
@@ -1060,7 +1060,7 @@ void
   PSet     empty_PSet;
 
   // grab list of destinations:
-  PSet dests = job_pset_p->getPSet("destinations");
+  PSet dests = job_pset_p->get<fhicl::ParameterSet>("destinations");
   vString  destinations = dests.getPSetNameList();
 
   // exclude statistic destinations:
@@ -1092,11 +1092,11 @@ void
     String filename = psetname;
     
     // Retrieve the destination pset object
-    PSet  dest_pset = dests.getPSet(psetname, empty_PSet);
+    PSet  dest_pset = dests.get<fhicl::ParameterSet>(psetname, empty_PSet);
 
     // check that this destination is not just a placeholder // change log 11
     bool is_placeholder 
-	= dest_pset.getBool("placeholder", false);
+	= dest_pset.get<bool>("placeholder", false);
     if (is_placeholder) continue;
 
     // Modify the file name if extension or name is explicitly specified
@@ -1110,11 +1110,11 @@ void
     // (filename(filename))!
     
     // grab the destination type
-    String dest_type = dest_pset.getString("type", "file");
+    String dest_type = dest_pset.get<std::string>("type", "file");
 
     // Determine the destination file name to use if no explicit filename is
     // supplied in the cfg.
-    String filename_default = dest_pset.getString("output", empty_String);
+    String filename_default = dest_pset.get<std::string>("output", empty_String);
 
     if ( filename_default == empty_String ) {
       filename_default = messageLoggerDefaults->output(psetname); 
@@ -1125,9 +1125,9 @@ void
     }
 
     String explicit_filename 
-        = dest_pset.getString("filename", filename_default);
+        = dest_pset.get<std::string>("filename", filename_default);
     String explicit_extension 
-        = dest_pset.getString("extension", empty_String);
+        = dest_pset.get<std::string>("extension", empty_String);
 
     filename = explicit_filename;
 
@@ -1191,7 +1191,7 @@ void
     }
     else if( dest_type == "file" ) 
     {
-      bool append = dest_pset.getBool("append", false);
+      bool append = dest_pset.get<bool>("append", false);
       boost::shared_ptr<std::ofstream> 
           os_sp(new std::ofstream(
                   filename.c_str(), 
@@ -1224,7 +1224,7 @@ void
     configure_dest(dest_ctrl, psetname, dest_pset);
 
     // check if this destination outputs the statistics
-    bool output_stat = dest_pset.getBool("outputStatistics", false);
+    bool output_stat = dest_pset.get<bool>("outputStatistics", false);
 
     // build and configure statistic destinations
     if( output_stat )
@@ -1235,7 +1235,7 @@ void
         stat_ctrl = admin_p->attach( ELstatistics(*os_p) );
 
         statisticsDestControls.push_back(stat_ctrl);
-        statisticsResets.push_back( dest_pset.getBool("resetStatistics", false) );
+        statisticsResets.push_back( dest_pset.get<bool>("resetStatistics", false) );
 
         configure_dest(stat_ctrl, psetname, dest_pset);
 
@@ -1254,7 +1254,7 @@ void
 #if 0
   // grab list of destinations:
   vString  destinations
-     = job_pset_p->getVString("destinations", empty_vString);
+     = job_pset_p->get<std::vector<std::string> >("destinations", empty_vString);
 
   // Use the default list of destinations if and only if the grabbed list is
   // empty						 	// change log 24
@@ -1276,9 +1276,9 @@ void
     String psetname = filename;
     
     // check that this destination is not just a placeholder // change log 11
-    PSet  dest_pset = job_pset_p->getPSet(psetname, empty_PSet);
+    PSet  dest_pset = job_pset_p->get<fhicl::ParameterSet>(psetname, empty_PSet);
     bool is_placeholder 
-	= dest_pset.getBool("placeholder", false);
+	= dest_pset.get<bool>("placeholder", false);
     if (is_placeholder) continue;
 
     // Modify the file name if extension or name is explicitly specified
@@ -1294,7 +1294,7 @@ void
     // Determine the destination file name to use if no explicit filename is
     // supplied in the cfg.
     String filename_default 
-        = dest_pset.getString("output", empty_String);
+        = dest_pset.get<std::string>("output", empty_String);
     if ( filename_default == empty_String ) {
       filename_default = messageLoggerDefaults->output(psetname); // change log 31
       if (filename_default  == empty_String) {
@@ -1303,10 +1303,10 @@ void
     }
 
     String explicit_filename 
-        = dest_pset.getString("filename", filename_default);
+        = dest_pset.get<std::string>("filename", filename_default);
     if (explicit_filename != empty_String) filename = explicit_filename;
     String explicit_extension 
-        = dest_pset.getString("extension", empty_String);
+        = dest_pset.get<std::string>("extension", empty_String);
     if (explicit_extension != empty_String) {
       if (explicit_extension[0] == '.') {
 	filename += explicit_extension;             
@@ -1375,7 +1375,7 @@ void
         }  
 
         // grab all of this destination's parameters:
-        PSet dest_pset = job_pset_p->getPSet( 
+        PSet dest_pset = job_pset_p->get<fhicl::ParameterSet>( 
             actual_filename, empty_PSet);
 
         boost::scoped_ptr<ELdestination> dest_sp(
@@ -1420,8 +1420,8 @@ void
   PSet     empty_PSet;
 
   // grab list of statistics destinations:
-  PSet     dests      = job_pset_p->getPSet("destinations");
-  PSet     stats      = dests.getPSet("statistics");
+  PSet     dests      = job_pset_p->get<fhicl::ParameterSet>("destinations");
+  PSet     stats      = dests.get<fhicl::ParameterSet>("statistics");
   vString  statistics = stats.getPSetNameList();
   
   bool no_statistics_configured = statistics.empty();		// change log 24
@@ -1447,19 +1447,19 @@ void
     String psetname = *it;
     String filename = psetname;
 
-    PSet stat_pset = stats.getPSet(psetname, empty_PSet);
+    PSet stat_pset = stats.get<fhicl::ParameterSet>(psetname, empty_PSet);
 
     // check that this destination is not just a placeholder // change log 20
     bool is_placeholder 
-	= stat_pset.getBool("placeholder", false);
+	= stat_pset.get<bool>("placeholder", false);
     if (is_placeholder) continue;
 
     // grab the statistic destination type
-    String dest_type = stat_pset.getString("type", "file");
+    String dest_type = stat_pset.get<std::string>("type", "file");
 
     // Determine the destination file name to use if no explicit filename is
     // supplied in the cfg.
-    String filename_default = stat_pset.getString("output", empty_String);
+    String filename_default = stat_pset.get<std::string>("output", empty_String);
 
     if ( filename_default == empty_String ) {
       filename_default = messageLoggerDefaults->output(psetname); 
@@ -1469,9 +1469,9 @@ void
     }
 
     String explicit_filename 
-        = stat_pset.getString("filename", filename_default);
+        = stat_pset.get<std::string>("filename", filename_default);
     String explicit_extension 
-        = stat_pset.getString("extension", empty_String);
+        = stat_pset.get<std::string>("extension", empty_String);
 
     filename = explicit_filename;
 
@@ -1568,7 +1568,7 @@ void
       ELdestControl dest_ctrl;
       dest_ctrl = admin_p->attach( ELstatistics(*os_p) );
       statisticsDestControls.push_back(dest_ctrl);
-      bool reset = stat_pset.getBool("reset", false);
+      bool reset = stat_pset.get<bool>("reset", false);
       statisticsResets.push_back(reset);
     
       // now configure this destination:
@@ -1585,7 +1585,7 @@ void
 #if 0
   // grab list of statistics destinations:
   vString  statistics 
-     = job_pset_p->getVString("statistics", empty_vString);
+     = job_pset_p->get<std::vector<std::string> >("statistics", empty_vString);
   
   bool no_statistics_configured = statistics.empty();		// change log 24
   
@@ -1595,7 +1595,7 @@ void
     // (If a cfg specifies destinations, and no statistics, assume that
     // is what the user wants.)
     vString  destinations
-     = job_pset_p->getVString("destinations", empty_vString);
+     = job_pset_p->get<std::vector<std::string> >("destinations", empty_vString);
     if (destinations.empty()) { 
       statistics = messageLoggerDefaults->statistics;
       no_statistics_configured = statistics.empty();
@@ -1612,14 +1612,14 @@ void
     String psetname = statname;
 
     // check that this destination is not just a placeholder // change log 20
-    PSet  stat_pset = job_pset_p->getPSet(psetname, empty_PSet);
+    PSet  stat_pset = job_pset_p->get<fhicl::ParameterSet>(psetname, empty_PSet);
     bool is_placeholder 
-	= stat_pset.getBool("placeholder", false);
+	= stat_pset.get<bool>("placeholder", false);
     if (is_placeholder) continue;
 
     // Determine the destination file name
     String filename 
-        = stat_pset.getString("output", empty_String);
+        = stat_pset.get<std::string>("output", empty_String);
     if ( filename == empty_String ) {
       filename = messageLoggerDefaults->output(psetname);	// change log 31
       if (filename == empty_String) {
@@ -1632,10 +1632,10 @@ void
     // is present, but uniformity is nice.
 					
     String explicit_filename 
-        = stat_pset.getString("filename", filename);
+        = stat_pset.get<std::string>("filename", filename);
     if (explicit_filename != empty_String) filename = explicit_filename;
     String explicit_extension 
-        = stat_pset.getString("extension", empty_String);
+        = stat_pset.get<std::string>("extension", empty_String);
     if (explicit_extension != empty_String) {
       if (explicit_extension[0] == '.') {
 	filename += explicit_extension;             
@@ -1702,7 +1702,7 @@ void
       ELdestControl dest_ctrl;
       dest_ctrl = admin_p->attach( ELstatistics(*os_p) );
       statisticsDestControls.push_back(dest_ctrl);
-      bool reset = stat_pset.getBool("reset", false);
+      bool reset = stat_pset.get<bool>("reset", false);
       statisticsResets.push_back(reset);
     
       // now configure this destination:
