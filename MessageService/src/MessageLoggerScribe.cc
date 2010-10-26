@@ -550,7 +550,7 @@ void
   PSet cats_pset = dest_pset.get<fhicl::ParameterSet>("categories");
 
   // grab list of categories
-  vString  categories = cats_pset.getPSetNameList();
+  vString  categories = cats_pset.get_pset_keys();
   vString::iterator it = categories.begin();
   while(it!=categories.end()) { 
     if(*it == "default") it=categories.erase(it); 
@@ -1061,7 +1061,7 @@ void
 
   // grab list of destinations:
   PSet dests = job_pset_p->get<fhicl::ParameterSet>("destinations");
-  vString  destinations = dests.getPSetNameList();
+  vString  destinations = dests.get_pset_keys();
 
   // exclude statistic destinations:
   {
@@ -1422,7 +1422,7 @@ void
   // grab list of statistics destinations:
   PSet     dests      = job_pset_p->get<fhicl::ParameterSet>("destinations");
   PSet     stats      = dests.get<fhicl::ParameterSet>("statistics");
-  vString  statistics = stats.getPSetNameList();
+  vString  statistics = stats.get_pset_keys();
   
   bool no_statistics_configured = statistics.empty();		// change log 24
   
@@ -1431,7 +1431,7 @@ void
     // but only if there is also no list of ordinary destinations.
     // (If a cfg specifies destinations, and no statistics, assume that
     // is what the user wants.)
-    vString  destinations = dests.getPSetNameList();
+    vString  destinations = dests.get_pset_keys();
     if (destinations.empty()) { 
       statistics = messageLoggerDefaults->statistics;
       no_statistics_configured = statistics.empty();
