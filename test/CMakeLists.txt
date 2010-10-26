@@ -26,6 +26,7 @@ TARGET_LINK_LIBRARIES (MFTest
     boost_thread
     boost_filesystem
     fhiclcpp
+    cetlib
     dl
     )
 
