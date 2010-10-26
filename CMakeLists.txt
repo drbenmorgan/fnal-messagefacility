@@ -27,6 +27,13 @@ SET (flavorqual_dir ${product}/${version}/${flavorqual})
 
 #ADD_DEFINITIONS (-g) 
 
+# make sure gcc has been set
+set ( GCC_VERSION $ENV{GCC_VERSION} )
+if (NOT GCC_VERSION)
+    message ("GCC has not been setup")
+endif()
+message(STATUS "Using GCC ${GCC_VERSION} " )
+
 # Check if the boost library has been set
 SET ( BOOST_VERS $ENV{BOOST_VERSION} )
 IF (NOT BOOST_VERS)
@@ -55,18 +62,39 @@ SET ( FHICLCPP_STRING $ENV{SETUP_FHICLCPP} )
 STRING( REGEX REPLACE ".*(-q.*)" "\\1" FHICLCPP_QUAL "${FHICLCPP_STRING}" )
 message(STATUS "FHiCLCpp version and qualifier are ${FHICLCPP_VERS} ${FHICLCPP_QUAL}" )
 
+# Check if the cetlib library has been set
+set ( CETLIB_VERS $ENV{CETLIB_VERSION} )
+if (NOT CETLIB_VERS)
+    message (FATAL_ERROR "cetlib library has not been setup")
+endif()
+set ( CETLIB_STRING $ENV{SETUP_CETLIB} )
+string( REGEX REPLACE ".*(-q.*)" "\\1" CETLIB_QUAL "${CETLIB_STRING}" )
+message(STATUS "Using CETLIB ${CETLIB_VERS} ${CETLIB_QUAL}" )
+
+# Check if the cpp0x library has been set
+set ( CPP0X_VERS $ENV{CPP0X_VERSION} )
+if (NOT CPP0X_VERS)
+    message (FATAL_ERROR "cpp0x library has not been setup")
+endif()
+set ( CPP0X_STRING $ENV{SETUP_CPP0X} )
+string( REGEX REPLACE ".*(-q.*)" "\\1" CPP0X_QUAL "${CPP0X_STRING}" )
+message(STATUS "Using CPP0X ${CPP0X_VERS} ${CPP0X_QUAL}" )
+
 # Project include directory
 INCLUDE_DIRECTORIES(
     ${MessageFacility_SOURCE_DIR}
     ${MessageFacility_BINARY_DIR}
     ${Boost_INCLUDE_DIR}
     $ENV{FHICLCPP_INC}
+    $ENV{CETLIB_INC}
+    $ENV{CPP0X_INC}
     )
 
 # Project library directory
 LINK_DIRECTORIES(
     ${Boost_LIBRARY_DIRS}
     $ENV{FHICLCPP_LIB}
+    $ENV{CETLIB_LIB}
     )
 
 # Install directory
