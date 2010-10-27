@@ -102,7 +102,7 @@
 #include "MessageLogger/interface/MessageDrop.h"
 #include "MessageLogger/interface/MessageLoggerQ.h"	// Change log 5
 #include "MessageLogger/interface/ErrorObj.h"
-#include "Utilities/interface/EDMException.h"		// Change log 8
+#include "Utilities/interface/exception.h"		// Change log 8
 
 #include "MessageService/interface/Presence.h"
 #include "MessageService/interface/MessageLogger.h"
@@ -374,22 +374,31 @@ public:
     operator<< (T const & t)  
     { if (!debugEnabled) return *this;				// Change log 8
       if (ap.get()) (*ap) << t; 
-      else Exception::throwThis
-       (mf::errors::LogicError,"operator << to stale copied LogDebug_ object"); 
+      else {
+         Exception e(mf::errors::LogicError);
+         e << "operator << to stale copied LogDebug_ object";
+         throw e;
+      }
       return *this; }
   LogDebug & 
   operator<< ( std::ostream&(*f)(std::ostream&))  
     { if (!debugEnabled) return *this;				// Change log 8
       if (ap.get()) (*ap) << f; 
-      else Exception::throwThis
-       (mf::errors::LogicError,"operator << to stale copied LogDebug_ object"); 
+      else {
+         Exception e(mf::errors::LogicError);
+         e << "operator << to stale copied LogDebug_ object";
+         throw e;
+      }
       return *this; }
   LogDebug & 
   operator<< ( std::ios_base&(*f)(std::ios_base&) )  
     { if (!debugEnabled) return *this;				// Change log 8
       if (ap.get()) (*ap) << f; 
-      else Exception::throwThis
-       (mf::errors::LogicError,"operator << to stale copied LogDebug_ object"); 
+      else {
+         Exception e(mf::errors::LogicError);
+         e << "operator << to stale copied LogDebug_ object";
+         throw e;
+      }
       return *this; }
 			   // Change log 8:  The tests for ap.get() being null 
 
@@ -412,22 +421,31 @@ public:
     operator<< (T const & t)  
     { if (!debugEnabled) return *this;				// Change log 8
       if (ap.get()) (*ap) << t; 
-      else Exception::throwThis
-       (mf::errors::LogicError,"operator << to stale copied LogTrace_ object"); 
+      else {
+         Exception e(mf::errors::LogicError);
+         e << "operator << to stale copied LogTrace_ object";
+         throw e;
+      }
       return *this; }
   LogTrace & 
   operator<< ( std::ostream&(*f)(std::ostream&))  
     { if (!debugEnabled) return *this;				// Change log 8
       if (ap.get()) (*ap) << f; 
-      else Exception::throwThis
-       (mf::errors::LogicError,"operator << to stale copied LogTrace_ object"); 
+      else {
+         Exception e(mf::errors::LogicError);
+         e << "operator << to stale copied LogTrace_ object";
+         throw e;
+      }
       return *this; }
   LogTrace & 
   operator<< ( std::ios_base&(*f)(std::ios_base&) )  
     { if (!debugEnabled) return *this;				// Change log 8
       if (ap.get()) (*ap) << f; 
-      else Exception::throwThis
-       (mf::errors::LogicError,"operator << to stale copied LogTrace_ object"); 
+      else {
+         Exception e(mf::errors::LogicError);
+         e << "operator << to stale copied LogTrace_ object";
+         throw e;
+      }
       return *this; }
 			   // Change log 8:  The tests for ap.get() being null 
  

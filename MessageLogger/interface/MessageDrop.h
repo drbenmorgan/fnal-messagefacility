@@ -23,7 +23,7 @@
 
 // Framework include files
 
-#include "Utilities/interface/EDMException.h"	// change log 4
+#include "Utilities/interface/exception.h"	// change log 4
 
 
 // system include files

@@ -8,7 +8,7 @@
 // I believe the below are not needed:
 
 #include "Utilities/interface/value_ptr.h"
-#include "Utilities/interface/EDMException.h"
+#include "Utilities/interface/exception.h"
 
 #include "MessageService/interface/ELdestControl.h"
 #include "MessageService/interface/MsgContext.h"

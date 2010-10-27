@@ -69,7 +69,7 @@
 //#include "DataFormats/Provenance/interface/ModuleDescription.h"
 
 #include "MessageLogger/interface/JobReport.h"
-#include "Utilities/interface/EDMException.h"
+#include "Utilities/interface/exception.h"
 //#include "ServiceRegistry/interface/Service.h"
 
 #include <sstream>
@@ -130,7 +130,7 @@ MessageLogger( fhicl::ParameterSet const & iPS
 
     suppressWarning = 
           iPS.get<std::vector<std::string> >("suppressWarning", empty_vString);
-  } catch (cet::Exception& e) {					// change log 13
+  } catch (cet::exception& e) {					// change log 13
   }
   
   // Use these lists to prepare a map to use in tracking suppression 

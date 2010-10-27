@@ -18,7 +18,7 @@
 #include "MessageService/interface/ELoutput.h"
 #include "MessageService/interface/ELcontextSupplier.h"
 
-#include "Utilities/interface/EDMException.h"
+#include "Utilities/interface/exception.h"
 
 #include <iostream>
 #include <iomanip>

@@ -1,7 +1,7 @@
 #include "Utilities/interface/Hash.h"
 #include "Utilities/interface/Algorithms.h"
 #include "Utilities/interface/Digest.h"
-#include "Utilities/interface/EDMException.h"
+#include "Utilities/interface/exception.h"
 
 namespace mf {
   namespace detail {

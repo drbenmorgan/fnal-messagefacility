@@ -29,7 +29,7 @@ Changes Log 1: 2009/01/14 10:29:00, Natalia Garcia Nebot
 
 #include "MessageLogger/interface/JobReport.h"
 #include "MessageLogger/interface/MessageLogger.h"
-#include "Utilities/interface/EDMException.h"
+#include "Utilities/interface/exception.h"
 
 #include <iostream>
 #include <sstream>

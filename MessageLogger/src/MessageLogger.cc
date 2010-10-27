@@ -6,6 +6,8 @@
 
 #include "fhiclcpp/Parser.h"
 
+#include <string>
+
 // Change Log
 //
 // 12/12/07  mf   elimination of dummyLogDebugObject_, dummyLogTraceObject_

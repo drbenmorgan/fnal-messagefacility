@@ -1,7 +1,7 @@
 #ifndef MessageFacility_MessageLogger_ConfigurationHandshake_h
 #define MessageFacility_MessageLogger_ConfigurationHandshake_h
 
-#include "Utilities/interface/EDMException.h"
+#include "Utilities/interface/exception.h"
 
 #include "boost/thread/mutex.hpp"
 #include "boost/thread/condition.hpp"

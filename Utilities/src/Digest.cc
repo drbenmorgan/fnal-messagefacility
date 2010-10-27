@@ -1,7 +1,7 @@
 #include <iomanip>
 #include <sstream>
 
-#include "Utilities/interface/EDMException.h"
+#include "Utilities/interface/exception.h"
 #include "Utilities/interface/Digest.h"
 
 namespace cms

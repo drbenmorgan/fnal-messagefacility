@@ -1,7 +1,7 @@
 #include "MessageLogger/interface/MessageLoggerQ.h"
 #include "MessageLogger/interface/AbstractMLscribe.h"
 #include "MessageLogger/interface/ConfigurationHandshake.h"
-#include "Utilities/interface/EDMException.h"
+#include "Utilities/interface/exception.h"
 #include "MessageLogger/interface/ErrorObj.h"
 
 #include <cstring>

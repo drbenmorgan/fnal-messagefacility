@@ -4,8 +4,7 @@
 SET (FILES
     DebugMacros.cc
     Digest.cc
-    EDMException.cc
-    Exception.cc
+    exception.cc
     FormatTime.cc
     Hash.cc
     md5.c

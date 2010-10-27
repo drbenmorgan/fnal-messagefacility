@@ -1,5 +1,5 @@
 #include "Utilities/interface/Parse.h"
-#include "Utilities/interface/EDMException.h"
+#include "Utilities/interface/exception.h"
 #include "Utilities/interface/Algorithms.h"
 #include <boost/tokenizer.hpp>
 #include <fstream>

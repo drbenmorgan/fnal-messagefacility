@@ -86,7 +86,7 @@
 #include "MessageService/interface/ELcontextSupplier.h"
 #include "MessageService/interface/ELoutput.h"
 
-#include "Utilities/interface/EDMException.h"
+#include "Utilities/interface/exception.h"
 
 #include <netdb.h>
 #include <arpa/inet.h>

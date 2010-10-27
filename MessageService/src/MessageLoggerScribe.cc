@@ -187,7 +187,7 @@
 #include "MessageLogger/interface/MessageLogger.h"
 #include "MessageLogger/interface/ConfigurationHandshake.h"
 
-#include "Utilities/interface/EDMException.h"
+#include "Utilities/interface/exception.h"
 #include "Utilities/interface/Algorithms.h"
 
 #include <algorithm>
@@ -273,11 +273,11 @@ void
       try {
 	if(active && !purge_mode) log (errorobj_p);        
       }
-      catch(cet::Exception& e)
+      catch(cet::exception& e)
       {
 	  ++count;
 	  std::cerr << "MessageLoggerScribe caught " << count
-	       << " cet::Exceptions, text = \n"
+	       << " cet::exceptions, text = \n"
 	       << e.what() << "\n";
 
 	  if(count > 25)
@@ -335,9 +335,9 @@ void
 	extern_dests.push_back( static_cast<NamedDestination *>(operand) );
 	configure_external_dests();
       }
-      catch(cet::Exception& e)				// change log 21
+      catch(cet::exception& e)				// change log 21
 	{
-	  std::cerr << "MessageLoggerScribe caught a cet::Exception "
+	  std::cerr << "MessageLoggerScribe caught a cet::exception "
 	       << "during extern dest configuration:\n"
 	       << e.what() << "\n"
 	       << "This is a serious problem, and the extern dest " 
@@ -359,7 +359,7 @@ void
       try {
 	triggerStatisticsSummaries();
       }
-      catch(cet::Exception& e)
+      catch(cet::exception& e)
 	{
 	  std::cerr << "MessageLoggerScribe caught exception "
 	       << "during summarize:\n"
@@ -378,9 +378,9 @@ void
       try {
 	jobReportOption = *jobReportOption_p;
       }
-      catch(cet::Exception& e)
+      catch(cet::exception& e)
 	{
-	  std::cerr << "MessageLoggerScribe caught a cet::Exception "
+	  std::cerr << "MessageLoggerScribe caught a cet::exception "
 	       << "during processing of --jobReport option:\n"
 	       << e.what() << "\n"
 	       << "This likely will affect or prevent the job report.\n"
