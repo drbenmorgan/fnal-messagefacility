@@ -1,5 +1,5 @@
 File    = table
-Product = messagefacility
+Product = @product@
 #*************************************************
 # Starting Group definition
 Group:
