@@ -31,8 +31,8 @@
 
 // user include files
 
-#include "ParameterSet.h"
-#include "messagefacility/Utilities/Exception.h"
+#include "fhiclcpp/ParameterSet.h"
+#include "messagefacility/Utilities/exception.h"
 
 // forward declarations
 

@@ -107,7 +107,7 @@ SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 # The environment has been established, now generate the Makefiles.
 
 subdirs(messagefacility)
-subdirs(test)
+#subdirs(test)
 subdirs(xcompile)
 subdirs(ups)
 
