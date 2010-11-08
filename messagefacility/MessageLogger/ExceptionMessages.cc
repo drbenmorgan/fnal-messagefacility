@@ -1,20 +1,19 @@
 #include "messagefacility/MessageLogger/ExceptionMessages.h"
 #include "messagefacility/MessageLogger/JobReport.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
-#include "messagefacility/Utilities/Exception.h"
 #include <string>
 #include <sstream>
 
 namespace mf {
   void 
-  printCmsException(cms::Exception& e, char const* prog, mf::JobReport * jobRep, int rc) try {
+  printMFException(mf::Exception& e, char const* prog, mf::JobReport * jobRep, int rc) try {
     std::string programName(prog ? prog : "program");
-    std::string shortDesc("CMSException");
+    std::string shortDesc("MFxception");
     std::ostringstream longDesc;
-    longDesc << "cms::Exception caught in " 
+    longDesc << "mf::Exception caught in " 
 	     << programName
 	     << "\n"
-	     << e.explainSelf();
+	     << e.explain_self();
     mf::LogSystem(shortDesc) << longDesc.str() << "\n";
     if(jobRep) jobRep->reportError(shortDesc, longDesc.str(), rc);
   } catch(...) {

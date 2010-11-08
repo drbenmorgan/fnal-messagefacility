@@ -23,7 +23,6 @@ SET (srcFiles
        MessageLoggerDefaults.cc
        MessageLoggerScribe.cc
        MessageServicePresence.cc
-       MessageServicePSetValidation.cc
        MsgContext.cc
        Presence.cc
        SingleThreadMSPresence.cc
