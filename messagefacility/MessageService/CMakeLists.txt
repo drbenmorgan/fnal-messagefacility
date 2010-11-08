@@ -29,7 +29,7 @@ SET (srcFiles
        ThreadQueue.cc
     )
 
-link_libraries( fhiclcpp dl )
+link_libraries( ${FHICLCPP} dl )
 ADD_LIBRARY (MessageServiceD SHARED ${srcFiles})
 ADD_LIBRARY (MessageService ${srcFiles})
 
