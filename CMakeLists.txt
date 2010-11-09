@@ -60,7 +60,8 @@ set_flavor_qual(FindUpsRoot)
 find_ups_product( cpp0x v0_0_0 )
 find_ups_product( cetlib v0_1_4 )
 find_ups_product( fhiclcpp v2_1_0  )
-find_ups_boost( v1_42_0 thread
+find_ups_boost( v1_42_0 filesystem
+                        thread
                         program_options )
 
 # make sure gcc has been set
@@ -107,7 +108,7 @@ SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 # The environment has been established, now generate the Makefiles.
 
 subdirs(messagefacility)
-#subdirs(test)
+subdirs(test)
 subdirs(xcompile)
 subdirs(ups)
 

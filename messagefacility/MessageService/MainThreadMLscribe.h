@@ -7,7 +7,6 @@
 
 // I believe the below are not needed:
 
-#include "messagefacility/Utilities/value_ptr.h"
 #include "messagefacility/Utilities/exception.h"
 
 #include "messagefacility/MessageService/ELdestControl.h"

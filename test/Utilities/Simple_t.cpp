@@ -1,4 +1,4 @@
-#include "FWCore/Utilities/interface/Exception.h"
+#include "messagefacility/Utilities/exception.h"
 
 #include <cassert>
 #include <iomanip>
@@ -7,7 +7,7 @@
 
 int main()
 {
-  cms::Exception e("BadJuju");
+   cet::exception e("BadJuju");
 
   char array[] = "blue";
   char* ptr = array;
@@ -20,7 +20,7 @@ int main()
     "arghargharghargharghargh 3 1.5\n boo blue blue\n"
     "---- BadJuju END\n";
 
-  std::string result(e.explainSelf());
+  std::string result(e.explain_self());
   assert (result == expected);
 
   // Check to see that the following items compile; their modification
@@ -28,12 +28,12 @@ int main()
   e << std::setprecision(3);
   e << std::scientific;      
 
-  cms::Exception e2("RealBadStuff","A"); e2 << "B";
+  cet::exception e2("RealBadStuff","A"); e2 << "B";
   std::string res2("---- RealBadStuff BEGIN\nA B\n---- RealBadStuff END\n");
-  assert(e2.explainSelf() == res2);
+  assert(e2.explain_self() == res2);
   
-  cms::Exception e3("RealBadStuff","A "); e3 << "B";
+  cet::exception e3("RealBadStuff","A "); e3 << "B";
   std::string res3("---- RealBadStuff BEGIN\nA B\n---- RealBadStuff END\n");
-  assert(e3.explainSelf() == res3);
+  assert(e3.explain_self() == res3);
   
 }

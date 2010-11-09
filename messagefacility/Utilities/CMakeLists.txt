@@ -7,18 +7,18 @@
 
 SET (srcFiles
     DebugMacros.cc
-    Digest.cc
     exception.cc
     FormatTime.cc
-    Hash.cc
-    md5.c
-    Parse.cc
     SingleConsumerQ.cc
     tinyxml.cc
     tinyxmlerror.cc
     tinyxmlparser.cc
     UnixSignalHandlers.cc
     )
+
+LINK_LIBRARIES ( ${CETLIB}
+                 ${Boost_THREAD_LIBRARY}
+                 ${Boost_FILESYSTEM_LIBRARY} )
 
 ADD_LIBRARY (UtilitiesD SHARED ${srcFiles})
 ADD_LIBRARY (Utilities ${srcFiles})

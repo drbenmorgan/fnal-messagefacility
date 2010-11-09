@@ -1,12 +1,10 @@
 
-#include "FWCore/Utilities/interface/Exception.h"
+#include "cetlib/exception.h"
 
 #include <iostream>
 #include <string>
 #include <iomanip>
 #include <assert.h>
-
-using namespace cms;
 
 struct Thing
 {
@@ -22,7 +20,7 @@ std::ostream& operator<<(std::ostream& os, const Thing& t)
 }
 
 const char expected[] =   "---- InfiniteLoop BEGIN\n"
-			   "In func1\n"
+			   "In func1 "
 			   "---- DataCorrupt BEGIN\n"
 			   "This is just a test: \n"
 			   "double: 1.11111\n"
@@ -52,7 +50,7 @@ void func3()
   Thing thing(4);
 
   //  throw cms::Exception("DataCorrupt") 
-  cms::Exception e("DataCorrupt");
+  cet::exception e("DataCorrupt");
   e << "This is just a test: \n"
     << "double: " << d << "\n"
     << "float:  " << f << "\n"
@@ -81,9 +79,9 @@ void func1()
     {
       func2();
     }
-  catch (Exception& e)
+  catch (cet::exception& e)
     {
-      throw Exception("InfiniteLoop","In func1",e) << "Gave up";
+       throw cet::exception("InfiniteLoop","In func1",e) << "Gave up";
     }
   
 }
@@ -119,14 +117,14 @@ int main()
   try {
       func1();
   }
-  catch (Exception& e) {
+  catch (cet::exception& e) {
       std::cerr << "*** main caught Exception, output is ***\n"
-	   << "(" << e.explainSelf() << ")"
+	   << "(" << e.explain_self() << ")"
 	   << "*** After exception output ***"
 	   << std::endl;
 
 
-      if(e.explainSelf() != expected) {
+      if(e.explain_self() != expected) {
 	  std::cerr << "not right answer\n(" << expected << ")\n"
 	       << std::endl;
 	  abort();
@@ -135,7 +133,7 @@ int main()
 
       std::cerr << "\nCategory name list:\n";
 
-      Exception::CategoryList::const_iterator i(e.history().begin()),
+      cet::exception::CategoryList::const_iterator i(e.history().begin()),
 	b(e.history().end());
       
       //if(e.history().size() !=2) abort();

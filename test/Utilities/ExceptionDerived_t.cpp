@@ -1,20 +1,18 @@
 
-#include "FWCore/Utilities/interface/Exception.h"
+#include "cetlib/exception.h"
 
 #include <iostream>
 #include <string>
 #include <iomanip>
 
-using namespace cms;
-
-struct Thing : public Exception
+struct Thing : public cet::exception
 {
-  Thing(const std::string& msg):Exception("Thing",msg) { }
+  Thing(const std::string& msg):exception("Thing",msg) { }
 };
 
 std::ostream& operator<<(std::ostream& os, const Thing& t)
 {
-  os << "Thing(" << t.explainSelf() << ")";
+  os << "Thing(" << t.explain_self() << ")";
   return os;
 }
 
@@ -33,8 +31,8 @@ void func1()
   try {
       func2();
   }
-  catch (Exception& e) {
-      throw Exception("InfiniteLoop","In func2",e) << "Gave up";
+  catch (cet::exception& e) {
+     throw cet::exception("InfiniteLoop","In func2",e) << "Gave up";
   }
   
 }
@@ -44,16 +42,16 @@ int main()
   try {
     func1();
   }
-  catch (Exception& e) {
-    std::cerr << "*** main caught Exception, output is ***\n"
-	 << "(" << e.explainSelf() << ")"
+  catch (cet::exception& e) {
+    std::cerr << "*** main caught cet::exception, output is ***\n"
+	 << "(" << e.explain_self() << ")"
 	 << "*** After exception output ***"
 	 << std::endl;
 
     std::cerr << "\nCategory name list:\n";
 
 #if 0
-    if(e.explainSelf() != answer) {
+    if(e.explain_self() != answer) {
       std::cerr << "not right answer\n(" << answer << ")\n"
 	   << std::endl;
       abort();

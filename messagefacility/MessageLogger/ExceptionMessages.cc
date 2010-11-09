@@ -6,7 +6,7 @@
 
 namespace mf {
   void 
-  printMFException(mf::Exception& e, char const* prog, mf::JobReport * jobRep, int rc) try {
+  printMFException(Exception& e, char const* prog, JobReport * jobRep, int rc) try {
     std::string programName(prog ? prog : "program");
     std::string shortDesc("MFxception");
     std::ostringstream longDesc;
@@ -14,12 +14,12 @@ namespace mf {
 	     << programName
 	     << "\n"
 	     << e.explain_self();
-    mf::LogSystem(shortDesc) << longDesc.str() << "\n";
+    LogSystem(shortDesc) << longDesc.str() << "\n";
     if(jobRep) jobRep->reportError(shortDesc, longDesc.str(), rc);
   } catch(...) {
   }
 
-  void printBadAllocException(char const *prog, mf::JobReport * jobRep, int rc) try {
+  void printBadAllocException(char const *prog, JobReport * jobRep, int rc) try {
     std::string programName(prog ? prog : "program");
     std::string shortDesc("std::bad_allocException");
     std::ostringstream longDesc;
@@ -27,12 +27,12 @@ namespace mf {
 	     << programName
 	     << "\n"
 	     << "The job has probably exhausted the virtual memory available to the process.\n";
-    mf::LogSystem(shortDesc) << longDesc.str() << "\n";
+    LogSystem(shortDesc) << longDesc.str() << "\n";
     if(jobRep) jobRep->reportError(shortDesc, longDesc.str(), rc);
   } catch(...) {
   }
 
-  void printStdException(std::exception& e, char const*prog, mf::JobReport * jobRep, int rc) try {
+  void printStdException(std::exception& e, char const*prog, JobReport * jobRep, int rc) try {
     std::string programName(prog ? prog : "program");
     std::string shortDesc("StdLibException");
     std::ostringstream longDesc;
@@ -40,19 +40,19 @@ namespace mf {
 	     << programName
 	     << "\n"
 	     << e.what();
-    mf::LogSystem(shortDesc) << longDesc.str() << "\n";
+    LogSystem(shortDesc) << longDesc.str() << "\n";
     if (jobRep) jobRep->reportError(shortDesc, longDesc.str(), rc);
   } catch(...) {
   }
 
-  void printUnknownException(char const *prog, mf::JobReport * jobRep, int rc) try {
+  void printUnknownException(char const *prog, JobReport * jobRep, int rc) try {
     std::string programName(prog ? prog : "program");
     std::string shortDesc("UnknownException");
     std::ostringstream longDesc;
     longDesc << "Unknown exception caught in "
 	     << programName
 	     << "\n";
-    mf::LogSystem(shortDesc) << longDesc.str() << "\n";
+    LogSystem(shortDesc) << longDesc.str() << "\n";
     if (jobRep) jobRep->reportError(shortDesc, longDesc.str(), rc);
   } catch(...) {
   }

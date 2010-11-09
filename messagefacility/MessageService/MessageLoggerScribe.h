@@ -1,7 +1,7 @@
 #ifndef MessageFacility_MessageService_MessageLoggerScribe_h
 #define MessageFacility_MessageService_MessageLoggerScribe_h
 
-#include "messagefacility/Utilities/value_ptr.h"
+#include "cetlib/value_ptr.h"
 #include "messagefacility/Utilities/exception.h"
 
 #include "messagefacility/MessageService/ELdestControl.h"
@@ -248,7 +248,7 @@ private:
   std::string	  		      jobReportOption;
   //static ErrorLog		    * static_errorlog_p;
   bool				      clean_slate_configuration;
-  value_ptr<MessageLoggerDefaults>    messageLoggerDefaults;
+  cet::value_ptr<MessageLoggerDefaults>    messageLoggerDefaults;
   bool				      active;
   bool 				      singleThread;		// changeLog 9
   bool 				      done;			// changeLog 9

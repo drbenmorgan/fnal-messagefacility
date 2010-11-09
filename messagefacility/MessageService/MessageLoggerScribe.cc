@@ -200,6 +200,7 @@
 #include <dlfcn.h> //dlopen
 
 using std::cerr;
+using cet::value_ptr;
 
 namespace mf {
 namespace service {
