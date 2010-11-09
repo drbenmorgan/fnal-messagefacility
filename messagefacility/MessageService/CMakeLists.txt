@@ -2,7 +2,7 @@
 #  MessageService/CMakeLists.txt
 #  -------------------------------------------------------------------
 #
-#  CMake build file for library MessageService and MessageServiceD
+#  CMake build file for library MessageService and MessageServiceS
 #
 SET (srcFiles
        ELadministrator.cc
@@ -29,15 +29,15 @@ SET (srcFiles
        ThreadQueue.cc
     )
 
-link_libraries( ${FHICLCPP} dl )
-ADD_LIBRARY (MessageServiceD SHARED ${srcFiles})
-ADD_LIBRARY (MessageService ${srcFiles})
+link_libraries( MessageLogger ${FHICLCPP} dl )
+ADD_LIBRARY (MessageService SHARED ${srcFiles})
+ADD_LIBRARY (MessageServiceS ${srcFiles})
 
-SET_TARGET_PROPERTIES ( MessageServiceD
+SET_TARGET_PROPERTIES ( MessageService
     PROPERTIES OUTPUT_NAME MF_MessageService
     )
 
-SET_TARGET_PROPERTIES ( MessageService
+SET_TARGET_PROPERTIES ( MessageServiceS
     PROPERTIES OUTPUT_NAME MF_MessageService
     )
 
@@ -54,7 +54,7 @@ INSTALL (FILES CMakeLists.txt
     DESTINATION ${product}/${version}/source/messagefacility/MessageService
     )
 
-INSTALL (TARGETS MessageService MessageServiceD
+INSTALL (TARGETS MessageService MessageServiceS
     RUNTIME DESTINATION ${flavorqual_dir}/bin
     LIBRARY DESTINATION ${flavorqual_dir}/lib
     ARCHIVE DESTINATION ${flavorqual_dir}/lib

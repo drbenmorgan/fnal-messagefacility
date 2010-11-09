@@ -2,19 +2,19 @@
 #  MessageLogger/CMakeLists.txt
 #  -------------------------------------------------------------------
 #
-#  CMake build file for library MessageLogger and MessageLoggerD
+#  CMake build file for library MessageLogger and MessageLoggerS
 #
 
 FILE (GLOB srcFiles *.cc )
 
-ADD_LIBRARY (MessageLoggerD SHARED ${srcFiles})
-ADD_LIBRARY (MessageLogger ${srcFiles})
+ADD_LIBRARY (MessageLogger SHARED ${srcFiles})
+ADD_LIBRARY (MessageLoggerS ${srcFiles})
 
-SET_TARGET_PROPERTIES (MessageLoggerD
+SET_TARGET_PROPERTIES (MessageLogger
     PROPERTIES OUTPUT_NAME MF_MessageLogger
     )
 
-SET_TARGET_PROPERTIES (MessageLogger
+SET_TARGET_PROPERTIES (MessageLoggerS
     PROPERTIES OUTPUT_NAME MF_MessageLogger
     )
 
@@ -31,9 +31,8 @@ INSTALL (FILES CMakeLists.txt
     DESTINATION ${product}/${version}/source/messagefacility/MessageLogger/
     )
 
-INSTALL (TARGETS MessageLogger MessageLoggerD
+INSTALL (TARGETS MessageLogger MessageLoggerS
     RUNTIME DESTINATION ${flavorqual_dir}/bin
     LIBRARY DESTINATION ${flavorqual_dir}/lib
     ARCHIVE DESTINATION ${flavorqual_dir}/lib
-    ) 
-
+    )

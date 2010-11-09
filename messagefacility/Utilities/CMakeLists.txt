@@ -2,7 +2,7 @@
 #  Utilities/CMakeLists.txt
 #  -------------------------------------------------------------------
 #
-#  CMake build file for library Utilities and UtilitiesD
+#  CMake build file for library Utilities and UtilitiesS
 #
 
 SET (srcFiles
@@ -20,14 +20,14 @@ LINK_LIBRARIES ( ${CETLIB}
                  ${Boost_THREAD_LIBRARY}
                  ${Boost_FILESYSTEM_LIBRARY} )
 
-ADD_LIBRARY (UtilitiesD SHARED ${srcFiles})
-ADD_LIBRARY (Utilities ${srcFiles})
+ADD_LIBRARY (Utilities SHARED ${srcFiles})
+ADD_LIBRARY (UtilitiesS ${srcFiles})
 
-SET_TARGET_PROPERTIES (UtilitiesD
+SET_TARGET_PROPERTIES (Utilities
     PROPERTIES OUTPUT_NAME MF_Utilities
     )
 
-SET_TARGET_PROPERTIES (Utilities
+SET_TARGET_PROPERTIES (UtilitiesS
     PROPERTIES OUTPUT_NAME MF_Utilities
     )
 
@@ -44,7 +44,7 @@ INSTALL (FILES CMakeLists.txt
     DESTINATION ${product}/${version}/source/messagefacility/Utilities
     )
 
-INSTALL (TARGETS Utilities UtilitiesD
+INSTALL (TARGETS Utilities UtilitiesS
     RUNTIME DESTINATION ${flavorqual_dir}/bin
     LIBRARY DESTINATION ${flavorqual_dir}/lib
     ARCHIVE DESTINATION ${flavorqual_dir}/lib
