@@ -3,8 +3,7 @@
 
 #include <iostream>
 
-#include "MessageLogger/interface/MessageLogger.h"
-//#include "boost/thread.hpp"
+#include "messagefacility/MessageLogger/MessageLogger.h"
 
 void anotherLogger()
 {

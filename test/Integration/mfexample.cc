@@ -2,13 +2,15 @@
 
 #include <iostream>
 
-#include "MessageLogger.h"
+#include "messagefacility/MessageLogger/MessageLogger.h"
 #include "boost/thread.hpp"
+
+using namespace mf;
 
 void anotherLogger()
 {
   // Set module name
-  mf::SetModuleName("anotherLogger");
+  SetModuleName("anotherLogger");
 
   LogWarning("cat1 | cat2") << "Followed by a WARNING message.";
   LogDebug("cat")           << "The debug message in the other thread";
@@ -20,18 +22,18 @@ int main()
 {
 
   // Start MessageFacility Service
-  mf::StartMessageFacility(
-      mf::MessageFacilityService::MultiThread,
-      mf::MessageFacilityService::ConfigurationFile(
+  StartMessageFacility(
+      MessageFacilityService::MultiThread,
+      MessageFacilityService::ConfigurationFile(
           "MessageFacility.cfg",
-          mf::MessageFacilityService::logCF("mylog")));
+          MessageFacilityService::logCF("mylog")));
 
   // Set application name (use process name by default)
-  mf::SetApplicationName("MF_Example");
+  SetApplicationName("MF_Example");
 
   // Set module name and context for the main thread
-  mf::SetModuleName("MF_main");
-  mf::SetContext("pre-event");
+  SetModuleName("MF_main");
+  SetContext("pre-event");
 
   // Start up another logger in a seperate thread
   boost::thread loggerThread(anotherLogger);
@@ -41,7 +43,7 @@ int main()
   LogWarning("catwarn") << "Followed by a WARNING message.";
 
   // Switch context
-  mf::SetContext("pro-event");
+  SetContext("pro-event");
 
   // Logs
   LogError("catError")     << "Error information.";
@@ -53,7 +55,7 @@ int main()
   loggerThread.join();
 
   // Log statistics
-  mf::LogStatistics();
+  LogStatistics();
 
   //sleep(2);
 
