@@ -7,6 +7,8 @@
 
 FILE (GLOB srcFiles *.cc )
 
+LINK_LIBRARIES ( Utilities )
+
 ADD_LIBRARY (MessageLogger SHARED ${srcFiles})
 ADD_LIBRARY (MessageLoggerS STATIC ${srcFiles})
 
