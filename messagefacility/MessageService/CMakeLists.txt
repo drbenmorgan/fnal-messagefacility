@@ -31,15 +31,16 @@ SET (srcFiles
 
 link_libraries( MessageLogger ${FHICLCPP} dl )
 ADD_LIBRARY (MessageService SHARED ${srcFiles})
-ADD_LIBRARY (MessageServiceS ${srcFiles})
+ADD_LIBRARY (MessageServiceS STATIC ${srcFiles})
 
 SET_TARGET_PROPERTIES ( MessageService
     PROPERTIES OUTPUT_NAME MF_MessageService
     )
-
 SET_TARGET_PROPERTIES ( MessageServiceS
     PROPERTIES OUTPUT_NAME MF_MessageService
     )
+SET_TARGET_PROPERTIES(MessageService  PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+SET_TARGET_PROPERTIES(MessageServiceS PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 
 # install files
 FILE (GLOB includeFiles *.h *.icc )

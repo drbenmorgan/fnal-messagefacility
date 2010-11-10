@@ -21,15 +21,16 @@ LINK_LIBRARIES ( ${CETLIB}
                  ${Boost_FILESYSTEM_LIBRARY} )
 
 ADD_LIBRARY (Utilities SHARED ${srcFiles})
-ADD_LIBRARY (UtilitiesS ${srcFiles})
+ADD_LIBRARY (UtilitiesS STATIC ${srcFiles})
 
 SET_TARGET_PROPERTIES (Utilities
     PROPERTIES OUTPUT_NAME MF_Utilities
     )
-
 SET_TARGET_PROPERTIES (UtilitiesS
     PROPERTIES OUTPUT_NAME MF_Utilities
     )
+SET_TARGET_PROPERTIES(Utilities  PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+SET_TARGET_PROPERTIES(UtilitiesS PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 
 # install files
 FILE (GLOB includeFiles *.h )

@@ -9,12 +9,17 @@ SET ( srcFiles
     Extensions.cc
     )
 
-       
-ADD_LIBRARY (Extensions SHARED ${srcFiles}  )
+ADD_LIBRARY (Extensions SHARED ${srcFiles})
+ADD_LIBRARY (ExtensionsS STATIC ${srcFiles})
 
-SET_TARGET_PROPERTIES (Extensions 
+SET_TARGET_PROPERTIES (Extensions
     PROPERTIES OUTPUT_NAME MF_ExtModules
     )
+SET_TARGET_PROPERTIES (ExtensionsS
+    PROPERTIES OUTPUT_NAME MF_ExtModules
+    )
+SET_TARGET_PROPERTIES(Extensions  PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+SET_TARGET_PROPERTIES(ExtensionsS PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 
 # install files
 FILE (GLOB includeFiles *.h )
@@ -34,4 +39,3 @@ INSTALL (TARGETS Extensions
     LIBRARY DESTINATION ${flavorqual_dir}/lib
     ARCHIVE DESTINATION ${flavorqual_dir}/lib
     ) 
-
