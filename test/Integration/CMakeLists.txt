@@ -16,10 +16,9 @@ CONFIGURE_FILE (
 # ----------------------------------------------------------------------
 # Identify tests:
 
-# FIXME MFTest and mfexample need working new-style configurations.
 set ( TEST_LIST
-#      MFTest
-#      mfexample
+      MFTest
+      mfexample
     )
 
 set ( ALSO_BUILD )
@@ -44,8 +43,9 @@ endforeach ( test ${TEST_LIST} ${ALSO_BUILD} )
 # ----------------------------------------------------------------------
 # Run tests:
 
+# FIXME MFTest and mfexample need working new-style configurations.
 foreach ( test ${TEST_LIST} ${ALSO_RUN} )
-  add_test ( ${test} ${EXECUTABLE_OUTPUT_PATH}/${test} )
+#  add_test ( ${test} ${EXECUTABLE_OUTPUT_PATH}/${test} )
 endforeach ( test ${TEST_LIST} )
 
 # Non-standard tests:
