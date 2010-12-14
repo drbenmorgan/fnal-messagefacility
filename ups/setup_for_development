@@ -34,7 +34,7 @@ tnotnull UPS_DIR || echo "$msg2"
 setup cmake
 setup -j fhiclcpp v2_3_0 -q a1
 setup -j cpp0x v1_0_0 -q a1
-setup -j cetlib v0_1_4 -q a1
+setup -j cetlib v0_1_8 -q a1
 setup -j boost v1_45_0 -q gcc45
 setup cetbuildtools v1_5_0
 setup gcc v4_5_1
