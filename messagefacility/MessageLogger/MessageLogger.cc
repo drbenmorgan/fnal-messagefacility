@@ -197,7 +197,7 @@ fhicl::ParameterSet MessageFacilityService::ConfigurationFile(
 
   fhicl::ParameterSet pset;
 
-  if (fhicl::Parser::Parse(fname, pset))
+  if (fhicl::Parser::ParseFile(fname, pset))
   {
     return pset;
   }
