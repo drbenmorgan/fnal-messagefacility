@@ -355,8 +355,6 @@ private:
 
 #define LOG_ABSOLUTE(id)  ::mf::LogAbsolute(id, __FILE__, __LINE__)
 
-std::string stripLeadingDirectoryTree(const std::string & file);
-
 // change log 10:  removed onlyLowestDirectory()
 
 void LogStatistics(); 
@@ -478,10 +476,6 @@ public:
   void GroupLogStatistics(std::string const & category);
   bool isMessageProcessingSetUp();
 
-  // Change Log 19
-  // The method is stripped from LogDebug_ class to be a free function
-  std::string stripLeadingDirectoryTree(const std::string & file);
-  
   // Change Log 15
   // The following two methods have no effect except in stand-alone apps
   // that do not create a MessageServicePresence:

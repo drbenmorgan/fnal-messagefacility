@@ -32,6 +32,10 @@
 //
 // ------------------------------------------------------------------------
 
+namespace {
+  std::string stripLeadingDirectoryTree(const std::string & file);
+}  
+
 namespace mf {
 
 LogInfo::~LogInfo() {}
