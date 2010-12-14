@@ -79,7 +79,7 @@ Common:
 	execute( true, NO_UPS_ENV )
     endif ( sh -c 'for dd in ${${UPS_PROD_NAME_UC}_FQ}/bin bin;do [ -d ${UPS_PROD_DIR}/$dd ] && exit;done;exit 1' )
 	    
-       setupRequired(fhiclcpp @FHICLCPP_VERS@ @FHICLCPP_QUAL@ )
+       setupRequired(fhiclcpp @FHICLCPP_VERSION@ @FHICLCPP_QUAL@ )
        setupRequired(boost @BOOST_VERS@ @BOOST_QUAL@ )
     setupRequired(gcc @GCC_VERSION@ )
 
