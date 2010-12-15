@@ -4,9 +4,10 @@
 #include "messagefacility/MessageService/MessageServicePresence.h"
 #include "messagefacility/MessageService/ELadministrator.h"
 
-#include "fhiclcpp/Parser.h"
+#include "fhiclcpp/make_ParameterSet.h"
 
 #include <string>
+#include <fstream>
 
 // Change Log
 //
@@ -200,15 +201,21 @@ fhicl::ParameterSet MessageFacilityService::ConfigurationFile(
   }
 
   fhicl::ParameterSet pset;
-
-  if (fhicl::Parser::ParseFile(fname, pset))
+  std::ifstream pset_file(fname.c_str());
+  if (!pset_file) {
+    std::cout << "Configuration file \"" << fname << "\" "
+              << "could not be found.\n"
+              << "Default configuration will be used instead.\n";
+    return def;
+  }
+  if (fhicl::make_ParameterSet(pset_file, pset))
   {
     return pset;
   }
   else
   {
     std::cout << "Configuration file \"" << fname << "\" "
-              << "could not be found or parsing failed.\n"
+              << "parsing failed.\n"
               << "Default configuration will be used instead.\n";
     return def;
   }
@@ -235,7 +242,7 @@ fhicl::ParameterSet MessageFacilityService::logConsole()
 
   fhicl::ParameterSet pset;
   std::string pstr(ss.str());
-  fhicl::Parser::ParseString(pstr, pset);
+  fhicl::make_ParameterSet(pstr, pset);
   return pset;
 }
 
@@ -253,7 +260,7 @@ fhicl::ParameterSet MessageFacilityService::logServer(int partition)
 
   fhicl::ParameterSet pset;
   std::string pstr(ss.str());
-  fhicl::Parser::ParseString(pstr, pset);
+  fhicl::make_ParameterSet(pstr, pset);
   return pset;
 }
 
@@ -272,7 +279,7 @@ fhicl::ParameterSet MessageFacilityService::logFile(std::string const & filename
 
   fhicl::ParameterSet pset;
   std::string pstr(ss.str());
-  fhicl::Parser::ParseString(pstr, pset);
+  fhicl::make_ParameterSet(pstr, pset);
   return pset;
 }
 
@@ -291,7 +298,7 @@ fhicl::ParameterSet MessageFacilityService::logCS(int partition)
 
   fhicl::ParameterSet pset;
   std::string pstr(ss.str());
-  fhicl::Parser::ParseString(pstr, pset);
+  fhicl::make_ParameterSet(pstr, pset);
   return pset;
 }
 
@@ -311,7 +318,7 @@ fhicl::ParameterSet MessageFacilityService::logCF(std::string const & filename, 
 
   fhicl::ParameterSet pset;
   std::string pstr(ss.str());
-  fhicl::Parser::ParseString(pstr, pset);
+  fhicl::make_ParameterSet(pstr, pset);
   return pset;
 }
 
@@ -334,7 +341,7 @@ fhicl::ParameterSet MessageFacilityService::logFS(std::string const & filename, 
 
   fhicl::ParameterSet pset;
   std::string pstr(ss.str());
-  fhicl::Parser::ParseString(pstr, pset);
+  fhicl::make_ParameterSet(pstr, pset);
   return pset;
 }
 
@@ -358,7 +365,7 @@ fhicl::ParameterSet MessageFacilityService::logCFS(std::string const & filename,
 
   fhicl::ParameterSet pset;
   std::string pstr(ss.str());
-  fhicl::Parser::ParseString(pstr, pset);
+  fhicl::make_ParameterSet(pstr, pset);
   return pset;
 }
 
@@ -377,7 +384,7 @@ fhicl::ParameterSet MessageFacilityService::logArchive(std::string const & filen
 
   fhicl::ParameterSet pset;
   std::string pstr(ss.str());
-  fhicl::Parser::ParseString(pstr, pset);
+  fhicl::make_ParameterSet(pstr, pset);
   return pset;
 }
 
