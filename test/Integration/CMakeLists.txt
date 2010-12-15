@@ -22,7 +22,7 @@ set ( ALSO_BUILD )
 
 set ( ALSO_RUN )
 
-link_libraries( MessageService Utilities )
+link_libraries( MessageLogger )
 
 # ----------------------------------------------------------------------
 # Build most tests:
