@@ -18,7 +18,7 @@ SET (srcFiles
 
 LINK_LIBRARIES ( ${CETLIB}
                  ${Boost_THREAD_LIBRARY}
-                 ${Boost_FILESYSTEM_LIBRARY} )
+                 )
 
 ADD_LIBRARY (Utilities SHARED ${srcFiles})
 ADD_LIBRARY (UtilitiesS STATIC ${srcFiles})
