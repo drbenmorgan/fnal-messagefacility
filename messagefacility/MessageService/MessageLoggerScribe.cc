@@ -188,7 +188,7 @@
 #include "messagefacility/MessageLogger/ConfigurationHandshake.h"
 
 #include "messagefacility/Utilities/exception.h"
-#include "messagefacility/Utilities/Algorithms.h"
+#include "cetlib/container_algorithms.h"
 
 #include <algorithm>
 #include <cassert>
@@ -563,7 +563,7 @@ void
   {
     std::vector<std::string> hardcats = messageLoggerDefaults->categories;
   // combine the lists, not caring about possible duplicates (for now)
-    copy_all( hardcats, std::back_inserter(categories) );
+    cet::copy_all( hardcats, std::back_inserter(categories) );
   }  // no longer need hardcats
 
   // See if this is just a placeholder			// change log 9
@@ -1499,7 +1499,7 @@ void
 
     // Check that this is not a duplicate name - 
     // unless it is an ordinary destination (which stats can share)
-    if ( !search_all(ordinary_destination_filenames, stream_id) )
+    if ( !cet::search_all(ordinary_destination_filenames, stream_id) )
     {
       if ( stream_ps.find(stream_id)!=stream_ps.end() ) 
       {        
