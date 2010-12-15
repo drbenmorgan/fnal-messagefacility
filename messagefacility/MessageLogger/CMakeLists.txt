@@ -7,10 +7,40 @@
 
 FILE (GLOB srcFiles *.cc )
 
-LINK_LIBRARIES ( Utilities ${FHICLCPP} )
+SET (MSsrcFiles
+       ../MessageService/ELadministrator.cc
+       ../MessageService/ELcollected.cc
+       ../MessageService/ELdestControl.cc
+       ../MessageService/ELdestination.cc
+       ../MessageService/ELerrorList.cc
+       ../MessageService/ELfwkJobReport.cc
+       ../MessageService/ELlimitsTable.cc
+       ../MessageService/ELoutput.cc
+       ../MessageService/ELrecv.cc
+       ../MessageService/ELstatistics.cc
+       ../MessageService/ELtsErrorLog.cc
+       ../MessageService/ErrorLog.cc
+       ../MessageService/HardwiredDefaults.cc
+       ../MessageService/MainThreadMLscribe.cc
+       ../MessageService/MessageLogger.cc
+       ../MessageService/MessageLoggerDefaults.cc
+       ../MessageService/MessageLoggerScribe.cc
+       ../MessageService/MessageServicePresence.cc
+       ../MessageService/MsgContext.cc
+       ../MessageService/Presence.cc
+       ../MessageService/SingleThreadMSPresence.cc
+       ../MessageService/ThreadQueue.cc
+    )
 
-ADD_LIBRARY (MessageLogger SHARED ${srcFiles})
-ADD_LIBRARY (MessageLoggerS STATIC ${srcFiles})
+LINK_LIBRARIES (
+ Utilities
+ ${FHICLCPP}
+ ${Boost_THREAD_LIBRARY}
+ dl
+ )
+
+ADD_LIBRARY (MessageLogger SHARED ${srcFiles} ${MSsrcFiles} )
+ADD_LIBRARY (MessageLoggerS STATIC ${srcFiles} ${MSsrcFiles} )
 
 SET_TARGET_PROPERTIES (MessageLogger
     PROPERTIES OUTPUT_NAME MF_MessageLogger
@@ -33,6 +63,20 @@ INSTALL (FILES CMakeLists.txt
 	       ${srcFiles}
     DESTINATION ${product}/${version}/source/messagefacility/MessageLogger/
     )
+
+FILE (GLOB MSincludeFiles ../MessageService/*.h ../MessageService/*.icc )
+
+INSTALL (FILES ${MSincludeFiles}
+    DESTINATION ${product}/${version}/include/messagefacility/MessageService
+    )
+
+INSTALL (FILES ../MessageService/CMakeLists.txt
+               ${MSincludeFiles}
+	             ${MSsrcFiles}
+    DESTINATION ${product}/${version}/source/messagefacility/MessageService
+    )
+
+
 
 INSTALL (TARGETS MessageLogger MessageLoggerS
     RUNTIME DESTINATION ${flavorqual_dir}/bin

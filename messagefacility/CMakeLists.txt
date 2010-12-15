@@ -1,5 +1,5 @@
 
 subdirs(Extensions)
 subdirs(MessageLogger)
-subdirs(MessageService)
+#subdirs(MessageService)
 subdirs(Utilities)
