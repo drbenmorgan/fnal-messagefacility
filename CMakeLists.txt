@@ -26,7 +26,7 @@ cmake_minimum_required (VERSION 2.6)
 project(MessageFacility)
 # the ups convention is that product names are all lower case, but this is a choices
 SET (product messagefacility)
-SET (version v1_6_4)
+SET (version v1_6_5)
 SET (qualifier a1)
 
 # cetbuildtools contains our cmake modules
