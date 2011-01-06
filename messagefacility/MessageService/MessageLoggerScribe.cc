@@ -1061,7 +1061,7 @@ void
   PSet     empty_PSet;
 
   // grab list of destinations:
-  PSet dests = job_pset_p->get<fhicl::ParameterSet>("destinations");
+  PSet dests = job_pset_p->get<fhicl::ParameterSet>("destinations", empty_PSet);
   vString  destinations = dests.get_pset_keys();
 
   // exclude statistic destinations:
@@ -1421,8 +1421,8 @@ void
   PSet     empty_PSet;
 
   // grab list of statistics destinations:
-  PSet     dests      = job_pset_p->get<fhicl::ParameterSet>("destinations");
-  PSet     stats      = dests.get<fhicl::ParameterSet>("statistics");
+  PSet     dests      = job_pset_p->get<fhicl::ParameterSet>("destinations", empty_PSet);
+  PSet     stats      = dests.get<fhicl::ParameterSet>("statistics", empty_PSet);
   vString  statistics = stats.get_pset_keys();
   
   bool no_statistics_configured = statistics.empty();		// change log 24
