@@ -548,7 +548,7 @@ void
   vString const  severities(severity_array+0, severity_array+4);
 
   // grab the pset for category list for this destination
-  PSet cats_pset = dest_pset.get<fhicl::ParameterSet>("categories");
+  PSet cats_pset = dest_pset.get<fhicl::ParameterSet>("categories", empty_PSet);
 
   // grab list of categories
   vString  categories = cats_pset.get_pset_keys();
@@ -616,7 +616,7 @@ void
   dest_ctrl.setThreshold(threshold_sev);
 
   // establish this destination's limit/interval/timespan for each category:
-  PSet default_category_pset = cats_pset.get<fhicl::ParameterSet>("default");
+  PSet default_category_pset = cats_pset.get<fhicl::ParameterSet>("default", empty_PSet);
 
   for( vString::const_iterator id_it = categories.begin()
      ; id_it != categories.end()
