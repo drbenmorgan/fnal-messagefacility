@@ -200,7 +200,6 @@
 #include <dlfcn.h> //dlopen
 
 using std::cerr;
-using cet::value_ptr;
 
 namespace mf {
 namespace service {
@@ -215,6 +214,7 @@ MessageLoggerScribe::MessageLoggerScribe(boost::shared_ptr<ThreadQueue> queue)
 , extern_dests( )
 , jobReportOption( )
 , clean_slate_configuration( true )
+, messageLoggerDefaults(MessageLoggerDefaults::mode("grid"))
 , active( true )
 , singleThread (queue.get() == 0)				// changeLog 36
 , done (false)							// changeLog 32
@@ -402,11 +402,10 @@ void
     case MessageLoggerQ::JOBMODE:  {			// change log 24
       std::string* jobMode_p =
 	      static_cast<std::string*>(operand);
+
       JobMode jm = MessageLoggerDefaults::mode(*jobMode_p);
-      messageLoggerDefaults = 
-	value_ptr<MessageLoggerDefaults>(new MessageLoggerDefaults(jm));
-	      // Note - since messageLoggerDefaults is a value_ptr, 
-	      //        there is no concern about deleting here.
+      messageLoggerDefaults.SetMode(jm);
+
       delete jobMode_p;  // dispose of the message text
       			 // which will have been new-ed
 			 // in MessageLogger.cc (service version)
@@ -561,7 +560,7 @@ void
   // grab list of hardwired categories (hardcats) -- these are to be added
   // to the list of categories -- change log 24
   {
-    std::vector<std::string> hardcats = messageLoggerDefaults->categories;
+    std::vector<std::string> hardcats = messageLoggerDefaults.categories;
   // combine the lists, not caring about possible duplicates (for now)
     cet::copy_all( hardcats, std::back_inserter(categories) );
   }  // no longer need hardcats
@@ -606,7 +605,7 @@ void
     dest_threshold = default_threshold;
   }
   if (dest_threshold == empty_String) {
-    dest_threshold = messageLoggerDefaults->threshold(dest_pset_name);
+    dest_threshold = messageLoggerDefaults.threshold(dest_pset_name);
   }
   if (dest_threshold == empty_String) {
     dest_threshold = COMMON_DEFAULT_THRESHOLD;
@@ -649,13 +648,13 @@ void
 
     std::string category = msgID;
     if ( limit     == NO_VALUE_SET )  {				// change log 24
-       limit = messageLoggerDefaults->limit(dest_pset_name,category);
+       limit = messageLoggerDefaults.limit(dest_pset_name,category);
     }  
     if ( interval     == NO_VALUE_SET )  {			// change log 24
-       interval = messageLoggerDefaults->reportEvery(dest_pset_name,category);
+       interval = messageLoggerDefaults.reportEvery(dest_pset_name,category);
     }  
     if ( timespan     == NO_VALUE_SET )  {			// change log 24
-       timespan = messageLoggerDefaults->timespan(dest_pset_name,category);
+       timespan = messageLoggerDefaults.timespan(dest_pset_name,category);
     }  
      
     if( limit     != NO_VALUE_SET )  {
@@ -716,7 +715,7 @@ void
   // grab list of hardwired categories (hardcats) -- these are to be added
   // to the list of categories -- change log 24
   {
-    std::vector<std::string> hardcats = messageLoggerDefaults->categories;
+    std::vector<std::string> hardcats = messageLoggerDefaults.categories;
   // combine the lists, not caring about possible duplicates (for now)
     copy_all( hardcats, std::back_inserter(categories) );
   }  // no longer need hardcats
@@ -783,7 +782,7 @@ void
       dest_threshold = default_pset_threshold;
   }
   if (dest_threshold == empty_String) {
-    dest_threshold = messageLoggerDefaults->threshold(filename);
+    dest_threshold = messageLoggerDefaults.threshold(filename);
   }
   if (dest_threshold == empty_String) dest_threshold = COMMON_DEFAULT_THRESHOLD;
   ELseverityLevel  threshold_sev(dest_threshold);
@@ -822,13 +821,13 @@ void
 
     std::string category = msgID;
     if ( limit     == NO_VALUE_SET )  {				// change log 24
-       limit = messageLoggerDefaults->limit(filename,category);
+       limit = messageLoggerDefaults.limit(filename,category);
     }  
     if ( interval     == NO_VALUE_SET )  {			// change log 24
-       interval = messageLoggerDefaults->reportEvery(filename,category);
+       interval = messageLoggerDefaults.reportEvery(filename,category);
     }  
     if ( timespan     == NO_VALUE_SET )  {			// change log 24
-       timespan = messageLoggerDefaults->timespan(filename,category);
+       timespan = messageLoggerDefaults.timespan(filename,category);
     }  
      
     if( limit     != NO_VALUE_SET )  {
@@ -860,18 +859,18 @@ void
 						// change log 5
     int  limit     = sev_pset.get<int>("limit", NO_VALUE_SET);
     if ( limit     == NO_VALUE_SET )  {				// change log 24
-       limit = messageLoggerDefaults->sev_limit(filename,sevID);
+       limit = messageLoggerDefaults.sev_limit(filename,sevID);
     }  
     if( limit    != NO_VALUE_SET )  dest_ctrl.setLimit(severity, limit   );
     int  interval  = sev_pset.get<int>("reportEvery", NO_VALUE_SET);
     if ( interval     == NO_VALUE_SET )  {			// change log 24
-       interval = messageLoggerDefaults->sev_reportEvery(filename,sevID);
+       interval = messageLoggerDefaults.sev_reportEvery(filename,sevID);
     }  
     if( interval != NO_VALUE_SET )  dest_ctrl.setInterval(severity, interval);
 						// change log 2
     int  timespan  = sev_pset.get<int>("timespan", NO_VALUE_SET);
     if ( timespan     == NO_VALUE_SET )  {			// change log 24
-       timespan = messageLoggerDefaults->sev_timespan(filename,sevID);
+       timespan = messageLoggerDefaults.sev_timespan(filename,sevID);
     }  
     if( timespan != NO_VALUE_SET )  dest_ctrl.setTimespan(severity, timespan   );
     						// change log 6
@@ -963,7 +962,7 @@ void
   // Use the default list of fwkJobReports if and only if the grabbed list is
   // empty						 	// change log 24
   if (fwkJobReports.empty()) {
-    fwkJobReports = messageLoggerDefaults->fwkJobReports;
+    fwkJobReports = messageLoggerDefaults.fwkJobReports;
   }
   
   // establish each fwkJobReports destination:
@@ -1076,7 +1075,7 @@ void
   // Use the default list of destinations if and only if the grabbed list is
   // empty						 	// change log 24
   if (destinations.empty()) {
-    destinations = messageLoggerDefaults->destinations;
+    destinations = messageLoggerDefaults.destinations;
   }
   
   // dial down the early destination if other dest's are supplied:
@@ -1118,7 +1117,7 @@ void
     String filename_default = dest_pset.get<std::string>("output", empty_String);
 
     if ( filename_default == empty_String ) {
-      filename_default = messageLoggerDefaults->output(psetname); 
+      filename_default = messageLoggerDefaults.output(psetname); 
                                    // change log 31
       if (filename_default  == empty_String) {
         filename_default  = filename;
@@ -1260,7 +1259,7 @@ void
   // Use the default list of destinations if and only if the grabbed list is
   // empty						 	// change log 24
   if (destinations.empty()) {
-    destinations = messageLoggerDefaults->destinations;
+    destinations = messageLoggerDefaults.destinations;
   }
   
   // dial down the early destination if other dest's are supplied:
@@ -1297,7 +1296,7 @@ void
     String filename_default 
         = dest_pset.get<std::string>("output", empty_String);
     if ( filename_default == empty_String ) {
-      filename_default = messageLoggerDefaults->output(psetname); // change log 31
+      filename_default = messageLoggerDefaults.output(psetname); // change log 31
       if (filename_default  == empty_String) {
         filename_default  = filename;
       }        
@@ -1434,7 +1433,7 @@ void
     // is what the user wants.)
     vString  destinations = dests.get_pset_keys();
     if (destinations.empty()) { 
-      statistics = messageLoggerDefaults->statistics;
+      statistics = messageLoggerDefaults.statistics;
       no_statistics_configured = statistics.empty();
     }
   }
@@ -1463,7 +1462,7 @@ void
     String filename_default = stat_pset.get<std::string>("output", empty_String);
 
     if ( filename_default == empty_String ) {
-      filename_default = messageLoggerDefaults->output(psetname); 
+      filename_default = messageLoggerDefaults.output(psetname); 
       if (filename_default  == empty_String) {
         filename_default  = filename;
       }        
@@ -1598,7 +1597,7 @@ void
     vString  destinations
      = job_pset_p->get<std::vector<std::string> >("destinations", empty_vString);
     if (destinations.empty()) { 
-      statistics = messageLoggerDefaults->statistics;
+      statistics = messageLoggerDefaults.statistics;
       no_statistics_configured = statistics.empty();
     }
   }
@@ -1622,7 +1621,7 @@ void
     String filename 
         = stat_pset.get<std::string>("output", empty_String);
     if ( filename == empty_String ) {
-      filename = messageLoggerDefaults->output(psetname);	// change log 31
+      filename = messageLoggerDefaults.output(psetname);	// change log 31
       if (filename == empty_String) {
         filename = statname;
       }        

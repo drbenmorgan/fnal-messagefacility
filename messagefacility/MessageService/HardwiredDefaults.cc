@@ -47,15 +47,22 @@ void MessageLoggerDefaults::
 hardwireGridJobMode() 
 {
   //	std::cerr << " ======= hardwireGridJobMode() \n";
+  destinations.clear();
   destinations.push_back ( "cerr"              );
+
+  categories.clear();
   categories.push_back   ( "FwkJob"            );
   categories.push_back   ( "FwkReport"         );
   categories.push_back   ( "FwkSummary"        );
   categories.push_back   ( "Root_NoDictionary" );
+
+  statistics.clear();
   statistics.push_back   ( "cerr_stats"        );
+
   // cerr destination - 
   //      note that using the name cerr is OK since it is not std::cerr
   //      but when we want to use default as a name, we have to be circumspect
+  destination.clear();
   { Destination cerr;			  // PSet cerr
     cerr.threshold = "INFO";		  // string threshold = "INFO"
     Category INFO_limits;		  // PSet INFO = { ... } 
@@ -101,15 +108,22 @@ void MessageLoggerDefaults::
 hardwireReleaseValidationJobMode() 
 {
   //	std::cerr << " ======= hardwireReleaseValidationJobMode() \n";
+  destinations.clear();
   destinations.push_back ( "cerr"              );
+
+  categories.clear();
   categories.push_back   ( "FwkJob"            );
   categories.push_back   ( "FwkReport"         );
   categories.push_back   ( "FwkSummary"        );
   categories.push_back   ( "Root_NoDictionary" );
+
+  statistics.clear();
   statistics.push_back   ( "cerr_stats"        );
+
   // cerr destination - 
   //      note that using the name cerr is OK since it is not std::cerr
   //      but when we want to use default as a name, we have to be circumspect
+  destination.clear();
   { Destination cerr;			  // PSet cerr
     cerr.threshold = "INFO";		  // string threshold = "INFO"
     Category INFO_limits;		  // PSet INFO = { ... } 
@@ -155,15 +169,22 @@ void MessageLoggerDefaults::
 hardwireAnalysisJobMode() 
 {
   //	std::cerr << " ======= hardwireAnalysisJobMode() \n";
+  destinations.clear();
   destinations.push_back ( "warnings"          );
+
+  categories.clear();
   categories.push_back   ( "FwkJob"            );
   categories.push_back   ( "FwkReport"         );
   categories.push_back   ( "FwkSummary"        );
   categories.push_back   ( "Root_NoDictionary" );
+
+  statistics.clear();
   statistics.push_back   ( "cerr"              );
+
   // cerr destination - 
   //      note that using the name cerr is OK since it is not std::cerr
   //      but when we want to use default as a name, we have to be circumspect
+  destination.clear();
   { Destination warnings;		  // PSet warnings
     warnings.threshold = "INFO";	  // string threshold = "INFO"
     Category INFO_limits;		  // PSet INFO = { ... } 
@@ -197,6 +218,10 @@ void MessageLoggerDefaults::
 hardwireNilJobMode() 
 {
   //	std::cerr << " ======= hardwireNilJobMode() \n";
+  destinations.clear();
+  categories.clear();
+  statistics.clear();
+  destination.clear();
 } // hardwireNilJobMode
 
 

@@ -248,7 +248,7 @@ private:
   std::string	  		      jobReportOption;
   //static ErrorLog		    * static_errorlog_p;
   bool				      clean_slate_configuration;
-  cet::value_ptr<MessageLoggerDefaults>    messageLoggerDefaults;
+  MessageLoggerDefaults               messageLoggerDefaults;
   bool				      active;
   bool 				      singleThread;		// changeLog 9
   bool 				      done;			// changeLog 9

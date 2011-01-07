@@ -122,7 +122,11 @@ public:
    
   // ctor
 
-  explicit MessageLoggerDefaults (mf::JobMode mode = GridJobMode) {
+  explicit MessageLoggerDefaults (mf::JobMode mode = GridJobMode)
+    { SetMode(mode); }
+
+  void SetMode(mf::JobMode mode = GridJobMode) {
+
     // mode-independent defaults
     
     // mode-dependent defaults
