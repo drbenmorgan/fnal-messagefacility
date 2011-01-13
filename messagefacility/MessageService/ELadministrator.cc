@@ -572,7 +572,7 @@ ELadministrator::ELadministrator()
   size_t end = procinfo.find('\0');
   size_t start = procinfo.find_last_of('/',end);
 
-  process_ = procinfo.substr(start+1, end-start);
+  process_ = procinfo.substr(start+1, end-start-1);
   application_ = process_;
 
 }  // ELadministrator()
