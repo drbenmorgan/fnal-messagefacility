@@ -34,9 +34,9 @@ tnotnull UPS_DIR || echo "$msg2"
 setup cmake
 setup -j fhiclcpp v2_6_0 -q a1
 setup -j cpp0x v1_0_5 -q a1
-setup -j cetlib v0_2_10 -q a1
+setup -j cetlib v0_2_11 -q a1
 setup -j boost v1_45_0 -q gcc45
-setup cetbuildtools v1_6_5
+setup cetbuildtools v1_6_6
 setup gcc v4_5_1
 
 test $?shell = 1 && set ss=csh || ss=sh

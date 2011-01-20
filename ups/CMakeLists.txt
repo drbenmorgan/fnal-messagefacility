@@ -11,13 +11,13 @@ configure_file ( ${PROJECT_SOURCE_DIR}/ups/messagefacility-config-version.cmake.
 configure_file ( ${PROJECT_SOURCE_DIR}/ups/messagefacility.table.in
                  ${PROJECT_BINARY_DIR}/ups/messagefacility.table @ONLY )
 configure_file ( ${PROJECT_SOURCE_DIR}/ups/messagefacility.version.in
-                 ${PROJECT_BINARY_DIR}/ups/${version}.version @ONLY )
+                 ${PROJECT_BINARY_DIR}/ups/${UPSFLAVOR}_${qualifier} @ONLY )
 
 install (FILES ${PROJECT_BINARY_DIR}/ups/messagefacility-config.cmake
                ${PROJECT_BINARY_DIR}/ups/messagefacility-config-version.cmake
 	 DESTINATION ${flavorqual_dir}/lib/messagefacility-${version} )
 install (FILES ${PROJECT_BINARY_DIR}/ups/messagefacility.table
 	 DESTINATION ${product}/${version}/ups )
-INSTALL (FILES ${PROJECT_BINARY_DIR}/ups/${version}.version
-         DESTINATION ${product} )
+INSTALL (FILES ${PROJECT_BINARY_DIR}/ups/${UPSFLAVOR}_${qualifier}
+         DESTINATION ${product}/${version}.version )
 
