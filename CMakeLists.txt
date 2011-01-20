@@ -53,7 +53,7 @@ include(ParseUpsVersion)
 #set package version from ups version
 set_version_from_ups( ${version} )
 #define flavorqual and flavorqual_dir
-set_flavor_qual(FindUpsRoot)
+set_flavor_qual()
 
 
 # these are minimum required versions, not the actual product versions
