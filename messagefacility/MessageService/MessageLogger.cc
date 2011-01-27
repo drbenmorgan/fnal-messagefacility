@@ -93,13 +93,9 @@ mf::service::MessageLogger::
 MessageLogger( fhicl::ParameterSet const & iPS
              /*, ActivityRegistry   & iRegistry*/
                             )
-	: curr_module_("BeginningJob")
-        , debugEnabled_(false)
+	: debugEnabled_(false)
 	, messageServicePSetHasBeenValidated_(false)
 	, messageServicePSetValidatationResults_() 
-	, nonModule_debugEnabled(false)
-	, nonModule_infoEnabled(true)
-	, nonModule_warningEnabled(true)
 {
   // prepare cfg validation string for later use
   //MessageServicePSetValidation validator;
@@ -254,136 +250,53 @@ MessageLogger( fhicl::ParameterSet const & iPS
 */
 } // ctor
 
-/*
-//
-// Shared helper routines for establishing module name and enabling behavior
-//
+   void
+   MessageLogger::setContext(std::string const &currentPhase) {
+      setContext(currentPhase, std::string(), currentPhase);
+   }
 
-void
-MessageLogger::establishModule(ModuleDescription const & desc, 
-			       std::string const & whichPhase)	// ChangeLog 13
-{
-  MessageDrop* messageDrop = MessageDrop::instance();
-  nonModule_debugEnabled   = messageDrop->debugEnabled;
-  nonModule_infoEnabled    = messageDrop->infoEnabled;
-  nonModule_warningEnabled = messageDrop->warningEnabled;
+   MessageLogger::EnabledState
+   MessageLogger::setContext(std::string const &currentProgramState,
+                             std::string const &currentWorkFlowStatus,
+                             std::string const &currentPhase) {
+      MessageDrop *md = MessageDrop::instance();
+      EnabledState previousState(md->debugEnabled,
+                                 md->infoEnabled,
+                                 md->warningEnabled);
+      md->moduleName = currentProgramState;
+      if (!currentWorkFlowStatus.empty()) md->runEvent = currentWorkFlowStatus;
 
-  //cache the value to improve performance based on profiling studies
-  std::map<const ModuleDescription*,std::string>::const_iterator itFind = descToCalcName_.find(&desc);
-  if ( itFind == descToCalcName_.end()) {
-    curr_module_ = desc.moduleName();
-    curr_module_ += ":";
-    curr_module_ += desc.moduleLabel();
-    //cache this value to improve performance based on profiling studies
-    descToCalcName_[&desc]=curr_module_;
-    messageDrop->moduleName = curr_module_ + whichPhase;  
-  } else {
-    messageDrop->moduleName = itFind->second + whichPhase;
-  }
-  if (!anyDebugEnabled_) {
-    messageDrop->debugEnabled = false;
-  } else if (everyDebugEnabled_) {
-    messageDrop->debugEnabled = true;
-  } else {
-    messageDrop->debugEnabled = 
-    			debugEnabledModules_.count(desc.moduleLabel());
-  }
+      if (!anyDebugEnabled_) {
+         md->debugEnabled = false;
+      } else if (everyDebugEnabled_) {
+         md->debugEnabled = true;
+      } else {
+         md->debugEnabled =
+            debugEnabledModules_.count(currentProgramState);
+         s_map_t::const_iterator it = suppression_levels_.find(currentProgramState);
+         if (it != suppression_levels_.end()) {
+            md->debugEnabled = md->debugEnabled && (it->second < ELseverityLevel::ELsev_success);
+            md->infoEnabled = (it->second < ELseverityLevel::ELsev_info);
+            md->warningEnabled = (it->second < ELseverityLevel::ELsev_warning);
+         } else {
+            md->infoEnabled = true;
+            md->warningEnabled = true;
+         }
+      }
+      return previousState;
+   }
 
-  std::map<const std::string,ELseverityLevel>::const_iterator it =
-       suppression_levels_.find(desc.moduleLabel());
-  if ( it != suppression_levels_.end() ) {
-    messageDrop->debugEnabled  = messageDrop->debugEnabled 
-                                           && (it->second < ELseverityLevel::ELsev_success );
-    messageDrop->infoEnabled    = (it->second < ELseverityLevel::ELsev_info );
-    messageDrop->warningEnabled = (it->second < ELseverityLevel::ELsev_warning );
-  } else {
-    messageDrop->infoEnabled    = true;
-    messageDrop->warningEnabled = true;
-  }
-} // establishModule
+   void
+   MessageLogger::setContext(std::string const &currentPhase,
+                             EnabledState previousEnabledState) {
+      MessageDrop *md = MessageDrop::instance();
+      md->moduleName = currentPhase;
+      md->debugEnabled = previousEnabledState.debugEnabled;
+      md->infoEnabled = previousEnabledState.infoEnabled;
+      md->warningEnabled = previousEnabledState.warningEnabled;
+   }
 
-void
-MessageLogger::establishModuleCtor(ModuleDescription const & desc, 
-			       std::string const & whichPhase)	// ChangeLog 16
-{
-  MessageDrop* messageDrop = MessageDrop::instance();
-  nonModule_debugEnabled   = messageDrop->debugEnabled;
-  nonModule_infoEnabled    = messageDrop->infoEnabled;
-  nonModule_warningEnabled = messageDrop->warningEnabled;
-
-  // Cannot cache the value to improve performance
-  curr_module_ = desc.moduleName() + ":" + desc.moduleLabel();
-  messageDrop->moduleName = curr_module_ + whichPhase;  
-
-  if (!anyDebugEnabled_) {
-    messageDrop->debugEnabled = false;
-  } else if (everyDebugEnabled_) {
-    messageDrop->debugEnabled = true;
-  } else {
-    messageDrop->debugEnabled = 
-    			debugEnabledModules_.count(desc.moduleLabel());
-  }
-
-  std::map<const std::string,ELseverityLevel>::const_iterator it =
-       suppression_levels_.find(desc.moduleLabel());
-  if ( it != suppression_levels_.end() ) {
-    messageDrop->debugEnabled  = messageDrop->debugEnabled 
-                                           && (it->second < ELseverityLevel::ELsev_success );
-    messageDrop->infoEnabled    = (it->second < ELseverityLevel::ELsev_info );
-    messageDrop->warningEnabled = (it->second < ELseverityLevel::ELsev_warning );
-  } else {
-    messageDrop->infoEnabled    = true;
-    messageDrop->warningEnabled = true;
-  }
-} // establishModuleCtor
-
-void
-MessageLogger::unEstablishModule(ModuleDescription const & desc, 
-			         std::string const & state)
-{
-  MessageDrop* messageDrop = MessageDrop::instance();
-  messageDrop->moduleName = state;
-  messageDrop->debugEnabled   = nonModule_debugEnabled;
-  messageDrop->infoEnabled    = nonModule_infoEnabled;
-  messageDrop->warningEnabled = nonModule_warningEnabled;
-}
-
-void
-MessageLogger::establish(std::string const & state)
-{
-  MessageDrop* messageDrop = MessageDrop::instance();
-  curr_module_ = state;
-  messageDrop->moduleName = curr_module_;  
-   if (!anyDebugEnabled_) {
-    messageDrop->debugEnabled = false;
-  } else if (everyDebugEnabled_) {
-    messageDrop->debugEnabled = true;
-  } else {
-    messageDrop->debugEnabled = 
-    		debugEnabledModules_.count(state);	// change log 8
-  }
-  std::map<const std::string,ELseverityLevel>::const_iterator it =
-       suppression_levels_.find(state);		// change log 8
-  if ( it != suppression_levels_.end() ) {
-    messageDrop->debugEnabled  = messageDrop->debugEnabled
-                                           && (it->second < ELseverityLevel::ELsev_success );
-    messageDrop->infoEnabled    = (it->second < ELseverityLevel::ELsev_info );
-    messageDrop->warningEnabled = (it->second < ELseverityLevel::ELsev_warning );
-  } else {
-    messageDrop->infoEnabled    = true;
-    messageDrop->warningEnabled = true;
-  }
-}
-
-void
-MessageLogger::unEstablish(std::string const & state)
-{
-  MessageDrop::instance()->moduleName = state;  
-}
-
-
-
-
+   /*
 //
 // callbacks that need to establish the module, and their counterparts
 //

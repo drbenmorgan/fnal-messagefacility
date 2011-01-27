@@ -50,6 +50,16 @@ class MessageLogger
 public:
   MessageLogger( fhicl::ParameterSet const & /*, ActivityRegistry & */);
 
+  struct EnabledState {
+     inline EnabledState(bool d, bool i, bool w) {
+        debugEnabled = d;
+        infoEnabled = i;
+        warningEnabled = w;
+     }
+     bool debugEnabled;
+     bool infoEnabled;
+     bool warningEnabled;  
+  };
 /*
   void  postBeginJob();
   void  postEndJob();
@@ -116,6 +126,16 @@ public:
   static 
   bool  anyDebugEnabled() { return anyDebugEnabled_; }
 
+  // Set the context for following messages.  Note that it is caller's
+  // responsibility to ensure that any saved EnableState is saved in a
+  // thread-safe way if appropriate.
+  void setContext(std::string const &currentPhase);
+  EnabledState setContext(std::string const &currentProgramState,
+                          std::string const &currentWorkFlowStatus,
+                          std::string const &currentPhase);
+  void setContext(std::string const &currentPhase,
+                  EnabledState previousEnabledState);
+  
 /*
   static
   void  SummarizeInJobReport();
@@ -123,25 +143,14 @@ public:
 
 private:
 
-  // set up the module name in the message drop, and the enable/suppress info
-/*
-  void  establishModule       ( const ModuleDescription& desc,
-  		                std::string const & whichPhase );
-  void  establishModuleCtor   ( const ModuleDescription& desc,
-  		                std::string const & whichPhase );
-  void  unEstablishModule     ( const ModuleDescription& desc,
-  		                std::string const & whichPhase );
-  void  establish             ( std::string const & whichPhase ); 
-  void  unEstablish           ( std::string const & whichPhase ); 
-*/
-  
  // put an ErrorLog object here, and maybe more
 
   //mf::EventID curr_event_;
-  std::string curr_module_;
+  //  std::string curr_module_;
 
   //std::set<std::string> debugEnabledModules_;
-  std::map<std::string,ELseverityLevel> suppression_levels_;
+  typedef std::map<std::string,ELseverityLevel> s_map_t;
+  s_map_t suppression_levels_;
   bool debugEnabled_;
   //this is a cache which profiling has shown to be helpful
   //std::map<const ModuleDescription*, std::string> descToCalcName_;
@@ -152,14 +161,13 @@ private:
   bool messageServicePSetHasBeenValidated_;
   std::string  messageServicePSetValidatationResults_;
 
-  bool nonModule_debugEnabled;
-  bool nonModule_infoEnabled;
-  bool nonModule_warningEnabled;  
+  // TODO: Use of nonModule_debugEnabled and friends is NOT thread-safe!
+  // Need to do something soon.
 
 public:
   std::set<std::string> debugEnabledModules_;
   static bool everyDebugEnabled_;
-  
+
 };  // MessageLogger
 
 
