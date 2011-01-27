@@ -36,7 +36,7 @@ setup -j fhiclcpp v2_8_1 -q a1
 setup -j cpp0x v1_0_7 -q a1
 setup -j cetlib v0_2_14 -q a1
 setup -j boost v1_45_0 -q gcc45
-setup cetbuildtools v1_7_0
+setup cetbuildtools v1_7_1
 setup gcc v4_5_1
 
 test $?shell = 1 && set ss=csh || ss=sh
