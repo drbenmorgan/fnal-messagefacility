@@ -84,6 +84,7 @@ namespace mf  {
       // responsibility to ensure that any saved EnableState is saved in a
       // thread-safe way if appropriate.
       EnabledState setContext(std::string const &currentPhase);
+      void setMinimalContext(std::string const &currentPhase);
       EnabledState setContext(std::string const &currentProgramState,
                               std::string const &levelsConfigLabel);
       void setContext(std::string const &currentPhase,

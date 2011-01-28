@@ -189,6 +189,11 @@ MessageLogger( fhicl::ParameterSet const & iPS
       return setContext(currentPhase, currentPhase);
    }
 
+   void
+   MessageLogger::setMinimalContext(std::string const &currentPhase) {
+      MessageDrop::instance()->moduleName = currentPhase;
+   }
+
    MessageLogger::EnabledState
    MessageLogger::setContext(std::string const &currentProgramState,
                              std::string const &levelsConfigLabel) {
