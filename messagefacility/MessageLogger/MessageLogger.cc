@@ -203,22 +203,22 @@ fhicl::ParameterSet MessageFacilityService::ConfigurationFile(
   fhicl::ParameterSet pset;
   std::ifstream pset_file(fname.c_str());
   if (!pset_file) {
-    std::cout << "Configuration file \"" << fname << "\" "
+    std::cerr << "Configuration file \"" << fname << "\" "
               << "could not be found.\n"
               << "Default configuration will be used instead.\n";
     return def;
   }
-  if (fhicl::make_ParameterSet(pset_file, pset))
-  {
-    return pset;
+  try {
+     fhicl::make_ParameterSet(pset_file, pset);
+     return pset;
   }
-  else
-  {
-    std::cout << "Configuration file \"" << fname << "\" "
-              << "parsing failed.\n"
+  catch (cet::exception &e) {
+    std::cerr << "Configuration file \"" << fname << "\" "
+              << "parsing failed with exception " << e.what()
+              << ".\n"
               << "Default configuration will be used instead.\n";
-    return def;
   }
+  return def;
 }
 
 
