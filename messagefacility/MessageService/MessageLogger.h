@@ -43,135 +43,83 @@ namespace fhicl {
 }
 
 namespace mf  {
-namespace service  {
+  namespace service  {
 
-class MessageLogger
-{
-public:
-  MessageLogger( fhicl::ParameterSet const & /*, ActivityRegistry & */);
+    class MessageLogger
+    {
+    public:
+      MessageLogger( fhicl::ParameterSet const & );
 
-  struct EnabledState {
-     inline EnabledState(bool d, bool i, bool w) {
-        debugEnabled = d;
-        infoEnabled = i;
-        warningEnabled = w;
-     }
-     bool debugEnabled;
-     bool infoEnabled;
-     bool warningEnabled;  
-  };
-/*
-  void  postBeginJob();
-  void  postEndJob();
-  void  jobFailure();
+      class EnabledState {
+      public:
+        inline EnabledState() : isValid_(false) { }
+        inline ~EnabledState() {}
+        inline EnabledState(bool d, bool i, bool w)
+          :
+          debugEnabled_(d),
+          infoEnabled_(i),
+          warningEnabled_(w),
+          isValid_(true)
+            {
+            }
+        inline bool isValid() const { return isValid_; }
+        inline void reset() { isValid_ = false; }
+        inline bool debugEnabled() const { return debugEnabled_; }
+        inline bool infoEnabled() const { return infoEnabled_; }
+        inline bool warningEnabled() const { return warningEnabled_; }
+      private:
+        bool debugEnabled_;
+        bool infoEnabled_;
+        bool warningEnabled_;
+        bool isValid_;
+      };
+
+      void  fillErrorObj(mf::ErrorObj& obj) const;
+      bool  debugEnabled() const { return debugEnabled_; }
+
+      static
+        bool  anyDebugEnabled() { return anyDebugEnabled_; }
+
+      // Set the context for following messages.  Note that it is caller's
+      // responsibility to ensure that any saved EnableState is saved in a
+      // thread-safe way if appropriate.
+      EnabledState setContext(std::string const &currentPhase);
+      EnabledState setContext(std::string const &currentProgramState,
+                              std::string const &levelsConfigLabel);
+      void setContext(std::string const &currentPhase,
+                      EnabledState previousEnabledState);
   
-  void  preSource  ();
-  void  postSource ();
+    private:
 
-  void  preFile       ();
-  void  preFileClose  ();
-  void  postFile      ();
+      // put an ErrorLog object here, and maybe more
 
-  void  preModuleConstruction ( ModuleDescription const & );
-  void  postModuleConstruction( ModuleDescription const & );
+      //mf::EventID curr_event_;
+      //  std::string curr_module_;
 
-  void  preSourceConstruction ( ModuleDescription const & );
-  void  postSourceConstruction( ModuleDescription const & );
+      //std::set<std::string> debugEnabledModules_;
+      typedef std::map<std::string,ELseverityLevel> s_map_t;
+      s_map_t suppression_levels_;
+      bool debugEnabled_;
+      //this is a cache which profiling has shown to be helpful
+      //std::map<const ModuleDescription*, std::string> descToCalcName_;
+      static bool   anyDebugEnabled_;
+      //static bool everyDebugEnabled_;
 
-  void  preModule ( ModuleDescription const & );
-  void  postModule( ModuleDescription const & );
+      static bool fjrSummaryRequested_;
+      bool messageServicePSetHasBeenValidated_;
+      std::string  messageServicePSetValidatationResults_;
 
-  void  preModuleBeginJob  ( ModuleDescription const & );
-  void  postModuleBeginJob ( ModuleDescription const & );
-  void  preModuleEndJob  ( ModuleDescription const & );
-  void  postModuleEndJob ( ModuleDescription const & );
+      // TODO: Use of nonModule_debugEnabled and friends is NOT thread-safe!
+      // Need to do something soon.
 
-  void  preModuleBeginRun  ( ModuleDescription const & );
-  void  postModuleBeginRun ( ModuleDescription const & );
-  void  preModuleEndRun  ( ModuleDescription const & );
-  void  postModuleEndRun ( ModuleDescription const & );
+    public:
+      std::set<std::string> debugEnabledModules_;
+      static bool everyDebugEnabled_;
 
-  void  preModuleBeginLumi  ( ModuleDescription const & );
-  void  postModuleBeginLumi ( ModuleDescription const & );
-  void  preModuleEndLumi  ( ModuleDescription const & );
-  void  postModuleEndLumi ( ModuleDescription const & );
-
-  void  preEventProcessing ( mf::EventID const &, mf::Timestamp const & );
-  void  postEventProcessing( Event const &, EventSetup const & );
-
-  void  preBeginRun    ( const mf::RunID&, const mf::Timestamp& );
-  void  postBeginRun   ( const mf::Run&, EventSetup const & );
-  void  preEndRun      ( const mf::RunID&, const mf::Timestamp& );
-  void  postEndRun     ( const mf::Run&, EventSetup const & );
-  void  preBeginLumi   ( const mf::LuminosityBlockID&, const mf::Timestamp& );
-  void  postBeginLumi  ( const mf::LuminosityBlock&, EventSetup const & );
-  void  preEndLumi     ( const mf::LuminosityBlockID&, const mf::Timestamp& );
-  void  postEndLumi    ( const mf::LuminosityBlock&, EventSetup const & );
-
-  void  prePathBeginRun   ( const std::string& pathname );
-  void  postPathBeginRun  ( const std::string& pathname, HLTPathStatus const&);
-  void  prePathEndRun     ( const std::string& pathname );
-  void  postPathEndRun    ( const std::string& pathname, HLTPathStatus const&);
-  void  prePathBeginLumi  ( const std::string& pathname );
-  void  postPathBeginLumi ( const std::string& pathname, HLTPathStatus const&);
-  void  prePathEndLumi    ( const std::string& pathname );
-  void  postPathEndLumi   ( const std::string& pathname, HLTPathStatus const&);
-  void  preProcessPath    ( const std::string& pathname );
-  void  postProcessPath   ( const std::string& pathname, HLTPathStatus const&);
-*/
-
-  void  fillErrorObj(mf::ErrorObj& obj) const;
-  bool  debugEnabled() const { return debugEnabled_; }
-
-  static 
-  bool  anyDebugEnabled() { return anyDebugEnabled_; }
-
-  // Set the context for following messages.  Note that it is caller's
-  // responsibility to ensure that any saved EnableState is saved in a
-  // thread-safe way if appropriate.
-  EnabledState setContext(std::string const &currentPhase);
-  EnabledState setContext(std::string const &currentProgramState,
-                          std::string const &currentWorkFlowStatus,
-                          std::string const &currentPhase);
-  void setContext(std::string const &currentPhase,
-                  EnabledState previousEnabledState);
-  
-/*
-  static
-  void  SummarizeInJobReport();
-*/  
-
-private:
-
- // put an ErrorLog object here, and maybe more
-
-  //mf::EventID curr_event_;
-  //  std::string curr_module_;
-
-  //std::set<std::string> debugEnabledModules_;
-  typedef std::map<std::string,ELseverityLevel> s_map_t;
-  s_map_t suppression_levels_;
-  bool debugEnabled_;
-  //this is a cache which profiling has shown to be helpful
-  //std::map<const ModuleDescription*, std::string> descToCalcName_;
-  static bool   anyDebugEnabled_;
-  //static bool everyDebugEnabled_;
-
-  static bool fjrSummaryRequested_;
-  bool messageServicePSetHasBeenValidated_;
-  std::string  messageServicePSetValidatationResults_;
-
-  // TODO: Use of nonModule_debugEnabled and friends is NOT thread-safe!
-  // Need to do something soon.
-
-public:
-  std::set<std::string> debugEnabledModules_;
-  static bool everyDebugEnabled_;
-
-};  // MessageLogger
+    };  // MessageLogger
 
 
-}  // namespace service
+  }  // namespace service
 
 }  // namespace mf
 

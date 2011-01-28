@@ -182,89 +182,21 @@ MessageLogger( fhicl::ParameterSet const & iPS
   
   MessageLoggerQ::MLqCFG( new fhicl::ParameterSet(iPS) );		// change log 9
 
-/*
-  iRegistry.watchPostBeginJob(this,&MessageLogger::postBeginJob);
-  iRegistry.watchPostEndJob(this,&MessageLogger::postEndJob);
-  iRegistry.watchJobFailure(this,&MessageLogger::jobFailure);	// change log 14
-
-  iRegistry.watchPreModuleConstruction(this,&MessageLogger::preModuleConstruction);
-  iRegistry.watchPostModuleConstruction(this,&MessageLogger::postModuleConstruction);
-								// change log 3
-
-  iRegistry.watchPreSourceConstruction(this,&MessageLogger::preSourceConstruction);
-  iRegistry.watchPostSourceConstruction(this,&MessageLogger::postSourceConstruction);
-								// change log 3
-
-  iRegistry.watchPreModule(this,&MessageLogger::preModule);
-  iRegistry.watchPostModule(this,&MessageLogger::postModule);
-
-  iRegistry.watchPreSource(this,&MessageLogger::preSource);
-  iRegistry.watchPostSource(this,&MessageLogger::postSource);
-							// change log 14:
-  iRegistry.watchPreSourceRun(this,&MessageLogger::preSource);
-  iRegistry.watchPostSourceRun(this,&MessageLogger::postSource);
-  iRegistry.watchPreSourceLumi(this,&MessageLogger::preSource);
-  iRegistry.watchPostSourceLumi(this,&MessageLogger::postSource);
-  iRegistry.watchPreOpenFile(this,&MessageLogger::preFile);
-  iRegistry.watchPostOpenFile(this,&MessageLogger::postFile);
-  iRegistry.watchPreCloseFile(this,&MessageLogger::preFileClose);
-  iRegistry.watchPostCloseFile(this,&MessageLogger::postFile);
-  
-							// change log 13:
-							// change log 15
-  iRegistry.watchPreModuleBeginJob(this,&MessageLogger::preModuleBeginJob);
-  iRegistry.watchPostModuleBeginJob(this,&MessageLogger::postModuleBeginJob);
-  iRegistry.watchPreModuleEndJob(this,&MessageLogger::preModuleEndJob);
-  iRegistry.watchPostModuleEndJob(this,&MessageLogger::postModuleEndJob);
-  iRegistry.watchPreModuleBeginRun(this,&MessageLogger::preModuleBeginRun);
-  iRegistry.watchPostModuleBeginRun(this,&MessageLogger::postModuleBeginRun);
-  iRegistry.watchPreModuleEndRun(this,&MessageLogger::preModuleEndRun);
-  iRegistry.watchPostModuleEndRun(this,&MessageLogger::postModuleEndRun);
-  iRegistry.watchPreModuleBeginLumi(this,&MessageLogger::preModuleBeginLumi);
-  iRegistry.watchPostModuleBeginLumi(this,&MessageLogger::postModuleBeginLumi);
-  iRegistry.watchPreModuleEndLumi(this,&MessageLogger::preModuleEndLumi);
-  iRegistry.watchPostModuleEndLumi(this,&MessageLogger::postModuleEndLumi);
-
-  iRegistry.watchPreProcessEvent(this,&MessageLogger::preEventProcessing);
-  iRegistry.watchPostProcessEvent(this,&MessageLogger::postEventProcessing);
-							// change log 14:
-  iRegistry.watchPreBeginRun(this,&MessageLogger::preBeginRun);
-  iRegistry.watchPostBeginRun(this,&MessageLogger::postBeginRun);
-  iRegistry.watchPreEndRun(this,&MessageLogger::preEndRun); // change log 15
-  iRegistry.watchPostEndRun(this,&MessageLogger::postEndRun);
-  iRegistry.watchPreBeginLumi(this,&MessageLogger::preBeginLumi);
-  iRegistry.watchPostBeginLumi(this,&MessageLogger::postBeginLumi);
-  iRegistry.watchPreEndLumi(this,&MessageLogger::preEndLumi);
-  iRegistry.watchPostEndLumi(this,&MessageLogger::postEndLumi);
-
-  iRegistry.watchPrePathBeginRun(this,&MessageLogger::prePathBeginRun);
-  iRegistry.watchPostPathBeginRun(this,&MessageLogger::postPathBeginRun);
-  iRegistry.watchPrePathEndRun(this,&MessageLogger::prePathEndRun);
-  iRegistry.watchPostPathEndRun(this,&MessageLogger::postPathEndRun);
-  iRegistry.watchPrePathBeginLumi(this,&MessageLogger::prePathBeginLumi);
-  iRegistry.watchPostPathBeginLumi(this,&MessageLogger::postPathBeginLumi);
-  iRegistry.watchPrePathEndLumi(this,&MessageLogger::prePathEndLumi);
-  iRegistry.watchPostPathEndLumi(this,&MessageLogger::postPathEndLumi);
-  iRegistry.watchPreProcessPath(this,&MessageLogger::preProcessPath);
-  iRegistry.watchPostProcessPath(this,&MessageLogger::postProcessPath);
-*/
 } // ctor
 
    MessageLogger::EnabledState
    MessageLogger::setContext(std::string const &currentPhase) {
-      return setContext(currentPhase, std::string(), currentPhase);
+      return setContext(currentPhase, currentPhase);
    }
 
    MessageLogger::EnabledState
    MessageLogger::setContext(std::string const &currentProgramState,
-                             std::string const &currentWorkFlowStatus,
-                             std::string const &currentPhase) {
+                             std::string const &levelsConfigLabel) {
       MessageDrop *md = MessageDrop::instance();
       EnabledState previousState(md->debugEnabled,
                                  md->infoEnabled,
                                  md->warningEnabled);
       md->moduleName = currentProgramState;
-      if (!currentWorkFlowStatus.empty()) md->runEvent = currentWorkFlowStatus;
 
       if (!anyDebugEnabled_) {
          md->debugEnabled = false;
@@ -272,8 +204,8 @@ MessageLogger( fhicl::ParameterSet const & iPS
          md->debugEnabled = true;
       } else {
          md->debugEnabled =
-            debugEnabledModules_.count(currentProgramState);
-         s_map_t::const_iterator it = suppression_levels_.find(currentProgramState);
+            debugEnabledModules_.count(levelsConfigLabel);
+         s_map_t::const_iterator it = suppression_levels_.find(levelsConfigLabel);
          if (it != suppression_levels_.end()) {
             md->debugEnabled = md->debugEnabled && (it->second < ELseverityLevel::ELsev_success);
             md->infoEnabled = (it->second < ELseverityLevel::ELsev_info);
@@ -291,9 +223,9 @@ MessageLogger( fhicl::ParameterSet const & iPS
                              EnabledState previousEnabledState) {
       MessageDrop *md = MessageDrop::instance();
       md->moduleName = currentPhase;
-      md->debugEnabled = previousEnabledState.debugEnabled;
-      md->infoEnabled = previousEnabledState.infoEnabled;
-      md->warningEnabled = previousEnabledState.warningEnabled;
+      md->debugEnabled = previousEnabledState.debugEnabled();
+      md->infoEnabled = previousEnabledState.infoEnabled();
+      md->warningEnabled = previousEnabledState.warningEnabled();
    }
 
    /*
