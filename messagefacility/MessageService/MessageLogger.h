@@ -129,7 +129,7 @@ public:
   // Set the context for following messages.  Note that it is caller's
   // responsibility to ensure that any saved EnableState is saved in a
   // thread-safe way if appropriate.
-  void setContext(std::string const &currentPhase);
+  EnabledState setContext(std::string const &currentPhase);
   EnabledState setContext(std::string const &currentProgramState,
                           std::string const &currentWorkFlowStatus,
                           std::string const &currentPhase);

@@ -250,9 +250,9 @@ MessageLogger( fhicl::ParameterSet const & iPS
 */
 } // ctor
 
-   void
+   MessageLogger::EnabledState
    MessageLogger::setContext(std::string const &currentPhase) {
-      setContext(currentPhase, std::string(), currentPhase);
+      return setContext(currentPhase, std::string(), currentPhase);
    }
 
    MessageLogger::EnabledState
