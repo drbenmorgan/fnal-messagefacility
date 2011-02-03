@@ -12,22 +12,22 @@
 // Change Log
 //
 // 12/12/07  mf   elimination of dummyLogDebugObject_, dummyLogTraceObject_
-//		 (see change log 8 in MessageLogger.h)
+//               (see change log 8 in MessageLogger.h)
 //
 // 12/14/07  mf  Moved the static free function onlyLowestDirectory
-//		 to a class member function of LogDebug_, changing
-//		 name to a more descriptive stripLeadingDirectoryTree.
-//		 Cures the 2600-copies-of-this-function complaint.
-//		 Implementation of this is moved into this .cc file.
+//               to a class member function of LogDebug_, changing
+//               name to a more descriptive stripLeadingDirectoryTree.
+//               Cures the 2600-copies-of-this-function complaint.
+//               Implementation of this is moved into this .cc file.
 //
 //  6/20/08  mf  Have flushMessageLog() check messageLoggerScribeIsRunning
-//		 (in the message drop) to avoid hangs if that thread is not
-//		 around.
+//               (in the message drop) to avoid hangs if that thread is not
+//               around.
 //
 //  11/18/08 wmtan  Use explicit non-inlined destructors
 //
 //  8/11/09  mf setStandAloneMessageThreshold() and
-//		squelchStandAloneMessageCategory()
+//              squelchStandAloneMessageCategory()
 //
 //  10/29/09 wmtan  Use explicit non-inlined constructors for LogDebug_ and LogTrace_
 //
@@ -77,16 +77,16 @@ void HaltMessageLogging() {
 
 void FlushMessageLog() {
   if (MessageDrop::instance()->messageLoggerScribeIsRunning !=
-  			MLSCRIBE_RUNNING_INDICATOR) return; 	// 6/20/08 mf
+                        MLSCRIBE_RUNNING_INDICATOR) return;     // 6/20/08 mf
   mf::MessageLoggerQ::MLqFLS ( ); // Flush the message log queue
 }
 
-bool isMessageProcessingSetUp() {				// 6/20/08 mf
+bool isMessageProcessingSetUp() {                               // 6/20/08 mf
 //  std::cerr << "isMessageProcessingSetUp: \n";
 //  std::cerr << "messageLoggerScribeIsRunning = "
-//  	    << (int)MessageDrop::instance()->messageLoggerScribeIsRunning << "\n";
+//          << (int)MessageDrop::instance()->messageLoggerScribeIsRunning << "\n";
   return (MessageDrop::instance()->messageLoggerScribeIsRunning ==
-  			MLSCRIBE_RUNNING_INDICATOR);
+                        MLSCRIBE_RUNNING_INDICATOR);
 }
 
 void GroupLogStatistics(std::string const & category) {
@@ -105,9 +105,9 @@ std::string stripLeadingDirectoryTree(const std::string & file)
 
 // LogWarning
 mf::LogWarning::LogWarning( std::string const & id, std::string const & file, int line )
-    : ap ( mf::MessageDrop::instance()->warningEnabled ? 
+    : ap ( mf::MessageDrop::instance()->warningEnabled ?
            new MessageSender(ELwarning,id) : 0 )
-{ 
+{
   *this << " "
         << stripLeadingDirectoryTree(file)
         << ":" << line << "\n";
@@ -116,7 +116,7 @@ mf::LogWarning::LogWarning( std::string const & id, std::string const & file, in
 // LogError
 mf::LogError::LogError( std::string const & id, std::string const & file, int line )
     : ap( new MessageSender(ELerror,id) )
-{ 
+{
   *this << " "
         << stripLeadingDirectoryTree(file)
         << ":" << line << "\n";
@@ -124,9 +124,9 @@ mf::LogError::LogError( std::string const & id, std::string const & file, int li
 
 // LogInfo
 mf::LogInfo::LogInfo( std::string const & id, std::string const & file, int line )
-    : ap ( mf::MessageDrop::instance()->infoEnabled ? 
+    : ap ( mf::MessageDrop::instance()->infoEnabled ?
            new MessageSender(ELinfo,id) : 0 )
-{ 
+{
   *this << " "
         << stripLeadingDirectoryTree(file)
         << ":" << line << "\n";
@@ -193,8 +193,8 @@ fhicl::ParameterSet MessageFacilityService::ConfigurationFile(
 
     fname = filename.substr(0, sub_start)
                       + envstr
-                      + filename.substr(sub_end+1, filename.size()-sub_end-1); 
-  } 
+                      + filename.substr(sub_end+1, filename.size()-sub_end-1);
+  }
   else
   {
     fname = filename;
@@ -289,8 +289,8 @@ fhicl::ParameterSet MessageFacilityService::logCS(int partition)
   ss << commonPSet()
      << "  destinations : { "
      << "    console : { type : \"cout\", threshold : \"DEBUG\" }, "
-     << "    server : { " 
-     << "      type : \"dds\", threshold : \"DEBUG\", " 
+     << "    server : { "
+     << "      type : \"dds\", threshold : \"DEBUG\", "
      << "      partition : " << partition << " "
      << "    } "
      << "  } "
@@ -424,7 +424,7 @@ void StartMessageFacility(
      *              that the MessageServicePresence will be destroyed first,
      *              and particularly *BEFORE* the destruction of ELadmin.
      *              This is achieved by instantiating a static object, who
-     *              is responsible for killing the Presence at the *END* of 
+     *              is responsible for killing the Presence at the *END* of
      *              the start sequence. So this destroyer object will be killed
      *              before everyone else.
      */
