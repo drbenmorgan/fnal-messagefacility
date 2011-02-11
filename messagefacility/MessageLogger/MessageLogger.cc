@@ -4,6 +4,7 @@
 #include "messagefacility/MessageService/MessageServicePresence.h"
 #include "messagefacility/MessageService/ELadministrator.h"
 
+#include "cetlib/filepath_maker.h"
 #include "fhiclcpp/make_ParameterSet.h"
 
 #include <string>
@@ -201,15 +202,11 @@ fhicl::ParameterSet MessageFacilityService::ConfigurationFile(
   }
 
   fhicl::ParameterSet pset;
-  std::ifstream pset_file(fname.c_str());
-  if (!pset_file) {
-    std::cerr << "Configuration file \"" << fname << "\" "
-              << "could not be found.\n"
-              << "Default configuration will be used instead.\n";
-    return def;
-  }
+  cet::filepath_lookup_after1 lookupPolicy("FHICL_FILE_PATH");
   try {
-     fhicl::make_ParameterSet(pset_file, pset);
+     fhicl::make_ParameterSet(fname,
+                              lookupPolicy,
+                              pset);
      return pset;
   }
   catch (cet::exception &e) {
