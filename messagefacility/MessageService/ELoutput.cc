@@ -465,6 +465,13 @@ bool ELoutput::log( const mf::ErrorObj & msg )  {
     #endif
       ++item_count;
       if  ( !msg.is_verbatim() ) {
+        if (item_count==2) {
+          if (!(*it).compare("--")) {
+            ++it; ++it; ++it; item_count+=3; 
+            if (!insertNewlineAfterHeader) emit("", true); 
+            continue;
+          }
+        }
 	if ( !insertNewlineAfterHeader && (item_count == 3) ) {
           // in a LogDebug message, the first 3 items are FILE, :, and LINE
           emit( *it, true );

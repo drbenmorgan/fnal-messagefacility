@@ -49,7 +49,7 @@ int main()
     mf::LogError("catError")     << "Error information.";
     mf::LogWarning("catWarning") << "Warning information.";
     mf::LogInfo("catInfo")       << "Info information.";
-    mf::LogDebug("debug")        << "DEBUG information.";
+    LOG_DEBUG("debug")           << "DEBUG information.";
 
     //sleep(1);
   }
