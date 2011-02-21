@@ -221,10 +221,7 @@ fhicl::ParameterSet MessageFacilityService::ConfigurationFile(
 
 std::string MessageFacilityService::commonPSet()
 {
-  std::string pset = "MessageFacility : { \
-          debugModules:[\"*\"], \
-          statistics:[\"stats\"], ";
-
+  std::string pset = "debugModules:[\"*\"]  statistics:[\"stats\"] ";
   return pset;
 }
 
@@ -233,9 +230,8 @@ fhicl::ParameterSet MessageFacilityService::logConsole()
   std::ostringstream ss;
   ss << commonPSet()
      << "  destinations : { "
-     << "    console : { type : \"cout\", threshold : \"DEBUG\" } "
-     << "  } "
-     << "} ";
+     << "    console : { type : \"cout\" threshold : \"DEBUG\" } "
+     << "  } " ;
 
   fhicl::ParameterSet pset;
   std::string pstr(ss.str());
@@ -249,11 +245,10 @@ fhicl::ParameterSet MessageFacilityService::logServer(int partition)
   ss << commonPSet()
      << "  destinations : { "
      << "    server : { "
-     << "      type : \"dds\", threshold : \"DEBUG\", "
+     << "      type : \"dds\" threshold : \"DEBUG\" "
      << "      partition : " << partition << " "
      << "    } "
-     << "  } "
-     << "} ";
+     << "  } " ;
 
   fhicl::ParameterSet pset;
   std::string pstr(ss.str());
@@ -267,12 +262,11 @@ fhicl::ParameterSet MessageFacilityService::logFile(std::string const & filename
   ss << commonPSet()
      << "  destinations : { "
      << "    file : { "
-     << "      type : \"file\", threshold : \"DEBUG\", "
-     << "      filename : \"" << filename << "\", "
+     << "      type : \"file\" threshold : \"DEBUG\" "
+     << "      filename : \"" << filename << "\" "
      << "      append : " << (append ? "true" : "false")
      << "    } "
-     << "  } "
-     << "} ";
+     << "  } " ;
 
   fhicl::ParameterSet pset;
   std::string pstr(ss.str());
@@ -285,13 +279,12 @@ fhicl::ParameterSet MessageFacilityService::logCS(int partition)
   std::ostringstream ss;
   ss << commonPSet()
      << "  destinations : { "
-     << "    console : { type : \"cout\", threshold : \"DEBUG\" }, "
+     << "    console : { type : \"cout\" threshold : \"DEBUG\" } "
      << "    server : { "
-     << "      type : \"dds\", threshold : \"DEBUG\", "
+     << "      type : \"dds\" threshold : \"DEBUG\" "
      << "      partition : " << partition << " "
      << "    } "
-     << "  } "
-     << "} ";
+     << "  } " ;
 
   fhicl::ParameterSet pset;
   std::string pstr(ss.str());
@@ -304,14 +297,13 @@ fhicl::ParameterSet MessageFacilityService::logCF(std::string const & filename, 
   std::ostringstream ss;
   ss << commonPSet()
      << "  destinations : { "
-     << "    console : { type : \"cout\", threshold : \"DEBUG\" }, "
+     << "    console : { type : \"cout\" threshold : \"DEBUG\" } "
      << "    file : { "
-     << "      type : \"file\", threshold : \"DEBUG\", "
-     << "      filename : \"" << filename << "\", "
+     << "      type : \"file\" threshold : \"DEBUG\" "
+     << "      filename : \"" << filename << "\" "
      << "      append : " << (append ? "true" : "false")
      << "    } "
-     << "  } "
-     << "} ";
+     << "  } ";
 
   fhicl::ParameterSet pset;
   std::string pstr(ss.str());
@@ -325,16 +317,15 @@ fhicl::ParameterSet MessageFacilityService::logFS(std::string const & filename, 
   ss << commonPSet()
      << "  destinations : { "
      << "    file : { "
-     << "      type : \"file\", threshold : \"DEBUG\", "
-     << "      filename : \"" << filename << "\", "
+     << "      type : \"file\" threshold : \"DEBUG\" "
+     << "      filename : \"" << filename << "\" "
      << "      append : " << (append ? "true" : "false")
-     << "    }, "
+     << "    } "
      << "    server : { "
-     << "      type : \"dds\", threshold : \"DEBUG\", "
+     << "      type : \"dds\" threshold : \"DEBUG\" "
      << "      partition : " << partition << " "
      << "    } "
-     << "  } "
-     << "} ";
+     << "  } " ;
 
   fhicl::ParameterSet pset;
   std::string pstr(ss.str());
@@ -347,18 +338,17 @@ fhicl::ParameterSet MessageFacilityService::logCFS(std::string const & filename,
   std::ostringstream ss;
   ss << commonPSet()
      << "  destinations : { "
-     << "    console : { type : \"cout\", threshold : \"DEBUG\" }, "
+     << "    console : { type : \"cout\" threshold : \"DEBUG\" } "
      << "    file : { "
-     << "      type : \"file\", threshold : \"DEBUG\", "
-     << "      filename : \"" << filename << "\", "
+     << "      type : \"file\" threshold : \"DEBUG\" "
+     << "      filename : \"" << filename << "\" "
      << "      append : " << (append ? "true" : "false")
-     << "    }, "
+     << "    } "
      << "    server : { "
-     << "      type : \"dds\", threshold : \"DEBUG\", "
+     << "      type : \"dds\" threshold : \"DEBUG\" "
      << "      partition : " << partition << " "
      << "    } "
-     << "  } "
-     << "} ";
+     << "  } " ;
 
   fhicl::ParameterSet pset;
   std::string pstr(ss.str());
@@ -372,12 +362,11 @@ fhicl::ParameterSet MessageFacilityService::logArchive(std::string const & filen
   ss << commonPSet()
      << "  destinations : { "
      << "    archive : { "
-     << "      type : \"archive\", threshold : \"DEBUG\", "
-     << "      filename : \"" << filename << "\", "
+     << "      type : \"archive\" threshold : \"DEBUG\" "
+     << "      filename : \"" << filename << "\" "
      << "      append : " << (append ? "true" : "false")
      << "    } "
-     << "  } "
-     << "} ";
+     << "  } " ;
 
   fhicl::ParameterSet pset;
   std::string pstr(ss.str());
