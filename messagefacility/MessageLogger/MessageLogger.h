@@ -116,7 +116,7 @@ namespace mf  {
 class LogWarning
 {
 public:
-  explicit LogWarning( std::string const & id, std::string const & file="", int line=0);
+  explicit LogWarning( std::string const & id, std::string const & file="--", int line=0);
   ~LogWarning();						// Change log 13
 
   template< class T >
@@ -141,7 +141,7 @@ private:
 class LogError
 {
 public:
-  explicit LogError( std::string const & id, std::string const & file="", int line=0);
+  explicit LogError( std::string const & id, std::string const & file="--", int line=0);
   ~LogError();							// Change log 13
 
   template< class T >
@@ -167,7 +167,7 @@ private:
 class LogSystem
 {
 public:
-  explicit LogSystem( std::string const & id, std::string const & file="", int line=0 ) 
+  explicit LogSystem( std::string const & id, std::string const & file="--", int line=0 ) 
     : ap( new MessageSender(ELsevere,id) )
   { }
   ~LogSystem();							// Change log 13
@@ -193,7 +193,7 @@ private:
 class LogInfo				
 {
 public:
-  explicit LogInfo( std::string const & id, std::string const & file="", int line=0);
+  explicit LogInfo( std::string const & id, std::string const & file="--", int line=0);
   ~LogInfo();							// Change log 13
 
   template< class T >
@@ -220,7 +220,7 @@ private:
 class LogVerbatim						// change log 2
 {
 public:
-  explicit LogVerbatim( std::string const & id, std::string const & file="", int line=0 ) 
+  explicit LogVerbatim( std::string const & id, std::string const & file="--", int line=0 ) 
     : ap ( mf::MessageDrop::instance()->infoEnabled ?		// change log 16
       new MessageSender(ELinfo,id,true) : 0 ) // the true is the verbatim arg 
   { }
@@ -249,7 +249,7 @@ private:
 class LogPrint							// change log 3
 {
 public:
-  explicit LogPrint( std::string const & id, std::string const & file="", int line=0 ) 
+  explicit LogPrint( std::string const & id, std::string const & file="--", int line=0 ) 
     : ap ( mf::MessageDrop::instance()->warningEnabled ?	// change log 16
       new MessageSender(ELwarning,id,true) : 0 ) // the true is the Print arg 
   { }
@@ -278,7 +278,7 @@ private:
 class LogProblem						// change log 4
 {
 public:
-  explicit LogProblem( std::string const & id, std::string const & file="", int line=0 ) 
+  explicit LogProblem( std::string const & id, std::string const & file="--", int line=0 ) 
     : ap( new MessageSender(ELerror,id,true) )
   { }
   ~LogProblem();						// Change log 13
@@ -305,7 +305,7 @@ private:
 class LogImportant						// change log 11
 {
 public:
-  explicit LogImportant( std::string const & id, std::string const & file="", int line=0 ) 
+  explicit LogImportant( std::string const & id, std::string const & file="--", int line=0 ) 
     : ap( new MessageSender(ELerror,id,true) )
   { }
   ~LogImportant();						 // Change log 13
@@ -332,7 +332,7 @@ private:
 class LogAbsolute						// change log 4
 {
 public:
-  explicit LogAbsolute( std::string const & id, std::string const & file="", int line=0 ) 
+  explicit LogAbsolute( std::string const & id, std::string const & file="--", int line=0 ) 
     : ap( new MessageSender(ELsevere,id,true) )
   { }
   ~LogAbsolute();						// Change log 13
@@ -363,7 +363,7 @@ void LogErrorObj(ErrorObj * eo_p);
 class LogDebug
 {
 public:
-  explicit LogDebug( std::string const & id, std::string const & file="", int line=0 ); // Change log 17
+  explicit LogDebug( std::string const & id, std::string const & file="--", int line=0 ); // Change log 17
   explicit LogDebug()  : ap(), debugEnabled(false) {}		// Change log 8	
   ~LogDebug(); 
 
@@ -410,7 +410,7 @@ private:
 class LogTrace
 {
 public:
-  explicit LogTrace( std::string const & id, std::string const & file="", int line=0);			// Change log 13
+  explicit LogTrace( std::string const & id, std::string const & file="--", int line=0);			// Change log 13
   explicit LogTrace()  : ap(), debugEnabled(false) {}		// Change log 8	
   ~LogTrace(); 
 
