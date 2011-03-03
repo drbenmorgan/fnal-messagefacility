@@ -27,7 +27,7 @@ project(MessageFacility)
 # the ups convention is that product names are all lower case, but this is a choices
 SET (product messagefacility)
 SET (version v1_8_9)
-SET (qualifier a1)
+SET (qualifier a2)
 
 # cetbuildtools contains our cmake modules
 SET ( CETBUILDTOOLS_VERSION $ENV{CETBUILDTOOLS_VERSION} )
