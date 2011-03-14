@@ -17,7 +17,7 @@ int main()
 
   std::string expected = 
     "---- BadJuju BEGIN\n"
-    "arghargharghargharghargh 3 1.5\n boo blue blue\n"
+    "  arghargharghargharghargh 3 1.5\n   boo blue blue\n"
     "---- BadJuju END\n";
 
   std::string result(e.explain_self());
@@ -29,11 +29,11 @@ int main()
   e << std::scientific;      
 
   cet::exception e2("RealBadStuff","A"); e2 << "B";
-  std::string res2("---- RealBadStuff BEGIN\nA B\n---- RealBadStuff END\n");
+  std::string res2("---- RealBadStuff BEGIN\n  A B\n---- RealBadStuff END\n");
   assert(e2.explain_self() == res2);
   
   cet::exception e3("RealBadStuff","A "); e3 << "B";
-  std::string res3("---- RealBadStuff BEGIN\nA B\n---- RealBadStuff END\n");
+  std::string res3("---- RealBadStuff BEGIN\n  A B\n---- RealBadStuff END\n");
   assert(e3.explain_self() == res3);
   
 }

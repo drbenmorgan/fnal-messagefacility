@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
-#include <assert.h>
+#include <cassert>
 
 struct Thing
 {
@@ -20,23 +20,23 @@ std::ostream& operator<<(std::ostream& os, const Thing& t)
 }
 
 const char expected[] =   "---- InfiniteLoop BEGIN\n"
-			   "In func1 "
+			   "  In func1 "
 			   "---- DataCorrupt BEGIN\n"
-			   "This is just a test: \n"
-			   "double: 1.11111\n"
-			   "float:  2.22222\n"
-			   "uint:   75\n"
-			   "string: a string\n"
-			   "char*:  a nonconst pointer\n"
-			   "char[]: a c-style array\n"
-			   "Thing:  Thing(4)\n"
-			   "\n"
-			   "double: 1.111110e+00\n"
-			   "float:  2.22e+00\n"
-			   "char*:  ..a nonconst pointer\n"
-			   "\n"
-			   "---- DataCorrupt END\n"
-			   "Gave up\n"
+			   "    This is just a test: \n"
+			   "    double: 1.11111\n"
+			   "    float:  2.22222\n"
+			   "    uint:   75\n"
+			   "    string: a string\n"
+			   "    char*:  a nonconst pointer\n"
+			   "    char[]: a c-style array\n"
+			   "    Thing:  Thing(4)\n"
+			   "    \n"
+			   "    double: 1.111110e+00\n"
+			   "    float:  2.22e+00\n"
+			   "    char*:  ..a nonconst pointer\n"
+			   "    \n"
+			   "  ---- DataCorrupt END\n"
+			   "  Gave up\n"
 			   "---- InfiniteLoop END\n";
 
 void func3()
@@ -119,7 +119,7 @@ int main()
   }
   catch (cet::exception& e) {
       std::cerr << "*** main caught Exception, output is ***\n"
-	   << "(" << e.explain_self() << ")"
+	   << "(" << e.explain_self() << ")\n"
 	   << "*** After exception output ***"
 	   << std::endl;
 
