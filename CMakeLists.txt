@@ -44,6 +44,10 @@ set (CMAKE_SKIP_RPATH)
 
 ENABLE_TESTING()
 
+# make sure someone isn't typing cmake in the source code tree
+include(EnsureOutOfSourceBuild)
+cet_ensure_out_of_source_build()
+
 # define some necessary modules
 include(FindUpsPackage)
 include(FindUpsBoost)
@@ -57,7 +61,7 @@ set_flavor_qual()
 
 
 # these are minimum required versions, not the actual product versions
-find_ups_product( cetbuildtools v1_7_4 )
+find_ups_product( cetbuildtools v1_08_00 )
 find_ups_product( cpp0x v1_01_0 )
 find_ups_product( cetlib v0_05_00 )
 find_ups_product( fhiclcpp v2_11_0  )
