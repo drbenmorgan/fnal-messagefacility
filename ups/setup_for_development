@@ -32,10 +32,10 @@ tnotnull UPS_DIR || echo "$msg2"
 # note that we do not test for them first...
 # use setup -j to avoid pulling dependencies
 setup cmake
-setup cetbuildtools v1_10_02
-setup -j fhiclcpp v2_11_13 -q a2
-setup -j cetlib v0_05_05 -q a2
-setup -j cpp0x v1_01_04 -q a2
+setup cetbuildtools v1_11_01
+setup -j fhiclcpp v2_12_01 -q a2
+setup -j cetlib v0_06_00 -q a2
+setup -j cpp0x v1_01_05 -q a2
 setup -j boost v1_45_0 -q gcc45
 setup gcc v4_5_1
 
@@ -60,21 +60,23 @@ test -z "$db" && echo "$msg" || vecho_ "db=$db"
 test -n "$db" && setenv MESSAGEFACILITY_SOURCE `dirname $db`
 #echo This script lives in $db
 
-tnotnull MESSAGEFACILITY_BUILD && set_ fwdir=$MESSAGEFACILITY_BUILD || set_ fwdir=`pwd`
-test -n "$fwdir" && setenv MESSAGEFACILITY_BUILD $fwdir
-test -d "$fwdir/lib" || mkdir -p $fwdir/lib
-echo The workng build directory is $fwdir
+tnotnull MESSAGEFACILITY_BUILD && set_ thisdir=$MESSAGEFACILITY_BUILD || set_ thisdir=`pwd`
+test -n "$thisdir" && setenv MESSAGEFACILITY_BUILD $thisdir
+test -d "$thisdir/lib" || mkdir -p $thisdir/lib
+echo The workng build directory is $thisdir
 
-tnotnull MESSAGEFACILITY_BUILD && setenv LD_LIBRARY_PATH `echo :${LD_LIBRARY_PATH}: | sed -e "s|:${MESSAGEFACILITY_BUILD}/lib:|:|" -e 's|^:||;s|:$||'`; setenv LD_LIBRARY_PATH ${MESSAGEFACILITY_BUILD}/lib:${LD_LIBRARY_PATH}
+tnotnull MESSAGEFACILITY_BUILD && setenv LD_LIBRARY_PATH `echo :${LD_LIBRARY_PATH}: | sed -e "s|:${MESSAGEFACILITY_BUILD}/lib:|:|" -e 's|^:||;s|:$||'`
+tnotnull MESSAGEFACILITY_BUILD && setenv LD_LIBRARY_PATH ${MESSAGEFACILITY_BUILD}/lib:${LD_LIBRARY_PATH}
+setenv LD_LIBRARY_PATH `dropit -D -p "$LD_LIBRARY_PATH"`
 
 echo
 echo MESSAGEFACILITY_SOURCE=$MESSAGEFACILITY_SOURCE
 echo MESSAGEFACILITY_BUILD=$MESSAGEFACILITY_BUILD
-echo $fwdir/lib has been added to LD_LIBRARY_PATH
+echo $thisdir/lib has been added to LD_LIBRARY_PATH
 echo
 echo LD_LIBRARY_PATH is now ${LD_LIBRARY_PATH}
 
 # cleanup before exiting
 test "$ss" = csh && unalias tnotnull nullout set_ vecho_ 
-unset ss msg db me fwdir py_ver
+unset ss msg db me thisdir py_ver
 unset set_ setenv unsetenv tnotnull source nullout vecho_
