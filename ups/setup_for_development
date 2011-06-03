@@ -32,10 +32,10 @@ tnotnull UPS_DIR || echo "$msg2"
 # note that we do not test for them first...
 # use setup -j to avoid pulling dependencies
 setup cmake
-setup cetbuildtools v1_11_04
-setup -j fhiclcpp v2_12_04 -q a2
-setup -j cetlib v0_06_08 -q a2
-setup -j cpp0x v1_01_08 -q a2
+setup cetbuildtools v1_11_05
+setup -j fhiclcpp v2_12_07 -q a2
+setup -j cetlib v1_00_01 -q a2
+setup -j cpp0x v1_01_11 -q a2
 setup -j boost v1_45_0 -q gcc45
 setup gcc v4_5_1
 
