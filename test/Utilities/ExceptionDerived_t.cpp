@@ -34,7 +34,7 @@ void func1()
   catch (cet::exception& e) {
      throw cet::exception("InfiniteLoop","In func2",e) << "Gave up";
   }
-  
+
 }
 
 int main()
@@ -44,20 +44,20 @@ int main()
   }
   catch (cet::exception& e) {
     std::cerr << "*** main caught cet::exception, output is ***\n"
-	 << "(" << e.explain_self() << ")"
-	 << "*** After exception output ***"
-	 << std::endl;
+         << "(" << e.explain_self() << ")"
+         << "*** After exception output ***"
+         << std::endl;
 
     std::cerr << "\nCategory name list:\n";
 
 #if 0
     if(e.explain_self() != answer) {
       std::cerr << "not right answer\n(" << answer << ")\n"
-	   << std::endl;
+           << std::endl;
       abort();
     }
 #endif
 
   }
-  return 0; 
+  return 0;
 }

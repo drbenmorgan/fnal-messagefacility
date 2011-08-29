@@ -15,19 +15,19 @@
 // 6/5/01   mf          setReactedTo
 // 11/01/01 web         maxIDlength now unsigned
 //
-// 2/14/06  mf		Removed oerator<<(endmsg) which is not needed for
-//			MessageLogger for CMS
+// 2/14/06  mf          Removed oerator<<(endmsg) which is not needed for
+//                      MessageLogger for CMS
 //
-// 3/13/06  mf		Instrumented for automatic suppression of spaces.
-// 3/20/06  mf		Instrumented for universal suppression of spaces
-//			(that is, items no longer contain any space added
-//			by the MessageLogger stack)
+// 3/13/06  mf          Instrumented for automatic suppression of spaces.
+// 3/20/06  mf          Instrumented for universal suppression of spaces
+//                      (that is, items no longer contain any space added
+//                      by the MessageLogger stack)
 //
-// 4/28/06  mf		maxIDlength changed from 20 to 200
-//			If a category name exceeds that, then the 
-//			limit not taking effect bug will occur again... 
+// 4/28/06  mf          maxIDlength changed from 20 to 200
+//                      If a category name exceeds that, then the
+//                      limit not taking effect bug will occur again...
 //
-// 6/6/06  mf		verbatim
+// 6/6/06  mf           verbatim
 //
 // ErrorObj( const ELseverityLevel & sev, const ELstring & id )
 // ~ErrorObj()
@@ -69,16 +69,16 @@ namespace mf
 // ----------------------------------------------------------------------
 
 int  ErrorObj::ourSerial(  0 );
-const unsigned int  maxIDlength( 200 );		// changed 4/28/06 from 20
+const unsigned int  maxIDlength( 200 );         // changed 4/28/06 from 20
 
 
 // ----------------------------------------------------------------------
 // Birth/death:
 // ----------------------------------------------------------------------
 
-ErrorObj::ErrorObj( const ELseverityLevel & sev, 
-		    const ELstring & id,
-		    bool verbat )  : verbatim(verbat) {
+ErrorObj::ErrorObj( const ELseverityLevel & sev,
+                    const ELstring & id,
+                    bool verbat )  : verbatim(verbat) {
 
   #ifdef ErrorObjCONSTRUCTOR_TRACE
     std::cerr << "Constructor for ErrorObj\n";
@@ -97,9 +97,9 @@ ErrorObj::ErrorObj( const ErrorObj & orig )  :
         , myTimestamp     ( orig.myTimestamp )
         , myItems         ( orig.myItems )
         , myReactedTo     ( orig.myReactedTo )
- 	, myOs            ( )
-	, emptyString     ( )
-	, verbatim	  ( orig.verbatim )
+        , myOs            ( )
+        , emptyString     ( )
+        , verbatim        ( orig.verbatim )
 {
 
   #ifdef ErrorObjCONSTRUCTOR_TRACE
@@ -193,19 +193,19 @@ void ErrorObj::setReactedTo( bool r )  {
 
 void ErrorObj::setHostName( const ELstring & hostname ) {
   myXid.hostname = hostname;
-} 
+}
 
 void ErrorObj::setHostAddr( const ELstring & hostaddr ) {
   myXid.hostaddr = hostaddr;
-} 
+}
 
 void ErrorObj::setApplication( const ELstring & application ) {
   myXid.application = application;
-} 
+}
 
 void ErrorObj::setPID( long pid ) {
   myXid.pid = pid;
-} 
+}
 
 #ifdef ErrorObj_SUB_TRACE
   static int subN = 0;
@@ -255,7 +255,7 @@ void ErrorObj::set( const ELseverityLevel & sev, const ELstring & id )  {
 }  // set()
 
 void ErrorObj::setTimestamp( const timeval & t ) {
-	myTimestamp = t;
+        myTimestamp = t;
 }
 
 
@@ -272,12 +272,12 @@ void ErrorObj::clear()  {
 
 }  // clear()
 
-ErrorObj & 
+ErrorObj &
 ErrorObj::opltlt ( const char s[] ) {
-  // Exactly equivalent to the general template. 
+  // Exactly equivalent to the general template.
   // If this is not provided explicitly, then the template will
   // be instantiated once for each length of string ever used.
-  myOs.str(emptyString); 
+  myOs.str(emptyString);
   myOs << s;
 #ifdef OLD_STYLE_AUTOMATIC_SPACES
   if ( ! myOs.str().empty() ) {

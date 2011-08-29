@@ -14,10 +14,10 @@ void
                            , edm::EventSetup const & /*unused*/
                               )
 {
-  
+
   for (int i=0; i<10; ++i) {
-    edm::LogPrint  ("cat_P") << "LogPrint: " << i; 
-    edm::LogSystem ("cat_S") << "LogSystem: " << i; 
+    edm::LogPrint  ("cat_P") << "LogPrint: " << i;
+    edm::LogSystem ("cat_S") << "LogSystem: " << i;
   }
 
 }  // MessageLoggerClient::analyze()

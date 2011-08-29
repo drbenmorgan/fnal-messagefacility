@@ -5,15 +5,15 @@
 // ----------------------------------------------------------------------
 //
 // ELlimitsTable is a class holding two maps:  One listing various
-//		 limits associated with each id, and one counting occurrences
-//		 and tracking latest times of each type of extended-id
-//		 (id + severity + module + subroutine + process).
-//		 In addition, there is a table by severity of defaults,
-//		 and a single wildcard default limit.
+//               limits associated with each id, and one counting occurrences
+//               and tracking latest times of each type of extended-id
+//               (id + severity + module + subroutine + process).
+//               In addition, there is a table by severity of defaults,
+//               and a single wildcard default limit.
 //
 // The fundamental operation is
 //
-//	bool add( const ELextendedID & )
+//      bool add( const ELextendedID & )
 //
 // which checks if the extended id is in the main map.  If it is not, it
 // looks for the specified limit (by id, then severity, then wildcard) and
@@ -26,11 +26,11 @@
 // Limits of 0 in the auxilliary defaults indicate that the corresponding
 // limit was not specified.
 //
-// 7/6/98 mf	Created file.
-// 6/7/00 web	Reflect consolidation of ELdestination/X
-// 6/14/00 web	Declare classes before granting friendship.
-// 6/15/01 mf	Grant friendship to ELoutput so that faithful copying of
-//		ELoutput destinations becomes possible.
+// 7/6/98 mf    Created file.
+// 6/7/00 web   Reflect consolidation of ELdestination/X
+// 6/14/00 web  Declare classes before granting friendship.
+// 6/15/01 mf   Grant friendship to ELoutput so that faithful copying of
+//              ELoutput destinations becomes possible.
 // 5/16/06 mf   Added wildcardInterval member, and severityIntervals
 //
 // ----------------------------------------------------------------------
@@ -41,8 +41,8 @@
 #include "messagefacility/MessageLogger/ELextendedID.h"
 #include "messagefacility/MessageLogger/ELmap.h"
 
-namespace mf {       
-namespace service {       
+namespace mf {
+namespace service {
 
 
 // ----------------------------------------------------------------------

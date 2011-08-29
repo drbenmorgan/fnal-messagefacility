@@ -21,7 +21,7 @@ void
        LogTrace    ("cat_A") << "LogTrace was used to send this mess" << "age";
        LogDebug    ("cat_B") << "LogDebug was used to send this other message";
   edm::LogVerbatim ("cat_A") << "LogVerbatim was us" << "ed to send this message";
-  if( edm::isInfoEnabled() ) 
+  if( edm::isInfoEnabled() )
      edm::LogInfo  ("cat_B") << "LogInfo was used to send this other message";
 }  // MessageLoggerClient::analyze()
 

@@ -18,8 +18,8 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("EmptySource")
 
-process.sendSomeMessages = cms.EDAnalyzer( "PSetTestClient_A", 
-  a = cms.untracked.PSet 
+process.sendSomeMessages = cms.EDAnalyzer( "PSetTestClient_A",
+  a = cms.untracked.PSet
   (
     b = cms.untracked.PSet
     (

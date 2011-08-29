@@ -2,7 +2,7 @@
 #
 # There are two types of developers:
 # 1) Administrators - entitled to edit all files in the module ,
-#    in particular the .admin directory.  (Including this file) 
+#    in particular the .admin directory.  (Including this file)
 # 2) Regular Developers - entitled to edit all files in the module
 #    except those in the .admin directory.
 #

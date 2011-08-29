@@ -72,9 +72,9 @@ public:
   // --- special control of standAlone logging behavior
   static  void standAloneThreshold(std::string const & severity);
   static  void squelch(std::string const & category);
-  static  bool ignore ( mf::ELseverityLevel const & severity, 
-  			std::string const & category );
-			
+  static  bool ignore ( mf::ELseverityLevel const & severity,
+                        std::string const & category );
+
 private:
   // ---  traditional birth/death, but disallowed to users:
   MessageLoggerQ();
@@ -82,9 +82,9 @@ private:
 
   // ---  place an item onto the queue, or execute the command directly
   static  void  simpleCommand( OpCode opcode, void * operand );
-  static  void  handshakedCommand( OpCode opcode, 
-  				   void * operand, 
-				   std::string const & commandMnemonic);
+  static  void  handshakedCommand( OpCode opcode,
+                                   void * operand,
+                                   std::string const & commandMnemonic);
 
   // --- no copying:
   MessageLoggerQ( MessageLoggerQ const & );
@@ -94,7 +94,7 @@ private:
   static  boost::shared_ptr<mf::service::AbstractMLscribe> mlscribe_ptr;
   static  mf::ELseverityLevel threshold;
   static  std::set<std::string> squelchSet;
-  
+
 };  // MessageLoggerQ
 
 

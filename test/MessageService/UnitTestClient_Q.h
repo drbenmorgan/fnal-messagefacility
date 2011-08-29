@@ -21,12 +21,12 @@ class UTC_Q1
 public:
   explicit
     UTC_Q1( edm::ParameterSet const & p)
-  { 
+  {
     identifier = p.getUntrackedParameter<int> ("identifier", 99);
     edm::GroupLogStatistics("timer");  // these lines would normally be in
     edm::GroupLogStatistics("trace");  // whatever service knows that
-    				       // timer and trace should be groupd
-				       // by moduels for statistics
+                                       // timer and trace should be groupd
+                                       // by moduels for statistics
   }
 
   virtual
@@ -48,7 +48,7 @@ class UTC_Q2
 public:
   explicit
     UTC_Q2( edm::ParameterSet const & p)
-  { 
+  {
     identifier = p.getUntrackedParameter<int> ("identifier", 98);
   }
 

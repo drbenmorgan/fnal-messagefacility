@@ -73,9 +73,9 @@ In the previous configuration model, for a specific destination, the value of a 
 3. Defaults common to the destination
 4. The actual parameter
 
-With the new configuratuion model, source 2, and 3 have been suppressed. It means, the configuring ParameterSet object for each destination will be required to carry a parameter list as complete as possible. If a parameter still cannot be found in the ParameterSet object, the configuration code will go look for a hardwired default directly. 
+With the new configuratuion model, source 2, and 3 have been suppressed. It means, the configuring ParameterSet object for each destination will be required to carry a parameter list as complete as possible. If a parameter still cannot be found in the ParameterSet object, the configuration code will go look for a hardwired default directly.
 
-The model is a great simplicity comparing with the previous model, especially when looking for default values. Another great advantage is that, most of the parameters now have very limited places that allows to appear. Usually they can only appear at one certain level in a configuration file. 
+The model is a great simplicity comparing with the previous model, especially when looking for default values. Another great advantage is that, most of the parameters now have very limited places that allows to appear. Usually they can only appear at one certain level in a configuration file.
 
 For example, in the old configuring model "limit : 10" may appear in a top-level "default" ParameterSet object, or in a "default" ParameterSet object inside of a destination, or in a "category" object, or in a "severity" object. This layout of multiple sources for a single parameter brings great confusion in both writing a configuration file, and in processing the configuration file. Under the new model, the only allowed place for the parameter "limit" to appear is inside of a "category" object, which is inside of a destination object.
 
@@ -101,7 +101,7 @@ Following is the deatiled rule for the new configuring model,
 4. Each of the destination ParameterSet objects has a series of parameters that allows you to customized the behavior of that specific destination. These parameters are:
 
   4.1 "type", a string indicating the type of the destination, which can be chosen from "cout", "cerr", "file", or any string defined in the Extension package ("DDS" and "archive" for the moment)
-  4.2 "filename", a string indicating the name of output file. Only applicable for destinations of the type "file" (or "archive") 
+  4.2 "filename", a string indicating the name of output file. Only applicable for destinations of the type "file" (or "archive")
   4.3 "threshold", a string with possible values of "DEBUG", "INFO", "WARNING", and "ERROR" to set the severity filtering for that destination
   4.4 "noTimeStamps", a parameter taking a boolean value to suppress (when set to true), or enable (set to false, this is the default value) the timestamps in logged messages for this destination
   4.5 "useMilliseconds", a boolean value indicating if the milliseconds in the timestamp is wanted (true) or not (false, this is the default value). Applicable only when "noTimeStamps" is set to false
@@ -119,18 +119,18 @@ Following is the deatiled rule for the new configuring model,
 
 6. Each of the category ParameterSet object is used to customize the message filtering in that category for the specific destination. It can have three possible parameters:
 
-  6.1 "limit", an integer value set the occurance limit of repeating message (in the same categories) in a given timespan. 
+  6.1 "limit", an integer value set the occurance limit of repeating message (in the same categories) in a given timespan.
   6.2 "reportEvery", an integer value
   6.3 "timespan", an integer value in seconds
 
 7. A configuration file written under the new configuring model would look like the following,
 
-  MessageFacility : 
+  MessageFacility :
   {
       debugModules : ["*"],
-      destinations : 
+      destinations :
       {
-          detailedInfo : 
+          detailedInfo :
           {
               type : "file",
               filename : "detailedInfo.txt",
@@ -139,7 +139,7 @@ Following is the deatiled rule for the new configuring model,
               useMilleseconds : true,
               outputStatistics : true,
               resetStatistics: true,
-              categories : 
+              categories :
               {
                   unimportant : { limit : 5 },
                   serious_matter : { limit : 200 },
@@ -164,7 +164,7 @@ Following is the deatiled rule for the new configuring model,
                       runctrol : { limit : -1 },
                       default : { limit : 0 }
                   }
-              } 
+              }
           } // statistics
       } // destinations
   }

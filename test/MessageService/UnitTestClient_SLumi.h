@@ -23,9 +23,9 @@ class UTC_SL1
 public:
   explicit
     UTC_SL1( edm::ParameterSet const & p)
-  { 
+  {
     identifier = p.getUntrackedParameter<int> ("identifier", 99);
-    edm::GroupLogStatistics("grouped_cat");  
+    edm::GroupLogStatistics("grouped_cat");
   }
 
   virtual
@@ -49,7 +49,7 @@ class UTC_SL2
 public:
   explicit
     UTC_SL2( edm::ParameterSet const & p)
-  { 
+  {
     identifier = p.getUntrackedParameter<int> ("identifier", 98);
   }
 
@@ -73,7 +73,7 @@ class UTC_SLUMMARY
 public:
   explicit
     UTC_SLUMMARY( edm::ParameterSet const & p)
-  { 
+  {
   }
 
   virtual
@@ -87,8 +87,8 @@ public:
 
   virtual
     void endLuminosityBlock ( edm::LuminosityBlock const & lb
-                	    , edm::EventSetup 	   const & c
-                	    );
+                            , edm::EventSetup      const & c
+                            );
 
 private:
 };

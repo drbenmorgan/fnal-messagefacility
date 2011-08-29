@@ -7,14 +7,14 @@
 //
 // Changes:
 //
-//   1 - 3/22/06  mf  - in configure_dest()	
-//	Repaired the fact that destination limits for categories
-//	were not being effective:
-//	a) use values from the destination specific default PSet
-//	   rather than the overall default PSet to set these
-//	b) when an explicit value has been set - either by overall default or 
-//	   by a destination specific default PSet - set that limit or
-//	   timespan for that dest_ctrl via a "*" msgId.
+//   1 - 3/22/06  mf  - in configure_dest()
+//      Repaired the fact that destination limits for categories
+//      were not being effective:
+//      a) use values from the destination specific default PSet
+//         rather than the overall default PSet to set these
+//      b) when an explicit value has been set - either by overall default or
+//         by a destination specific default PSet - set that limit or
+//         timespan for that dest_ctrl via a "*" msgId.
 //
 // ----------------------------------------------------------------------
 
@@ -205,20 +205,20 @@ bool ELfwkJobReport::log( const mf::ErrorObj & msg )  {
 
   // Change log 1:  React ONLY to category FwkJob
   if (xid.id != "FwkJob") return false;
-  
+
   // See if this message is to be acted upon
   // (this is redundant if we are reacting only to FwkJob)
   // and add it to limits table if it was not already present:
   //
   if ( msg.xid().severity < threshold  )  return false;
-  
+
   if ( (xid.id == "BeginningJob")        ||
        (xid.id == "postBeginJob")        ||
        (xid.id == "preEventProcessing")  ||
        (xid.id == "preModule")           ||
        (xid.id == "postModule")          ||
        (xid.id == "postEventProcessing") ||
-       (xid.id == "postEndJob")             ) return false; 
+       (xid.id == "postEndJob")             ) return false;
   if ( thisShouldBeIgnored(xid.module) )  return false;
   if ( ! limits.add( msg.xid() )       )  return false;
 
@@ -236,7 +236,7 @@ bool ELfwkJobReport::log( const mf::ErrorObj & msg )  {
   //emit (xid.id);
   //emit ( " </Category>\n");
   //emit ( "    <Message> \n");
-  
+
  //  emit( msg.idOverflow() ); this is how to get the rest of the category
 
   #ifdef ELfwkJobReportTRACE_LOG
@@ -260,12 +260,12 @@ bool ELfwkJobReport::log( const mf::ErrorObj & msg )  {
 
   // Close the body of the message
   //emit ("    </Message>\n");
-  
+
   // Provide further identification: Module
   //
   //emit ("    <Module> ");
   //emit ( xid.module );
-  //emit (" </Module>\n");    
+  //emit (" </Module>\n");
 
   #ifdef ELfwkJobReportTRACE_LOG
     std::cerr << "    =:=:=: Module done \n";
@@ -412,5 +412,5 @@ void ELfwkJobReport::flush()  {
 // ----------------------------------------------------------------------
 
 
-} // end of namespace service  
-} // end of namespace mf  
+} // end of namespace service
+} // end of namespace mf

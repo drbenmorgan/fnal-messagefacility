@@ -7,7 +7,7 @@ namespace mf {
     debugvalue();
 
     int operator()() { return value_; }
-    
+
     const char* cvalue_;
     int value_;
   };

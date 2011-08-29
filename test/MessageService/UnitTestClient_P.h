@@ -20,10 +20,10 @@ class UnitTestClient_P
 {
 public:
   explicit
-    UnitTestClient_P( edm::ParameterSet const & p) 
+    UnitTestClient_P( edm::ParameterSet const & p)
     : useLogFlush(true)
     , queueFillers(1)
-  { 
+  {
     useLogFlush  = p.getUntrackedParameter<bool>("useLogFlush",  useLogFlush);
     queueFillers = p.getUntrackedParameter<int> ("queueFillers", queueFillers);
   }

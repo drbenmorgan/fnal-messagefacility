@@ -4,12 +4,12 @@
 
 // ----------------------------------------------------------------------
 //
-// ELextendedID.h	is used as a key in maps for both counting toward
-//			limits on how many times a destination will react
-//			to a type of message, and for statistics.
+// ELextendedID.h       is used as a key in maps for both counting toward
+//                      limits on how many times a destination will react
+//                      to a type of message, and for statistics.
 //
-// 07-Jul-1998 mf	Created file.
-// 26-Aug-1998 WEB	Updated with ELseverityLevel in place of int.
+// 07-Jul-1998 mf       Created file.
+// 26-Aug-1998 WEB      Updated with ELseverityLevel in place of int.
 //
 // ----------------------------------------------------------------------
 
@@ -18,7 +18,7 @@
 #include "messagefacility/MessageLogger/ELseverityLevel.h"
 
 
-namespace mf {       
+namespace mf {
 
 
 // ----------------------------------------------------------------------

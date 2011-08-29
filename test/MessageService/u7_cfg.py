@@ -12,7 +12,7 @@ process.load("FWCore.MessageService.test.Services_cff")
 
 process.MessageLogger = cms.Service("MessageLogger",
     u7_job_report = cms.untracked.PSet(
-	extension = cms.untracked.string("mxml")
+        extension = cms.untracked.string("mxml")
     ),
     u7_restrict = cms.untracked.PSet(
         default = cms.untracked.PSet(
@@ -29,9 +29,9 @@ process.MessageLogger = cms.Service("MessageLogger",
             limit = cms.untracked.int32(0)
         )
     ),
-    destinations = cms.untracked.vstring('u7_log', 
+    destinations = cms.untracked.vstring('u7_log',
         'u7_restrict'),
-    categories = cms.untracked.vstring('FwkJob', 
+    categories = cms.untracked.vstring('FwkJob',
         'special'),
     fwkJobReports = cms.untracked.vstring('u7_job_report')
 )

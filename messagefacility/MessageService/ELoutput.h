@@ -4,21 +4,21 @@
 
 // ----------------------------------------------------------------------
 //
-// ELoutput	is a subclass of ELdestination representing the standard
-//		provided destination.
+// ELoutput     is a subclass of ELdestination representing the standard
+//              provided destination.
 //
-// 7/8/98 mf	Created file.
-// 6/17/99 jvr	Made output format options available for ELdestControl only
-// 7/2/99 jvr	Added separate/attachTime, Epilogue, and Serial options
-// 2/22/00 mf	Changed myDetX to myOutputX (to avoid future puzzlement!)
-//		and added ELoutput(ox) to cacilitate inherited classes.
-// 6/7/00 web	Consolidated ELoutput/X; add filterModule()
-// 6/14/00 web	Declare classes before granting friendship; remove using
-// 10/4/00 mf	add excludeModule()
-//  4/4/01 mf 	Removed moduleOfInterest and moduleToExclude, in favor
-//		of using base class method.
-//  6/23/03 mf  changeFile(), flush() 
-//  6/11/07 mf  changed default for emitAtStart to false  
+// 7/8/98 mf    Created file.
+// 6/17/99 jvr  Made output format options available for ELdestControl only
+// 7/2/99 jvr   Added separate/attachTime, Epilogue, and Serial options
+// 2/22/00 mf   Changed myDetX to myOutputX (to avoid future puzzlement!)
+//              and added ELoutput(ox) to cacilitate inherited classes.
+// 6/7/00 web   Consolidated ELoutput/X; add filterModule()
+// 6/14/00 web  Declare classes before granting friendship; remove using
+// 10/4/00 mf   add excludeModule()
+//  4/4/01 mf   Removed moduleOfInterest and moduleToExclude, in favor
+//              of using base class method.
+//  6/23/03 mf  changeFile(), flush()
+//  6/11/07 mf  changed default for emitAtStart to false
 //
 // ----------------------------------------------------------------------
 
@@ -29,7 +29,7 @@
 
 #include "boost/shared_ptr.hpp"
 
-namespace mf {       
+namespace mf {
 
 
 // ----------------------------------------------------------------------
@@ -37,7 +37,7 @@ namespace mf {
 // ----------------------------------------------------------------------
 
 class ErrorObj;
-namespace service {       
+namespace service {
 
 class ELdestControl;
 
@@ -55,7 +55,7 @@ public:
   // ---  Birth/death:
   //
   ELoutput();
-  ELoutput( std::ostream & os, bool emitAtStart = false );	// 6/11/07 mf
+  ELoutput( std::ostream & os, bool emitAtStart = false );      // 6/11/07 mf
   ELoutput( const ELstring & fileName, bool emitAtStart = false );
   ELoutput( const ELoutput & orig );
   virtual ~ELoutput();
@@ -102,10 +102,10 @@ protected:
 
   virtual void summarization ( const ELstring & fullTitle
                              , const ELstring & sumLines );
-			     
+
   virtual void changeFile (std::ostream & os);
   virtual void changeFile (const ELstring & filename);
-  virtual void flush(); 				       
+  virtual void flush();
 
 
 protected:

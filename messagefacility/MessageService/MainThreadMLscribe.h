@@ -23,7 +23,7 @@
 #include <iostream>
 
 namespace mf {
-namespace service {       
+namespace service {
 
 // ----------------------------------------------------------------------
 //
@@ -32,12 +32,12 @@ namespace service {
 // This class is a concrete of AbstractMessageLoggerScribe
 // Its purpose exists ONLY if there is a second thread running the workhorse
 // scrribe.  In that case, the workhorse will be consuming from a
-// SingleConsumerQ, and this class is the one that places the item on said 
+// SingleConsumerQ, and this class is the one that places the item on said
 // queue.  It does work that used to be the realm of MessageLoggerQ.
 //
 // Changes:
 //
-// 0 - 8/7/09  	Initial version mf and crj
+// 0 - 8/7/09   Initial version mf and crj
 //
 // -----------------------------------------------------------------------
 
@@ -51,16 +51,16 @@ public:
   virtual ~MainThreadMLscribe();
 
   // --- receive and act on messages:
-  virtual							
+  virtual
   void  runCommand(MessageLoggerQ::OpCode  opcode, void * operand);
-		  						
 
-  // --- obtain a pointer to the errorlog 
+
+  // --- obtain a pointer to the errorlog
   static ErrorLog * getErrorLog_ptr() {return static_errorlog_p;}
-  
+
 private:
 
-  static ErrorLog		    * static_errorlog_p;
+  static ErrorLog                   * static_errorlog_p;
    boost::shared_ptr<ThreadQueue>   m_queue;
 };  // MainThreadMLscribe
 

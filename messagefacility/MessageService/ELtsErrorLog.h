@@ -5,9 +5,9 @@
 // ----------------------------------------------------------------------
 //
 // ELtsErrorLog is an implementation class for private derivation by
-//		ThreadSafeErrorLog.
+//              ThreadSafeErrorLog.
 //
-// 5/31/00 mf	Created file.
+// 5/31/00 mf   Created file.
 //
 // ----------------------------------------------------------------------
 
@@ -15,8 +15,8 @@
 
 #include "messagefacility/MessageLogger/ErrorObj.h"
 
-namespace mf {       
-namespace service {       
+namespace mf {
+namespace service {
 
 // ----------------------------------------------------------------------
 // ELtsErrorLog:
@@ -95,11 +95,11 @@ protected:
   // -----  member data:
   //
 protected:
-  ELadministrator  * 	a;
-  ErrorLog 		e;
-  ELstring 		process;
-  bool 			msgIsActive;
-  mf::ErrorObj		msg;
+  ELadministrator  *    a;
+  ErrorLog              e;
+  ELstring              process;
+  bool                  msgIsActive;
+  mf::ErrorObj          msg;
 
 };  // ELtsErrorLog
 
@@ -115,7 +115,7 @@ inline void ELtsItem ( ELtsErrorLog & e, const T & t );
 
 // ----------------------------------------------------------------------
 // Message Continuation:
-//   streaming for char [] 
+//   streaming for char []
 // ----------------------------------------------------------------------
 
 inline void ELtsItem ( ELtsErrorLog & e, const char s[] );

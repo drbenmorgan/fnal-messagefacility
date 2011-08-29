@@ -3,10 +3,10 @@
 
 // Change log
 //
-//  1  mf 8/25/08	First implementation
-//			
-//  2  mf 6/22/09	Change to use severity in the key by using entry as key
-//			Also, LoggedErrorsOnlySummary()
+//  1  mf 8/25/08       First implementation
+//
+//  2  mf 6/22/09       Change to use severity in the key by using entry as key
+//                      Also, LoggedErrorsOnlySummary()
 namespace mf {
 
 bool EnableLoggedErrorsSummary() {
@@ -30,7 +30,7 @@ std::vector<ErrorSummaryEntry> LoggedErrorsSummary() {
   ErrorSummaryEntry e;
   ErrorSummaryMapIterator end = MessageSender::errorSummaryMap.end();
   for (ErrorSummaryMapIterator i = MessageSender::errorSummaryMap.begin();
-  	i != end; ++i) {
+        i != end; ++i) {
     e       = i->first;    // sets category, module and severity ChangeLog 2
     e.count = (i->second); // count is 0 in key; set it to correct value
     v.push_back(e);
@@ -45,10 +45,10 @@ std::vector<ErrorSummaryEntry> LoggedErrorsOnlySummary() {    //  ChangeLog 2
   ErrorSummaryEntry e;
   ErrorSummaryMapIterator end = MessageSender::errorSummaryMap.end();
   for (ErrorSummaryMapIterator i = MessageSender::errorSummaryMap.begin();
-  	i != end; ++i) {
-    e = i->first;    
+        i != end; ++i) {
+    e = i->first;
     if (e.severity >= mf::ELerror) {
-      e.count = (i->second); 
+      e.count = (i->second);
       v.push_back(e);
     }
   }

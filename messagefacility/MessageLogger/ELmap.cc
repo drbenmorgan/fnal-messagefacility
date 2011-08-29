@@ -9,9 +9,9 @@
 //   99-06-11   mf      Corrected logic for suppressing output when n > limit
 //                      but not but a factor of 2**K
 //   06-05-16   mf      Added code to establish interval and to use skipped
-//			and interval when determinine in add() whehter to react
+//                      and interval when determinine in add() whehter to react
 //   06-05-19   wmtan   Bug fix.  skipped = 0, not skipped == 0.
-//			and interval when determinine in add() whehter to react
+//                      and interval when determinine in add() whehter to react
 //   09-04-15   wmtan   Use smart pointers with new, not bare pointers
 //
 // ----------------------------------------------------------------------
@@ -84,16 +84,16 @@ bool  CountAndLimit::add()  {
 
   lastTime = now;
 
-  ++n;  
+  ++n;
   ++aggregateN;
-  ++skipped;  
+  ++skipped;
 
 #ifdef ELcountTRACE
   std::cerr << "&&&       n is " << n << "-- limit is    " << limit    << "\n";
-  std::cerr << "&&& skipped is " << skipped 
-  	                              << "-- interval is " << interval << "\n";
+  std::cerr << "&&& skipped is " << skipped
+                                      << "-- interval is " << interval << "\n";
 #endif
-  
+
   if (skipped < interval) return false;
 
   if ( limit == 0 ) return false;        // Zero limit - never react to this
@@ -101,14 +101,14 @@ bool  CountAndLimit::add()  {
     skipped = 0;
     return true;
   }
-  
+
   // Now we are over the limit - have we exceeded limit by 2^N * limit?
   long  diff = n - limit;
   long  r = diff/limit;
   if ( r*limit != diff ) { // Not a multiple of limit - don't react
     return false;
-  }  
-  if ( r == 1 )   {	// Exactly twice limit - react
+  }
+  if ( r == 1 )   {     // Exactly twice limit - react
     skipped = 0;
     return true;
   }
@@ -118,7 +118,7 @@ bool  CountAndLimit::add()  {
     r >>= 1;
   }
   // If you never get an odd number till one, r is 2**n so react
-  
+
   skipped = 0;
   return true;
 

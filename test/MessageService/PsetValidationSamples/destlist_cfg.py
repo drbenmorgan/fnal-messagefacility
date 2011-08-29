@@ -14,8 +14,8 @@ process.MessageLogger = cms.Service("MessageLogger",
 
 #enable one of the following -- the first should pass, the rest fail
     destinations = cms.untracked.vstring( 'u1_warnings',  'u1_errors',
-                   'u1_infos',  'u1_debugs', 'u1_default', 'u1_x'), 
-        
+                   'u1_infos',  'u1_debugs', 'u1_default', 'u1_x'),
+
 #    destinations = cms.untracked.vstring('cerr'),
 #    destinations = cms.untracked.vstring('cout'),
 #    destinations = cms.vstring('cout'),
@@ -33,7 +33,7 @@ process.MessageLogger = cms.Service("MessageLogger",
 #   u1_x = cms.bool(true),
 #   u1_x = cms.string('abc'),
 #   u1_x = cms.vstring('abc','def'),
-    
+
     u1_infos = cms.untracked.PSet(
         threshold = cms.untracked.string('INFO'),
         noTimeStamps = cms.untracked.bool(True),
@@ -73,7 +73,7 @@ process.MessageLogger = cms.Service("MessageLogger",
     ),
     fwkJobReports = cms.untracked.vstring('u1_job_report.mxml'),
     debugModules = cms.untracked.vstring('*'),
-    categories = cms.untracked.vstring('preEventProcessing', 
+    categories = cms.untracked.vstring('preEventProcessing',
         'FwkJob')
 )
 

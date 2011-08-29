@@ -18,7 +18,7 @@
 // Original Author:  W. Brown and M. Fischler
 //         Created:  Fri Nov 11 16:38:19 CST 2005
 //     Major Split:  Tue Feb 14 15:00:00 CST 2006
-//			See FWCore/MessageLogger/MessageLogger.h
+//                      See FWCore/MessageLogger/MessageLogger.h
 //
 
 // system include files
@@ -89,7 +89,7 @@ namespace mf  {
                               std::string const &levelsConfigLabel);
       void setContext(std::string const &currentPhase,
                       EnabledState previousEnabledState);
-  
+
     private:
 
       // put an ErrorLog object here, and maybe more

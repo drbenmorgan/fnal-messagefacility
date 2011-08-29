@@ -24,7 +24,7 @@ class UTC_V1
 public:
   explicit
     UTC_V1( edm::ParameterSet const & p) : ev(0)
-  { 
+  {
     identifier = p.getUntrackedParameter<int> ("identifier", 99);
   }
 
@@ -40,7 +40,7 @@ public:
   virtual void beginJob ();
   virtual void beginRun (edm::Run const&, edm::EventSetup const&);
   virtual void beginLuminosityBlock
-  		(edm::LuminosityBlock const&, edm::EventSetup const&);
+                (edm::LuminosityBlock const&, edm::EventSetup const&);
 
 
 
@@ -55,7 +55,7 @@ class UTC_V2
 public:
   explicit
     UTC_V2( edm::ParameterSet const & p) : ev(0)
-  { 
+  {
     identifier = p.getUntrackedParameter<int> ("identifier", 98);
   }
 

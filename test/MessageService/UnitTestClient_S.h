@@ -22,9 +22,9 @@ class UTC_S1
 public:
   explicit
     UTC_S1( edm::ParameterSet const & p)
-  { 
+  {
     identifier = p.getUntrackedParameter<int> ("identifier", 99);
-    edm::GroupLogStatistics("grouped_cat");  
+    edm::GroupLogStatistics("grouped_cat");
   }
 
   virtual
@@ -48,7 +48,7 @@ class UTC_S2
 public:
   explicit
     UTC_S2( edm::ParameterSet const & p)
-  { 
+  {
     identifier = p.getUntrackedParameter<int> ("identifier", 98);
   }
 
@@ -72,7 +72,7 @@ class UTC_SUMMARY
 public:
   explicit
     UTC_SUMMARY( edm::ParameterSet const & p)
-  { 
+  {
   }
 
   virtual

@@ -4,22 +4,22 @@
 
 // ----------------------------------------------------------------------
 //
-// ELcontextSupplier	a class with a few (pure virtual) methods to
-//			provides strings for summary, ordinary, and
-//			more verbose full constexts.  The context is
-//			meant to convey framework-wide info, such as
-//			current run and event.
+// ELcontextSupplier    a class with a few (pure virtual) methods to
+//                      provides strings for summary, ordinary, and
+//                      more verbose full constexts.  The context is
+//                      meant to convey framework-wide info, such as
+//                      current run and event.
 //
 //
-//	THIS HEADER FILE DEFINES AN INTERFACE AND IS INCLUDED IN
-//	FRAMEWORK CODE THAT OUGHT NOT TO BE FORCED TO RECOMPILE
-//	UNNECESSARILY.
+//      THIS HEADER FILE DEFINES AN INTERFACE AND IS INCLUDED IN
+//      FRAMEWORK CODE THAT OUGHT NOT TO BE FORCED TO RECOMPILE
+//      UNNECESSARILY.
 //
-//	THEREFORE, CHANGES IN THIS FILE SHOULD BE AVOIDED IF POSSIBLE.
+//      THEREFORE, CHANGES IN THIS FILE SHOULD BE AVOIDED IF POSSIBLE.
 //
-// 7/7/98 mf	Created file.
+// 7/7/98 mf    Created file.
 // 7/14/98 pgc  Renamed from ELcontextSupplier to ELcontextSupplier
-// 9/8/98 web	Minor touch-ups
+// 9/8/98 web   Minor touch-ups
 // 12/20/99 mf  Added virtual destructor.
 //
 // ----------------------------------------------------------------------
@@ -28,8 +28,8 @@
 #include "messagefacility/MessageLogger/ELstring.h"
 #include "messagefacility/MessageLogger/ErrorObj.h"
 
-namespace mf {       
-namespace service {       
+namespace mf {
+namespace service {
 
 // ----------------------------------------------------------------------
 // ELcontextSupplier:

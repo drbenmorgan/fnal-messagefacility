@@ -237,7 +237,7 @@
 
 <bin name=makeJobReport file=makeJobReport.cpp>
 # Removed because it is up at the top of the file: <use name=boost>
- <use name=boost_program_options> 
+ <use name=boost_program_options>
  <use name=FWCore/Framework>
  <use name=FWCore/MessageLogger>
  <use name=FWCore/PluginManager>

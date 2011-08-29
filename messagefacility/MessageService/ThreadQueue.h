@@ -4,7 +4,7 @@
 //
 // Package:     MessageService
 // Class  :     ThreadQueue
-// 
+//
 /**\class ThreadQueue ThreadQueue.h FWCore/MessageService/interface/ThreadQueue.h
 
  Description: <one line class summary>
@@ -47,7 +47,7 @@ class ThreadQueue
   // ---  place a message onto the queue:
   void  produce( MessageLoggerQ::OpCode opcode, void *   operand );
 
- 
+
    private:
       ThreadQueue(const ThreadQueue&); // stop default
 

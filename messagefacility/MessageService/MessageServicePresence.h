@@ -9,7 +9,7 @@
 
 
 namespace mf  {
-namespace service {       
+namespace service {
 
 class ThreadQueue;
 

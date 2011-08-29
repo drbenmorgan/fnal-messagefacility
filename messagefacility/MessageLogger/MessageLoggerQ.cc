@@ -16,27 +16,27 @@
 //////////////////////////////////////////////////////////////////////
 
 // Change Log
-// 
+//
 // 1 - 3/9/07 mf
-//	Addition of JOB command, to be used by --jobreport
+//      Addition of JOB command, to be used by --jobreport
 // 2 - 6/19/07 mf
-//	Addition of MOD command, to be used by --mode
+//      Addition of MOD command, to be used by --mode
 // 3 - 7/24/07 mf
-//	Addition of SHT command, to be used when no .cfg file was given
+//      Addition of SHT command, to be used when no .cfg file was given
 // 4 - 7/25/07 mf
-//	Change of each mommand function to start with MLq, e.g. MLqLOG
+//      Change of each mommand function to start with MLq, e.g. MLqLOG
 // 5 - 8/7/07 mf
-//	Addition of FLS command, to be used by FlushMessageLog
+//      Addition of FLS command, to be used by FlushMessageLog
 // 6 - 8/16/07 mf
-//	Addition of GRP command, to be used by GroupLogStatistics
+//      Addition of GRP command, to be used by GroupLogStatistics
 // 7 - 6/18/08 mf
-//	Addition of JRS command, to be used by SummarizeInJobReport
+//      Addition of JRS command, to be used by SummarizeInJobReport
 // 8 - 10/24/08 mf
-//	Support for singleThread
+//      Support for singleThread
 // 9 - 8/6/09  mf
 //      handshaked() method to support cleaner abstraction of scribes
 // 10 - 8/7/09  mf, crj
-//      major down-functioning:  the actual dealing with buffer of the 
+//      major down-functioning:  the actual dealing with buffer of the
 //      SingleConsumerQ is moved off into MainThreadMLscribe.
 // 11 - 8/10/09 mf, cdj
 //      StandAloneScribe - a class that gets installed as the scribe if
@@ -44,7 +44,7 @@
 //      logger
 // 12 - 8/10/09 mf, cdj
 //      Removal of use of singleThread from this class - does not need it any
-//	longer
+//      longer
 // 13 - 8/10/09 mf
 //      Special control of standAlone message logging
 // 14 - 8/12/09 mf, cdj
@@ -57,62 +57,62 @@ using namespace mf;
 // ChangeLog 11
 namespace {
    class StandAloneScribe : public mf::service::AbstractMLscribe {
-      
+
    public:
       StandAloneScribe() {}
-            
+
       // ---------- member functions ---------------------------
       virtual
       void  runCommand(mf::MessageLoggerQ::OpCode  opcode, void * operand);
-      
+
    private:
       StandAloneScribe(const StandAloneScribe&); // stop default
-      
+
       const StandAloneScribe& operator=(const StandAloneScribe&); // stop default
-      
+
       // ---------- member data --------------------------------
-      
-   };      
-   
-   void  
+
+   };
+
+   void
    StandAloneScribe::runCommand(mf::MessageLoggerQ::OpCode  opcode, void * operand) {
       //even though we don't print, have to clean up memory
       switch (opcode) {
          case mf::MessageLoggerQ::LOG_A_MESSAGE: {
             mf::ErrorObj *  errorobj_p = static_cast<mf::ErrorObj *>(operand);
-	    if ( MessageLoggerQ::ignore				// ChangeLog 13
-	    		(errorobj_p->xid().severity, errorobj_p->xid().id) ) {
+            if ( MessageLoggerQ::ignore                         // ChangeLog 13
+                        (errorobj_p->xid().severity, errorobj_p->xid().id) ) {
               delete errorobj_p;
               break;
-	    }
-	    if (errorobj_p->is_verbatim()) {
- 	      std::cerr<< errorobj_p->fullText() << std::endl;
-	    } else {
- 	      std::cerr<< "%MSG" << errorobj_p->xid().severity.getSymbol()
-	               << " " << errorobj_p->xid().id << ": \n"
-            	       << errorobj_p->fullText() << "\n"
-		       << "%MSG"
-		       << std::endl;
-	    }
+            }
+            if (errorobj_p->is_verbatim()) {
+              std::cerr<< errorobj_p->fullText() << std::endl;
+            } else {
+              std::cerr<< "%MSG" << errorobj_p->xid().severity.getSymbol()
+                       << " " << errorobj_p->xid().id << ": \n"
+                       << errorobj_p->fullText() << "\n"
+                       << "%MSG"
+                       << std::endl;
+            }
             delete errorobj_p;
             break;
          }
          case mf::MessageLoggerQ::JOBREPORT:
          case mf::MessageLoggerQ::JOBMODE:
          case mf::MessageLoggerQ::GROUP_STATS:
-	 {
+         {
             std::string* string_p = static_cast<std::string*> (operand);
             delete string_p;
             break;
-	 }
+         }
          default:
             break;
       }
-   }   
+   }
 
   // Changelog 14
-  boost::shared_ptr<StandAloneScribe> obtainStandAloneScribePtr() {   
-    static boost::shared_ptr<StandAloneScribe> 
+  boost::shared_ptr<StandAloneScribe> obtainStandAloneScribePtr() {
+    static boost::shared_ptr<StandAloneScribe>
       standAloneScribe_ptr( new StandAloneScribe );
     return standAloneScribe_ptr;
   }
@@ -120,9 +120,9 @@ namespace {
 
 } // end of anonymous namespace
 
-boost::shared_ptr<mf::service::AbstractMLscribe>  
-  MessageLoggerQ::mlscribe_ptr = obtainStandAloneScribePtr();  
-  				// changeLog 8, 11, 14
+boost::shared_ptr<mf::service::AbstractMLscribe>
+  MessageLoggerQ::mlscribe_ptr = obtainStandAloneScribePtr();
+                                // changeLog 8, 11, 14
 
 MessageLoggerQ::MessageLoggerQ()
 { }
@@ -141,9 +141,9 @@ MessageLoggerQ *
 
 void
   MessageLoggerQ::setMLscribe_ptr
-  	(boost::shared_ptr<mf::service::AbstractMLscribe> m) // changeLog 8, 14
+        (boost::shared_ptr<mf::service::AbstractMLscribe> m) // changeLog 8, 14
 {
-  if (!m) { 
+  if (!m) {
     mlscribe_ptr = obtainStandAloneScribePtr();
   } else {
     mlscribe_ptr = m;
@@ -157,11 +157,11 @@ void
 } // simpleCommand
 
 void
-  MessageLoggerQ::handshakedCommand( 
-  	OpCode opcode, 
-	void * operand,
-	std::string const & commandMnemonic )
-{								// Change Log 10
+  MessageLoggerQ::handshakedCommand(
+        OpCode opcode,
+        void * operand,
+        std::string const & commandMnemonic )
+{                                                               // Change Log 10
   try {
     mlscribe_ptr->runCommand(opcode, operand);
   }
@@ -169,30 +169,30 @@ void
   {
     ex << "\n The preceding exception was thrown in MessageLoggerScribe\n";
     ex << "and forwarded to the main thread from the Messages thread.";
-    std::cerr << "exception from MessageLoggerQ::" 
-              << commandMnemonic << " - exception what() is \n" 
-    	      << ex.what();
+    std::cerr << "exception from MessageLoggerQ::"
+              << commandMnemonic << " - exception what() is \n"
+              << ex.what();
     // TODO - get the above text into the what itself
-    throw ex;   
-  }  
+    throw ex;
+  }
 }  // handshakedCommand
 
 void
   MessageLoggerQ::MLqEND()
 {
-  simpleCommand (END_THREAD, (void *)0); 
+  simpleCommand (END_THREAD, (void *)0);
 }  // MessageLoggerQ::END()
 
 void
   MessageLoggerQ::MLqSHT()
 {
-  simpleCommand (SHUT_UP, (void *)0); 
+  simpleCommand (SHUT_UP, (void *)0);
 }  // MessageLoggerQ::SHT()
 
 void
   MessageLoggerQ::MLqLOG( ErrorObj * p )
 {
-  simpleCommand (LOG_A_MESSAGE, static_cast<void *>(p)); 
+  simpleCommand (LOG_A_MESSAGE, static_cast<void *>(p));
 }  // MessageLoggerQ::LOG()
 
 
@@ -205,42 +205,42 @@ void
 void
 MessageLoggerQ::MLqEXT( service::NamedDestination* p )
 {
-  simpleCommand (EXTERN_DEST, static_cast<void *>(p)); 
+  simpleCommand (EXTERN_DEST, static_cast<void *>(p));
 }
 
 void
   MessageLoggerQ::MLqSUM( )
 {
-  simpleCommand (SUMMARIZE, 0); 
+  simpleCommand (SUMMARIZE, 0);
 }  // MessageLoggerQ::SUM()
 
 void
   MessageLoggerQ::MLqJOB( std::string * j )
 {
-  simpleCommand (JOBREPORT, static_cast<void *>(j)); 
+  simpleCommand (JOBREPORT, static_cast<void *>(j));
 }  // MessageLoggerQ::JOB()
 
 void
   MessageLoggerQ::MLqMOD( std::string * jm )
 {
-  simpleCommand (JOBMODE, static_cast<void *>(jm)); 
+  simpleCommand (JOBMODE, static_cast<void *>(jm));
 }  // MessageLoggerQ::MOD()
 
 
 void
-  MessageLoggerQ::MLqFLS(  )			// Change Log 5
+  MessageLoggerQ::MLqFLS(  )                    // Change Log 5
 {
   // The ConfigurationHandshake, developed for synchronous CFG, contains a
   // place to convey exception information.  FLS does not need this, nor does
-  // it need the parameter set, but we are reusing ConfigurationHandshake 
+  // it need the parameter set, but we are reusing ConfigurationHandshake
   // rather than reinventing the mechanism.
   handshakedCommand(FLUSH_LOG_Q, 0, "FLS" );
 }  // MessageLoggerQ::FLS()
 
 void
-  MessageLoggerQ::MLqGRP( std::string * cat_p )  	// Change Log 6
+  MessageLoggerQ::MLqGRP( std::string * cat_p )         // Change Log 6
 {
-  simpleCommand (GROUP_STATS, static_cast<void *>(cat_p)); 
+  simpleCommand (GROUP_STATS, static_cast<void *>(cat_p));
 }  // MessageLoggerQ::GRP()
 
 void
@@ -265,14 +265,14 @@ bool
 mf::ELseverityLevel MessageLoggerQ::threshold ("WARNING");
 std::set<std::string> MessageLoggerQ::squelchSet;
 void MessageLoggerQ::standAloneThreshold(std::string const & severity) {
-  threshold = mf::ELseverityLevel(severity);  
+  threshold = mf::ELseverityLevel(severity);
 }
 void MessageLoggerQ::squelch(std::string const & category) {
-  squelchSet.insert(category);  
+  squelchSet.insert(category);
 }
-bool MessageLoggerQ::ignore ( mf::ELseverityLevel const & severity, 
-  			       std::string const & category ) {
+bool MessageLoggerQ::ignore ( mf::ELseverityLevel const & severity,
+                               std::string const & category ) {
   if ( severity < threshold ) return true;
   if ( squelchSet.count(category) > 0 ) return true;
   return false;
-}			       
+}

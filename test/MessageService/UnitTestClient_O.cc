@@ -14,10 +14,10 @@ void
                            , edm::EventSetup const & /*unused*/
                               )
 {
-  edm::LogInfo   ("importantInfo")   
-  		<< "This LogInfo message should appear in both destinations";
-  edm::LogInfo   ("routineInfo")   
-		<< "This LogInfo message should appear in the info destination";
+  edm::LogInfo   ("importantInfo")
+                << "This LogInfo message should appear in both destinations";
+  edm::LogInfo   ("routineInfo")
+                << "This LogInfo message should appear in the info destination";
 
 
  }  // MessageLoggerClient::analyze()

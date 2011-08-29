@@ -26,7 +26,7 @@ void
 {
 //  std::cerr << "PSetTestClient_A::analyze called\n";
   edm::LogError ("x") << "xa = " << xa << " xb = " << xb;
-}  
+}
 
 
 } // end namespace edmtest

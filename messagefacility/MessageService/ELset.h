@@ -10,8 +10,8 @@
 //
 // The following elements of set semantics are relied upon:
 //      insert()
-//	clear()
-//	find() which returns an iterator which may or may not be .end()
+//      clear()
+//      find() which returns an iterator which may or may not be .end()
 //
 // ----------------------------------------------------------------------
 
@@ -20,8 +20,8 @@
 #include <set>
 
 
-namespace mf {       
-namespace service {       
+namespace mf {
+namespace service {
 
 
 struct ELsetS {

@@ -4,25 +4,25 @@
 
 // ----------------------------------------------------------------------
 //
-// ErrorLog 	provides interface to the module-wide variable by which
-//		users issue log messages.  Both the physicist and the
-//		frameworker interact with this class, which has a piece
-//		of module name information, but mainly works thru
-//		dispatching to the ELadministrator.
+// ErrorLog     provides interface to the module-wide variable by which
+//              users issue log messages.  Both the physicist and the
+//              frameworker interact with this class, which has a piece
+//              of module name information, but mainly works thru
+//              dispatching to the ELadministrator.
 //
-// 7/6/98  mf	Created file.
-// 5/2/99  web	Added non-default constructor.
-// 3/16/00 mf	Added operator() (nbytes, data) to invoke ELrecv.
-// 6/6/00  web	Reflect consolidation of ELadministrator/X; consolidate
-//		ErrorLog/X.
-// 3/13/01 mf	hexTrigger and related global methods
-// 3/13/01 mf	setDiscardThreshold 
-// 5/7/01  mf	operator<< (const char[]) to avoid many instantiations of 
-//		the template one for each length of potential error message 
-// 3/6/02  mf	getELdestControl()
+// 7/6/98  mf   Created file.
+// 5/2/99  web  Added non-default constructor.
+// 3/16/00 mf   Added operator() (nbytes, data) to invoke ELrecv.
+// 6/6/00  web  Reflect consolidation of ELadministrator/X; consolidate
+//              ErrorLog/X.
+// 3/13/01 mf   hexTrigger and related global methods
+// 3/13/01 mf   setDiscardThreshold
+// 5/7/01  mf   operator<< (const char[]) to avoid many instantiations of
+//              the template one for each length of potential error message
+// 3/6/02  mf   getELdestControl()
 // 12/2/02 mf   operator()( int debugLevel ); also
-//		debugVerbosityLevel, debugSeverityLevel, debugMessageId
-// 3/17/04 mf	spaceAfterInts
+//              debugVerbosityLevel, debugSeverityLevel, debugMessageId
+// 3/17/04 mf   spaceAfterInts
 //
 // ----------------------------------------------------------------------
 
@@ -32,8 +32,8 @@
 
 #include <sstream>
 
-namespace mf {       
-namespace service {       
+namespace mf {
+namespace service {
 
 
 // ----------------------------------------------------------------------
@@ -61,8 +61,8 @@ public:
   // -----  start a new logging operation:
   //
   ErrorLog & operator()( const ELseverityLevel & sev, const ELstring & id );
-	//-| If overriding this, please see Note 1
-	//-| at the bottom of this file!
+        //-| If overriding this, please see Note 1
+        //-| at the bottom of this file!
 
   inline ErrorLog & operator()( int debugLevel );
 
@@ -74,10 +74,10 @@ public:
 
   // -----  logging operations:
   //
-  ErrorLog & operator()( mf::ErrorObj & msg );	  // an entire message
+  ErrorLog & operator()( mf::ErrorObj & msg );    // an entire message
 
   ErrorLog & emit( const ELstring & msg );        // just one part of a message
-  ErrorLog & endmsg();				  // no more parts forthcoming
+  ErrorLog & endmsg();                            // no more parts forthcoming
   ErrorLog & operator<<( void (* f)(ErrorLog &) );// allow log << zmel::endmsg
 
 // ----------------------------------------------------------------------
@@ -92,8 +92,8 @@ public:
 
   // -----  mutators:
   //
-  void setModule ( const ELstring & modName );	// These two are IDENTICAL
-  void setPackage( const ELstring & pkgName );	// These two are IDENTICAL
+  void setModule ( const ELstring & modName );  // These two are IDENTICAL
+  void setPackage( const ELstring & pkgName );  // These two are IDENTICAL
 
   // -----  logging collected message:
   //
@@ -102,37 +102,37 @@ public:
   // -----  advanced control options:
 
   int             setHexTrigger       (int trigger);
-  bool		  setSpaceAfterInt    (bool space=true);
+  bool            setSpaceAfterInt    (bool space=true);
   ELseverityLevel setDiscardThreshold (ELseverityLevel sev);
   void            setDebugVerbosity   (int debugVerbosity);
   void            setDebugMessages    (ELseverityLevel sev, ELstring id);
 
   // -----  recovery of an ELdestControl handle
 
-  bool getELdestControl (const ELstring & name, 
-			 ELdestControl & theDestControl) const;
+  bool getELdestControl (const ELstring & name,
+                         ELdestControl & theDestControl) const;
 
   // -----  information about this ErrorLog instance
-  
+
   ELstring moduleName() const;
   ELstring subroutineName() const;
-  
+
   // -----  member data:
   //
 protected:
   ELadministrator  * a;
 
 private:
-  ELstring  		subroutine;
-  ELstring  		module;
+  ELstring              subroutine;
+  ELstring              module;
 public:
-  int	    		hexTrigger;
-  bool			spaceAfterInt;
-  ELseverityLevel 	discardThreshold;
-  bool      		discarding;
-  int			debugVerbosityLevel;
-  ELseverityLevel 	debugSeverityLevel;
-  ELstring		debugMessageId;
+  int                   hexTrigger;
+  bool                  spaceAfterInt;
+  ELseverityLevel       discardThreshold;
+  bool                  discarding;
+  int                   debugVerbosityLevel;
+  ELseverityLevel       debugSeverityLevel;
+  ELstring              debugMessageId;
 
 };  // ErrorLog
 

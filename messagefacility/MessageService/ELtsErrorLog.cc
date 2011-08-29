@@ -298,8 +298,8 @@ bool ELtsErrorLog::pokeMsg ( mf::ErrorObj & msg )  {
 }
 
 static inline void msgabort() {
-  mf::Exception e(mf::errors::LogicError, 
-  	"msgabort - MessageLogger tsErrorLog requested to abort");
+  mf::Exception e(mf::errors::LogicError,
+        "msgabort - MessageLogger tsErrorLog requested to abort");
   throw e;
 }
 
@@ -340,5 +340,5 @@ void ELtsErrorLog::dispatch ( mf::ErrorObj & msg )  {
 
 }
 
-} // end of namespace service  
-} // end of namespace mf  
+} // end of namespace service
+} // end of namespace mf

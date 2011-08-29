@@ -3,4 +3,4 @@
  <class name="mf::ELseverityLevel"/>
  <class name="std::vector<mf::ErrorSummaryEntry>"/>
 </lcgdict>
- 
+

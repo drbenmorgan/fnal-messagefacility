@@ -10,11 +10,11 @@ namespace mf {
                   , LogicError
     };
   } // error
-    
+
   namespace detail {
     std::string translate( errors::error );
   }
-  
+
   typedef  cet::coded_exception<errors::error,detail::translate>
   Exception;
 } // mf

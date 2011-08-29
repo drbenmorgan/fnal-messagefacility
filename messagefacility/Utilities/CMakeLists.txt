@@ -41,7 +41,7 @@ INSTALL (FILES ${includeFiles}
 
 INSTALL (FILES CMakeLists.txt
                ${includeFiles}
-	       ${srcFiles}
+               ${srcFiles}
     DESTINATION ${product}/${version}/source/messagefacility/Utilities
     )
 
@@ -49,5 +49,5 @@ INSTALL (TARGETS Utilities UtilitiesS
     RUNTIME DESTINATION ${flavorqual_dir}/bin
     LIBRARY DESTINATION ${flavorqual_dir}/lib
     ARCHIVE DESTINATION ${flavorqual_dir}/lib
-    ) 
+    )
 

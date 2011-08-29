@@ -24,7 +24,7 @@ class UTC_T1
 public:
   explicit
     UTC_T1( edm::ParameterSet const & p) : ev(0)
-  { 
+  {
     identifier = p.getUntrackedParameter<int> ("identifier", 99);
   }
 
@@ -48,7 +48,7 @@ class UTC_T2
 public:
   explicit
     UTC_T2( edm::ParameterSet const & p) : ev(0)
-  { 
+  {
     identifier = p.getUntrackedParameter<int> ("identifier", 98);
   }
 

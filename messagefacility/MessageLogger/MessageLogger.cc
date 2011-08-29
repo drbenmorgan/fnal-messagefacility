@@ -36,7 +36,7 @@
 
 namespace {
   std::string stripLeadingDirectoryTree(const std::string & file);
-}  
+}
 
 namespace mf {
 
@@ -177,7 +177,7 @@ fhicl::ParameterSet MessageFacilityService::ConfigurationFile(
 
   if(    (sub_start==npos && sub_end!=npos)
       || (sub_start!=npos && sub_end==npos)
-      || (sub_start > sub_end) 
+      || (sub_start > sub_end)
       || (sub_start!=0 && sub_start!=npos) )
   {
     std::cout << "Unrecognized configuration file. "
@@ -187,7 +187,7 @@ fhicl::ParameterSet MessageFacilityService::ConfigurationFile(
 
   std::string env;
   std::string fname;
-  boost::scoped_ptr<cet::filepath_maker> 
+  boost::scoped_ptr<cet::filepath_maker>
               policy_ptr(new cet::filepath_maker());
 
   if (sub_start==0)  // env embedded in the filename

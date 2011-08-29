@@ -5,15 +5,15 @@
 #include <sstream>
 
 namespace mf {
-  void 
+  void
   printMFException(Exception& e, char const* prog, JobReport * jobRep, int rc) try {
     std::string programName(prog ? prog : "program");
     std::string shortDesc("MFxception");
     std::ostringstream longDesc;
-    longDesc << "mf::Exception caught in " 
-	     << programName
-	     << "\n"
-	     << e.explain_self();
+    longDesc << "mf::Exception caught in "
+             << programName
+             << "\n"
+             << e.explain_self();
     LogSystem(shortDesc) << longDesc.str() << "\n";
     if(jobRep) jobRep->reportError(shortDesc, longDesc.str(), rc);
   } catch(...) {
@@ -24,9 +24,9 @@ namespace mf {
     std::string shortDesc("std::bad_allocException");
     std::ostringstream longDesc;
     longDesc << "std::bad_alloc exception caught in "
-	     << programName
-	     << "\n"
-	     << "The job has probably exhausted the virtual memory available to the process.\n";
+             << programName
+             << "\n"
+             << "The job has probably exhausted the virtual memory available to the process.\n";
     LogSystem(shortDesc) << longDesc.str() << "\n";
     if(jobRep) jobRep->reportError(shortDesc, longDesc.str(), rc);
   } catch(...) {
@@ -36,10 +36,10 @@ namespace mf {
     std::string programName(prog ? prog : "program");
     std::string shortDesc("StdLibException");
     std::ostringstream longDesc;
-    longDesc << "Standard library exception caught in " 
-	     << programName
-	     << "\n"
-	     << e.what();
+    longDesc << "Standard library exception caught in "
+             << programName
+             << "\n"
+             << e.what();
     LogSystem(shortDesc) << longDesc.str() << "\n";
     if (jobRep) jobRep->reportError(shortDesc, longDesc.str(), rc);
   } catch(...) {
@@ -50,8 +50,8 @@ namespace mf {
     std::string shortDesc("UnknownException");
     std::ostringstream longDesc;
     longDesc << "Unknown exception caught in "
-	     << programName
-	     << "\n";
+             << programName
+             << "\n";
     LogSystem(shortDesc) << longDesc.str() << "\n";
     if (jobRep) jobRep->reportError(shortDesc, longDesc.str(), rc);
   } catch(...) {

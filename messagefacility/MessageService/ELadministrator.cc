@@ -404,7 +404,7 @@ void ELadministrator::setLimits( const ELstring & id, int limit )  {
 
 
 void ELadministrator::setIntervals
-			( const ELseverityLevel & sev, int interval )  {
+                        ( const ELseverityLevel & sev, int interval )  {
 
   std::list<boost::shared_ptr<ELdestination> >::iterator d;
   for ( d = sinks().begin();  d != sinks().end();  ++d )
@@ -563,7 +563,7 @@ ELadministrator::ELadministrator()
 
   std::string procinfo;
 
-  if( procfile.is_open() ) 
+  if( procfile.is_open() )
   {
     procfile >> procinfo;
     procfile.close();
@@ -616,5 +616,5 @@ ELadministrator::~ELadministrator()  {
 // ----------------------------------------------------------------------
 
 
-} // end of namespace service  
-} // end of namespace mf  
+} // end of namespace service
+} // end of namespace mf

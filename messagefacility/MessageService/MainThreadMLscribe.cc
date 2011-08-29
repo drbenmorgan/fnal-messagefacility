@@ -4,7 +4,7 @@
 //
 // Changes:
 //
-// 
+//
 
 #include "messagefacility/MessageService/MainThreadMLscribe.h"
 #include "messagefacility/MessageService/ThreadQueue.h"
@@ -14,14 +14,14 @@
 namespace mf {
 namespace service {
 
-MainThreadMLscribe::MainThreadMLscribe(boost::shared_ptr<ThreadQueue> tqp) 
-  : m_queue(tqp) 
+MainThreadMLscribe::MainThreadMLscribe(boost::shared_ptr<ThreadQueue> tqp)
+  : m_queue(tqp)
 {
 }
 
 MainThreadMLscribe::~MainThreadMLscribe() {}
 
-void  
+void
 MainThreadMLscribe::
 runCommand(MessageLoggerQ::OpCode  opcode, void * operand)
 {
@@ -35,20 +35,20 @@ runCommand(MessageLoggerQ::OpCode  opcode, void * operand)
       m_queue->produce (opcode, v);
       // wait for result to appear (in epp)
       h.c.wait(sl); // c.wait(sl) unlocks the scoped lock and sleeps till notified
-      // ... and once the MessageLoggerScribe does h.c.notify_all() ... 
+      // ... and once the MessageLoggerScribe does h.c.notify_all() ...
       ep = *h.epp;
-      // finally, release the scoped lock by letting it go out of scope 
+      // finally, release the scoped lock by letting it go out of scope
     }
     if ( ep ) {
       mf::Exception ex(*ep);
       throw ex;
-    }  
+    }
   } else {
     m_queue->produce (opcode, operand);
   }
 } // runCommand
-  
-  
 
-} // end of namespace service  
-} // end of namespace mf  
+
+
+} // end of namespace service
+} // end of namespace mf

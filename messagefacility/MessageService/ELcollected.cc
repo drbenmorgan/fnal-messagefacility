@@ -273,6 +273,6 @@ bool ELcollected::log( const mf::ErrorObj & msg )  {
 // ----------------------------------------------------------------------
 
 
-} // end of namespace service  
-} // end of namespace mf  
+} // end of namespace service
+} // end of namespace mf
 

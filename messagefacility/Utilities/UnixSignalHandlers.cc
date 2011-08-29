@@ -26,15 +26,15 @@ namespace mf {
     extern "C" {
       void ep_sigusr2(int,siginfo_t*,void*)
       {
-	FDEBUG(1) << "in sigusr2 handler\n";
-	shutdown_flag = true;
+        FDEBUG(1) << "in sigusr2 handler\n";
+        shutdown_flag = true;
       }
     }
 
 //--------------------------------------------------------------
 
     boost::mutex signum_lock;
-    volatile int signum_value = 
+    volatile int signum_value =
 #if defined(__linux__)
       SIGRTMIN;
 #else
@@ -51,7 +51,7 @@ namespace mf {
       return rc;
     }
 
-#define MUST_BE_ZERO(fun) if((fun) != 0)					\
+#define MUST_BE_ZERO(fun) if((fun) != 0)                                        \
       { perror("UnixSignalHandlers::setupSignal: sig function failed"); abort(); }
 
 //--------------------------------------------------------------
@@ -72,16 +72,16 @@ namespace mf {
       // ignore all the RT signals
       sigset_t myset;
       MUST_BE_ZERO(sigemptyset(&myset));
-      
+
       struct sigaction tmpact;
       memset(&tmpact,0,sizeof(tmpact));
       tmpact.sa_handler = SIG_IGN;
 
       for(int num = SIGRTMIN; num < SIGRTMAX; ++num) {
-	  MUST_BE_ZERO(sigaddset(&myset,num));
-	  MUST_BE_ZERO(sigaction(num,&tmpact,NULL));
+          MUST_BE_ZERO(sigaddset(&myset,num));
+          MUST_BE_ZERO(sigaction(num,&tmpact,NULL));
       }
-      
+
       MUST_BE_ZERO(pthread_sigmask(SIG_BLOCK,&myset,0));
 #endif
     }
@@ -133,22 +133,22 @@ namespace mf {
       memset(&act,0,sizeof(act));
       act.sa_sigaction = func;
       act.sa_flags = SA_RESTART;
-      
+
       // get my signal number
       int mysig = signum;
       if( mysig == SIGKILL ) {
-	perror("Cannot install handler for KILL signal");
-	return;
+        perror("Cannot install handler for KILL signal");
+        return;
       } else if( mysig == SIGSTOP ) {
-	 perror("Cannot install handler for STOP signal");
-	return;
+         perror("Cannot install handler for STOP signal");
+        return;
       }
-      
+
       if(sigaction(mysig,&act,NULL) != 0) {
-	  perror("sigaction failed");
-	  abort();
+          perror("sigaction failed");
+          abort();
       }
-      
+
       sigset_t newset;
       MUST_BE_ZERO(sigemptyset(&newset));
       MUST_BE_ZERO(sigaddset(&newset,mysig));

@@ -36,33 +36,33 @@
 //                      correctly provide the time zone.  Had been providing
 //                      CST every time.
 //
-// 12/xx/06     mf	Tailoring to CMS MessageLogger 
-//  1/11/06	mf      Eliminate time stamp from starting message 
-//  3/20/06	mf	Major formatting change to do no formatting
-//			except the header and line separation.
-//  4/04/06	mf	Move the line feed between header and text
-//			till after the first 3 items (FILE:LINE) for
-//			debug messages. 
-//  6/06/06	mf	Verbatim
-//  6/12/06	mf	Set preambleMode true when printing the header
+// 12/xx/06     mf      Tailoring to CMS MessageLogger
+//  1/11/06     mf      Eliminate time stamp from starting message
+//  3/20/06     mf      Major formatting change to do no formatting
+//                      except the header and line separation.
+//  4/04/06     mf      Move the line feed between header and text
+//                      till after the first 3 items (FILE:LINE) for
+//                      debug messages.
+//  6/06/06     mf      Verbatim
+//  6/12/06     mf      Set preambleMode true when printing the header
 //
 // Change Log
 //
-//  1 10/18/06	mf	In format_time(): Initialized ts[] with 5 extra
-//			spaces, to cover cases where time zone is more than
-//			3 characters long
+//  1 10/18/06  mf      In format_time(): Initialized ts[] with 5 extra
+//                      spaces, to cover cases where time zone is more than
+//                      3 characters long
 //
-//  2 10/30/06  mf	In log():  if severity indicated is SEVERE, do not
-//			impose limits.  This is to implement the LogSystem
-//			feature:  Those messages are never to be ignored.
+//  2 10/30/06  mf      In log():  if severity indicated is SEVERE, do not
+//                      impose limits.  This is to implement the LogSystem
+//                      feature:  Those messages are never to be ignored.
 //
-//  3 6/11/07  mf	In emit():  In preamble mode, do not break and indent 
-//			even if exceeding nominal line length.
+//  3 6/11/07  mf       In emit():  In preamble mode, do not break and indent
+//                      even if exceeding nominal line length.
 //
-//  4 6/11/07  mf	In log():  After the message, add a %MSG on its own line 
+//  4 6/11/07  mf       In log():  After the message, add a %MSG on its own line
 //
-//  5 3/27/09  mf	Properly treat charsOnLine, which had been fouled due to
-//			change 3.  In log() and emit().
+//  5 3/27/09  mf       Properly treat charsOnLine, which had been fouled due to
+//                      change 3.  In log() and emit().
 //
 // ----------------------------------------------------------------------
 
@@ -299,12 +299,12 @@ bool ELoutput::log( const mf::ErrorObj & msg )  {
   // if it was not already present:
   //
   if ( xid.severity < threshold        )  return false;
-  if ( thisShouldBeIgnored(xid.module) 
-  	&& (xid.severity < ELsevere) /* change log 2 */ )  
-					  return false;
-  if ( ! limits.add( xid )              
-    	&& (xid.severity < ELsevere) /* change log 2 */ )  
-					  return false;
+  if ( thisShouldBeIgnored(xid.module)
+        && (xid.severity < ELsevere) /* change log 2 */ )
+                                          return false;
+  if ( ! limits.add( xid )
+        && (xid.severity < ELsevere) /* change log 2 */ )
+                                          return false;
 
   #ifdef ELoutputTRACE_LOG
     std::cerr << "    =:=:=: Limits table work done \n";
@@ -315,7 +315,7 @@ bool ELoutput::log( const mf::ErrorObj & msg )  {
   preambleMode = true;
 
   if  ( !msg.is_verbatim()  ) {
-    charsOnLine = 0; 						// Change log 5
+    charsOnLine = 0;                                            // Change log 5
     emit( preamble );
     emit( xid.severity.getSymbol() );
     emit( " " );
@@ -323,13 +323,13 @@ bool ELoutput::log( const mf::ErrorObj & msg )  {
     emit( msg.idOverflow() );
     emit( ": " );
   }
-  
+
   #ifdef ELoutputTRACE_LOG
     std::cerr << "    =:=:=: Prologue done \n";
   #endif
   // Output serial number of message:
   //
-  if  ( !msg.is_verbatim()  ) 
+  if  ( !msg.is_verbatim()  )
  {
     if ( wantSerial )  {
       std::ostringstream s;
@@ -337,7 +337,7 @@ bool ELoutput::log( const mf::ErrorObj & msg )  {
       emit( "[serial #" + s.str() + ELstring("] ") );
     }
   }
-  
+
 #ifdef OUTPUT_FORMATTED_ERROR_MESSAGES
   // Output each item in the message (before the epilogue):
   //
@@ -355,16 +355,16 @@ bool ELoutput::log( const mf::ErrorObj & msg )  {
   // Provide further identification:
   //
   bool needAspace = true;
-  if  ( !msg.is_verbatim()  ) 
+  if  ( !msg.is_verbatim()  )
  {
     if ( wantEpilogueSeparate )  {
       if ( xid.module.length() + xid.subroutine.length() > 0 )  {
-	emit("\n");
-	needAspace = false;
+        emit("\n");
+        needAspace = false;
       }
       else if ( wantTimestamp && !wantTimeSeparate )  {
-	emit("\n");
-	needAspace = false;
+        emit("\n");
+        needAspace = false;
       }
     }
     if ( wantModule && (xid.module.length() > 0) )  {
@@ -376,68 +376,68 @@ bool ELoutput::log( const mf::ErrorObj & msg )  {
       emit( xid.subroutine + "()" + ELstring(" ") );
     }
   }
-  
+
   #ifdef ELoutputTRACE_LOG
     std::cerr << "    =:=:=: Module and Subroutine done \n";
   #endif
 
   // Provide time stamp:
   //
-  if  ( !msg.is_verbatim() ) 
+  if  ( !msg.is_verbatim() )
  {
     if ( wantTimestamp )  {
       if ( wantTimeSeparate )  {
-	emit( ELstring("\n") );
-	needAspace = false;
+        emit( ELstring("\n") );
+        needAspace = false;
       }
       if (needAspace) { emit(ELstring(" ")); needAspace = false; }
       emit( formatTime(msg.timestamp(), wantMillisecond) + ELstring(" ") );
     }
   }
-  
+
   #ifdef ELoutputTRACE_LOG
     std::cerr << "    =:=:=: TimeStamp done \n";
   #endif
 
   // Provide the context information:
   //
-  if  ( !msg.is_verbatim() ) 
+  if  ( !msg.is_verbatim() )
  {
     if ( wantSomeContext ) {
       if (needAspace) { emit(ELstring(" ")); needAspace = false; }
       #ifdef ELoutputTRACE_LOG
-	std::cerr << "    =:=:=:>> context supplier is at 0x"
+        std::cerr << "    =:=:=:>> context supplier is at 0x"
                   << std::hex
                   << &ELadministrator::instance()->getContextSupplier() << '\n';
-	std::cerr << "    =:=:=:>> context is --- "
+        std::cerr << "    =:=:=:>> context is --- "
                   << ELadministrator::instance()->getContextSupplier().context()
                   << '\n';
       #endif
       if ( wantFullContext )  {
-	emit( ELadministrator::instance()->getContextSupplier().fullContext());
+        emit( ELadministrator::instance()->getContextSupplier().fullContext());
       #ifdef ELoutputTRACE_LOG
-	std::cerr << "    =:=:=: fullContext done: \n";
+        std::cerr << "    =:=:=: fullContext done: \n";
       #endif
       } else  {
-	emit( ELadministrator::instance()->getContextSupplier().context());
+        emit( ELadministrator::instance()->getContextSupplier().context());
     #ifdef ELoutputTRACE_LOG
       std::cerr << "    =:=:=: Context done: \n";
     #endif
       }
     }
   }
-  
+
   // Provide traceback information:
   //
 
-  bool insertNewlineAfterHeader = ( 
-         (msg.xid().severity != ELsuccess) 
+  bool insertNewlineAfterHeader = (
+         (msg.xid().severity != ELsuccess)
       && (msg.xid().severity != ELinfo   )
       && (msg.xid().severity != ELwarning)
       && (msg.xid().severity != ELerror  ) );
   // ELsuccess is what LogDebug issues
-  
-  if  ( !msg.is_verbatim() ) 
+
+  if  ( !msg.is_verbatim() )
  {
     if ( msg.xid().severity >= traceThreshold )  {
       emit( ELstring("\n")
@@ -467,17 +467,17 @@ bool ELoutput::log( const mf::ErrorObj & msg )  {
       if  ( !msg.is_verbatim() ) {
         if (item_count==2) {
           if (!(*it).compare("--")) {
-            ++it; ++it; ++it; item_count+=3; 
-            if (!insertNewlineAfterHeader) emit("", true); 
+            ++it; ++it; ++it; item_count+=3;
+            if (!insertNewlineAfterHeader) emit("", true);
             continue;
           }
         }
-	if ( !insertNewlineAfterHeader && (item_count == 3) ) {
+        if ( !insertNewlineAfterHeader && (item_count == 3) ) {
           // in a LogDebug message, the first 3 items are FILE, :, and LINE
           emit( *it, true );
-	} else {
+        } else {
           emit( *it );
-	}
+        }
       } else {
         emit( *it );
       }
@@ -488,17 +488,17 @@ bool ELoutput::log( const mf::ErrorObj & msg )  {
   // And after the message, add a %MSG on its own line
   // Change log 4  6/11/07 mf
 
-  if  ( !msg.is_verbatim() ) 
+  if  ( !msg.is_verbatim() )
   {
     emit ("\n%MSG");
   }
-  
+
 
   // Done; message has been fully processed; separate, flush, and leave
   //
 
   (*os) << newline;
-  flush(); 
+  flush();
 
 
   #ifdef ELoutputTRACE_LOG
@@ -547,24 +547,24 @@ void ELoutput::emit( const ELstring & s, bool nl )  {
     if ( first == '\n'
     || (charsOnLine + static_cast<int>(s.length())) > lineLength )  {
       #ifdef ELoutput_EMIT_TRACE
-	std::cerr << "[][][] in emit: about to << to *os \n";
+        std::cerr << "[][][] in emit: about to << to *os \n";
       #endif
       #ifdef HEADERS_BROKEN_INTO_LINES_AND_INDENTED
       // Change log 3: Removed this code 6/11/07 mf
       (*os) << newline << indent;
       charsOnLine = indent.length();
       #else
-      charsOnLine = 0;   					// Change log 5   
+      charsOnLine = 0;                                          // Change log 5
       #endif
       if (second != ' ')  {
-	(*os) << ' ';
-	charsOnLine++;
+        (*os) << ' ';
+        charsOnLine++;
       }
       if ( first == '\n' )  {
-	(*os) << s.substr(1);
+        (*os) << s.substr(1);
       }
       else  {
-	(*os) << s;
+        (*os) << s;
       }
     }
     #ifdef ELoutput_EMIT_TRACE
@@ -577,7 +577,7 @@ void ELoutput::emit( const ELstring & s, bool nl )  {
     if (last == '\n' || last2 == '\n')  {  //accounts for newline @ end    $$ JV:2
       (*os) << indent;                    //of the ELstring
       if (last != ' ')
-	(*os) << ' ';
+        (*os) << ' ';
       charsOnLine = indent.length() + 1;
     }
 
@@ -588,7 +588,7 @@ void ELoutput::emit( const ELstring & s, bool nl )  {
   if (!preambleMode) {
     (*os) << s;
   }
-  
+
   #ifdef ELoutput_EMIT_TRACE
     std::cerr << "[][][] in emit: completed \n";
   #endif
@@ -699,5 +699,5 @@ void ELoutput::flush()  {
 // ----------------------------------------------------------------------
 
 
-} // end of namespace service  
-} // end of namespace mf  
+} // end of namespace service
+} // end of namespace mf

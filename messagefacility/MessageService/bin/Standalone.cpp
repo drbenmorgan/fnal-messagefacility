@@ -1,13 +1,13 @@
 /*----------------------------------------------------------------------
 
-   This is a generic main that can be used with any plugin and a 
+   This is a generic main that can be used with any plugin and a
    PSet script. It shows the minimum machinery necessary for a
    "standalone" program to issue MessageLogger messages.
    N. B. In this context, standalone means a job where the user
    has provided the main program instead of supplying a module
    for cmsRun to call on.
 
-----------------------------------------------------------------------*/  
+----------------------------------------------------------------------*/
 
 #include <exception>
 #include <iostream>
@@ -28,15 +28,15 @@
 
 std::string indirectWarn( int num )
 {
-//  std::cout << "  Returning the string Emit Warning level message " << num << std::endl; 
-    return std::string("\t\tEmit Warning level message "); 
+//  std::cout << "  Returning the string Emit Warning level message " << num << std::endl;
+    return std::string("\t\tEmit Warning level message ");
 }
 
 
 std::string indirectInfo( int num )
 {
-//  std::cout << "  Returning the string Emit Info level message " << num << std::endl; 
-    return std::string("\t\tEmit Info level message "); 
+//  std::cout << "  Returning the string Emit Info level message " << num << std::endl;
+    return std::string("\t\tEmit Info level message ");
 }
 
 void DoMyStuff( )
@@ -47,8 +47,8 @@ void DoMyStuff( )
 
   double d = 3.14159265357989;
   edm::LogWarning("cat_A")   << "Test of std::setprecision(p):"
-  			     << " Pi with precision 12 is " 
-  			     << std::setprecision(12) << d;
+                             << " Pi with precision 12 is "
+                             << std::setprecision(12) << d;
 
   for( int i=0; i<25; ++i) {
 //  edm::LogInfo("cat_B")    << "\t\tEmit Info level message " << i+1;
@@ -56,7 +56,7 @@ void DoMyStuff( )
 //  edm::LogWarning("cat_C") << "\t\tEmit Warning level message " << i+1;
     edm::LogWarning("cat_C") << indirectWarn(i+1) << i+1;
   }
-}  
+}
 
 int main(int argc, char* argv[]) {
 
@@ -79,26 +79,26 @@ int main(int argc, char* argv[]) {
 // C.  Manufacture a configuration and establish it.
     std::string config =
       "process x = {"
-	"service = MessageLogger {"
-	  "untracked vstring destinations = {'infos.mlog','warnings.mlog'}"
-	  "untracked PSet infos = {"
-	    "untracked string threshold = 'INFO'"
-	    "untracked PSet default = {untracked int32 limit = 1000000}"
-	    "untracked PSet FwkJob = {untracked int32 limit = 0}"
-	  "}"
-	  "untracked PSet warnings = {"
-	    "untracked string threshold = 'WARNING'"
-	    "untracked PSet default = {untracked int32 limit = 1000000}"
-	  "}"
-	  "untracked vstring fwkJobReports = {'FrameworkJobReport.xml'}"
-	  "untracked vstring categories = {'FwkJob'}"
-	  "untracked PSet FrameworkJobReport.xml = {"
-	    "untracked PSet default = {untracked int32 limit = 0}"
-	    "untracked PSet FwkJob = {untracked int32 limit = 10000000}"
-	  "}"
-	"}"
-	"service = JobReportService{}"
-	"service = SiteLocalConfigService{}"
+        "service = MessageLogger {"
+          "untracked vstring destinations = {'infos.mlog','warnings.mlog'}"
+          "untracked PSet infos = {"
+            "untracked string threshold = 'INFO'"
+            "untracked PSet default = {untracked int32 limit = 1000000}"
+            "untracked PSet FwkJob = {untracked int32 limit = 0}"
+          "}"
+          "untracked PSet warnings = {"
+            "untracked string threshold = 'WARNING'"
+            "untracked PSet default = {untracked int32 limit = 1000000}"
+          "}"
+          "untracked vstring fwkJobReports = {'FrameworkJobReport.xml'}"
+          "untracked vstring categories = {'FwkJob'}"
+          "untracked PSet FrameworkJobReport.xml = {"
+            "untracked PSet default = {untracked int32 limit = 0}"
+            "untracked PSet FwkJob = {untracked int32 limit = 10000000}"
+          "}"
+        "}"
+        "service = JobReportService{}"
+        "service = SiteLocalConfigService{}"
       "}";
 
 

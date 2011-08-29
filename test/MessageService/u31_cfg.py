@@ -1,4 +1,4 @@
-# Unit test configuration file for 
+# Unit test configuration file for
 # LoggerErrorsSummary() and  LoggerErrorsOnlySummary()
 
 import FWCore.ParameterSet.Config as cms
@@ -25,9 +25,9 @@ process.MessageLogger = cms.Service("MessageLogger",
             limit = cms.untracked.int32(0)
         )
     ),
-    categories = cms.untracked.vstring('preEventProcessing', 
-        'FwkJob', 
-        'timer', 
+    categories = cms.untracked.vstring('preEventProcessing',
+        'FwkJob',
+        'timer',
         'trace'),
     destinations = cms.untracked.vstring('u31_infos')
 )

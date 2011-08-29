@@ -9,27 +9,27 @@
 
 // Change log
 //
-//  1  mf 8/25/08	keeping the error summary information for
-//			LoggedErrorsSummary()
-//			
+//  1  mf 8/25/08       keeping the error summary information for
+//                      LoggedErrorsSummary()
+//
 
 
 using namespace mf;
 
-bool MessageSender::errorSummaryIsBeingKept = false;		// change log 1
+bool MessageSender::errorSummaryIsBeingKept = false;            // change log 1
 bool MessageSender::freshError              = false;
-std::map<ErrorSummaryMapKey, unsigned int> MessageSender::errorSummaryMap; 
+std::map<ErrorSummaryMapKey, unsigned int> MessageSender::errorSummaryMap;
 
-MessageSender::MessageSender( ELseverityLevel const & sev, 
-			      ELstring const & id,
-			      bool verbatim )
+MessageSender::MessageSender( ELseverityLevel const & sev,
+                              ELstring const & id,
+                              bool verbatim )
 : errorobj_p( new ErrorObj(sev,id,verbatim) )
 {
   //std::cout << "MessageSender ctor; new ErrorObj at: " << errorobj_p << '\n';
 }
 
-MessageSender::MessageSender( ELseverityLevel const & sev, 
-			      ELstring const & id )
+MessageSender::MessageSender( ELseverityLevel const & sev,
+                              ELstring const & id )
 : errorobj_p( new ErrorObj(sev,id,false) )
 {
   //std::cout << "MessageSender ctor; new ErrorObj at: " << errorobj_p << '\n';
@@ -41,7 +41,7 @@ MessageSender::MessageSender( ELseverityLevel const & sev,
 // if the MessageLogger library is loaded -- even if it is not used.
 MessageSender::~MessageSender()
 {
-  try 
+  try
     {
       //std::cout << "MessageSender dtor; ErrorObj at: " << errorobj_p << '\n';
 
@@ -49,37 +49,37 @@ MessageSender::~MessageSender()
       // (via the intermediate MessageLoggerQ) to the MessageLoggerScribe
       // that will (a) route the message text to its destination(s)
       // and will then (b) dispose of the ErrorObj
-      
+
       MessageDrop * drop = MessageDrop::instance();
       if (drop) {
-	errorobj_p->setModule(drop->moduleName);
-	errorobj_p->setContext(drop->runEvent);
-      } 
+        errorobj_p->setModule(drop->moduleName);
+        errorobj_p->setContext(drop->runEvent);
+      }
 #ifdef TRACE_DROP
       if (!drop) std::cerr << "MessageSender::~MessageSender() - Null drop pointer \n";
 #endif
-								// change log 1
-      if ( errorSummaryIsBeingKept && 
-           errorobj_p->xid().severity >= ELwarning ) 
-      {				
-	ELextendedID const & xid = errorobj_p->xid();
+                                                                // change log 1
+      if ( errorSummaryIsBeingKept &&
+           errorobj_p->xid().severity >= ELwarning )
+      {
+        ELextendedID const & xid = errorobj_p->xid();
         ErrorSummaryMapKey key (xid.id, xid.module, xid.severity);
-	ErrorSummaryMapIterator i = errorSummaryMap.find(key);
-	if (i != errorSummaryMap.end()) {
-	  ++(i->second);  // same as ++errorSummaryMap[key]
-	} else {
-	  errorSummaryMap[key] = 1;
-	}
-	freshError = true;
+        ErrorSummaryMapIterator i = errorSummaryMap.find(key);
+        if (i != errorSummaryMap.end()) {
+          ++(i->second);  // same as ++errorSummaryMap[key]
+        } else {
+          errorSummaryMap[key] = 1;
+        }
+        freshError = true;
       }
-      
+
       MessageLoggerQ::MLqLOG(errorobj_p);
     }
   catch ( ... )
     {
       // nothing to do
-      
-      // for test that removal of thread-involved static works, 
+
+      // for test that removal of thread-involved static works,
       // simply throw here, then run in trivial_main in totalview
       // and Next or Step so that the exception would be detected.
       // That test has been done 12/14/07.

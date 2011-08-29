@@ -7,7 +7,7 @@
 
 namespace edmtest
 {
- 
+
 int  UnitTestClient_B::nevent = 0;
 
 void

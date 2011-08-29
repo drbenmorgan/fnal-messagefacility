@@ -4,9 +4,9 @@
 
 // ----------------------------------------------------------------------
 //
-// ELstring.h	Provides a string class with the semantics of std::string.
-// 		Customizers may substitute for this class to provide either
-//		a string with a different allocator, or whatever else.
+// ELstring.h   Provides a string class with the semantics of std::string.
+//              Customizers may substitute for this class to provide either
+//              a string with a different allocator, or whatever else.
 //
 // The elements of string semantics which are relied upon are listed
 // in ELstring.semantics
@@ -17,7 +17,7 @@
 #include <string>
 
 
-namespace mf {       
+namespace mf {
 
 
 // ----------------------------------------------------------------------

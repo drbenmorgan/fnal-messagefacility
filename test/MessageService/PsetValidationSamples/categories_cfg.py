@@ -13,10 +13,10 @@ process.load("FWCore.MessageService.test.Services_cff")
 process.MessageLogger = cms.Service("MessageLogger",
 
     destinations = cms.untracked.vstring( 'u1_warnings',  'u1_errors',
-                   'u1_infos',  'u1_debugs', 'u1_default', 'u1_x'), 
-    statistics = cms.untracked.vstring( 'u1_warnings', 'u1_default', 'u1_y'), 
-    fwkJobReports = cms.untracked.vstring( 'u1_f' ), 
-        
+                   'u1_infos',  'u1_debugs', 'u1_default', 'u1_x'),
+    statistics = cms.untracked.vstring( 'u1_warnings', 'u1_default', 'u1_y'),
+    fwkJobReports = cms.untracked.vstring( 'u1_f' ),
+
 #enable one of the following -- the first should pass, the rest fail
     categories = cms.untracked.vstring('preEventProcessing','FwkJob',
                                        'cat_A','cat_B'),
@@ -25,13 +25,13 @@ process.MessageLogger = cms.Service("MessageLogger",
 #   categories = cms.vstring('preEventProcessing','FwkJob','u1_f'),
 #    categories = cms.untracked.int32(2),
 #    categories = cms.untracked.vstring('preEventProcessing','FwkJob',
-#					'cat_A','cat_B','cat_A'),
+#                                       'cat_A','cat_B','cat_A'),
 #    categories = cms.untracked.vstring('preEventProcessing','FwkJob',
-#					'cat_A','cat_B','limit'),
+#                                       'cat_A','cat_B','limit'),
 
 # If the passing one above enabled, enabling this should now fail:
     cat_A = cms.untracked.int32(2),
-   
+
     u1_infos = cms.untracked.PSet(
         threshold = cms.untracked.string('INFO'),
         noTimeStamps = cms.untracked.bool(True),

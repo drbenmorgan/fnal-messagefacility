@@ -9,7 +9,7 @@
 class ELdestination;
 
 namespace mf  {
-namespace service {       
+namespace service {
 
   class NamedDestination {
   public:

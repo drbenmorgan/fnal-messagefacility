@@ -4,9 +4,9 @@
 //
 // Changes:
 //
-// 0 - 6/27/06 mf - created this file to contain compress(), to convert from 
-//                  Run: 124 Event: 4567 to 124/4567 for purposes of 
-//		    ELstatistics output.
+// 0 - 6/27/06 mf - created this file to contain compress(), to convert from
+//                  Run: 124 Event: 4567 to 124/4567 for purposes of
+//                  ELstatistics output.
 
 
 #include "messagefacility/MessageService/MsgContext.h"
@@ -15,7 +15,7 @@
 #include <iostream>
 
 namespace mf {
-namespace service {       
+namespace service {
 
   std::string MsgContext::compress (const std::string& c) const
   {
@@ -33,7 +33,7 @@ namespace service {
     if (eventWord != "Event:") return c;
     std::ostringstream os;
     os << run << "/" << event;
-    return os.str();    
+    return os.str();
   }
 }        // end of namespace service
 }       // end of namespace mf

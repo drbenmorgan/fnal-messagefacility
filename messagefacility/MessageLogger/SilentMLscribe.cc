@@ -2,7 +2,7 @@
 //
 // Package:     MessageLogger
 // Class  :     SilentMLscribe
-// 
+//
 // Implementation:
 //     <Notes on implementation>
 //
@@ -33,7 +33,7 @@ namespace mf {
       SilentMLscribe::SilentMLscribe()
       {
       }
-      
+
 // SilentMLscribe::SilentMLscribe(const SilentMLscribe& rhs)
 // {
 //    // do actual copying here;
@@ -58,7 +58,7 @@ namespace mf {
 //
 // member functions
 //
-      void  
+      void
       SilentMLscribe::runCommand(MessageLoggerQ::OpCode  opcode, void * operand) {
          //even though we don't print, have to clean up memory
          switch (opcode) {
@@ -70,11 +70,11 @@ namespace mf {
             case MessageLoggerQ::JOBREPORT:
             case MessageLoggerQ::JOBMODE:
             case MessageLoggerQ::GROUP_STATS:
-	    {
+            {
                std::string* string_p = static_cast<std::string*> (operand);
                delete string_p;
                break;
-	    }
+            }
             default:
                break;
          }

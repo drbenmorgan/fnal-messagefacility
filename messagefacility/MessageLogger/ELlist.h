@@ -8,16 +8,16 @@
 //              Customizers may substitute for this class to provide either
 //              a list with a different allocator, or whatever else.
 //
-//	We typedef an individual type for each of these lists since
-//	the syntax
-//		typedef list ELlist;
-//		ELlist<ELdestination> sinks;
-//	may or may not be valid C++, and if valid probably won't work
-//	everywhere.
+//      We typedef an individual type for each of these lists since
+//      the syntax
+//              typedef list ELlist;
+//              ELlist<ELdestination> sinks;
+//      may or may not be valid C++, and if valid probably won't work
+//      everywhere.
 //
 // The following elements of list semantics are relied upon:
 //      push_back()             ELadminstrator
-//	
+//
 //
 // ----------------------------------------------------------------------
 
@@ -30,7 +30,7 @@
 #include <list>
 
 
-namespace mf {       
+namespace mf {
 
 
 // ----------------------------------------------------------------------

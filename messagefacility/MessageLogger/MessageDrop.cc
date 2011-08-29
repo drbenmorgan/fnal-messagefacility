@@ -22,9 +22,9 @@
 
 // Change Log
 //
-// 1 12/13/07 mf     	the static drops had been file-global level; moved it
-//		     	into the instance() method to cure a 24-byte memory
-//			leak reported by valgrind. Suggested by MP.
+// 1 12/13/07 mf        the static drops had been file-global level; moved it
+//                      into the instance() method to cure a 24-byte memory
+//                      leak reported by valgrind. Suggested by MP.
 
 using namespace mf;
 
@@ -36,9 +36,9 @@ MessageDrop::instance()
 {
   static boost::thread_specific_ptr<MessageDrop> drops;
   MessageDrop* drop = drops.get();
-  if(drop==0) { 
+  if(drop==0) {
     drops.reset(new MessageDrop);
-    drop=drops.get(); 
+    drop=drops.get();
     drop->moduleName = mf::service::ELadministrator::instance()->application();
   }
   return drop;

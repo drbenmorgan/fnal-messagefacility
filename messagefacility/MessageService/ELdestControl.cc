@@ -89,7 +89,7 @@ ELdestControl & ELdestControl::setLimit( const ELstring & s, int n )  {
 
 
 ELdestControl & ELdestControl::setInterval
-				( const ELseverityLevel & sv, int interval )  {
+                                ( const ELseverityLevel & sv, int interval )  {
   if (d) d->limits.setInterval( sv, interval );
   return  * this;
 }
@@ -294,4 +294,4 @@ void ELdestControl::flush () {
 
 
 } // end of namespace service
-} // end of namespace mf 
+} // end of namespace mf

@@ -13,7 +13,7 @@ class ELdestinationFactory;
 
 struct DestinationMaker
 {
-  DestinationMaker( std::string const & type_str, 
+  DestinationMaker( std::string const & type_str,
       ELdestination* (*f)(std::string const &, fhicl::ParameterSet const &) )
   {
     ELdestinationFactory::reg(type_str, f);

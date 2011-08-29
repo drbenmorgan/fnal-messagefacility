@@ -32,7 +32,7 @@ namespace mf
     // wait for buffer to appear
     while(pos_ < 0)
       {
-	pool_cond_.wait(sl);
+        pool_cond_.wait(sl);
       }
     void* v = buffer_pool_[pos_];
     --pos_;
@@ -55,7 +55,7 @@ namespace mf
     // if full, wait for item to be removed
     while((bpos_+max_queue_depth_)==fpos_)
       {
-	push_cond_.wait(sl);
+        push_cond_.wait(sl);
       }
 
     // put buffer into queue
@@ -72,7 +72,7 @@ namespace mf
     // if empty, wait for item to appear
     while(bpos_==fpos_)
       {
-	pop_cond_.wait(sl);
+        pop_cond_.wait(sl);
       }
     // get a buffer from the queue and return it
     Buffer v = queue_[bpos_ % max_queue_depth_];

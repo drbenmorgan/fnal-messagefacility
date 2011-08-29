@@ -23,9 +23,9 @@ void
   n++;
   if (n <= 2) return;
   edm::LogError   ("cat_A")   << "S1 with identifier " << identifier
-  			      << " n = " << n;
+                              << " n = " << n;
   edm::LogError   ("grouped_cat")  << "S1 timer with identifier " << identifier;
-}  
+}
 
 void
   UTC_S2::analyze( edm::Event      const & e
@@ -40,7 +40,7 @@ void
   for (int i = 0; i<n; ++i) {
     edm::LogError   ("cat_B")   << "more S2B";
   }
-}  
+}
 
 void
   UTC_SUMMARY::analyze( edm::Event      const & e
@@ -53,11 +53,11 @@ void
   std::vector<edm::ErrorSummaryEntry> es = edm::LoggedErrorsSummary();
   std::ostringstream os;
   for (unsigned int i = 0; i != es.size(); ++i) {
-    os << es[i].category << "   " << es[i].module << "   " 
+    os << es[i].category << "   " << es[i].module << "   "
        << es[i].count << "\n";
   }
   edm::LogVerbatim ("ErrorsInEvent") << os.str();
-}  
+}
 
 
 }  // namespace edmtest

@@ -60,7 +60,7 @@ INSTALL (FILES ${includeFiles}
 
 INSTALL (FILES CMakeLists.txt
                ${includeFiles}
-	       ${srcFiles}
+               ${srcFiles}
     DESTINATION ${product}/${version}/source/messagefacility/MessageLogger/
     )
 
@@ -72,7 +72,7 @@ INSTALL (FILES ${MSincludeFiles}
 
 INSTALL (FILES ../MessageService/CMakeLists.txt
                ${MSincludeFiles}
-	             ${MSsrcFiles}
+                     ${MSsrcFiles}
     DESTINATION ${product}/${version}/source/messagefacility/MessageService
     )
 
@@ -82,4 +82,4 @@ INSTALL (TARGETS MessageLogger MessageLoggerS
     RUNTIME DESTINATION ${flavorqual_dir}/bin
     LIBRARY DESTINATION ${flavorqual_dir}/lib
     ARCHIVE DESTINATION ${flavorqual_dir}/lib
-    ) 
+    )

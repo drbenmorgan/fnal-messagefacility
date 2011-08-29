@@ -7,7 +7,7 @@
 #include "messagefacility/MessageLogger/AbstractMLscribe.h"
 
 namespace mf  {
-namespace service {       
+namespace service {
 
 class SingleThreadMSPresence : public Presence
 {
@@ -17,7 +17,7 @@ public:
   ~SingleThreadMSPresence();
 
   // --- Access to the scribe
-  // REMOVED AbstractMLscribe * scribe_ptr() { return &m; }  
+  // REMOVED AbstractMLscribe * scribe_ptr() { return &m; }
 
 private:
   // --- no copying:

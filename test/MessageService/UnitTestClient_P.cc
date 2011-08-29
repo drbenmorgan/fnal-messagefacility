@@ -1,4 +1,4 @@
-// Tests effect of LogFlush by cfg-configurable choices of how many 
+// Tests effect of LogFlush by cfg-configurable choices of how many
 // messages to use to clog the queue and whether or not FlushMessageLog
 // is invoked.  Under normal testing, it will invoke FlushMessageLog in
 // a situation where its absence would result in different output.
@@ -19,8 +19,8 @@ void
                            , edm::EventSetup const & /*unused*/
                               )
 {
-  edm::LogWarning ("configuration") << "useLogFlush = " << useLogFlush 
-  			       << " queueFillers = " << queueFillers;
+  edm::LogWarning ("configuration") << "useLogFlush = " << useLogFlush
+                               << " queueFillers = " << queueFillers;
   std::string longMessage;
   for (int k=0; k<100; k++) {
     longMessage += "Line in long message\n";

@@ -19,10 +19,10 @@ struct ConfigurationHandshake {
   boost::mutex m;
   boost::condition c;
   mf::Place_for_passing_exception_ptr epp;
-  explicit ConfigurationHandshake 
-      (void * p_in, Place_for_passing_exception_ptr epp_in) : 
-    			      p(p_in), m(), c(), epp(epp_in) {}   
-};  
+  explicit ConfigurationHandshake
+      (void * p_in, Place_for_passing_exception_ptr epp_in) :
+                              p(p_in), m(), c(), epp(epp_in) {}
+};
 
 }  // namespace mf
 

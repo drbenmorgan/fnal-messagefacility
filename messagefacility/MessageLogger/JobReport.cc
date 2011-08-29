@@ -4,14 +4,14 @@
 // Package:     Services
 // Class  :     MessageLogger
 //
-// 10/23/07 mf	In an attempt to get clues about (or ene) the
-//		does-not-output-branches behavior, changed the
-//		generic os<< lines in JobReport::JobReportImpl::writeOutputFile
-//		to direct use of LogInfo.
+// 10/23/07 mf  In an attempt to get clues about (or ene) the
+//              does-not-output-branches behavior, changed the
+//              generic os<< lines in JobReport::JobReportImpl::writeOutputFile
+//              to direct use of LogInfo.
 //
-// 4/8/08   mf	Encase the logdesc for in <CDATA> ... </CDATA>
+// 4/8/08   mf  Encase the logdesc for in <CDATA> ... </CDATA>
 //
-// 6/19/08  mf	reportMessageInfo()
+// 6/19/08  mf  reportMessageInfo()
 //
 // 24 June 2008   ewv  Correct format for CDATA and for second instance of reportError
 
@@ -51,7 +51,7 @@ namespace mf
       formatFile(f, os);
       os << "\n<InputType>" << f.inputType << "</InputType>";
       os << "\n<InputSourceClass>" << TiXmlText(f.inputSourceClassName)
-	 << "</InputSourceClass>";
+         << "</InputSourceClass>";
       os << "\n<EventsRead>" << f.numEventsRead << "</EventsRead>";
       return os;
     }
@@ -62,17 +62,17 @@ namespace mf
     print (S& os, JobReport::OutputFile const& f) {
       formatFile(f, os);
       os << "\n<OutputModuleClass>"
-			<< TiXmlText(f.outputModuleClassName)
-			<< "</OutputModuleClass>";
+                        << TiXmlText(f.outputModuleClassName)
+                        << "</OutputModuleClass>";
       os << "\n<TotalEvents>"
-			<< f.numEventsWritten
-			<< "</TotalEvents>\n";
+                        << f.numEventsWritten
+                        << "</TotalEvents>\n";
       os << "\n<DataType>"
-			<< TiXmlText(f.dataType)
-			<< "</DataType>\n";
+                        << TiXmlText(f.dataType)
+                        << "</DataType>\n";
       os << "\n<BranchHash>"
-			<< TiXmlText(f.branchHash)
-			<< "</BranchHash>\n";
+                        << TiXmlText(f.branchHash)
+                        << "</BranchHash>\n";
 
       return os;
     }
@@ -80,14 +80,14 @@ namespace mf
   template <typename S>
     S&
     print (S& os,
-	   JobReport::RunReport const& rep){
+           JobReport::RunReport const& rep){
     os << "\n<Run ID=\""
        <<rep.runNumber
        << "\">\n";
 
     std::set<unsigned int>::iterator il;
     for (il = rep.lumiSections.begin(); il != rep.lumiSections.end();
-	 ++il){
+         ++il){
       os << "   <LumiSection ID=\"" << *il << "\"/>\n";
 
     }
@@ -95,7 +95,7 @@ namespace mf
     os << "</Run>\n";
 
 
-	return os;
+        return os;
      }
 
   std::ostream& operator<< (std::ostream& os, JobReport::InputFile const& f) {
@@ -126,42 +126,42 @@ namespace mf
 
 
     JobReport::InputFile& JobReport::JobReportImpl::getInputFileForToken(JobReport::Token t) {
-	if (t >= inputFiles_.size() ) {
-	    throw mf::Exception(mf::errors::LogicError)
-	      << "Access reported for input file with token "
-	      << t
-	      << " but no matching input file is found\n";
-	}
+        if (t >= inputFiles_.size() ) {
+            throw mf::Exception(mf::errors::LogicError)
+              << "Access reported for input file with token "
+              << t
+              << " but no matching input file is found\n";
+        }
 
-	if (inputFiles_[t].fileHasBeenClosed) {
-	    throw mf::Exception(mf::errors::LogicError)
-	      << "Access reported for input file with token "
-	      << t
-	      << " after this file has been closed.\n"
-	      << "File record follows:\n"
-	      << inputFiles_[t]
-	      << '\n';
-	}
+        if (inputFiles_[t].fileHasBeenClosed) {
+            throw mf::Exception(mf::errors::LogicError)
+              << "Access reported for input file with token "
+              << t
+              << " after this file has been closed.\n"
+              << "File record follows:\n"
+              << inputFiles_[t]
+              << '\n';
+        }
 
       return inputFiles_[t];
     }
 
     JobReport::OutputFile& JobReport::JobReportImpl::getOutputFileForToken(JobReport::Token t) {
-	if (t >= outputFiles_.size() ) {
-	    throw mf::Exception(mf::errors::LogicError)
-	      << "Access reported for output file with token "
-	      << t
-	      << " but no matching output file is found\n";
-	}
-	if (outputFiles_[t].fileHasBeenClosed) {
-	    throw mf::Exception(mf::errors::LogicError)
-	      << "Access reported for output file with token "
-	      << t
-	      << " after this file has been closed.\n"
-	      << "File record follows:\n"
-	      << outputFiles_[t]
-	      << '\n';
-	}
+        if (t >= outputFiles_.size() ) {
+            throw mf::Exception(mf::errors::LogicError)
+              << "Access reported for output file with token "
+              << t
+              << " but no matching output file is found\n";
+        }
+        if (outputFiles_[t].fileHasBeenClosed) {
+            throw mf::Exception(mf::errors::LogicError)
+              << "Access reported for output file with token "
+              << t
+              << " after this file has been closed.\n"
+              << "File record follows:\n"
+              << outputFiles_[t]
+              << '\n';
+        }
       return outputFiles_[t];
     }
 
@@ -172,12 +172,12 @@ namespace mf
      * is added to all open output files as a contributor
      */
     void JobReport::JobReportImpl::insertInputForOutputs(JobReport::Token t) {
-	std::vector<JobReport::OutputFile>::iterator outFile;
-	for (outFile = outputFiles_.begin();
-	     outFile != outputFiles_.end();
-	     outFile++){
-	  outFile->contributingInputs.push_back(t);
-	}
+        std::vector<JobReport::OutputFile>::iterator outFile;
+        for (outFile = outputFiles_.begin();
+             outFile != outputFiles_.end();
+             outFile++){
+          outFile->contributingInputs.push_back(t);
+        }
     }
     /*
      * get a vector of Tokens for all currently open
@@ -186,14 +186,14 @@ namespace mf
      * input file tokens are used to initialise its list of contributors
      */
     std::vector<JobReport::Token> JobReport::JobReportImpl::openInputFiles(void) {
-	std::vector<JobReport::Token> result;
-	for (unsigned int i = 0; i < inputFiles_.size(); ++i) {
-	  JobReport::InputFile inFile = inputFiles_[i];
-	  if ( inFile.fileHasBeenClosed == false){
-	    result.push_back(i);
-	  }
-	}
-	return result;
+        std::vector<JobReport::Token> result;
+        for (unsigned int i = 0; i < inputFiles_.size(); ++i) {
+          JobReport::InputFile inFile = inputFiles_[i];
+          if ( inFile.fileHasBeenClosed == false){
+            result.push_back(i);
+          }
+        }
+        return result;
     }
 
     /*
@@ -202,14 +202,14 @@ namespace mf
      *
      */
     std::vector<JobReport::Token> JobReport::JobReportImpl::openOutputFiles(void) {
-	std::vector<JobReport::Token> result;
-	for (unsigned int i = 0; i < outputFiles_.size(); ++i) {
-	  JobReport::OutputFile outFile = outputFiles_[i];
-	  if ( outFile.fileHasBeenClosed == false){
-	    result.push_back(i);
-	  }
-	}
-	return result;
+        std::vector<JobReport::Token> result;
+        for (unsigned int i = 0; i < outputFiles_.size(); ++i) {
+          JobReport::OutputFile outFile = outputFiles_[i];
+          if ( outFile.fileHasBeenClosed == false){
+            result.push_back(i);
+          }
+        }
+        return result;
     }
 
     /*
@@ -220,20 +220,20 @@ namespace mf
     void JobReport::JobReportImpl::writeInputFile(JobReport::InputFile const& f){
       if(ost_) {
         *ost_ <<f ;
-	*ost_ << "\n<Runs>";
-	std::map<JobReport::RunNumber, JobReport::RunReport>::const_iterator iRun;
-	for (iRun = f.runReports.begin();
-	     iRun != f.runReports.end(); iRun++){
-	  *ost_ << iRun->second;
-	}
-	*ost_ << "\n</Runs>\n";
+        *ost_ << "\n<Runs>";
+        std::map<JobReport::RunNumber, JobReport::RunReport>::const_iterator iRun;
+        for (iRun = f.runReports.begin();
+             iRun != f.runReports.end(); iRun++){
+          *ost_ << iRun->second;
+        }
+        *ost_ << "\n</Runs>\n";
 
         *ost_ << "</InputFile>\n";
 
 
-	*ost_ << std::flush;
+        *ost_ << std::flush;
       }
-	//LogInfo("FwkJob") << f;
+        //LogInfo("FwkJob") << f;
     }
 
     /*
@@ -252,29 +252,29 @@ namespace mf
      */
     void JobReport::JobReportImpl::writeOutputFile(JobReport::OutputFile const& f) {
       if (ost_) {
-	*ost_ << "\n<File>";
+        *ost_ << "\n<File>";
         *ost_ <<f;
 
-	*ost_ << "\n<Runs>";
-	std::map<JobReport::RunNumber, JobReport::RunReport>::const_iterator iRun;
-	for (iRun = f.runReports.begin();
-	     iRun != f.runReports.end(); iRun++){
-	  *ost_ << iRun->second;
-	}
-	*ost_ << "\n</Runs>\n";
+        *ost_ << "\n<Runs>";
+        std::map<JobReport::RunNumber, JobReport::RunReport>::const_iterator iRun;
+        for (iRun = f.runReports.begin();
+             iRun != f.runReports.end(); iRun++){
+          *ost_ << iRun->second;
+        }
+        *ost_ << "\n</Runs>\n";
 
-	*ost_ << "\n<Inputs>";
- 	std::vector<JobReport::Token>::const_iterator iInput;
- 	for (iInput = f.contributingInputs.begin();
- 	     iInput != f.contributingInputs.end(); iInput++) {
- 	    JobReport::InputFile inpFile = inputFiles_[*iInput];
- 	    *ost_ <<"\n<Input>";
- 	    *ost_ <<"\n  <LFN>" << TiXmlText(inpFile.logicalFileName) << "</LFN>";
- 	    *ost_ <<"\n  <PFN>" << TiXmlText(inpFile.physicalFileName) << "</PFN>";
- 	    *ost_ <<"\n</Input>";
- 	}
- 	*ost_ << "\n</Inputs>";
- 	*ost_ << "\n</File>\n";
+        *ost_ << "\n<Inputs>";
+        std::vector<JobReport::Token>::const_iterator iInput;
+        for (iInput = f.contributingInputs.begin();
+             iInput != f.contributingInputs.end(); iInput++) {
+            JobReport::InputFile inpFile = inputFiles_[*iInput];
+            *ost_ <<"\n<Input>";
+            *ost_ <<"\n  <LFN>" << TiXmlText(inpFile.logicalFileName) << "</LFN>";
+            *ost_ <<"\n  <PFN>" << TiXmlText(inpFile.physicalFileName) << "</PFN>";
+            *ost_ <<"\n</Input>";
+        }
+        *ost_ << "\n</Inputs>";
+        *ost_ << "\n</File>\n";
       }
     }
 
@@ -291,14 +291,14 @@ namespace mf
           }
       }
       for (opos = outputFiles_.begin(); opos != outputFiles_.end(); ++opos) {
-	if (!(opos->fileHasBeenClosed)) {
-	  writeOutputFile(*opos);
-	}
+        if (!(opos->fileHasBeenClosed)) {
+          writeOutputFile(*opos);
+        }
       }
     }
 
   void JobReport::JobReportImpl::addGeneratorInfo(std::string const& name,
-						  std::string const& value){
+                                                  std::string const& value){
 
     generatorInfo_[name] = value;
   }
@@ -327,11 +327,11 @@ namespace mf
       // check run is known to file
       // if not, add a run report for that run
       if (theFile.runReports.count(runNumber) == 0){
-	JobReport::RunReport newReport = JobReport::RunReport();
-	newReport.runNumber = runNumber;
-	theFile.runReports.insert(
-		 std::make_pair(runNumber, newReport)
-		 );
+        JobReport::RunReport newReport = JobReport::RunReport();
+        newReport.runNumber = runNumber;
+        theFile.runReports.insert(
+                 std::make_pair(runNumber, newReport)
+                 );
       }
 
     }
@@ -348,11 +348,11 @@ namespace mf
       // check run is known to file
       // if not, add a run report for that run
       if (theFile.runReports.count(runNumber) == 0){
-	JobReport::RunReport newReport = JobReport::RunReport();
-	newReport.runNumber = runNumber;
-	theFile.runReports.insert(
-		 std::make_pair(runNumber, newReport)
-		 );
+        JobReport::RunReport newReport = JobReport::RunReport();
+        newReport.runNumber = runNumber;
+        theFile.runReports.insert(
+                 std::make_pair(runNumber, newReport)
+                 );
       }
 
 
@@ -375,11 +375,11 @@ namespace mf
       // check run is known to file
       // if not, add a run report for that run
       if (theFile.runReports.count(runNumber) == 0){
-	JobReport::RunReport newReport = JobReport::RunReport();
-	newReport.runNumber = runNumber;
-	theFile.runReports.insert(
-		 std::make_pair(runNumber, newReport)
-		 );
+        JobReport::RunReport newReport = JobReport::RunReport();
+        newReport.runNumber = runNumber;
+        theFile.runReports.insert(
+                 std::make_pair(runNumber, newReport)
+                 );
       }
 
       //
@@ -409,11 +409,11 @@ namespace mf
       // check run is known to file
       // if not, add a run report for that run
       if (theFile.runReports.count(runNumber) == 0){
-	JobReport::RunReport newReport = JobReport::RunReport();
-	newReport.runNumber = runNumber;
-	theFile.runReports.insert(
-		 std::make_pair(runNumber, newReport)
-		 );
+        JobReport::RunReport newReport = JobReport::RunReport();
+        newReport.runNumber = runNumber;
+        theFile.runReports.insert(
+                 std::make_pair(runNumber, newReport)
+                 );
       }
 
       //
@@ -449,13 +449,13 @@ namespace mf
 
     JobReport::Token
     JobReport::inputFileOpened(std::string const& physicalFileName,
-			       std::string const& logicalFileName,
-			       std::string const& catalog,
-			       std::string const& inputType,
-			       std::string const& inputSourceClassName,
-			       std::string const& moduleLabel,
-			       std::string const& guid,
-			       std::vector<std::string> const& branchNames)
+                               std::string const& logicalFileName,
+                               std::string const& catalog,
+                               std::string const& inputType,
+                               std::string const& inputSourceClassName,
+                               std::string const& moduleLabel,
+                               std::string const& guid,
+                               std::vector<std::string> const& branchNames)
     {
       // Do we have to worry about thread safety here? Or is this
       // service used in a way to make this safe?
@@ -511,14 +511,14 @@ namespace mf
 
     JobReport::Token
     JobReport::outputFileOpened(std::string const& physicalFileName,
-				std::string const& logicalFileName,
-				std::string const& catalog,
-				std::string const& outputModuleClassName,
-				std::string const& moduleLabel,
-				std::string const& guid,
-				std::string const& dataType,
-				std::string const& branchHash,
-				std::vector<std::string> const& branchNames)
+                                std::string const& logicalFileName,
+                                std::string const& catalog,
+                                std::string const& outputModuleClassName,
+                                std::string const& moduleLabel,
+                                std::string const& guid,
+                                std::string const& dataType,
+                                std::string const& branchHash,
+                                std::vector<std::string> const& branchNames)
     {
       impl_->outputFiles_.push_back(JobReport::OutputFile());
       JobReport::OutputFile& r = impl_->outputFiles_.back();
@@ -586,7 +586,7 @@ namespace mf
 
     void
     JobReport::overrideContributingInputs(Token outputToken,
-					  std::vector<Token> const& inputTokens)
+                                          std::vector<Token> const& inputTokens)
     {
        // Get the required output file instance using the token
       JobReport::OutputFile& f = impl_->getOutputFileForToken(outputToken);
@@ -627,7 +627,7 @@ namespace mf
 
   void
   JobReport::reportError(std::string const& shortDesc,
-  			 std::string const& longDesc)
+                         std::string const& longDesc)
   {
     if(impl_->ost_) {
       std::ostream& msg =*(impl_->ost_);
@@ -647,13 +647,13 @@ namespace mf
       std::ostream& msg = *(impl_->ost_);
       //std::ostringstream msg;
       msg << "<AnalysisFile>\n"
-	  << "  <FileName>" << TiXmlText(fileName) <<"</FileName>\n";
+          << "  <FileName>" << TiXmlText(fileName) <<"</FileName>\n";
 
       std::map<std::string, std::string>::const_iterator pos;
       for (pos = fileData.begin(); pos != fileData.end(); ++pos){
         msg <<  "  <" << pos->first
-	    <<  "  Value=\"" << pos->second  << "\" />"
-	    <<  "\n";
+            <<  "  Value=\"" << pos->second  << "\" />"
+            <<  "\n";
       }
 
       msg << "</AnalysisFile>\n";
@@ -667,14 +667,14 @@ namespace mf
 
   void
   JobReport::reportError(std::string const& shortDesc,
-			 std::string const& longDesc,
-			 int const& exitCode)
+                         std::string const& longDesc,
+                         int const& exitCode)
   {
     if(impl_->ost_) {
       std::ostream& msg = *(impl_->ost_);
       //std::ostringstream msg;
       msg << "<FrameworkError ExitStatus=\""<< exitCode
-    	<<"\" Type=\"" << shortDesc <<"\" >\n";
+        <<"\" Type=\"" << shortDesc <<"\" >\n";
       msg << "<![CDATA[\n" << longDesc << "\n]]>\n";
       msg << "</FrameworkError>\n";
       //LogError("FwkJob") << msg.str();
@@ -684,7 +684,7 @@ namespace mf
 
   void
   JobReport::reportSkippedFile(std::string const& pfn,
-			       std::string const& lfn) {
+                               std::string const& lfn) {
 
     if(impl_->ost_) {
       std::ostream& msg = *(impl_->ost_);
@@ -761,11 +761,11 @@ namespace mf
       std::map<std::string, std::string>::const_iterator property_pos;
 
       for (core_pos = CPUData.begin(); core_pos != CPUData.end(); ++core_pos){
-	msg << "  <CPUCore Core=\"" << core_pos->first << "\">\n";
-      	for (property_pos = core_pos->second.begin(); property_pos != core_pos->second.end(); ++property_pos){
-       	    msg <<  "    <Property Name=\"" << property_pos->first << "\">" << property_pos->second << "</Property>\n";
+        msg << "  <CPUCore Core=\"" << core_pos->first << "\">\n";
+        for (property_pos = core_pos->second.begin(); property_pos != core_pos->second.end(); ++property_pos){
+            msg <<  "    <Property Name=\"" << property_pos->first << "\">" << property_pos->second << "</Property>\n";
         }
-	msg << "  </CPUCore>\n";
+        msg << "  </CPUCore>\n";
       }
 
       msg << "</CPUService>\n";
@@ -811,7 +811,7 @@ namespace mf
       std::ostream& msg = *(impl_->ost_);
       msg << "<StorageStatistics>\n"
         << data << "\n"
-	<<  "</StorageStatistics>\n";
+        <<  "</StorageStatistics>\n";
       //LogInfo("FwkJob") << msg.str();
       msg << std::flush;
     }
@@ -830,7 +830,7 @@ namespace mf
       std::ostream& msg = *(impl_->ost_);
       msg << "<RandomServiceStateFile>\n"
         << TiXmlText(name) << "\n"
-	<<  "</RandomServiceStateFile>\n";
+        <<  "</RandomServiceStateFile>\n";
       //LogInfo("FwkJob") << msg.str();
       msg << std::flush;
     }
@@ -843,7 +843,7 @@ namespace mf
       std::ostream& msg =*(impl_->ost_);
       msg << "<PSetHash>"
         <<  hashValue
-	<<  "</PSetHash>\n";
+        <<  "</PSetHash>\n";
       //LogInfo("FwkJob") << msg.str();
       msg << std::flush;
     }
@@ -852,7 +852,7 @@ namespace mf
 
   void
   JobReport::reportPerformanceSummary(std::string const& metricClass,
-				      std::map<std::string, std::string> const& metrics)
+                                      std::map<std::string, std::string> const& metrics)
   {
     if(impl_->ost_){
       std::ostream& msg =*(impl_->ost_);
@@ -866,7 +866,7 @@ namespace mf
       }
 
       msg << "  </PerformanceSummary>\n"
-	<< "</PerformanceReport>\n";
+        << "</PerformanceReport>\n";
       msg << std::flush;
       //LogInfo("FwkJob") << msg.str();
     }
@@ -874,14 +874,14 @@ namespace mf
 
   void
   JobReport::reportPerformanceForModule(std::string const&  metricClass,
-					std::string const&  moduleName,
-					std::map<std::string, std::string> const& metrics)
+                                        std::string const&  moduleName,
+                                        std::map<std::string, std::string> const& metrics)
   {
     if(impl_->ost_){
       std::ostream& msg =*(impl_->ost_);
       msg << "<PerformanceReport>\n"
         << "  <PerformanceModule Metric=\"" << metricClass << "\" "
-	<< " Module=\""<< moduleName << "\" >\n";
+        << " Module=\""<< moduleName << "\" >\n";
 
       std::map<std::string, std::string>::const_iterator iter;
       for( iter = metrics.begin(); iter != metrics.end(); ++iter ) {
@@ -890,7 +890,7 @@ namespace mf
       }
 
       msg << "  </PerformanceModule>\n"
-	<< "</PerformanceReport>\n";
+        << "</PerformanceReport>\n";
       msg << std::flush;
       //LogInfo("FwkJob") << msg.str();
     }
@@ -905,7 +905,7 @@ namespace mf
     std::vector<JobReport::OutputFile>::iterator f;
 
     for (f = impl_->outputFiles_.begin();
-	 f != impl_->outputFiles_.end(); f++){
+         f != impl_->outputFiles_.end(); f++){
 
       msg << "\n<File>";
       msg << *f;
@@ -920,12 +920,12 @@ namespace mf
       msg << "\n<Inputs>";
       std::vector<JobReport::Token>::iterator iInput;
       for (iInput = f->contributingInputs.begin();
-	   iInput != f->contributingInputs.end(); iInput++) {
-	JobReport::InputFile inpFile = impl_->inputFiles_[*iInput];
-	msg <<"\n<Input>";
-	msg <<"\n  <LFN>" << TiXmlText(inpFile.logicalFileName) << "</LFN>";
-	msg <<"\n  <PFN>" << TiXmlText(inpFile.physicalFileName) << "</PFN>";
-	msg <<"\n</Input>";
+           iInput != f->contributingInputs.end(); iInput++) {
+        JobReport::InputFile inpFile = impl_->inputFiles_[*iInput];
+        msg <<"\n<Input>";
+        msg <<"\n  <LFN>" << TiXmlText(inpFile.logicalFileName) << "</LFN>";
+        msg <<"\n  <PFN>" << TiXmlText(inpFile.physicalFileName) << "</PFN>";
+        msg <<"\n</Input>";
       }
       msg << "\n</Inputs>";
       msg << "\n</File>";

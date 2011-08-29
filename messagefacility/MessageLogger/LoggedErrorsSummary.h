@@ -4,16 +4,16 @@
 // ----------------------------------------------------------------------
 //
 // LoggedErrorsSummary.h - Methods to obtain summary of warning and error
-//		    messages issued in an event.  
+//                  messages issued in an event.
 //
-//   Usage:  
-//	EnableLoggedErrorsSummary();
-//	then per event:
-//	some_code_that_might_issue_messages();
-//	if (edm::FreshErrorsExist()) {
-//	  std::vector<edm::ErrorSummaryEntry> es = edm::LoggedErrorsSummary();
-//	  package_as_product_in_the_event (es);
-//	}
+//   Usage:
+//      EnableLoggedErrorsSummary();
+//      then per event:
+//      some_code_that_might_issue_messages();
+//      if (edm::FreshErrorsExist()) {
+//        std::vector<edm::ErrorSummaryEntry> es = edm::LoggedErrorsSummary();
+//        package_as_product_in_the_event (es);
+//      }
 //
 //  The above gives warnings and errors; use LoggedErrorsOnlySummary() for
 //  just errors.
@@ -30,15 +30,15 @@
 //    std::vector<edm::ErrorSummaryEntry> errs;
 //    std::vector<edm::ErrorSummaryEntry>::const_iterator end = es.end();
 //    for (std::vector<edm::ErrorSummaryEntry>::const_iterator i = es.begin();
-//                                                        i != end; ++i) { 
+//                                                        i != end; ++i) {
 //      if ( i->severity >= edm:ELerror ) errs.push_back(*i);
 //    }
 //    place_into_event(errs);
 //  }
 //
-// 25-Aug-2008 mf	Created file.
+// 25-Aug-2008 mf       Created file.
 //
-// 22-Jun-2009 mf	Added LoggedErrorsOnlySummary()
+// 22-Jun-2009 mf       Added LoggedErrorsOnlySummary()
 //
 // ----------------------------------------------------------------------
 
@@ -46,7 +46,7 @@
 
 #include <vector>
 
-namespace mf {       
+namespace mf {
 
 bool EnableLoggedErrorsSummary();
 bool DisableLoggedErrorsSummary();

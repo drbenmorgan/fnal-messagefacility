@@ -4,11 +4,11 @@
 
 // ----------------------------------------------------------------------
 //
-// ELerrorList	is a subclass of ELdestination representing a simple
-//		std::list of ErrorObjs's.
+// ELerrorList  is a subclass of ELdestination representing a simple
+//              std::list of ErrorObjs's.
 //
-// 9/21/00 mf	Created file.
-// 10/4/00 mf	Add excludeModule()
+// 9/21/00 mf   Created file.
+// 10/4/00 mf   Add excludeModule()
 //  4/4/01 mf   Removed moduleOfInterest and moduleToExclude, in favor
 //              of using base class method.
 //
@@ -21,8 +21,8 @@
 
 #include <list>
 
-namespace mf {       
-namespace service {       
+namespace mf {
+namespace service {
 
 
 // ----------------------------------------------------------------------

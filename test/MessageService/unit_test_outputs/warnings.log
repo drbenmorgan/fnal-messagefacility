@@ -2,22 +2,22 @@
 Test of std::setprecision(p): Pi with precision 12 is 3.14159265358
 %MSG
 %MSG-w cat_C:  UnitTestClient_G:sendSomeMessages Run: 1 Event: 1
-		Emit Warning level message 1
+                Emit Warning level message 1
 %MSG
 %MSG-w cat_C:  UnitTestClient_G:sendSomeMessages Run: 1 Event: 1
-		Emit Warning level message 2
+                Emit Warning level message 2
 %MSG
 %MSG-w cat_C:  UnitTestClient_G:sendSomeMessages Run: 1 Event: 1
-		Emit Warning level message 3
+                Emit Warning level message 3
 %MSG
 %MSG-w cat_C:  UnitTestClient_G:sendSomeMessages Run: 1 Event: 1
-		Emit Warning level message 6
+                Emit Warning level message 6
 %MSG
 %MSG-w cat_C:  UnitTestClient_G:sendSomeMessages Run: 1 Event: 1
-		Emit Warning level message 9
+                Emit Warning level message 9
 %MSG
 %MSG-w cat_C:  UnitTestClient_G:sendSomeMessages Run: 1 Event: 1
-		Emit Warning level message 15
+                Emit Warning level message 15
 %MSG
 
 =============================================
@@ -33,7 +33,7 @@ MessageLogger Summary
 
  type    category    Examples: run/evt        run/evt          run/evt
  ---- -------------------- ---------------- ---------------- ----------------
-    1 cat_A                1/1                               
+    1 cat_A                1/1
     2 cat_C                1/1              1/1              1/1
 
 Severity    # Occurrences   Total Occurrences

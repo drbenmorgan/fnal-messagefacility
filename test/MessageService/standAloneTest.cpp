@@ -3,7 +3,7 @@
 namespace edmtest
 {
 
-void sampleStandAlone() 
+void sampleStandAlone()
 {
        LogDebug    ("cat_A")   << "LogDebug    was used to send cat_A";
        LogDebug    ("cat_B")   << "LogDebug    was used to send cat_B";
@@ -25,8 +25,8 @@ void sampleStandAlone()
 
 }  // namespace edmtest
 
-int main() 
-{ 
+int main()
+{
   edm::LogImportant ("note") << "Default settings";
   edmtest::sampleStandAlone();
 
@@ -42,9 +42,9 @@ int main()
   edm::setStandAloneMessageThreshold("WARNING");
   edmtest::sampleStandAlone();
 
-  edm::LogImportant ("note") << "threshold ELerror"; // ERROR would confuse 
-  						     // the grep checking that
-						     // the runtests worked
+  edm::LogImportant ("note") << "threshold ELerror"; // ERROR would confuse
+                                                     // the grep checking that
+                                                     // the runtests worked
   edm::setStandAloneMessageThreshold("ERROR");
   edmtest::sampleStandAlone();
 

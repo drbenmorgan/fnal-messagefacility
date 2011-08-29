@@ -25,7 +25,7 @@ public:
   explicit
     PSetTestClient_A( edm::ParameterSet const & p);
   virtual ~PSetTestClient_A() {}
-  
+
   virtual
     void analyze( edm::Event      const & e
                 , edm::EventSetup const & c

@@ -20,7 +20,7 @@
 // 4/12/01      mf      repair multi-module filtering
 // 6/23/03      mf      changeFile(), flush()
 // 1/10/06      mf      finish()
-// 6/19/08 	mf   	summaryForJobReport()
+// 6/19/08      mf      summaryForJobReport()
 //
 // ----------------------------------------------------------------------
 
@@ -289,24 +289,24 @@ void close_and_delete::operator()(std::ostream* os) const {
 
 ELdestinationFactory::map_type * ELdestinationFactory::map;
 
-void ELdestinationFactory::reg(std::string type_str, 
-         ELdestination* (*f)(std::string const &, fhicl::ParameterSet const &)) 
+void ELdestinationFactory::reg(std::string type_str,
+         ELdestination* (*f)(std::string const &, fhicl::ParameterSet const &))
 {
   getMap()->insert(std::make_pair(type_str, f));
 }
 
-ELdestination * 
-ELdestinationFactory::createInstance (std::string const & type_str, 
-         std::string const & name,         
+ELdestination *
+ELdestinationFactory::createInstance (std::string const & type_str,
+         std::string const & name,
          fhicl::ParameterSet const & pset )
 {
   map_type::iterator it = getMap()->find(type_str);
 
   if(it == getMap()->end())
     return 0;
-    
+
   return it->second(name, pset);
 }
 
-} // end of namespace service  
-} // end of namespace mf  
+} // end of namespace service
+} // end of namespace mf

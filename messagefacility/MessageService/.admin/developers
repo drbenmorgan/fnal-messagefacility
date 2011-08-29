@@ -2,13 +2,13 @@
 #
 # There are two types of developers:
 # 1) Administrators - entitled to edit all files in the module ,
-#    in particular the .admin directory.  (Including this file) 
+#    in particular the .admin directory.  (Including this file)
 # 2) Regular Developers - entitled to edit all files in the module
 #    except those in the .admin directory.
 #
 # You must use the full name of the developer as recorded on this system.
 # see :
-# http://cmsdoc.cern.ch/cmsoo/projects/swdevtools/developer_list.html 
+# http://cmsdoc.cern.ch/cmsoo/projects/swdevtools/developer_list.html
 # for a full list of names. If the developer you require is not on this
 # list then email the cvs administrator (cvsadmin@cmscvs.cern.ch)
 #

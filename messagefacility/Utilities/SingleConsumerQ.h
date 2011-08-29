@@ -79,7 +79,7 @@ namespace mf {
     {
     public:
       explicit OperateBuffer(SingleConsumerQ& b):
-	b_(b),v_(T::get(b)),committed_(false) { }
+        b_(b),v_(T::get(b)),committed_(false) { }
       ~OperateBuffer()
       { if(!committed_) T::release(b_,v_.ptr_); }
 

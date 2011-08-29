@@ -30,7 +30,7 @@ INSTALL (FILES ${includeFiles}
 
 INSTALL (FILES CMakeLists.txt
                ${srcFiles}
-	       ${includeFiles}
+               ${includeFiles}
     DESTINATION ${product}/${version}/source/messagefacility/Extensions
     )
 
@@ -38,4 +38,4 @@ INSTALL (TARGETS Extensions
     RUNTIME DESTINATION ${flavorqual_dir}/bin
     LIBRARY DESTINATION ${flavorqual_dir}/lib
     ARCHIVE DESTINATION ${flavorqual_dir}/lib
-    ) 
+    )

@@ -4,9 +4,9 @@
 #include "messagefacility/MessageLogger/MessageLoggerQ.h"
 
 namespace mf  {
-namespace service {       
+namespace service {
 
-class AbstractMLscribe 
+class AbstractMLscribe
 {
 public:
   // ---  birth/death:

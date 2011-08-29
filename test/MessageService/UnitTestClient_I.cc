@@ -19,8 +19,8 @@ void
        LogDebug  ("cat_A")   << "LogDebug was used to send this message";
        LogDebug  ("cat_B")   << "LogDebug was used to send this other message";
   edm::LogError  ("cat_A")   << "LogError was used to send this message"
-  			     << "-which is long enough to span lines but-"
-			     << "will not be broken up by the logger any more";
+                             << "-which is long enough to span lines but-"
+                             << "will not be broken up by the logger any more";
   edm::LogError  ("cat_B")   << "LogError was used to send this other message";
   edm::LogWarning("cat_A")   << "LogWarning was used to send this message";
   edm::LogWarning("cat_B")   << "LogWarning was used to send this other message";

@@ -11,19 +11,19 @@
 //                The ELadministrator creates an ELdestControl handle
 //                to its own copy whenever an ELdestination is attached.
 //
-// 7/5/98  mf	Created file.
+// 7/5/98  mf   Created file.
 // 6/16/99 jvr  Allows suppress/include options on destinations
-// 7/2/99  jvr	Added separate/attachTime, Epilogue, and Serial options
-// 6/7/00  web	Reflect consolidation of ELdestination/X; add
-//		filterModule()
+// 7/2/99  jvr  Added separate/attachTime, Epilogue, and Serial options
+// 6/7/00  web  Reflect consolidation of ELdestination/X; add
+//              filterModule()
 // 10/04/00 mf  add excludeModule()
 // 01/15/00 mf  mods to give user control of line length
-// 03/13/01 mf  mod to give user control of hex trigger and 
-//		statisticsMap() method
+// 03/13/01 mf  mod to give user control of hex trigger and
+//              statisticsMap() method
 // 04/04/01 mf  add ignoreMOdule and respondToModule
 // 10/17/01 mf  add setTableLimit which had been omitted
 // 10/18/01 mf  Corrected default in summary title =0 to empty string
-//  6/23/03 mf  changeFile() and flush() 
+//  6/23/03 mf  changeFile() and flush()
 //  6/19/08 mf  summaryForJobReport()
 //
 // ----------------------------------------------------------------------
@@ -37,8 +37,8 @@
 #include "boost/shared_ptr.hpp"
 
 
-namespace mf {       
-namespace service {       
+namespace mf {
+namespace service {
 
 // ----------------------------------------------------------------------
 // prerequisite classes:
@@ -83,7 +83,7 @@ public:
   virtual void separateTime();           virtual void attachTime();
   virtual void separateEpilogue();       virtual void attachEpilogue();
   virtual void noTerminationSummary();
-  virtual int  setLineLength(int len);	 virtual int  getLineLength() const;
+  virtual int  setLineLength(int len);   virtual int  getLineLength() const;
 
   virtual void filterModule    ( ELstring const & moduleName );
   virtual void excludeModule   ( ELstring const & moduleName );
@@ -109,11 +109,11 @@ public:
 
   virtual bool log( mf::ErrorObj & msg );  // Backdoor to log a formed message
                                             // to only this destination.
-				       
+
   virtual void changeFile (std::ostream & os);
   virtual void changeFile (const ELstring & filename);
-  virtual void flush(); 				       
-  
+  virtual void flush();
+
   // -----  Helper methods invoked by other ErrorLogger classes
 
   virtual void summarization( const ELstring & title

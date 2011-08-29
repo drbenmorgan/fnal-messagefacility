@@ -10,9 +10,9 @@
 //                      and setTimespan(id,n) w/ setLimit(sev||"*",n)
 //   6/15/00    web     using -> USING
 //  11/01/01    web     Fixed mixed-type comparisons
-//   5/18/06	mf	setInterval
-//  11/2/07	mf	add:  Changed ivl = wildcardLimit to wildcardInterval.
-//			Probably moot and never reached, but a clear correction.
+//   5/18/06    mf      setInterval
+//  11/2/07     mf      add:  Changed ivl = wildcardLimit to wildcardInterval.
+//                      Probably moot and never reached, but a clear correction.
 //
 // ----------------------------------------------------------------------
 
@@ -50,7 +50,7 @@ ELlimitsTable::ELlimitsTable()
 
   for ( int k = 0;  k < ELseverityLevel::nLevels;  ++k )  {
     severityLimits[k]    = -1;                // JvR 99-06-10
-    severityIntervals[k]    = -1;             
+    severityIntervals[k]    = -1;
     severityTimespans[k] = -1;
   }
 
@@ -101,10 +101,10 @@ bool ELlimitsTable::add( const ELextendedID & xid )  {
           lim = wildcardLimit;
         }
       }
-      if ( ivl < 0 )  {                                    
+      if ( ivl < 0 )  {
         ivl = severityIntervals[xid.severity.getLevel()];
         if ( ivl < 0 )  {
-          ivl = wildcardInterval;			// mf 11/02/07
+          ivl = wildcardInterval;                       // mf 11/02/07
         }
       }
       if ( ts < 0 )  {
@@ -263,5 +263,5 @@ ELlimitsTable & ELlimitsTable::operator=( const ELlimitsTable & t )  {
 // ----------------------------------------------------------------------
 
 
-} // end of namespace service  
-} // end of namespace mf  
+} // end of namespace service
+} // end of namespace mf

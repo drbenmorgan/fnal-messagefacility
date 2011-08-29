@@ -4,7 +4,7 @@
 //
 // Changes:
 //
-// 
+//
 
 #include "messagefacility/MessageService/ThreadQueue.h"
 #include <cstring>
@@ -12,13 +12,13 @@
 namespace mf {
 namespace service {
 
-ThreadQueue::ThreadQueue() 
+ThreadQueue::ThreadQueue()
   : m_buf (buf_size, buf_depth)
 {
 }
 ThreadQueue::~ThreadQueue() {}
 
-void  
+void
 ThreadQueue::
 produce(MessageLoggerQ::OpCode  o, void * operand)
 {
@@ -29,8 +29,8 @@ produce(MessageLoggerQ::OpCode  o, void * operand)
   std::memcpy(slot_p+sizeof(MessageLoggerQ::OpCode), &v, sizeof(void *));
   b.commit(buf_size);
 } // runCommand
-  
-void  
+
+void
 ThreadQueue::
 consume( MessageLoggerQ::OpCode & opcode, void * & operand )
 {
@@ -42,7 +42,7 @@ consume( MessageLoggerQ::OpCode & opcode, void * & operand )
 }
 
 
-  
 
-} // end of namespace service  
-} // end of namespace mf  
+
+} // end of namespace service
+} // end of namespace mf

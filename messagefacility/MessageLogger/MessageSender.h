@@ -10,28 +10,28 @@
 
 // Change log
 //
-//  1  mf 8/25/08	error summary information for LoggedErrorsSummary()
+//  1  mf 8/25/08       error summary information for LoggedErrorsSummary()
 //
-//  2  mf 6/22/09	add severity to LoggedErrorsSummary by using 
-//			ErrorSummaryEntry as map key
-//			
+//  2  mf 6/22/09       add severity to LoggedErrorsSummary by using
+//                      ErrorSummaryEntry as map key
+//
 
 namespace mf
 {
 
 typedef ErrorSummaryEntry ErrorSummaryMapKey;
-typedef std::map<ErrorSummaryMapKey, unsigned int>::iterator 
-						ErrorSummaryMapIterator;
+typedef std::map<ErrorSummaryMapKey, unsigned int>::iterator
+                                                ErrorSummaryMapIterator;
 
 class MessageSender
 {
 public:
   // ---  birth/death:
-  MessageSender( ELseverityLevel const & sev, 
-  		 ELstring const & id,
-		 bool verbatim );
-  MessageSender( ELseverityLevel const & sev, 
-  		 ELstring const & id );
+  MessageSender( ELseverityLevel const & sev,
+                 ELstring const & id,
+                 bool verbatim );
+  MessageSender( ELseverityLevel const & sev,
+                 ELstring const & id );
   ~MessageSender();
 
   // ---  stream out the next part of a message:
@@ -43,11 +43,11 @@ public:
     return *this;
   }
 
-  // static data:						// change log 1
+  // static data:                                               // change log 1
   static bool errorSummaryIsBeingKept;
   static bool freshError;
   static std::map<ErrorSummaryMapKey, unsigned int> errorSummaryMap;
-  
+
 private:
   // no copying:
   MessageSender( MessageSender const & );

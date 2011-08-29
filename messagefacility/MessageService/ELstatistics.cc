@@ -17,10 +17,10 @@
 //  11/01/01    web     Remove last vestige of GNU relic code; reordered
 //                      initializers to correspond to order of member
 //                      declarations
-//   1/17/06    mf	summary() for use in MessageLogger
-//   8/16/07    mf	Changes to implement grouping of modules in specified 
-//			categories
-//   6/19/08    mf	summaryForJobReport()
+//   1/17/06    mf      summary() for use in MessageLogger
+//   8/16/07    mf      Changes to implement grouping of modules in specified
+//                      categories
+//   6/19/08    mf      summaryForJobReport()
 //
 //  ---------------------------------------------------------------------
 
@@ -255,9 +255,9 @@ void  ELstatistics::zero()  {
 
 
 ELstring  ELstatistics::formSummary( ELmap_stats & stats )  {
-			// Major changes 8/16/07 mf, including making this
-			// a static member function instead of a free function
-			
+                        // Major changes 8/16/07 mf, including making this
+                        // a static member function instead of a free function
+
   using std::ios;       /* _base ? */
   using std::setw;
   using std::right;
@@ -276,17 +276,17 @@ ELstring  ELstatistics::formSummary( ELmap_stats & stats )  {
     part3() : n(0L), t(0L)  { ; }
   }  p3[ELseverityLevel::nLevels];
 
-  std::set<std::string>::iterator gcEnd = groupedCategories.end(); 
+  std::set<std::string>::iterator gcEnd = groupedCategories.end();
   std::set<std::string> gCats = groupedCategories;  // TEMP FOR DEBUGGING SANITY
   for ( ELmap_stats::const_iterator i = stats.begin();  i != stats.end();  ++i )  {
 
      // If this is a grouped category, wait till later to output its stats
-    std::string cat = (*i).first.id; 
+    std::string cat = (*i).first.id;
     if ( groupedCategories.find(cat) != gcEnd )
-    {								// 8/16/07 mf
+    {                                                           // 8/16/07 mf
        continue; // We will process these categories later
     }
-    							
+
     // -----  Emit new process and part I header, if needed:
     //
     if ( n == 0  || ! eq(lastProcess, (*i).first.process) ) {
@@ -330,23 +330,23 @@ ELstring  ELstatistics::formSummary( ELmap_stats & stats )  {
     for ( ELmap_stats::const_iterator i = stats.begin();  i != stats.end();  ++i )  {
       if ( (*i).first.id == *g ) {
         if (groupTotal==0) severityLevel = (*i).first.severity;
-	groupIgnored &= (*i).second.ignoredFlag;
-	groupAggregateN += (*i).second.aggregateN;
+        groupIgnored &= (*i).second.ignoredFlag;
+        groupAggregateN += (*i).second.aggregateN;
         ++groupTotal;
-      } 
+      }
     } // for i
     if (groupTotal > 0) {
       // -----  Emit detailed message information:
       //
       s << right << std::setw( 5) << ++n                                     << ' '
-	<< left  << std::setw(20) << (*g).substr(0,20)                       << ' '
-	<< left  << std::setw( 2) << severityLevel.getSymbol()               << ' '
-	<< left  << std::setw(16) << "  <Any Module>  "                      << ' '
-	<< left  << std::setw(16) << "<Any Function>"
-	<< right << std::setw( 7) << groupTotal
-	<< left  << std::setw( 1) << ( groupIgnored ? '*' : ' ' )
-	<< right << std::setw( 8) << groupAggregateN                  << '\n'
-	;
+        << left  << std::setw(20) << (*g).substr(0,20)                       << ' '
+        << left  << std::setw( 2) << severityLevel.getSymbol()               << ' '
+        << left  << std::setw(16) << "  <Any Module>  "                      << ' '
+        << left  << std::setw(16) << "<Any Function>"
+        << right << std::setw( 7) << groupTotal
+        << left  << std::setw( 1) << ( groupIgnored ? '*' : ' ' )
+        << right << std::setw( 8) << groupAggregateN                  << '\n'
+        ;
       ftnote = ftnote || groupIgnored;
 
       // -----  Obtain information for Part III, below:
@@ -368,18 +368,18 @@ ELstring  ELstatistics::formSummary( ELmap_stats & stats )  {
   //
   n = 0;
   for ( ELmap_stats::const_iterator i = stats.begin();  i != stats.end();  ++i )  {
-    std::string cat = (*i).first.id; 
+    std::string cat = (*i).first.id;
     if ( groupedCategories.find(cat) != gcEnd )
-    {								// 8/16/07 mf
+    {                                                           // 8/16/07 mf
        continue; // We will process these categories later
     }
     if ( n ==  0 ) {
       s << '\n'
-	<< " type    category    Examples: "
-	   "run/evt        run/evt          run/evt\n"
-	<< " ---- -------------------- ----"
-	   "------------ ---------------- ----------------\n"
-	;
+        << " type    category    Examples: "
+           "run/evt        run/evt          run/evt\n"
+        << " ---- -------------------- ----"
+           "------------ ---------------- ----------------\n"
+        ;
     }
     s << right << std::setw( 5) << ++n                             << ' '
       << left  << std::setw(20) << (*i).first.id.c_str()           << ' '
@@ -426,7 +426,7 @@ void  ELstatistics::summary( std::ostream & os, const ELstring & title )  {
 void  ELstatistics::summary( )  {
 
   termStream << "\n=============================================\n\n"
-  	     << "MessageLogger Summary" << std::endl << formSummary(stats) 
+             << "MessageLogger Summary" << std::endl << formSummary(stats)
              << std::flush;
   updatedStats = false;
 
@@ -448,7 +448,7 @@ std::map<ELextendedID , StatsCount> ELstatistics::statisticsMap() const {
 }
 
 
-								// 6/19/08 mf
+                                                                // 6/19/08 mf
 void  ELstatistics::summaryForJobReport (std::map<std::string, double> & sm) {
 
   struct part3  {
@@ -456,19 +456,19 @@ void  ELstatistics::summaryForJobReport (std::map<std::string, double> & sm) {
     part3() : n(0L), t(0L)  { ; }
   }  p3[ELseverityLevel::nLevels];
 
-  std::set<std::string>::iterator gcEnd = groupedCategories.end(); 
+  std::set<std::string>::iterator gcEnd = groupedCategories.end();
   std::set<std::string> gCats = groupedCategories;  // TEMP FOR DEBUGGING SANITY
 
   // ----- Part I:  The ungrouped categories
   for ( ELmap_stats::const_iterator i = stats.begin();  i != stats.end();  ++i )  {
 
      // If this is a grouped category, wait till later to output its stats
-    std::string cat = (*i).first.id; 
+    std::string cat = (*i).first.id;
     if ( groupedCategories.find(cat) != gcEnd )
-    {								
+    {
        continue; // We will process these categories later
     }
-    							
+
     // -----  Emit detailed message information:
     //
     std::ostringstream s;
@@ -476,13 +476,13 @@ void  ELstatistics::summaryForJobReport (std::map<std::string, double> & sm) {
     std::string sevSymbol = (*i).first.severity.getSymbol();
     if ( sevSymbol[0] == '-' ) sevSymbol = sevSymbol.substr(1);
     s << sevSymbol << "_" << (*i).first.id;
-    int n = (*i).second.aggregateN;    
+    int n = (*i).second.aggregateN;
     std::string catstr = s.str();
     if (sm.find(catstr) != sm.end()) {
-      sm[catstr] += n; 
+      sm[catstr] += n;
     } else {
        sm[catstr] = n;
-    } 
+    }
     // -----  Obtain information for Part III, below:
     //
     ELextendedID xid = (*i).first;
@@ -498,9 +498,9 @@ void  ELstatistics::summaryForJobReport (std::map<std::string, double> & sm) {
     for ( ELmap_stats::const_iterator i = stats.begin();  i != stats.end();  ++i )  {
       if ( (*i).first.id == *g ) {
         if (groupTotal==0) severityLevel = (*i).first.severity;
-	groupAggregateN += (*i).second.aggregateN;
+        groupAggregateN += (*i).second.aggregateN;
         ++groupTotal;
-      } 
+      }
     } // for i
     if (groupTotal > 0) {
       // -----  Emit detailed message information:
@@ -510,13 +510,13 @@ void  ELstatistics::summaryForJobReport (std::map<std::string, double> & sm) {
       std::string sevSymbol = severityLevel.getSymbol();
       if ( sevSymbol[0] == '-' ) sevSymbol = sevSymbol.substr(1);
       s << sevSymbol << "_" << *g;
-      int n = groupAggregateN;    
+      int n = groupAggregateN;
       std::string catstr = s.str();
       if (sm.find(catstr) != sm.end()) {
-        sm[catstr] += n; 
+        sm[catstr] += n;
       } else {
          sm[catstr] = n;
-      } 
+      }
 
       // -----  Obtain information for Part III, below:
       //
@@ -547,7 +547,7 @@ void  ELstatistics::summaryForJobReport (std::map<std::string, double> & sm) {
 
 } // summaryForJobReport()
 
-std::string ELstatistics::dualLogName (std::string const & s) 
+std::string ELstatistics::dualLogName (std::string const & s)
 {
   if (s=="LogDebug")   return  "LogDebug_LogTrace";
   if (s=="LogInfo")    return  "LogInfo_LogVerbatim";
@@ -557,11 +557,11 @@ std::string ELstatistics::dualLogName (std::string const & s)
   return "UnusedSeverity";
 }
 
-std::set<std::string> ELstatistics::groupedCategories; // 8/16/07 mf 
+std::set<std::string> ELstatistics::groupedCategories; // 8/16/07 mf
 
 void ELstatistics::noteGroupedCategory(std::string const & cat) {
   groupedCategories.insert(cat);
 }
-  
-} // end of namespace service  
-} // end of namespace mf  
+
+} // end of namespace service
+} // end of namespace mf

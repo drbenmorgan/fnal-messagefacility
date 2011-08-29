@@ -1,7 +1,7 @@
 #include "messagefacility/MessageLogger/AbstractMLscribe.h"
 
 namespace mf  {
-namespace service { 
+namespace service {
 
 AbstractMLscribe::AbstractMLscribe() {}
 AbstractMLscribe::~AbstractMLscribe() {}

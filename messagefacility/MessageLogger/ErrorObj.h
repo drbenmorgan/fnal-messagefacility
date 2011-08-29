@@ -4,17 +4,17 @@
 
 // ----------------------------------------------------------------------
 //
-// ErrorObj 	is the representation of all information about an error
-//		message.  The system uses this heavily:  ErrorLog forms an
-//		ErrorObj to pass around to destinations.  A physicist is
-//		permitted to use ErrorObj to form a message for potential
-//		logging.
+// ErrorObj     is the representation of all information about an error
+//              message.  The system uses this heavily:  ErrorLog forms an
+//              ErrorObj to pass around to destinations.  A physicist is
+//              permitted to use ErrorObj to form a message for potential
+//              logging.
 //
-// 7/8/98  mf	Created file.
+// 7/8/98  mf   Created file.
 // 6/15/99 mf,jvr  Inserted operator<<(void (*f)(ErrorLog&)
 // 7/16/99 jvr  Added setSeverity() and setID functions
-// 6/6/00 web	Adapt to consolidated ELcout/X
-// 6/14/00 web	Declare classes before granting friendship.
+// 6/6/00 web   Adapt to consolidated ELcout/X
+// 6/14/00 web  Declare classes before granting friendship.
 // 5/7/01  mf   operator<< (const char[]) to avoid many instantiations of
 //              the template one for each length of potential error message
 // 6/5/01  mf   Made set() and clear() public.  Added setReactedTo.
@@ -33,7 +33,7 @@
 
 #include <sys/time.h>
 
-namespace mf {       
+namespace mf {
 
 
 // ----------------------------------------------------------------------
@@ -55,9 +55,9 @@ class ErrorObj  {
 public:
   // --- birth/death:
   //
-  ErrorObj( const ELseverityLevel & sev, 
-  	    const ELstring & id, 
-	    bool verbatim = false );
+  ErrorObj( const ELseverityLevel & sev,
+            const ELstring & id,
+            bool verbatim = false );
   ErrorObj( const ErrorObj & orig );  // Same serial number and everything!
   virtual ~ErrorObj();
 
@@ -86,16 +86,16 @@ public:
   virtual void  setApplication(const ELstring & application );
   virtual void  setPID       ( long             pid );
   virtual void  setTimestamp ( const timeval & t );
-		//-| process is always determined through ErrorLog or
-		//-| an ELdestControl, both of which talk to ELadministrator.
+                //-| process is always determined through ErrorLog or
+                //-| an ELdestControl, both of which talk to ELadministrator.
 
   // -----  Methods for ErrorLog or for physicists logging errors:
   //
   template< class T >
   inline ErrorObj &  opltlt ( const T & t );
          ErrorObj &  opltlt ( const char s[] );
-  inline ErrorObj &  operator<< ( std::ostream&(*f)(std::ostream&) ); 
-  inline ErrorObj &  operator<< ( std::ios_base&(*f)(std::ios_base&) ); 
+  inline ErrorObj &  operator<< ( std::ostream&(*f)(std::ostream&) );
+  inline ErrorObj &  operator<< ( std::ios_base&(*f)(std::ios_base&) );
 
   virtual ErrorObj &  eo_emit( const ELstring & txt );
 
@@ -119,10 +119,10 @@ private:
   ELlist_string  myItems;
   bool           myReactedTo;
   ELstring       myContext;
-  std::ostringstream myOs; 
+  std::ostringstream myOs;
   std::string    emptyString;
-  bool		 verbatim;
-    
+  bool           verbatim;
+
 };  // ErrorObj
 
 

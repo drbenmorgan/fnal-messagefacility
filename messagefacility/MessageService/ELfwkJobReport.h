@@ -5,7 +5,7 @@
 // ----------------------------------------------------------------------
 //
 // ELfwkJobReport  is a subclass of ELdestination formating in a way
-//		   that is good for automated scanning.
+//                 that is good for automated scanning.
 //
 // 1/10/06 mf, de  Created file.
 //
@@ -18,7 +18,7 @@
 
 #include "boost/shared_ptr.hpp"
 
-namespace mf {       
+namespace mf {
 
 
 // ----------------------------------------------------------------------
@@ -26,7 +26,7 @@ namespace mf {
 // ----------------------------------------------------------------------
 
 class ErrorObj;
-namespace service {       
+namespace service {
 class ELdestControl;
 
 
@@ -89,11 +89,11 @@ protected:
 
   virtual void summarization ( const ELstring & fullTitle
                              , const ELstring & sumLines );
-			     
+
   virtual void changeFile (std::ostream & os);
   virtual void changeFile (const ELstring & filename);
-  virtual void flush(); 				       
-  virtual void finish(); 				       
+  virtual void flush();
+  virtual void finish();
 
 
 protected:

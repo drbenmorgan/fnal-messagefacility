@@ -1,6 +1,6 @@
 
-execute_process( COMMAND date 
-                 OUTPUT_VARIABLE datime 
+execute_process( COMMAND date
+                 OUTPUT_VARIABLE datime
                  OUTPUT_STRIP_TRAILING_WHITESPACE )
 
 # create package configuration and version files
@@ -14,5 +14,5 @@ configure_file ( ${PROJECT_SOURCE_DIR}/ups/messagefacility-config-version.cmake.
 
 install (FILES ${PROJECT_BINARY_DIR}/ups/messagefacility-config.cmake
                ${PROJECT_BINARY_DIR}/ups/messagefacility-config-version.cmake
-	 DESTINATION ${flavorqual_dir}/lib/messagefacility-${version} )
+         DESTINATION ${flavorqual_dir}/lib/messagefacility-${version} )
 

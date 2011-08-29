@@ -13,16 +13,16 @@ process.load("FWCore.MessageService.test.Services_cff")
 process.MessageLogger = cms.Service("MessageLogger",
 
     destinations = cms.untracked.vstring( 'u1_warnings',  'u1_errors',
-                   'u1_infos',  'u1_debugs', 'u1_default', 'u1_x'), 
-        
+                   'u1_infos',  'u1_debugs', 'u1_default', 'u1_x'),
+
 #enable one of the following -- the first should pass, the rest fail
-     statistics = cms.untracked.vstring( 'u1_warnings', 'u1_default', 'u1_y'), 
+     statistics = cms.untracked.vstring( 'u1_warnings', 'u1_default', 'u1_y'),
 #    statistics = cms.vstring('cout'),
 #    statistics = cms.untracked.int32(2),
 #    statistics = cms.untracked.vstring('u1_warnings', 'u1_errors', 'u1_warnings'),
 #    statistics = cms.untracked.vstring('cout','limit'),
 
-   
+
     u1_infos = cms.untracked.PSet(
         threshold = cms.untracked.string('INFO'),
         noTimeStamps = cms.untracked.bool(True),
@@ -62,7 +62,7 @@ process.MessageLogger = cms.Service("MessageLogger",
     ),
     fwkJobReports = cms.untracked.vstring('u1_job_report.mxml'),
     debugModules = cms.untracked.vstring('*'),
-    categories = cms.untracked.vstring('preEventProcessing', 
+    categories = cms.untracked.vstring('preEventProcessing',
         'FwkJob')
 )
 

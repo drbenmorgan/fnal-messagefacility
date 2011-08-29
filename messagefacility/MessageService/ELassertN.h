@@ -7,32 +7,32 @@
 // include ELassertN.h (or for that matter assert.h) and get meanings of the
 // assert macros based on the current definition status of NDEBUG -- and later,
 // one can alter NDEBUG (or NDEBUG1, NDEBUG2, NDBUG3) and re-include ELassertN.h
-// so as to change to the new assertion behavior.  
+// so as to change to the new assertion behavior.
 //
 // Usage:
 //
-// 	The variable errlog must be an ErrorLog which is in scope where the
-//	ELassert is done.  The error message will go to that errlog.
+//      The variable errlog must be an ErrorLog which is in scope where the
+//      ELassert is done.  The error message will go to that errlog.
 //
-//	ELassert  (condition) will behave like assert(condition) but if
-//			      triggered will issue an error message with
-//			      ELabort severity, rather than a cerr output
-//			      and an abort.
-//	ELassert1 (condition) will behave like ELassert(condition) but is
-//	 		      disabled by either NDEBUG or NDEBUG1,
-//	ELassert2 (condition) is disabled by those and by NDEBUG2.
-//	ELassert3 (condition) is disabled by those and by NDEBUG2 or NDEBUG3.
+//      ELassert  (condition) will behave like assert(condition) but if
+//                            triggered will issue an error message with
+//                            ELabort severity, rather than a cerr output
+//                            and an abort.
+//      ELassert1 (condition) will behave like ELassert(condition) but is
+//                            disabled by either NDEBUG or NDEBUG1,
+//      ELassert2 (condition) is disabled by those and by NDEBUG2.
+//      ELassert3 (condition) is disabled by those and by NDEBUG2 or NDEBUG3.
 //
-//	ELsanityCheck(condition) will behave like ELassert(condition) but
-//			         is disabled by NOSANCHECK rather than NDEBUG.
+//      ELsanityCheck(condition) will behave like ELassert(condition) but
+//                               is disabled by NOSANCHECK rather than NDEBUG.
 //
-//	ELwarningAssert  (condition) same as the corresponding ELassert,
+//      ELwarningAssert  (condition) same as the corresponding ELassert,
 //      ELwarningAssert1 (condition) but will use ELwarning as the message
 //      ELwarningAssert1 (condition) severity if triggered.
 //      ELwarningAssert1 (condition)
-//	ELwarningCheck   (condition) same as ELsanityCheck but will issue
-//				     an error message with ELwarning severity
-//				     (rather than ELabort) if triggered
+//      ELwarningCheck   (condition) same as ELsanityCheck but will issue
+//                                   an error message with ELwarning severity
+//                                   (rather than ELabort) if triggered
 
 // Clean up any earlier definitions, in case this is not the first time the
 // file has been included:

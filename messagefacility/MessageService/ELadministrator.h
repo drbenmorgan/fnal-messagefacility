@@ -5,20 +5,20 @@
 // ----------------------------------------------------------------------
 //
 // ELadminstrator.h  provides the singleton class that the framework uses to
-//		     control logger behavior including attaching destinations.
-//		Includes the methods used by ErrorLog to evoke the logging
-//		behavior in the destinations owned by the ELadminstrator.
+//                   control logger behavior including attaching destinations.
+//              Includes the methods used by ErrorLog to evoke the logging
+//              behavior in the destinations owned by the ELadminstrator.
 //
 // ----------------------------------------------------------------------
 //
 // ELadministrator   The singleton logger class.  One does not instantiate
-//		     an ELadministrator.  Instead, do
-//			ELadministrator * logger = ELadministrator::instance();
-//		     to get a pointer to the (unique) ELadministrator.
+//                   an ELadministrator.  Instead, do
+//                      ELadministrator * logger = ELadministrator::instance();
+//                   to get a pointer to the (unique) ELadministrator.
 //
-//	Only the framework should use ELadministrator directly.
-//	Physicist users get at it indirectly through using an ErrorLog
-//	set up in their Module class.
+//      Only the framework should use ELadministrator directly.
+//      Physicist users get at it indirectly through using an ErrorLog
+//      set up in their Module class.
 //
 // ELadminDestroyer  A class whose sole purpose is the destruction of the
 //                   ELadministrator when the program is over.  Right now,
@@ -32,20 +32,20 @@
 //
 // ----------------------------------------------------------------------
 //
-// 7/2/98 mf	Created file.
-// 2/29/00 mf	Added method swapContextSupplier for ELrecv to use.
-// 4/5/00 mf	Added method swapProcess for same reason:  ELrecv wants to
-//		be able to mock up the process and reset it afterward.
-// 6/6/00 web	Consolidate ELadministrator/X; adapt to consolidated
-//		ELcout/X.
-// 6/14/00 web	Declare classes before granting friendship.
-// 6/4/01  mf	Grant friedship to ELtsErrorLog
+// 7/2/98 mf    Created file.
+// 2/29/00 mf   Added method swapContextSupplier for ELrecv to use.
+// 4/5/00 mf    Added method swapProcess for same reason:  ELrecv wants to
+//              be able to mock up the process and reset it afterward.
+// 6/6/00 web   Consolidate ELadministrator/X; adapt to consolidated
+//              ELcout/X.
+// 6/14/00 web  Declare classes before granting friendship.
+// 6/4/01  mf   Grant friedship to ELtsErrorLog
 // 3/6/02  mf   Items for recovering handles to attached destinations:
-//		the attachedDestinations map, 
-//		an additional signature for attach(), 
-//		and getELdestControl() method
-// 3/17/04 mf	exitThreshold and setExitThreshold
-// 1/10/06 mf	finish
+//              the attachedDestinations map,
+//              an additional signature for attach(),
+//              and getELdestControl() method
+// 3/17/04 mf   exitThreshold and setExitThreshold
+// 1/10/06 mf   finish
 //
 // ----------------------------------------------------------------------
 
@@ -58,8 +58,8 @@
 
 #include "boost/shared_ptr.hpp"
 
-namespace mf {       
-namespace service {       
+namespace mf {
+namespace service {
 
 
 // ----------------------------------------------------------------------
@@ -78,12 +78,12 @@ class ELcout;
 // ELadministrator:
 // ----------------------------------------------------------------------
 
-class ELadministrator  {	// *** Destructable Singleton Pattern ***
+class ELadministrator  {        // *** Destructable Singleton Pattern ***
 
-  friend class ELadminDestroyer;	// proper ELadministrator cleanup
-  friend class ErrorLog;		// ELadministrator user behavior
-  friend class ELcout;			// ELcout behavior
-  friend class ELtsErrorLog;		// which walks sink list
+  friend class ELadminDestroyer;        // proper ELadministrator cleanup
+  friend class ErrorLog;                // ELadministrator user behavior
+  friend class ELcout;                  // ELcout behavior
+  friend class ELtsErrorLog;            // which walks sink list
 
 // *** Error Logger Functionality ***
 
@@ -91,7 +91,7 @@ public:
 
   // ---  birth via a surrogate:
   //
-  static ELadministrator * instance(); 		// *** Singleton Pattern
+  static ELadministrator * instance();          // *** Singleton Pattern
 
   // ---  get/set fundamental properties:
   //
@@ -115,11 +115,11 @@ public:
   ELseverityLevel  checkSeverity();
   int severityCount( const ELseverityLevel & sev ) const;
   int severityCount( const ELseverityLevel & from,
-	 	     const ELseverityLevel & to ) const;
+                     const ELseverityLevel & to ) const;
   void resetSeverityCount( const ELseverityLevel & sev );
   void resetSeverityCount( const ELseverityLevel & from,
-	 	           const ELseverityLevel & to );
-  void resetSeverityCount();			// reset all
+                           const ELseverityLevel & to );
+  void resetSeverityCount();                    // reset all
 
   // ---  apply the following actions to all attached destinations:
   //
@@ -132,7 +132,7 @@ public:
   void setTimespans ( const ELseverityLevel & sev, int seconds  );
   void wipe();
   void finish();
-  
+
   const ELstring              & application() const;
 
 protected:
@@ -171,11 +171,11 @@ private:
 
   // ---  traditional member data:
   //
-  ELstring                   process_;	     
-  boost::shared_ptr<ELcontextSupplier> context_;	     
-  ELseverityLevel            abortThreshold_; 
-  ELseverityLevel            exitThreshold_; 
-  std::list<boost::shared_ptr<ELdestination> > sinks_;		
+  ELstring                   process_;
+  boost::shared_ptr<ELcontextSupplier> context_;
+  ELseverityLevel            abortThreshold_;
+  ELseverityLevel            exitThreshold_;
+  std::list<boost::shared_ptr<ELdestination> > sinks_;
   ELseverityLevel            highSeverity_;
   int                        severityCounts_[ ELseverityLevel::nLevels ];
   mf::ErrorObj               msg;
@@ -210,7 +210,7 @@ public:
 private:
   // ---  member data:
   //
-  ELadministrator * admin_;	// keep track of our (single) self
+  ELadministrator * admin_;     // keep track of our (single) self
 
 };  // ELadminDestroyer
 

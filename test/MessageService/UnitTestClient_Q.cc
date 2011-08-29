@@ -15,7 +15,7 @@ void
   edm::LogInfo   ("cat_A")   << "Q1 with identifier " << identifier;
   edm::LogInfo   ("timer")   << "Q1 timer with identifier " << identifier;
   edm::LogInfo   ("trace")   << "Q1 trace with identifier " << identifier;
-}  
+}
 
 void
   UTC_Q2::analyze( edm::Event      const & e
@@ -25,7 +25,7 @@ void
   edm::LogInfo   ("cat_A")   << "Q2 with identifier " << identifier;
   edm::LogInfo   ("timer")   << "Q2 timer with identifier " << identifier;
   edm::LogInfo   ("trace")   << "Q2 trace with identifier " << identifier;
-}  
+}
 
 
 }  // namespace edmtest

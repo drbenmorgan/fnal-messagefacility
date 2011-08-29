@@ -30,7 +30,7 @@
 //
 // --- CMS
 //
-// 12/12/05 mf	replace exit() with throw
+// 12/12/05 mf  replace exit() with throw
 //
 // ----------------------------------------------------------------------
 
@@ -162,7 +162,7 @@ void ErrorLog::switchChannel( const ELstring & channelName ) {
   std::list<boost::shared_ptr<ELdestination> >::iterator d;
   for ( d = a->sinks().begin();  d != a->sinks().end();  ++d )
     (*d) -> switchChannel( channelName );
-  
+
 }
 
 static inline void msgexit(int s) {
@@ -497,5 +497,5 @@ ErrorLog & operator<<( ErrorLog & e, const char s[] ) {
 // ----------------------------------------------------------------------
 
 
-} // end of namespace service  
-} // end of namespace mf  
+} // end of namespace service
+} // end of namespace mf

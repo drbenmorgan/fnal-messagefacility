@@ -3,9 +3,9 @@
 #  -------------------------------------------------------------------
 #
 #  CMake build file gathering source files for library Extensions and
-#  ExtensionsD 
+#  ExtensionsD
 #
 
-SET (SRCFILES 
+SET (SRCFILES
     Extensions.cc
     )

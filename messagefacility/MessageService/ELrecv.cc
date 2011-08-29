@@ -179,5 +179,5 @@ void  ELrecv ( int nbytes, const char * data, ELstring localModule )  {
 } // ELrecv()
 
 
-} // end of namespace service  
-} // end of namespace mf  
+} // end of namespace service
+} // end of namespace mf
