@@ -9,7 +9,7 @@
 #    set fw_db=/some/path; source /some/path/this_file
 # or  fw_db=/some/path; . /some/path/this_file
 #
-# If MESSAGEFACILITY_BUILD is undefined, it is set to whatever directory 
+# If MESSAGEFACILITY_BUILD is undefined, it is set to whatever directory
 # you are in when this script is invoked.
 # $MESSAGEFACILITY_BUILD/lib is added to LD_LIBRARY_PATH
 
@@ -25,6 +25,8 @@ test "$ss" =  sh && eval 'setenv() { export $1;eval "$1=\"\${2-}\""; }' && eval 
 test "$ss" =  sh && eval 'tnotnull() { eval "test -n \"\${$1-}\""; }'                             && eval 'nullout() { "$@" >/dev/null 2>&1; }'
 test "$ss" = csh && alias tnotnull "eval '"'test $?'"\!* -eq 1' && eval '"'test -n "$'"\!*"'"'"'" && alias nullout "\!* >& /dev/null"
 
+test "$1" = "-d" && set_ extraqual=":debug" && echo "called with $1, using qualifier a2$extraqual"
+
 set_ msg2='You MUST setup ups'
 tnotnull UPS_DIR || echo "$msg2"
 
@@ -38,9 +40,9 @@ setup gcc v4_5_1
 setup -j boost v1_45_0 -q gcc45
 # set up CET products
 setup cetbuildtools v1_11_09
-setup -j cpp0x v1_01_14 -q a2
-setup -j cetlib v1_01_00 -q a2
-setup -j fhiclcpp v2_13_00 -q a2
+setup -j cpp0x v1_02_00 -q a2$extraqual
+setup -j cetlib v1_02_00 -q a2$extraqual
+setup -j fhiclcpp v2_14_00 -q a2$extraqual
 
 test $?shell = 1 && set ss=csh || ss=sh
 test "$ss" = csh && alias set_ set && alias vecho_ 'if ($?vv == 1) echo \!*' || eval 'vecho_() { test -n "${vv-}" && echo "$@";}'
@@ -66,7 +68,7 @@ test -n "$db" && setenv MESSAGEFACILITY_SOURCE `dirname $db`
 tnotnull MESSAGEFACILITY_BUILD && set_ thisdir=$MESSAGEFACILITY_BUILD || set_ thisdir=`pwd`
 test -n "$thisdir" && setenv MESSAGEFACILITY_BUILD $thisdir
 test -d "$thisdir/lib" || mkdir -p $thisdir/lib
-echo The workng build directory is $thisdir
+echo The working build directory is $thisdir
 
 tnotnull MESSAGEFACILITY_BUILD && setenv LD_LIBRARY_PATH `echo :${LD_LIBRARY_PATH}: | sed -e "s|:${MESSAGEFACILITY_BUILD}/lib:|:|" -e 's|^:||;s|:$||'`
 tnotnull MESSAGEFACILITY_BUILD && setenv LD_LIBRARY_PATH ${MESSAGEFACILITY_BUILD}/lib:${LD_LIBRARY_PATH}
@@ -80,6 +82,6 @@ echo
 echo LD_LIBRARY_PATH is now ${LD_LIBRARY_PATH}
 
 # cleanup before exiting
-test "$ss" = csh && unalias tnotnull nullout set_ vecho_ 
+test "$ss" = csh && unalias tnotnull nullout set_ vecho_
 unset ss msg db me thisdir py_ver
 unset set_ setenv unsetenv tnotnull source nullout vecho_
