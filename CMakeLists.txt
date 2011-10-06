@@ -26,8 +26,8 @@ cmake_minimum_required (VERSION 2.6)
 project(MessageFacility)
 # the ups convention is that product names are all lower case, but this is a choice
 SET (product messagefacility)
-SET (version v1_09_01)
-SET (qualifier a3)
+SET (version v1_09_02)
+SET (qualifier a4)
 
 # cetbuildtools contains our cmake modules
 SET ( CETBUILDTOOLS_VERSION $ENV{CETBUILDTOOLS_VERSION} )
@@ -61,10 +61,10 @@ set_flavor_qual()
 
 
 # these are minimum required versions, not the actual product versions
-find_ups_product( cetbuildtools v1_11_00 )
-find_ups_product( cpp0x v1_02_01 )
-find_ups_product( cetlib v1_02_01 )
-find_ups_product( fhiclcpp v2_15_01  )
+find_ups_product( cetbuildtools v1_12_00 )
+find_ups_product( cpp0x v1_02_02 )
+find_ups_product( cetlib v1_02_02 )
+find_ups_product( fhiclcpp v2_15_02  )
 find_ups_boost( v1_46_1 filesystem
                         thread
                         program_options )
