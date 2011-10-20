@@ -1,37 +1,14 @@
-// ----------------------------------------------------------------------
+//======================================================================
 //
-// ELdestination.cc
+// ELdestination
 //
-// History:
-//
-// 7/5/98       mf      Created
-// 6/16/99      jvr     Allow suppress/include options on destinations
-// 7/2/99       jvr     Added separate/attachTime, Epilogue, and Serial
-//                      options
-// 6/7/00       web     Consolidate ELdestination/X; add filterModule()
-// 8/22/00      web     Fix omitted .getSymbol() call
-// 10/4/00      mf      excludeModule()
-// 1/15/01      mf      setLineLength()
-// 2/13/01      mf      fix written by pc to accomodate NT problem with
-//                      static init { $001$ }.  Corresponding fix is in
-//                      .h file.
-// 3/13/01      mf      statisticsMap()
-// 4/05/01      mf      multi-module filtering
-// 4/12/01      mf      repair multi-module filtering
-// 6/23/03      mf      changeFile(), flush()
-// 1/10/06      mf      finish()
-// 6/19/08      mf      summaryForJobReport()
-//
-// ----------------------------------------------------------------------
-
-
-#include <iostream>
-#include <fstream>
+//======================================================================
 
 #include "messagefacility/MessageService/ELdestination.h"
-#include "messagefacility/MessageService/ELdestControl.h"
 
-//#include "Extensions/interface/ELDDSdest.h"
+#include "messagefacility/MessageService/ELdestControl.h"
+#include <fstream>
+#include <iostream>
 
 // Possible Traces:
 // #define ELdestinationCONSTRUCTOR_TRACE
@@ -77,9 +54,10 @@ ELdestination::~ELdestination()  {
 // Methods invoked by the ELadministrator:
 // ----------------------------------------------------------------------
 
-bool ELdestination::log( const mf::ErrorObj & msg )  { return false; }
+bool ELdestination::log( const mf::ErrorObj & )  { return false; }
 
-bool ELdestination::switchChannel( const mf::ELstring & channelName ) { return false; }
+bool ELdestination::switchChannel( const mf::ELstring & /*channelName*/ )
+{ return false; }
 
 
 // ----------------------------------------------------------------------
@@ -175,16 +153,15 @@ void ELdestination::summary( ELstring & s, const ELstring & title )  {
 
 }  // summary()
 
-void ELdestination::summaryForJobReport(std::map<std::string, double> & sm) { }
+void ELdestination::summaryForJobReport( std::map<std::string, double> & ) { }
 
 void ELdestination::finish() {  }
 
 void ELdestination::setTableLimit( int n )  { limits.setTableLimit( n ); }
 
 
-void ELdestination::summarization(
-  const ELstring & title
-, const ELstring & sumLines )  {
+void ELdestination::summarization( const ELstring & title
+                                 , const ELstring & /*sumLines*/ )  {
 
   mf::ErrorObj  msg( ELwarning2, noSummarizationMsg );
   msg << hereMsg << newline << title;
@@ -196,13 +173,13 @@ std::map<ELextendedID , StatsCount> ELdestination::statisticsMap() const {
   return std::map<ELextendedID , StatsCount> ();
 }
 
-void ELdestination::changeFile (std::ostream & os) {
+void ELdestination::changeFile( std::ostream & ) {
   mf::ErrorObj  msg( ELwarning2, noosMsg );
   msg << notELoutputMsg;
   log( msg );
 }
 
-void ELdestination::changeFile (const ELstring & filename) {
+void ELdestination::changeFile( ELstring const & filename ) {
   mf::ErrorObj  msg( ELwarning2, noosMsg );
   msg << notELoutputMsg << newline << "file requested is" << filename;
   log( msg );

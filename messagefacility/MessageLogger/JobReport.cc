@@ -1,40 +1,15 @@
-
-// -*- C++ -*-
+// ======================================================================
 //
-// Package:     Services
-// Class  :     MessageLogger
+// JobReport
 //
-// 10/23/07 mf  In an attempt to get clues about (or ene) the
-//              does-not-output-branches behavior, changed the
-//              generic os<< lines in JobReport::JobReportImpl::writeOutputFile
-//              to direct use of LogInfo.
-//
-// 4/8/08   mf  Encase the logdesc for in <CDATA> ... </CDATA>
-//
-// 6/19/08  mf  reportMessageInfo()
-//
-// 24 June 2008   ewv  Correct format for CDATA and for second instance of reportError
-
-//
-// Original Author:  Marc Paterno
-//
-
-/*
-
-Changes Log 1: 2009/01/14 10:29:00, Natalia Garcia Nebot
-        Modified and added some methods to report CPU and memory information from /proc/cpuinfo
-        and /proc/meminfo files and Memory statistics
-
-*/
+// ======================================================================
 
 #include "messagefacility/MessageLogger/JobReport.h"
+
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "messagefacility/Utilities/exception.h"
-
 #include <iostream>
 #include <sstream>
-
-
 
 namespace mf
 {
@@ -483,7 +458,7 @@ namespace mf
     }
 
     void
-    JobReport::eventReadFromFile(JobReport::Token fileToken, unsigned int run, unsigned int)
+    JobReport::eventReadFromFile(JobReport::Token fileToken, unsigned int /*run*/, unsigned int)
     {
       JobReport::InputFile& f = impl_->getInputFileForToken(fileToken);
       f.numEventsRead++;
@@ -543,7 +518,7 @@ namespace mf
     }
 
     void
-    JobReport::eventWrittenToFile(JobReport::Token fileToken, unsigned int run, unsigned int)
+    JobReport::eventWrittenToFile(JobReport::Token fileToken, unsigned int /*run*/, unsigned int)
     {
       JobReport::OutputFile& f = impl_->getOutputFileForToken(fileToken);
       f.numEventsWritten++;
@@ -601,7 +576,7 @@ namespace mf
         std::ostream& msg = *(impl_->ost_);
         msg << "<SkippedEvent Run=\"" << run << "\"";
         msg << " Event=\"" << event << "\" />\n";
-        msg <<std::flush;
+        msg << std::flush;
         //LogInfo("FwkJob") << msg.str();
       }
     }

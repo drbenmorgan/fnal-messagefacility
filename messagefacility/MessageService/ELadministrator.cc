@@ -519,22 +519,20 @@ ELadministrator * ELadministrator::instance()  {
 
 }  // instance()
 
-
 ELadministrator::ELadministrator()
-: process_       ( ""                                                        )
-, pid_           ( 0                                                         )
-, hostname_      ( ""                                                        )
-, hostaddr_      ( ""                                                        )
-, application_   ( ""                                                        )
-, context_       ( emptyContext.clone()                                      )
-, abortThreshold_( ELseverityLevel (ELseverityLevel::ELsev_abort)            )
-, exitThreshold_ ( ELseverityLevel (ELseverityLevel::ELsev_highestSeverity)  )
-, sinks_         (                                                           )
-, highSeverity_  ( ELseverityLevel (ELseverityLevel::ELsev_zeroSeverity)     )
-, msg            ( ELseverityLevel (ELseverityLevel::ELsev_unspecified), ""  )
-, msgIsActive    ( false                                                     )
+: process_       ( )
+, context_       ( emptyContext.clone() )
+, abortThreshold_( ELseverityLevel(ELseverityLevel::ELsev_abort) )
+, exitThreshold_ ( ELseverityLevel(ELseverityLevel::ELsev_highestSeverity) )
+, sinks_         ( )
+, highSeverity_  ( ELseverityLevel(ELseverityLevel::ELsev_zeroSeverity) )
+, msg            ( ELseverityLevel(ELseverityLevel::ELsev_unspecified), "" )
+, msgIsActive    ( false )
+, hostname_      ( )
+, hostaddr_      ( )
+, application_   ( )
+, pid_           ( 0 )
 {
-
   #ifdef ELadministratorCONSTRUCTOR_TRACE
     std::cerr << "ELadminstrator constructor\n";
   #endif

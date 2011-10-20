@@ -26,7 +26,7 @@ cmake_minimum_required (VERSION 2.6)
 project(MessageFacility)
 # the ups convention is that product names are all lower case, but this is a choice
 SET (product messagefacility)
-SET (version v1_09_02)
+SET (version v1_09_03)
 SET (qualifier a4)
 
 # cetbuildtools contains our cmake modules
@@ -75,6 +75,7 @@ SET ( GCC_VERSION $ENV{GCC_VERSION} )
 IF (NOT GCC_VERSION)
     MESSAGE (FATAL_ERROR "gcc has not been setup")
 ENDIF()
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -Wno-long-long")
 message(STATUS "GCC version is ${GCC_VERSION} " )
 
 # Use cmake directive include_directories to define include search path

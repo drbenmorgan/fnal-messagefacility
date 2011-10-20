@@ -43,7 +43,7 @@ public:
   virtual ELstring            summaryContext() const = 0;
   virtual ELstring            fullContext()    const = 0;
 
-  virtual void editErrorObj( mf::ErrorObj & msg ) const  { }
+  virtual void editErrorObj( mf::ErrorObj & ) const  { }
   virtual mf::ELstring traceRoutine( ) const  { return mf::ELstring(""); }
 
   virtual ~ELcontextSupplier()  { ; }
