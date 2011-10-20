@@ -25,6 +25,7 @@
 namespace mf  {
 
   class MaybeLogger_;
+  class CopyableLogger_;
   class NeverLogger_;
 
   class LogAbsolute;
@@ -50,9 +51,9 @@ class mf::MaybeLogger_
 {
 private:
   // data:
-  std::auto_ptr<MessageSender> ap;
+  std::auto_ptr<MessageSender> ap;  // C++11: use std::unique_ptr
 
-  // no copying:
+  // no copying (C++11: remove these):
   MaybeLogger_( MaybeLogger_ const & );
   void  operator = ( MaybeLogger_ const & );
 
@@ -85,17 +86,57 @@ mf::MaybeLogger_ &
 
 // ----------------------------------------------------------------------
 
-// With any decent optimization, use of NeverLogger_ (...)
-// including streaming of items to it via operator<<
-// will produce absolutely no executable code.
-class mf::NeverLogger_
+class mf::CopyableLogger_  // C++11: excise; use MaybeLogger_ instead
 {
-  // no copying:
-  NeverLogger_( NeverLogger_ const & );
-  void  operator = ( NeverLogger_ const & );
+private:
+  // data:
+  std::auto_ptr<MessageSender> ap;
+
+protected:
+  // c'tor:
+  explicit  CopyableLogger_( MessageSender * );
 
 public:
-  // use compiler-generated default c'tor and d'tor
+  // copying:
+  CopyableLogger_( CopyableLogger_ const & ) : ap( )
+  { throw "using CopyableLogger_::copy_c'tor!"; }
+
+  CopyableLogger_ &
+    operator = ( CopyableLogger_ const & )
+  { throw "using CopyableLogger_::op=!"; }
+
+  // d'tor:
+  ~CopyableLogger_( );
+
+  // streamers:
+  template< class T >
+  CopyableLogger_ &  operator << ( T const & );
+
+  CopyableLogger_ &  operator << ( std::ostream&(*)(std::ostream&) );
+  CopyableLogger_ &  operator << ( std::ios_base&(*)(std::ios_base&) );
+
+};  // CopyableLogger_
+
+template< class T >
+mf::CopyableLogger_ &
+  mf::CopyableLogger_::
+  operator << ( T const & t )
+{
+  if( ap.get() )
+    *ap << t;
+  return *this;
+}
+
+// ----------------------------------------------------------------------
+
+class mf::NeverLogger_
+{
+public:
+  // c'tor:
+   NeverLogger_( )  { }
+
+  // C++11: make this move-only
+  // use compiler-generated copy c'tor, copy assignment, and d'tor
 
   // streamers:
   template< class T >
@@ -133,14 +174,12 @@ public:
 // ----------------------------------------------------------------------
 
 class mf::LogDebug
-  : public MaybeLogger_
+  : public CopyableLogger_
 {
 public:
   // c'tors:
-  explicit LogDebug( std::string const & id, bool enabled = true );
-  LogDebug( std::string const & id, std::string const & file, int line
-          , bool enabled = true
-          );
+  explicit LogDebug( std::string const & id );
+  LogDebug( std::string const & id, std::string const & file, int line );
 
   // d'tor:
   ~LogDebug( );
@@ -252,14 +291,12 @@ public:
 // ----------------------------------------------------------------------
 
 class mf::LogTrace
-  : public MaybeLogger_
+  : public CopyableLogger_
 {
 public:
   // c'tors:
-  explicit LogTrace( std::string const & id, bool enabled = true );
-  LogTrace( std::string const & id, std::string const & file, int line
-          , bool enabled = true
-          );
+  explicit LogTrace( std::string const & id );
+  LogTrace( std::string const & id, std::string const & file, int line );
 
   // d'tor:
   ~LogTrace( );
@@ -413,16 +450,17 @@ public:
   #undef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
 #endif
 
+// N.B.: no surrounding ()'s in the conditional expressions below!
 #ifdef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
-  #define LOG_DEBUG(id) ::mf::NeverLogger_()
-  #define LOG_TRACE(id) ::mf::NeverLogger_()
+  #define LOG_DEBUG(id) true ? ::mf::NeverLogger_() : ::mf::NeverLogger_()
+  #define LOG_TRACE(id) true ? ::mf::NeverLogger_() : ::mf::NeverLogger_()
 #else
-  #define LOG_DEBUG(id)  \
-    ::mf::LogDebug(id, __FILE__, __LINE__ \
-                  , ::mf::MessageDrop::instance()->debugEnabled )
-  #define LOG_TRACE(id)  \
-    ::mf::LogTrace(id, __FILE__, __LINE__ \
-                  , ::mf::MessageDrop::instance()->debugEnabled )
+  #define LOG_DEBUG(id)   ! ::mf::MessageDrop::instance()->debugEnabled \
+                        ? ::mf::LogDebug(id, __FILE__, __LINE__) \
+                        : ::mf::LogDebug(id, __FILE__, __LINE__)
+  #define LOG_TRACE(id)   ! ::mf::MessageDrop::instance()->debugEnabled \
+                        ? ::mf::LogTrace(id, __FILE__, __LINE__) \
+                        : ::mf::LogTrace(id, __FILE__, __LINE__)
 #endif
 #undef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
 

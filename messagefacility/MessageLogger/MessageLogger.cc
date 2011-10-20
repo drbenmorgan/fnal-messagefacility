@@ -55,6 +55,29 @@ MaybeLogger_ &
 }
 
 // ----------------------------------------------------------------------
+// CopyableLogger_  // C++11: excise
+
+CopyableLogger_::CopyableLogger_( MessageSender * p ) : ap ( p )  { }
+
+CopyableLogger_::~CopyableLogger_( )  { }
+
+CopyableLogger_ &
+  CopyableLogger_::operator << ( std::ostream&(*f)(std::ostream&) )
+{
+  if( ap.get() )
+    *ap << f;
+  return *this;
+}
+
+CopyableLogger_ &
+  CopyableLogger_::operator << ( std::ios_base&(*f)(std::ios_base&) )
+{
+  if( ap.get() )
+    *ap << f;
+  return *this;
+}
+
+// ----------------------------------------------------------------------
 // LogAbsolute
 
   LogAbsolute::
@@ -73,24 +96,16 @@ LogAbsolute::~LogAbsolute( )  { }
 // LogDebug
 
   LogDebug::
-  LogDebug( std::string const & id, bool enabled )
-: MaybeLogger_( enabled
-                ? new MessageSender(ELsuccess, id)
-                : 0
-                )
+  LogDebug( std::string const & id )
+: CopyableLogger_( new MessageSender(ELsuccess, id) )
 {
   *this << " " << DEFAULT_FILE_NAME
         << ":" << DEFAULT_LINE_NUMBER << "\n";
 }
 
   LogDebug::
-  LogDebug( std::string const & id, std::string const & file, int line
-          , bool enabled
-          )
-: MaybeLogger_( enabled
-                ? new MessageSender(ELsuccess, id)
-                : 0
-                )
+  LogDebug( std::string const & id, std::string const & file, int line )
+: CopyableLogger_( new MessageSender(ELsuccess, id) )
 {
   *this << " " << stripLeadingDirectoryTree(file)
         << ":" << line << "\n";
@@ -216,21 +231,13 @@ LogSystem::~LogSystem( )  { }
 // LogTrace
 
   LogTrace::
-  LogTrace( std::string const & id, bool enabled )
-: MaybeLogger_( enabled
-                ? new MessageSender(ELsuccess, id, true)
-                : 0
-                )
+  LogTrace( std::string const & id )
+: CopyableLogger_( new MessageSender(ELsuccess, id, true) )
 { }
 
   LogTrace::
-  LogTrace( std::string const & id, std::string const & /*file*/, int /*line*/
-          , bool enabled
-          )
-: MaybeLogger_( enabled
-                ? new MessageSender(ELsuccess, id, true)
-                : 0
-                )
+  LogTrace( std::string const & id, std::string const & /*file*/, int /*line*/ )
+: CopyableLogger_( new MessageSender(ELsuccess, id, true) )
 { }
 
 LogTrace::~LogTrace( )  { }
