@@ -2,202 +2,29 @@
 //
 // MessageLoggerScribe.cc
 //
-// Changes:
-//
-//   1 - 3/22/06  mf  - in configure_dest()
-//      Repaired the fact that destination limits for categories
-//      were not being effective:
-//      a) use values from the destination specific default PSet
-//         rather than the overall default PSet to set these
-//      b) when an explicit value has been set - either by overall default or
-//         by a destination specific default PSet - set that limit or
-//         timespan for that dest_ctrl via a "*" msgId.
-//
-//   2 - 3/22/06  mf  - in configure_dest()
-//      Enabled the use of -1 in the .cfg file to mean infinite limit
-//      or timespan.  This is done by:
-//      a) replacing the default value of -1 (by which we recognize
-//      never-specified values) by NO_VALUE_SET = -45654
-//      b) checking for values of -1 and substituting a very large integer
-//
-//   3 - 4/28/06  mf  - in configure_dest()
-//      Mods to help deal with the fact that checking for an empty PSet is
-//      unwise when untracked parameters are involved:  The PSet will appear
-//      to be empty and if skipped, will result in limits not being applied.
-//      a) Replaced default values directly in getAparameter with variables
-//      which can be examined all in one place.
-//      b) Carefully checked that we are never comparing to the empty PSet
-//
-//   4 - 4/28/06  mf  - in configure_dest()
-//      If a destination name does not have an extension, append .log
-//      (or in the case of a FwkJobReport, .xml).
-//      [note for this change - the filename kept as an index to stream_ps
-//      can be kept as its original name; it is just a tool for assigning
-//      the right shared stream to statistics destinations]
-//
-//   5 - 4/28/06  mf  - in configure_dest()
-//      Provision for an overall default affecting all categories, for
-//      example, establishing a limit for all a specific category for
-//      every destination.
-//
-//   6 - 5/18/06 mf  - in configure_dest()
-//      Implement establishing intervals between reacting to message of
-//      some type.
-//
-//   7 - 5/24/06 mf  - in configure_dest()
-//      Corrected algorithm for estabolishing limits and intervals, avoiding
-//      interference between setting the one and getting the default for the
-//      other.
-//
-//   8 - 5/31/06 wmtan  - in configure_errorlog()
-//      The presence of the framework job report should not affect the output
-//      to the early destination (cerr).
-//
-//   9 - 6/6/06 mf  - in configure_dest()
-//      Support for placeholder PSet without actually creating the destination.
-//      Useful in a .cfi file, in conjunction with potential replace commands.
-//
-//  10 - 6/6/06 mf  - in configure_dest()
-//      Changed cfg keyword interval to reportEvery
-//
-//  11 - 6/12/06 mf  - in configure_errorlog()
-//      Check for placeholder before attaching a destination that may not be
-//      wanted.
-//
-//  12 - 6/14/06 mf  - in configure_external_dests()
-//      Clear the list of external dests needing configuration, if there
-//      is no configuration file available.
-//
-//  13 - 8/7/06 mf  - in configure_external_dests()
-//      Undo change 12: the list of external dests needing configuration
-//      is left intact if there is no configuration file available, the
-//      assumption being that at some later time there will be a file and
-//      the message logger will be configured again.
-//
-//      Note: The change made in (12) and un-done here was necessary to
-//            prevent segfault behavior when a job is done with external
-//            destinations and no .cfg file under some circumstances.
-//            D. Evans (who was being hit with that behavior due to an
-//            accidental .cfg omission) asserts (8/16) that running with
-//            no .cfg file is a sufficient anomoly that the current change
-//            is acceptable.
-//
-//  14 - 10/18/06 mf  - in configure_error_log()
-//      Finer control of output file name for a given destination:
-//      Accept a parameter extension, to specify some extension other than
-//      .log without needing to place a dot in the Pset name.  Also accept
-//      an explicit filename.
-//
-//  15 - 2/11/07 mf - at bottom
-//      Declared static_errorlog_p
-//
-//  16 - 3/13/07 mf - in configure_errorlog() and addition of 3 functions
-//       Break out the configuring of each type of destination, for sanity.
-//
-//  17 - 3/13/07 mf - in run(), at CONFIGURE case
-//       Use the handshake to make this synchronous, and pass any throw
-//       across to the other thread.
-//
-//  18 - 3/14/07 mf - in configure_ordinary_destinations() and 2 others
-//       Use actual filename in a master ostream_ps list, and behave correctly
-//       when duplicates are found (duplicate names both used leads to grim
-//       file behavior when one file is opened as two streams).
-//
-//  19 - 3/15/07 mf - in configure_fwkJobReports()
-//       "Deturdification" - default is to not produce a job reports; a
-//       command-line option lets you produce them.
-//
-//  20 - 3/15/07 mf - in configure_statistics() and configure_fwkJobReports()
-//       Handle the placeholder case
-//
-//  21 - 3/15/07 mf - run()
-//       Improve the behavior of catches of exceptions in non-synchronous
-//       command cases:  Unless the ConfigurationHandshake is used, re-throw
-//       is not an option, but exit is also not very good.
-//
-//  22 - 4/18/07 mf - in configure_error_log and its called functions
-//       Allow for duplicate file names if configuration happens twice.
-//
-//  23 - 6/13/07 mf - in configure_statistics
-//       Repared error of calling "cerr" "err", which would cause appended
-//       statistics destinations going to cerr to instead come out in a file
-//       err.log
-//
-//  24 - 6/15/07 mf - in configure_errlog and its descendants
-//       Major mods to hardwire defaults taken from the .cfi file
-//       To allow flexibility, this depends on MessageLoggerDefaults.h
-//
-//  25 - 7/24/07 mf - in run()
-//       A command SHUT_UP to deactivate, and in the LOG_A_MESSGE case, response to
-//       that command.  This allows supression of the generator info in case of a
-//       completely .cfg-less cetRun command.
-//
-//  26 - 8/7/07 mf - in run()
-//       A command FLUSH_LOG_Q to consume the entire queue, processing each
-//       message.  Actually, the key is that on the other side, it is used in
-//       a synchronous manner (like CONFIGURE) so as soon as one gets up to
-//       the flush command, the queue has in fact been flushed!
-//
-//  27 - 8/16/07 mf - in run()
-//       A command GROUP_STATS to add a category to a list which ELstatistics
-//       will use to avoid separate per-module statistics for that category.
-//
-//  28 - 6/18/08 mf - in CONFIGURE case and FLUSH_LOG_Q case
-//       Changed expectation of p from a ParameterSet* to a void*:
-//       static cast it to the needed ParameterSet*
-//
-//  29 - 6/19/08 mf - in run() and a new function triggerFJRmessageSummary()
-//       Implemented filling a map with summary info for the Job Report
-//
-//  30 - 6/20/08 mf - in run()
-//       Setting MessageLoggerScribeIsRunning
-//
-//  31 - 7/9/08  mf - in configure_ordinary_destinations()
-//               and configure_statistics()
-//       using hardwired default output filename if there is one
-//
-//  32 - 10/21/08 mf - in ctor and in run() and new runCommand()
-//       split up run() to have ability to implement single-thread
-//
-//  33 - 10/22/08 mf
-//       implementation of singleThread
-//
-//  34 - 5/13/09 mf
-//       Allowing threshold to be set for default destination in default PSet
-//
-//  35 - 5/29/09 mf
-//       Avoiding throw when duplicate destination names are used, to let the
-//       validation report that and abort instead.
-//
-//  35 - 8/10/09 mf, cdj
-//       Use ThreadQ in place of the singleton MessageLoggerQ to consume
-//
 // ----------------------------------------------------------------------
 
 #include "messagefacility/MessageService/MessageLoggerScribe.h"
+
+#include "cetlib/container_algorithms.h"
+#include "cpp0x/algorithm"
+#include "cpp0x/string"
+#include "messagefacility/MessageLogger/ConfigurationHandshake.h"
+#include "messagefacility/MessageLogger/ErrorObj.h"
+#include "messagefacility/MessageLogger/MessageLogger.h"
+#include "messagefacility/MessageLogger/MessageLoggerQ.h"
 #include "messagefacility/MessageService/ELadministrator.h"
+#include "messagefacility/MessageService/ELfwkJobReport.h"
 #include "messagefacility/MessageService/ELoutput.h"
 #include "messagefacility/MessageService/ELstatistics.h"
-#include "messagefacility/MessageService/ELfwkJobReport.h"
 #include "messagefacility/MessageService/ErrorLog.h"
 #include "messagefacility/MessageService/ThreadQueue.h"
-
-#include "messagefacility/MessageLogger/ErrorObj.h"
-#include "messagefacility/MessageLogger/MessageLoggerQ.h"
-#include "messagefacility/MessageLogger/MessageLogger.h"
-#include "messagefacility/MessageLogger/ConfigurationHandshake.h"
-
 #include "messagefacility/Utilities/exception.h"
-#include "cetlib/container_algorithms.h"
-
-#include <algorithm>
 #include <cassert>
+#include <dlfcn.h> //dlopen
 #include <fstream>
 #include <iostream>
-#include <string>
 #include <signal.h>
-
-#include <dlfcn.h> //dlopen
 
 using std::cerr;
 
@@ -1175,7 +1002,7 @@ void
 
     // attach the current destination, keeping a control handle to it:
     ELdestControl dest_ctrl;
-    std::ostream* os_p;
+    std::ostream* os_p = nullptr;
     if( dest_type == "cout" )
     {
       os_p = &std::cout;

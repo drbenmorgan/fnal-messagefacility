@@ -75,7 +75,7 @@ SET ( GCC_VERSION $ENV{GCC_VERSION} )
 IF (NOT GCC_VERSION)
     MESSAGE (FATAL_ERROR "gcc has not been setup")
 ENDIF()
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -Wno-long-long")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -g -O3  -Wall -Werror=return-type -pedantic -Wextra -Wno-long-long -Winit-self -Wcast-qual -Woverloaded-virtual")
 message(STATUS "GCC version is ${GCC_VERSION} " )
 
 # Use cmake directive include_directories to define include search path
