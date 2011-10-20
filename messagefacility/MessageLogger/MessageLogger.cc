@@ -1,85 +1,320 @@
-#include "messagefacility/MessageLogger/MessageLogger.h"
-#include "messagefacility/MessageLogger/MessageDrop.h"
+// ======================================================================
+//
+// MessageLogger
+//
+// ======================================================================
 
-#include "messagefacility/MessageService/MessageServicePresence.h"
-#include "messagefacility/MessageService/ELadministrator.h"
+#include "messagefacility/MessageLogger/MessageLogger.h"
 
 #include "cetlib/filepath_maker.h"
 #include "fhiclcpp/make_ParameterSet.h"
-
-#include <string>
+#include "messagefacility/MessageLogger/MessageDrop.h"
+#include "messagefacility/MessageService/ELadministrator.h"
+#include "messagefacility/MessageService/MessageServicePresence.h"
 #include <fstream>
+#include <string>
 
-// Change Log
-//
-// 12/12/07  mf   elimination of dummyLogDebugObject_, dummyLogTraceObject_
-//               (see change log 8 in MessageLogger.h)
-//
-// 12/14/07  mf  Moved the static free function onlyLowestDirectory
-//               to a class member function of LogDebug_, changing
-//               name to a more descriptive stripLeadingDirectoryTree.
-//               Cures the 2600-copies-of-this-function complaint.
-//               Implementation of this is moved into this .cc file.
-//
-//  6/20/08  mf  Have flushMessageLog() check messageLoggerScribeIsRunning
-//               (in the message drop) to avoid hangs if that thread is not
-//               around.
-//
-//  11/18/08 wmtan  Use explicit non-inlined destructors
-//
-//  8/11/09  mf setStandAloneMessageThreshold() and
-//              squelchStandAloneMessageCategory()
-//
-//  10/29/09 wmtan  Use explicit non-inlined constructors for LogDebug_ and LogTrace_
-//
-// ------------------------------------------------------------------------
+using namespace mf;
 
-namespace {
-  std::string stripLeadingDirectoryTree(const std::string & file);
+// ----------------------------------------------------------------------
+// helpers
+
+std::string const  DEFAULT_FILE_NAME   = "--";
+int         const  DEFAULT_LINE_NUMBER = 0;
+
+std::string
+  stripLeadingDirectoryTree( std::string const & file )
+{
+  std::string::size_type lastSlash = file.find_last_of('/');
+  if (lastSlash == std::string::npos) return file;
+  if (lastSlash == file.size()-1)     return file;
+  return file.substr(lastSlash+1, file.size()-lastSlash-1);
 }
+
+// ----------------------------------------------------------------------
+// MaybeLogger_
+
+MaybeLogger_::MaybeLogger_( MessageSender * p ) : ap ( p )  { }
+
+MaybeLogger_::~MaybeLogger_( )  { }
+
+MaybeLogger_ &
+  MaybeLogger_::operator << ( std::ostream&(*f)(std::ostream&) )
+{
+  if( ap.get() )
+    *ap << f;
+  return *this;
+}
+
+MaybeLogger_ &
+  MaybeLogger_::operator << ( std::ios_base&(*f)(std::ios_base&) )
+{
+  if( ap.get() )
+    *ap << f;
+  return *this;
+}
+
+// ----------------------------------------------------------------------
+// LogAbsolute
+
+  LogAbsolute::
+  LogAbsolute( std::string const & id )
+: MaybeLogger_( new MessageSender(ELsevere, id, true) )
+{ }
+
+  LogAbsolute::
+  LogAbsolute( std::string const & id, std::string const & /*file*/, int /*line*/ )
+: MaybeLogger_( new MessageSender(ELsevere, id, true) )
+{ }
+
+LogAbsolute::~LogAbsolute( )  { }
+
+// ----------------------------------------------------------------------
+// LogDebug
+
+  LogDebug::
+  LogDebug( std::string const & id, bool enabled )
+: MaybeLogger_( enabled
+                ? new MessageSender(ELsuccess, id)
+                : 0
+                )
+{
+  *this << " " << DEFAULT_FILE_NAME
+        << ":" << DEFAULT_LINE_NUMBER << "\n";
+}
+
+  LogDebug::
+  LogDebug( std::string const & id, std::string const & file, int line
+          , bool enabled
+          )
+: MaybeLogger_( enabled
+                ? new MessageSender(ELsuccess, id)
+                : 0
+                )
+{
+  *this << " " << stripLeadingDirectoryTree(file)
+        << ":" << line << "\n";
+}
+
+LogDebug::~LogDebug( )  { }
+
+// ----------------------------------------------------------------------
+// LogError
+
+  LogError::
+  LogError( std::string const & id )
+: MaybeLogger_( new MessageSender(ELerror, id) )
+{
+  *this << " " << DEFAULT_FILE_NAME
+        << ":" << DEFAULT_LINE_NUMBER << "\n";
+}
+
+  LogError::
+  LogError( std::string const & id, std::string const & file, int line )
+: MaybeLogger_( new MessageSender(ELerror, id) )
+{
+  *this << " " << stripLeadingDirectoryTree(file)
+        << ":" << line << "\n";
+}
+
+LogError::~LogError()  { }
+
+// ----------------------------------------------------------------------
+// LogImportant
+
+  LogImportant::
+  LogImportant( std::string const & id )
+: MaybeLogger_( new MessageSender(ELerror, id, true) )
+{ }
+
+  LogImportant::
+  LogImportant( std::string const & id, std::string const & /*file*/, int /*line*/ )
+: MaybeLogger_( new MessageSender(ELerror, id, true) )
+{ }
+
+LogImportant::~LogImportant( )  { }
+
+// ----------------------------------------------------------------------
+// LogInfo
+
+  LogInfo::
+  LogInfo( std::string const & id )
+: MaybeLogger_( MessageDrop::instance()->infoEnabled
+              ? new MessageSender(ELinfo, id)
+              : 0
+            )
+{
+  *this << " " << DEFAULT_FILE_NAME
+        << ":" << DEFAULT_LINE_NUMBER << "\n";
+}
+
+  LogInfo::
+  LogInfo( std::string const & id, std::string const & file, int line )
+: MaybeLogger_( MessageDrop::instance()->infoEnabled
+              ? new MessageSender(ELinfo, id)
+              : 0
+            )
+{
+  *this << " " << stripLeadingDirectoryTree(file)
+        << ":" << line << "\n";
+}
+
+LogInfo::~LogInfo()  { }
+
+// ----------------------------------------------------------------------
+// LogPrint
+
+  LogPrint::
+  LogPrint( std::string const & id )
+: MaybeLogger_( MessageDrop::instance()->warningEnabled
+              ? new MessageSender(ELwarning, id, true)
+              : 0
+            )
+{ }
+
+  LogPrint::
+  LogPrint( std::string const & id, std::string const & /*file*/, int /*line*/ )
+: MaybeLogger_( MessageDrop::instance()->warningEnabled
+              ? new MessageSender(ELwarning, id, true)
+              : 0
+            )
+{ }
+
+LogPrint::~LogPrint( )  { }
+
+// ----------------------------------------------------------------------
+// LogProblem
+
+  LogProblem::
+  LogProblem( std::string const & id )
+: MaybeLogger_( new MessageSender(ELerror, id, true) )
+{ }
+
+  LogProblem::
+  LogProblem( std::string const & id, std::string const & /*file*/, int /*line*/ )
+: MaybeLogger_( new MessageSender(ELerror, id, true) )
+{ }
+
+LogProblem::~LogProblem( )  { }
+
+// ----------------------------------------------------------------------
+// LogSystem
+
+  LogSystem::
+  LogSystem( std::string const & id )
+: MaybeLogger_( new MessageSender(ELsevere, id) )
+{ }
+
+  LogSystem::
+  LogSystem( std::string const & id, std::string const & /*file*/, int /*line*/ )
+: MaybeLogger_( new MessageSender(ELsevere, id) )
+{ }
+
+LogSystem::~LogSystem( )  { }
+
+// ----------------------------------------------------------------------
+// LogTrace
+
+  LogTrace::
+  LogTrace( std::string const & id, bool enabled )
+: MaybeLogger_( enabled
+                ? new MessageSender(ELsuccess, id, true)
+                : 0
+                )
+{ }
+
+  LogTrace::
+  LogTrace( std::string const & id, std::string const & /*file*/, int /*line*/
+          , bool enabled
+          )
+: MaybeLogger_( enabled
+                ? new MessageSender(ELsuccess, id, true)
+                : 0
+                )
+{ }
+
+LogTrace::~LogTrace( )  { }
+
+// ----------------------------------------------------------------------
+// LogVerbatim
+
+  LogVerbatim::
+  LogVerbatim( std::string const & id )
+: MaybeLogger_( MessageDrop::instance()->infoEnabled
+              ? new MessageSender(ELinfo, id, true)
+              : 0
+            )
+{ }
+
+  LogVerbatim::
+  LogVerbatim( std::string const & id, std::string const & /*file*/, int /*line*/ )
+: MaybeLogger_( MessageDrop::instance()->infoEnabled
+              ? new MessageSender(ELinfo, id, true)
+              : 0
+            )
+{ }
+
+LogVerbatim::~LogVerbatim( )  { }
+
+// ----------------------------------------------------------------------
+// LogWarning
+
+  LogWarning::
+  LogWarning( std::string const & id )
+: MaybeLogger_( MessageDrop::instance()->warningEnabled
+              ? new MessageSender(ELwarning, id)
+              : 0
+            )
+{
+  *this << " " << DEFAULT_FILE_NAME
+        << ":" << DEFAULT_LINE_NUMBER << "\n";
+}
+
+  LogWarning::
+  LogWarning( std::string const & id, std::string const & file, int line )
+: MaybeLogger_( MessageDrop::instance()->warningEnabled
+              ? new MessageSender(ELwarning, id)
+              : 0
+            )
+{
+  *this << " " << stripLeadingDirectoryTree(file)
+        << ":" << line << "\n";
+}
+
+LogWarning::~LogWarning()  { }
+
+// ----------------------------------------------------------------------
 
 namespace mf {
 
-LogInfo::~LogInfo() {}
-LogWarning::~LogWarning() {}
-LogError::~LogError() {}
-LogAbsolute::~LogAbsolute() {}
-LogSystem::~LogSystem() {}
-LogVerbatim::~LogVerbatim() {}
-LogDebug::~LogDebug() {}
-LogTrace::~LogTrace() {}
-LogPrint::~LogPrint() {}
-LogProblem::~LogProblem() {}
-LogImportant::~LogImportant() {}
-
 void LogStatistics() {
-  mf::MessageLoggerQ::MLqSUM ( ); // trigger summary info
+  MessageLoggerQ::MLqSUM ( ); // trigger summary info
 }
 
 void LogErrorObj(ErrorObj * eo_p) {
-  mf::MessageLoggerQ::MLqLOG(eo_p);
+  MessageLoggerQ::MLqLOG(eo_p);
 }
 
 bool isDebugEnabled() {
-  return ( mf::MessageDrop::instance()->debugEnabled );
+  return ( MessageDrop::instance()->debugEnabled );
 }
 
 bool isInfoEnabled() {
-  return( mf::MessageDrop::instance()->infoEnabled );
+  return( MessageDrop::instance()->infoEnabled );
 }
 
 bool isWarningEnabled() {
-  return( mf::MessageDrop::instance()->warningEnabled );
+  return( MessageDrop::instance()->warningEnabled );
 }
 
 void HaltMessageLogging() {
-  mf::MessageLoggerQ::MLqSHT ( ); // Shut the logger up
+  MessageLoggerQ::MLqSHT ( ); // Shut the logger up
 }
 
 void FlushMessageLog() {
   if (MessageDrop::instance()->messageLoggerScribeIsRunning !=
                         MLSCRIBE_RUNNING_INDICATOR) return;     // 6/20/08 mf
-  mf::MessageLoggerQ::MLqFLS ( ); // Flush the message log queue
+  MessageLoggerQ::MLqFLS ( ); // Flush the message log queue
 }
 
 bool isMessageProcessingSetUp() {                               // 6/20/08 mf
@@ -92,66 +327,15 @@ bool isMessageProcessingSetUp() {                               // 6/20/08 mf
 
 void GroupLogStatistics(std::string const & category) {
   std::string * cat_p = new std::string(category);
-  mf::MessageLoggerQ::MLqGRP (cat_p); // Indicate a group summary category
+  MessageLoggerQ::MLqGRP (cat_p); // Indicate a group summary category
   // Note that the scribe will be responsible for deleting cat_p
 }
 
-std::string stripLeadingDirectoryTree(const std::string & file)
-{
-  std::string::size_type lastSlash = file.find_last_of('/');
-  if (lastSlash == std::string::npos) return file;
-  if (lastSlash == file.size()-1)     return file;
-  return file.substr(lastSlash+1, file.size()-lastSlash-1);
-}
-
-// LogWarning
-mf::LogWarning::LogWarning( std::string const & id, std::string const & file, int line )
-    : ap ( mf::MessageDrop::instance()->warningEnabled ?
-           new MessageSender(ELwarning,id) : 0 )
-{
-  *this << " "
-        << stripLeadingDirectoryTree(file)
-        << ":" << line << "\n";
-}
-
-// LogError
-mf::LogError::LogError( std::string const & id, std::string const & file, int line )
-    : ap( new MessageSender(ELerror,id) )
-{
-  *this << " "
-        << stripLeadingDirectoryTree(file)
-        << ":" << line << "\n";
-}
-
-// LogInfo
-mf::LogInfo::LogInfo( std::string const & id, std::string const & file, int line )
-    : ap ( mf::MessageDrop::instance()->infoEnabled ?
-           new MessageSender(ELinfo,id) : 0 )
-{
-  *this << " "
-        << stripLeadingDirectoryTree(file)
-        << ":" << line << "\n";
-}
-
-// LogDebug
-mf::LogDebug::LogDebug( std::string const & id, std::string const & file, int line )
-  : ap( new MessageSender(ELsuccess,id) ), debugEnabled(true)
-{ *this
-        << " "
-        << stripLeadingDirectoryTree(file)
-        << ":" << line << "\n"; }
-
-// LogTrace
-mf::LogTrace::LogTrace( std::string const & id, std::string const & file, int line )
-  : ap( new MessageSender(ELsuccess,id,true) )
-  , debugEnabled(true)
-  {  }
-
 void setStandAloneMessageThreshold(std::string const & severity) {
-  mf::MessageLoggerQ::standAloneThreshold(severity);
+  MessageLoggerQ::standAloneThreshold(severity);
 }
 void squelchStandAloneMessageCategory(std::string const & category){
-  mf::MessageLoggerQ::squelch(category);
+  MessageLoggerQ::squelch(category);
 }
 
 
@@ -440,7 +624,7 @@ void SetApplicationName(std::string const & application)
 
   boost::mutex::scoped_lock lock(mfs.m);
 
-  mf::service::ELadministrator::instance()->setApplication(application);
+  service::ELadministrator::instance()->setApplication(application);
   SetModuleName(application);
 }
 
@@ -485,7 +669,7 @@ void SwitchChannel(int c)
   ss << "Partition" << c;
 
   std::string * chanl = new std::string(ss.str());
-  mf::MessageLoggerQ::MLqSWC(chanl);
+  MessageLoggerQ::MLqSWC(chanl);
 }
 
 }  // namespace mf
