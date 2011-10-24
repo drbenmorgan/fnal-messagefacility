@@ -35,7 +35,7 @@ int main()
   SetModuleName("MF_main");
   SetContext("pre-event");
 
-  // Start up another logger in a seperate thread
+  // Start up another logger in a separate thread
   boost::thread loggerThread(anotherLogger);
 
   // Issue messages with different severity levels

@@ -31,7 +31,7 @@ int main()
   mf::SetModuleName("MFTest");
   mf::SetContext("pre-event");
 
-  // Start up another logger in a seperate thread
+  // Start up another logger in a separate thread
   //boost::thread loggerThread(anotherLogger);
 
   // Issue messages with different severity levels
@@ -44,7 +44,7 @@ int main()
   //mf::SwitchChannel(2);
 
   // Log Debugs
-  for(int i=0; i<5; ++i)
+  for(int i = 0; i != 5; ++i)
   {
     mf::LogError("catError")     << "Error information.";
     mf::LogWarning("catWarning") << "Warning information.";
