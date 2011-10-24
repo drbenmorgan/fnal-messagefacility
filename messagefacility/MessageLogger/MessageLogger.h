@@ -96,9 +96,6 @@ protected:
   // c'tor:
   explicit  MaybeLogger_( MessageSender * );
 
-  // d'tor:
-  ~MaybeLogger_( );
-
 public:
   // streamers:
   template< class T >
@@ -127,21 +124,16 @@ private:
   // data:
   std::auto_ptr<MessageSender> ap;
 
+  // no copy assignment
+  void  operator = ( CopyableLogger_ const & );
+
 protected:
   // c'tor:
   explicit  CopyableLogger_( MessageSender * );
 
 public:
-  // copying:
-  CopyableLogger_( CopyableLogger_ const & ) : ap( )
-  { throw "using CopyableLogger_::copy_c'tor!"; }
-
-  CopyableLogger_ &
-    operator = ( CopyableLogger_ const & )
-  { throw "using CopyableLogger_::op=!"; }
-
-  // d'tor:
-  ~CopyableLogger_( );
+  // copy c'tor:
+  CopyableLogger_( CopyableLogger_ const & ) : ap( )  { }
 
   // streamers:
   template< class T >
@@ -159,6 +151,11 @@ mf::CopyableLogger_ &
 {
   if( ap.get() )
     *ap << t;
+  else {
+    Exception e(mf::errors::LogicError);
+    e << "streaming to stale (copied) CopyableLogger_ object";
+    throw e;
+  }
   return *this;
 }
 

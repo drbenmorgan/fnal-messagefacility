@@ -35,8 +35,6 @@ std::string
 
 MaybeLogger_::MaybeLogger_( MessageSender * p ) : ap ( p )  { }
 
-MaybeLogger_::~MaybeLogger_( )  { }
-
 MaybeLogger_ &
   MaybeLogger_::operator << ( std::ostream&(*f)(std::ostream&) )
 {
@@ -58,13 +56,16 @@ MaybeLogger_ &
 
 CopyableLogger_::CopyableLogger_( MessageSender * p ) : ap ( p )  { }
 
-CopyableLogger_::~CopyableLogger_( )  { }
-
 CopyableLogger_ &
   CopyableLogger_::operator << ( std::ostream&(*f)(std::ostream&) )
 {
   if( ap.get() )
     *ap << f;
+  else {
+    Exception e(mf::errors::LogicError);
+    e << "streaming to stale (copied) CopyableLogger_ object";
+    throw e;
+  }
   return *this;
 }
 
@@ -73,6 +74,11 @@ CopyableLogger_ &
 {
   if( ap.get() )
     *ap << f;
+  else {
+    Exception e(mf::errors::LogicError);
+    e << "streaming to stale (copied) CopyableLogger_ object";
+    throw e;
+  }
   return *this;
 }
 
@@ -547,8 +553,7 @@ fhicl::ParameterSet MessageFacilityService::logArchive(std::string const & filen
 MessageFacilityService::MessageFacilityService()
   : MFServiceEnabled  (false)
   , theML             (     )
-{
-}
+{ }
 
 MFSdestroyer::~MFSdestroyer()
 {
