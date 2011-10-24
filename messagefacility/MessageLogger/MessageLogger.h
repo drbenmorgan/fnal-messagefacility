@@ -7,8 +7,11 @@
 //
 // ======================================================================
 
+#include "boost/noncopyable.hpp"
 #include "boost/scoped_ptr.hpp"
 #include "boost/thread/mutex.hpp"
+#include "cpp0x/memory"
+#include "cpp0x/string"
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageLogger/ELseverityLevel.h"
 #include "messagefacility/MessageLogger/ErrorObj.h"
@@ -18,9 +21,7 @@
 #include "messagefacility/MessageService/MessageLogger.h"
 #include "messagefacility/MessageService/Presence.h"
 #include "messagefacility/Utilities/exception.h"
-#include "cpp0x/memory"
-#include <set>
-#include <string>
+#include <ostream>
 
 namespace mf  {
 
@@ -43,19 +44,53 @@ namespace mf  {
   class MFSdestroyer;
   class MessageFacilityService;
 
-}
+  void LogStatistics( );
+  void LogErrorObj(ErrorObj * eo_p);
+
+  extern LogDebug dummyLogDebugObject_;
+  extern LogTrace dummyLogTraceObject_;
+
+  bool isDebugEnabled( );
+  bool isInfoEnabled( );
+  bool isWarningEnabled( );
+  void HaltMessageLogging( );
+  void FlushMessageLog( );
+  void GroupLogStatistics(std::string const & category);
+  bool isMessageProcessingSetUp( );
+
+  // The following two methods have no effect except in stand-alone apps
+  // that do not create a MessageServicePresence:
+  void setStandAloneMessageThreshold    (std::string const & severity);
+  void squelchStandAloneMessageCategory (std::string const & category);
+
+  void SetApplicationName(std::string const & application);
+  void SetModuleName(std::string const & modulename);
+  void SetContext(std::string const & context);
+
+  void SwitchChannel(int c);
+
+}  // mf
 
 // ======================================================================
 
+// N.B.:
+// - a C++11 std::unique_ptr is not copyable, so the containing class
+//   is implicitly not copyable
+// - C++03 code uses std::auto_ptr as a workaround for std::unique_ptr,
+//   so we mark the containing class as explicitly noncopyable
+
 class mf::MaybeLogger_
+#if ! defined __GXX_EXPERIMENTAL_CXX0X__
+  : public boost::noncopyable
+#endif  // __GXX_EXPERIMENTAL_CXX0X__
 {
 private:
   // data:
-  std::auto_ptr<MessageSender> ap;  // C++11: use std::unique_ptr
-
-  // no copying (C++11: remove these):
-  MaybeLogger_( MaybeLogger_ const & );
-  void  operator = ( MaybeLogger_ const & );
+#if defined __GXX_EXPERIMENTAL_CXX0X__
+  std::unique_ptr<MessageSender> ap;
+#else
+  std::auto_ptr<MessageSender> ap;
+#endif  // __GXX_EXPERIMENTAL_CXX0X__
 
 protected:
   // c'tor:
@@ -86,7 +121,7 @@ mf::MaybeLogger_ &
 
 // ----------------------------------------------------------------------
 
-class mf::CopyableLogger_  // C++11: excise; use MaybeLogger_ instead
+class mf::CopyableLogger_
 {
 private:
   // data:
@@ -135,234 +170,93 @@ public:
   // c'tor:
    NeverLogger_( )  { }
 
-  // C++11: make this move-only
+#if defined __GXX_EXPERIMENTAL_CXX0X__
+  NeverLogger_               ( NeverLogger_ const & ) = delete;
+  NeverLogger_ &  operator = ( NeverLogger_ const & ) = delete;
+
+  NeverLogger_               ( NeverLogger_      && ) = default;
+  NeverLogger_ &  operator = ( NeverLogger_      && ) = default;
+
+  // use compiler-generated d'tor
+#else
   // use compiler-generated copy c'tor, copy assignment, and d'tor
+#endif  // __GXX_EXPERIMENTAL_CXX0X__
 
   // streamers:
   template< class T >
-  NeverLogger_ &
-    operator << ( T const & )
+  NeverLogger_ &  operator << ( T const & )
   { return *this; }
 
-  NeverLogger_ &
-    operator << ( std::ostream&(*)(std::ostream&) )
+  NeverLogger_ &  operator << ( std::ostream&(*)(std::ostream&) )
   { return *this; }
 
-  NeverLogger_ &
-    operator << ( std::ios_base&(*)(std::ios_base&) )
+  NeverLogger_ &  operator << ( std::ios_base&(*)(std::ios_base&) )
   { return *this; }
 
 };  // NeverLogger_
 
 // ----------------------------------------------------------------------
 
-class mf::LogAbsolute // verbatim version of LogSystem
-  : public MaybeLogger_
-{
-public:
-  // c'tors:
-  explicit LogAbsolute( std::string const & id );
-  LogAbsolute( std::string const & id, std::string const & file, int line );
+#define DEFINE_LOGGER(Name,Base)  \
+class mf::Name : public Base {  \
+public:  \
+  explicit Name( std::string const & id );  \
+  Name( std::string const & id, std::string const & file, int line );  \
+};
 
-  // d'tor:
-  ~LogAbsolute( );
+DEFINE_LOGGER(LogAbsolute,MaybeLogger_) // verbatim version of LogSystem
+DEFINE_LOGGER(LogDebug,CopyableLogger_)
+DEFINE_LOGGER(LogError,MaybeLogger_)
+DEFINE_LOGGER(LogImportant,MaybeLogger_)  // less judgmental verbatim version of LogError
+DEFINE_LOGGER(LogInfo,MaybeLogger_)
+DEFINE_LOGGER(LogPrint,MaybeLogger_) // verbatim version of LogWarning
+DEFINE_LOGGER(LogProblem,MaybeLogger_) // verbatim version of LogError
+DEFINE_LOGGER(LogSystem,MaybeLogger_)
+DEFINE_LOGGER(LogTrace,CopyableLogger_)
+DEFINE_LOGGER(LogVerbatim,MaybeLogger_)  // verbatim version of LogInfo
+DEFINE_LOGGER(LogWarning,MaybeLogger_)
 
-};  // LogAbsolute
+#undef DEFINE_LOGGER
+
+// ----------------------------------------------------------------------
 
 #define LOG_ABSOLUTE(id)  ::mf::LogAbsolute(id, __FILE__, __LINE__)
-
-// ----------------------------------------------------------------------
-
-class mf::LogDebug
-  : public CopyableLogger_
-{
-public:
-  // c'tors:
-  explicit LogDebug( std::string const & id );
-  LogDebug( std::string const & id, std::string const & file, int line );
-
-  // d'tor:
-  ~LogDebug( );
-
-};  // LogDebug
-
-// ----------------------------------------------------------------------
-
-class mf::LogError
-  : public MaybeLogger_
-{
-public:
-  // c'tors:
-  explicit LogError( std::string const & id );
-  LogError( std::string const & id, std::string const & file, int line );
-
-  // d'tor:
-  ~LogError( );
-
-};  // LogError
-
-#define LOG_ERROR(id)  ::mf::LogError(id, __FILE__, __LINE__)
-
-// ----------------------------------------------------------------------
-
-class mf::LogImportant // less judgemental verbatim version of LogError
-  : public MaybeLogger_
-{
-public:
-  // c'tors:
-  explicit LogImportant( std::string const & id );
-  LogImportant( std::string const & id, std::string const & file, int line );
-
-  // d'tor:
-  ~LogImportant( );
-
-};  // LogImportant
-
-#define LOG_IMPORTANT(id)  ::mf::LogImportant(id, __FILE__, __LINE__)
-
-// ----------------------------------------------------------------------
-
-class mf::LogInfo
-  : public MaybeLogger_
-{
-public:
-  // c'tors:
-  explicit LogInfo( std::string const & id );
-  LogInfo( std::string const & id, std::string const & file, int line );
-
-  // d'tor:
-  ~LogInfo( );
-
-};  // LogInfo
-
-#define LOG_INFO(id)  ::mf::LogInfo(id, __FILE__, __LINE__)
-
-// ----------------------------------------------------------------------
-
-class mf::LogProblem // verbatim version of LogError
-  : public MaybeLogger_
-{
-public:
-  // c'tors:
-  explicit LogProblem( std::string const & id );
-  LogProblem( std::string const & id, std::string const & file, int line );
-
-  // d'tor:
-  ~LogProblem( );
-
-};  // LogProblem
-
-#define LOG_PROBLEM(id)  ::mf::LogProblem(id, __FILE__, __LINE__)
-
-// ----------------------------------------------------------------------
-
-class mf::LogPrint // verbatim version of LogWarning
-  : public MaybeLogger_
-{
-public:
-  // c'tors:
-  explicit LogPrint( std::string const & id );
-  LogPrint( std::string const & id, std::string const & file, int line );
-
-  // d'tor:
-  ~LogPrint( );
-
-};  // LogPrint
-
-#define LOG_PRINT(id)  ::mf::LogPrint(id, __FILE__, __LINE__)
-
-// ----------------------------------------------------------------------
-
-class mf::LogSystem
-  : public MaybeLogger_
-{
-public:
-  // c'tors:
-  explicit LogSystem( std::string const & id );
-  LogSystem( std::string const & id, std::string const & file, int line );
-
-  // d'tor:
-  ~LogSystem( );
-
-};  // LogSystem
-
-#define LOG_SYSTEM(id)  ::mf::LogSystem(id, __FILE__, __LINE__)
-
-// ----------------------------------------------------------------------
-
-class mf::LogTrace
-  : public CopyableLogger_
-{
-public:
-  // c'tors:
-  explicit LogTrace( std::string const & id );
-  LogTrace( std::string const & id, std::string const & file, int line );
-
-  // d'tor:
-  ~LogTrace( );
-
-};  // LogTrace
-
-// ----------------------------------------------------------------------
-
-class mf::LogVerbatim  // verbatim version of LogInfo
-  : public MaybeLogger_
-{
-public:
-  // c'tors:
-  explicit LogVerbatim( std::string const & id );
-  LogVerbatim( std::string const & id, std::string const & file, int line );
-
-  // d'tor:
-  ~LogVerbatim( );
-
-};  // LogVerbatim
-
+#define LOG_ERROR(id)     ::mf::LogError(id, __FILE__, __LINE__)
+#define LOG_IMPORTANT(id) ::mf::LogImportant(id, __FILE__, __LINE__)
+#define LOG_INFO(id)      ::mf::LogInfo(id, __FILE__, __LINE__)
+#define LOG_PROBLEM(id)   ::mf::LogProblem(id, __FILE__, __LINE__)
+#define LOG_PRINT(id)     ::mf::LogPrint(id, __FILE__, __LINE__)
+#define LOG_SYSTEM(id)    ::mf::LogSystem(id, __FILE__, __LINE__)
 #define LOG_VERBATIM(id)  ::mf::LogVerbatim(id, __FILE__, __LINE__)
+#define LOG_WARNING(id)   ::mf::LogWarning(id, __FILE__, __LINE__)
+
+// If ML_DEBUG is defined, LogDebug is active.
+// Otherwise, LogDebug is suppressed if either ML_NDEBUG or NDEBUG is defined.
+#undef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
+#if defined(NDEBUG) || defined(ML_NDEBUG)
+  #define EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
+#endif
+#if defined(ML_DEBUG)
+  #undef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
+#endif
+
+// N.B.: no surrounding ()'s in the conditional expressions below!
+#ifdef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
+  #define LOG_DEBUG(id) true ? ::mf::NeverLogger_() : ::mf::NeverLogger_()
+  #define LOG_TRACE(id) true ? ::mf::NeverLogger_() : ::mf::NeverLogger_()
+#else
+  #define LOG_DEBUG(id)   ! ::mf::MessageDrop::instance()->debugEnabled \
+                        ? ::mf::LogDebug(id, __FILE__, __LINE__) \
+                        : ::mf::LogDebug(id, __FILE__, __LINE__)
+  #define LOG_TRACE(id)   ! ::mf::MessageDrop::instance()->debugEnabled \
+                        ? ::mf::LogTrace(id, __FILE__, __LINE__) \
+                        : ::mf::LogTrace(id, __FILE__, __LINE__)
+#endif
+#undef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
 
 // ----------------------------------------------------------------------
 
-class mf::LogWarning
-  : public MaybeLogger_
-{
-public:
-  // c'tors:
-  explicit LogWarning( std::string const & id );
-  LogWarning( std::string const & id, std::string const & file, int line );
-
-  // d'tor:
-  ~LogWarning( );
-
-};  // LogWarning
-
-#define LOG_WARNING(id)  ::mf::LogWarning(id, __FILE__, __LINE__)
-
-// ----------------------------------------------------------------------
-
-namespace mf  {
-
-void LogStatistics( );
-void LogErrorObj(ErrorObj * eo_p);
-
-extern LogDebug dummyLogDebugObject_;
-extern LogTrace dummyLogTraceObject_;
-
-  bool isDebugEnabled( );
-  bool isInfoEnabled( );
-  bool isWarningEnabled( );
-  void HaltMessageLogging( );
-  void FlushMessageLog( );
-  void GroupLogStatistics(std::string const & category);
-  bool isMessageProcessingSetUp( );
-
-
-  // The following two methods have no effect except in stand-alone apps
-  // that do not create a MessageServicePresence:
-  void setStandAloneMessageThreshold    (std::string const & severity);
-  void squelchStandAloneMessageCategory (std::string const & category);
-
-
-class MessageFacilityService
+class mf::MessageFacilityService
 {
 private:
   MessageFacilityService( );
@@ -418,51 +312,23 @@ private:
   static std::string commonPSet( );
 };
 
-class MFSdestroyer
+// ----------------------------------------------------------------------
+
+class mf::MFSdestroyer
 {
 public:
   ~MFSdestroyer( );
 };
 
+// ----------------------------------------------------------------------
 
-  //
+namespace mf {
 
   void StartMessageFacility(
       std::string const & mode,
       fhicl::ParameterSet const & pset = MessageFacilityService::ConfigurationFile());
 
-  void SetApplicationName(std::string const & application);
-  void SetModuleName(std::string const & modulename);
-  void SetContext(std::string const & context);
-
-  void SwitchChannel(int c);
-
-}  // namespace mf
-
-
-// If ML_DEBUG is defined, LogDebug is active.
-// Otherwise, LogDebug is suppressed if either ML_NDEBUG or NDEBUG is defined.
-#undef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
-#if defined(NDEBUG) || defined(ML_NDEBUG)
-  #define EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
-#endif
-#if defined(ML_DEBUG)
-  #undef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
-#endif
-
-// N.B.: no surrounding ()'s in the conditional expressions below!
-#ifdef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
-  #define LOG_DEBUG(id) true ? ::mf::NeverLogger_() : ::mf::NeverLogger_()
-  #define LOG_TRACE(id) true ? ::mf::NeverLogger_() : ::mf::NeverLogger_()
-#else
-  #define LOG_DEBUG(id)   ! ::mf::MessageDrop::instance()->debugEnabled \
-                        ? ::mf::LogDebug(id, __FILE__, __LINE__) \
-                        : ::mf::LogDebug(id, __FILE__, __LINE__)
-  #define LOG_TRACE(id)   ! ::mf::MessageDrop::instance()->debugEnabled \
-                        ? ::mf::LogTrace(id, __FILE__, __LINE__) \
-                        : ::mf::LogTrace(id, __FILE__, __LINE__)
-#endif
-#undef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
+}
 
 // ======================================================================
 

@@ -11,8 +11,7 @@
 #include "messagefacility/MessageLogger/MessageDrop.h"
 #include "messagefacility/MessageService/ELadministrator.h"
 #include "messagefacility/MessageService/MessageServicePresence.h"
-#include <fstream>
-#include <string>
+#include <sstream>
 
 using namespace mf;
 
@@ -90,8 +89,6 @@ CopyableLogger_ &
 : MaybeLogger_( new MessageSender(ELsevere, id, true) )
 { }
 
-LogAbsolute::~LogAbsolute( )  { }
-
 // ----------------------------------------------------------------------
 // LogDebug
 
@@ -110,8 +107,6 @@ LogAbsolute::~LogAbsolute( )  { }
   *this << " " << stripLeadingDirectoryTree(file)
         << ":" << line << "\n";
 }
-
-LogDebug::~LogDebug( )  { }
 
 // ----------------------------------------------------------------------
 // LogError
@@ -132,8 +127,6 @@ LogDebug::~LogDebug( )  { }
         << ":" << line << "\n";
 }
 
-LogError::~LogError()  { }
-
 // ----------------------------------------------------------------------
 // LogImportant
 
@@ -147,8 +140,6 @@ LogError::~LogError()  { }
 : MaybeLogger_( new MessageSender(ELerror, id, true) )
 { }
 
-LogImportant::~LogImportant( )  { }
-
 // ----------------------------------------------------------------------
 // LogInfo
 
@@ -156,7 +147,7 @@ LogImportant::~LogImportant( )  { }
   LogInfo( std::string const & id )
 : MaybeLogger_( MessageDrop::instance()->infoEnabled
               ? new MessageSender(ELinfo, id)
-              : 0
+              : nullptr
             )
 {
   *this << " " << DEFAULT_FILE_NAME
@@ -167,14 +158,12 @@ LogImportant::~LogImportant( )  { }
   LogInfo( std::string const & id, std::string const & file, int line )
 : MaybeLogger_( MessageDrop::instance()->infoEnabled
               ? new MessageSender(ELinfo, id)
-              : 0
+              : nullptr
             )
 {
   *this << " " << stripLeadingDirectoryTree(file)
         << ":" << line << "\n";
 }
-
-LogInfo::~LogInfo()  { }
 
 // ----------------------------------------------------------------------
 // LogPrint
@@ -183,7 +172,7 @@ LogInfo::~LogInfo()  { }
   LogPrint( std::string const & id )
 : MaybeLogger_( MessageDrop::instance()->warningEnabled
               ? new MessageSender(ELwarning, id, true)
-              : 0
+              : nullptr
             )
 { }
 
@@ -191,11 +180,9 @@ LogInfo::~LogInfo()  { }
   LogPrint( std::string const & id, std::string const & /*file*/, int /*line*/ )
 : MaybeLogger_( MessageDrop::instance()->warningEnabled
               ? new MessageSender(ELwarning, id, true)
-              : 0
+              : nullptr
             )
 { }
-
-LogPrint::~LogPrint( )  { }
 
 // ----------------------------------------------------------------------
 // LogProblem
@@ -210,8 +197,6 @@ LogPrint::~LogPrint( )  { }
 : MaybeLogger_( new MessageSender(ELerror, id, true) )
 { }
 
-LogProblem::~LogProblem( )  { }
-
 // ----------------------------------------------------------------------
 // LogSystem
 
@@ -224,8 +209,6 @@ LogProblem::~LogProblem( )  { }
   LogSystem( std::string const & id, std::string const & /*file*/, int /*line*/ )
 : MaybeLogger_( new MessageSender(ELsevere, id) )
 { }
-
-LogSystem::~LogSystem( )  { }
 
 // ----------------------------------------------------------------------
 // LogTrace
@@ -240,8 +223,6 @@ LogSystem::~LogSystem( )  { }
 : CopyableLogger_( new MessageSender(ELsuccess, id, true) )
 { }
 
-LogTrace::~LogTrace( )  { }
-
 // ----------------------------------------------------------------------
 // LogVerbatim
 
@@ -249,7 +230,7 @@ LogTrace::~LogTrace( )  { }
   LogVerbatim( std::string const & id )
 : MaybeLogger_( MessageDrop::instance()->infoEnabled
               ? new MessageSender(ELinfo, id, true)
-              : 0
+              : nullptr
             )
 { }
 
@@ -257,11 +238,9 @@ LogTrace::~LogTrace( )  { }
   LogVerbatim( std::string const & id, std::string const & /*file*/, int /*line*/ )
 : MaybeLogger_( MessageDrop::instance()->infoEnabled
               ? new MessageSender(ELinfo, id, true)
-              : 0
+              : nullptr
             )
 { }
-
-LogVerbatim::~LogVerbatim( )  { }
 
 // ----------------------------------------------------------------------
 // LogWarning
@@ -270,7 +249,7 @@ LogVerbatim::~LogVerbatim( )  { }
   LogWarning( std::string const & id )
 : MaybeLogger_( MessageDrop::instance()->warningEnabled
               ? new MessageSender(ELwarning, id)
-              : 0
+              : nullptr
             )
 {
   *this << " " << DEFAULT_FILE_NAME
@@ -281,14 +260,12 @@ LogVerbatim::~LogVerbatim( )  { }
   LogWarning( std::string const & id, std::string const & file, int line )
 : MaybeLogger_( MessageDrop::instance()->warningEnabled
               ? new MessageSender(ELwarning, id)
-              : 0
+              : nullptr
             )
 {
   *this << " " << stripLeadingDirectoryTree(file)
         << ":" << line << "\n";
 }
-
-LogWarning::~LogWarning()  { }
 
 // ----------------------------------------------------------------------
 
@@ -376,14 +353,12 @@ fhicl::ParameterSet MessageFacilityService::ConfigurationFile(
     return def;
   }
 
-  std::string env;
   std::string fname;
-  boost::scoped_ptr<cet::filepath_maker>
-              policy_ptr(new cet::filepath_maker());
+  std::auto_ptr<cet::filepath_maker> policy_ptr(new cet::filepath_maker());
 
   if (sub_start==0)  // env embedded in the filename
   {
-    env   = filename.substr(2, sub_end-2);
+    std::string env = filename.substr(2, sub_end-2);
     fname = filename.substr(sub_end+1);
     policy_ptr.reset(new cet::filepath_lookup(env));
   }
@@ -394,7 +369,7 @@ fhicl::ParameterSet MessageFacilityService::ConfigurationFile(
   }
   else                             // non-absolute path
   {
-    env   = std::string("FHICL_FILE_PATH");
+    std::string env = std::string("FHICL_FILE_PATH");
     fname = filename;
     policy_ptr.reset(new cet::filepath_lookup_after1(env));
   }
@@ -594,14 +569,14 @@ void StartMessageFacility(
 
     /*
      * qlu 03/10/10 The order of object initialization and destruction is
-     *              curcial in starting up and shutting down the Message
+     *              crucial in starting up and shutting down the Message
      *              Facility service. In the d'tor of MessageServicePresence
      *              it sends out a END message to the queue and waits for the
      *              MLscribe thread to finish logging all remaining messages
      *              in the queue. Therefore the ELadministrator singleton
      *              (whose instance is handled by a local static variable)
      *              and all attached destinations must be present during the
-     *              process. We must provide the secured method to gurantee
+     *              process. We must provide the secured method to guarantee
      *              that the MessageServicePresence will be destroyed first,
      *              and particularly *BEFORE* the destruction of ELadmin.
      *              This is achieved by instantiating a static object, who
@@ -642,16 +617,16 @@ void SetModuleName(std::string const & modulename)
     return;
 
   MessageDrop * drop = MessageDrop::instance();
-  drop -> moduleName = modulename;
+  drop->moduleName = modulename;
 
-  MessageFacilityService & mfs = MessageFacilityService::instance();
+  MessageFacilityService const & mfs = MessageFacilityService::instance();
 
   if( mfs.theML->everyDebugEnabled_ )
-    drop -> debugEnabled = true;
+    drop->debugEnabled = true;
   else if( mfs.theML->debugEnabledModules_.count(modulename))
-    drop -> debugEnabled = true;
+    drop->debugEnabled = true;
   else
-    drop -> debugEnabled = false;
+    drop->debugEnabled = false;
 }
 
 // Set the run/event context
@@ -660,7 +635,7 @@ void SetContext(std::string const & context)
   if( !MessageFacilityService::instance().MFServiceEnabled )
     return;
 
-  MessageDrop::instance() -> runEvent = context;
+  MessageDrop::instance()->runEvent = context;
 }
 
 // Switch dds partition / channel
