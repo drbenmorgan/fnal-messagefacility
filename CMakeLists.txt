@@ -48,6 +48,9 @@ ENABLE_TESTING()
 include(EnsureOutOfSourceBuild)
 cet_ensure_out_of_source_build()
 
+include(SetCompilerFlags)
+cet_set_compiler_flags(DIAGS VIGILANT EXTRA_FLAGS -pedantic)
+
 # define some necessary modules
 include(FindUpsPackage)
 include(FindUpsBoost)
@@ -61,10 +64,10 @@ set_flavor_qual()
 
 
 # these are minimum required versions, not the actual product versions
-find_ups_product( cetbuildtools v1_12_00 )
-find_ups_product( cpp0x v1_02_02 )
-find_ups_product( cetlib v1_02_02 )
-find_ups_product( fhiclcpp v2_15_02  )
+find_ups_product( cetbuildtools v1_13_02)
+find_ups_product( cpp0x v1_02_03 )
+find_ups_product( cetlib v1_02_03 )
+find_ups_product( fhiclcpp v2_15_03  )
 find_ups_boost( v1_46_1 filesystem
                         thread
                         program_options )
@@ -75,8 +78,6 @@ SET ( GCC_VERSION $ENV{GCC_VERSION} )
 IF (NOT GCC_VERSION)
     MESSAGE (FATAL_ERROR "gcc has not been setup")
 ENDIF()
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -g -O3  -Wall -Werror=return-type -pedantic -Wextra -Wno-long-long -Winit-self -Wcast-qual -Woverloaded-virtual")
-message(STATUS "GCC version is ${GCC_VERSION} " )
 
 # Use cmake directive include_directories to define include search path
 
