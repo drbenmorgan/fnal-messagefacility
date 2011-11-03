@@ -64,7 +64,7 @@ set_flavor_qual()
 
 
 # these are minimum required versions, not the actual product versions
-find_ups_product( cetbuildtools v1_13_02)
+find_ups_product( cetbuildtools v1_13_03)
 find_ups_product( cpp0x v1_02_03 )
 find_ups_product( cetlib v1_02_03 )
 find_ups_product( fhiclcpp v2_15_03  )
