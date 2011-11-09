@@ -9,9 +9,9 @@
 #    set fw_db=/some/path; source /some/path/this_file
 # or  fw_db=/some/path; . /some/path/this_file
 #
-# If MESSAGEFACILITY_BUILD is undefined, it is set to whatever directory
+# If CETPKG_BUILD is undefined, it is set to whatever directory
 # you are in when this script is invoked.
-# $MESSAGEFACILITY_BUILD/lib is added to LD_LIBRARY_PATH
+# $CETPKG_BUILD/lib is added to LD_LIBRARY_PATH
 
 test $?shell = 1 && set ss=csh || ss=sh
 #echo Shell type is $ss.
@@ -33,10 +33,10 @@ set_ msg3='ERROR: You MUST specify either -o, -p, or -d'
 test -z "$1" && ( echo ""; echo "$msg3"; echo "" ) && return
 
 # set the default type, just to avoid confusion
-setenv MESSAGEFACILITY_TYPE RelWithDebInfo
-test "$1" = "-d" && set_ extraqual=":debug" && setenv MESSAGEFACILITY_TYPE Debug
-test "$1" = "-o" && set_ extraqual=":opt" && setenv MESSAGEFACILITY_TYPE Release
-test "$1" = "-p" && set_ extraqual=":prof" && setenv MESSAGEFACILITY_TYPE MinSizeRel
+setenv CETPKG_TYPE RelWithDebInfo
+test "$1" = "-d" && set_ extraqual=":debug" && setenv CETPKG_TYPE Debug
+test "$1" = "-o" && set_ extraqual=":opt" && setenv CETPKG_TYPE Release
+test "$1" = "-p" && set_ extraqual=":prof" && setenv CETPKG_TYPE MinSizeRel
 echo "called with $1, using qualifier a4$extraqual"
 
 # we setup dependent products here
@@ -71,27 +71,33 @@ test -z "$db" -a "$ss" = csh && set me=`history 1|sed 's/^[ 	0-9:]*//'` && test 
     && set db=`sh -c "cd $me >/dev/null 2>&1 && pwd"` && vecho_ 'setting db via interactive history'
 
 test -z "$db" && echo "$msg" || vecho_ "db=$db"
-test -n "$db" && setenv MESSAGEFACILITY_SOURCE `dirname $db`
+test -n "$db" && setenv CETPKG_SOURCE `dirname $db`
 #echo This script lives in $db
 
-tnotnull MESSAGEFACILITY_BUILD && set_ thisdir=$MESSAGEFACILITY_BUILD || set_ thisdir=`pwd`
-test -n "$thisdir" && setenv MESSAGEFACILITY_BUILD $thisdir
+tnotnull CETPKG_BUILD && set_ thisdir=$CETPKG_BUILD || set_ thisdir=`pwd`
+test -n "$thisdir" && setenv CETPKG_BUILD $thisdir
 test -d "$thisdir/lib" || mkdir -p $thisdir/lib
 echo The working build directory is $thisdir
 
-tnotnull MESSAGEFACILITY_BUILD && setenv LD_LIBRARY_PATH `echo :${LD_LIBRARY_PATH}: | sed -e "s|:${MESSAGEFACILITY_BUILD}/lib:|:|" -e 's|^:||;s|:$||'`
-tnotnull MESSAGEFACILITY_BUILD && setenv LD_LIBRARY_PATH ${MESSAGEFACILITY_BUILD}/lib:${LD_LIBRARY_PATH}
+tnotnull CETPKG_BUILD && setenv LD_LIBRARY_PATH `echo :${LD_LIBRARY_PATH}: | sed -e "s|:${CETPKG_BUILD}/lib:|:|" -e 's|^:||;s|:$||'`
+tnotnull CETPKG_BUILD && setenv LD_LIBRARY_PATH ${CETPKG_BUILD}/lib:${LD_LIBRARY_PATH}
 setenv LD_LIBRARY_PATH `dropit -D -p "$LD_LIBRARY_PATH"`
 
+# Package-specific variable names.
+for i in SOURCE BUILD TYPE; do
+  eval setenv MESSAGEFACILITY_${i} \${CETPKG_${i}}
+done
+
+# Show what we've done
 echo
-echo MESSAGEFACILITY_SOURCE=$MESSAGEFACILITY_SOURCE
-echo MESSAGEFACILITY_BUILD=$MESSAGEFACILITY_BUILD
-echo MESSAGEFACILITY_TYPE=$MESSAGEFACILITY_TYPE
+echo MESSAGEFACILITY_SOURCE=CETPKG_SOURCE=$CETPKG_SOURCE
+echo MESSAGEFACILITY_BUILD=CETPKG_BUILD=$CETPKG_BUILD
+echo MESSAGEFACILITY_TYPE=CETPKG_TYPE=$CETPKG_TYPE
 echo $thisdir/lib has been added to LD_LIBRARY_PATH
 echo
 echo LD_LIBRARY_PATH is now ${LD_LIBRARY_PATH}
 echo Please use this cmake command:
-echo cmake -DCMAKE_INSTALL_PREFIX=/install/path -DCMAKE_BUILD_TYPE=\$MESSAGEFACILITY_TYPE \$MESSAGEFACILITY_SOURCE
+echo cmake -DCMAKE_INSTALL_PREFIX=/install/path -DCMAKE_BUILD_TYPE=\$CETPKG_TYPE \$CETPKG_SOURCE
 
 # cleanup before exiting
 test "$ss" = csh && unalias tnotnull nullout set_ vecho_ return
