@@ -20,8 +20,8 @@ std::ostream& operator<<(std::ostream& os, const Thing& t)
 }
 
 const char expected[] =   "---- InfiniteLoop BEGIN\n"
-                           "  In func1 "
-                           "---- DataCorrupt BEGIN\n"
+                           "  In func1\n"
+                           "  ---- DataCorrupt BEGIN\n"
                            "    This is just a test: \n"
                            "    double: 1.11111\n"
                            "    float:  2.22222\n"
