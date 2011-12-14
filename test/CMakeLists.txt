@@ -1,4 +1,4 @@
-cet_set_compiler_flags(ENABLE_ASSERTS DIAGS VIGILANT EXTRA_FLAGS -pedantic)
+cet_enable_asserts()
 
 subdirs(Utilities)
 subdirs(Integration)
