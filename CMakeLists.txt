@@ -86,10 +86,10 @@ SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
 # The environment has been established, now generate the Makefiles.
 
-subdirs(messagefacility)
-subdirs(test)
-subdirs(xcompile)
-subdirs(ups)
+add_subdirectory(messagefacility)
+add_subdirectory(test)
+add_subdirectory(xcompile)
+add_subdirectory(ups)
 
 # This step enables building the package tarball
 # packaging utility

@@ -1,5 +1,5 @@
 cet_enable_asserts()
 
-subdirs(Utilities)
-subdirs(Integration)
-#subdirs(MessageService)
+add_subdirectory(Utilities)
+add_subdirectory(Integration)
+#add_subdirectory(MessageService)
