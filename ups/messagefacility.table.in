@@ -16,9 +16,6 @@ Qualifiers = ""
 
   Action = GetExtraProducts
     setupRequired(fhiclcpp @FHICLCPP_VERSION@ -q @FHICLCPP_BASE_QUAL@ )
-    setupRequired(cetlib @CETLIB_VERSION@ -q @CETLIB_BASE_QUAL@)
-    setupRequired(cpp0x @CPP0X_VERSION@ -q @CPP0X_BASE_QUAL@)
-    setupRequired(boost @BOOST_VERS@ -q @BOOST_BASE_QUAL@)
 
 Flavor     = ANY
 Qualifiers = "@qualifier@"
@@ -31,9 +28,6 @@ Qualifiers = "@qualifier@"
 
   Action = GetExtraProducts
     setupRequired(fhiclcpp @FHICLCPP_VERSION@ -q @FHICLCPP_BASE_QUAL@ )
-    setupRequired(cetlib @CETLIB_VERSION@ -q @CETLIB_BASE_QUAL@)
-    setupRequired(cpp0x @CPP0X_VERSION@ -q @CPP0X_BASE_QUAL@)
-    setupRequired(boost @BOOST_VERS@ -q @BOOST_BASE_QUAL@)
 
 Flavor     = ANY
 Qualifiers = "@qualifier@:debug"
@@ -46,9 +40,6 @@ Qualifiers = "@qualifier@:debug"
 
   Action = GetExtraProducts
     setupRequired(fhiclcpp @FHICLCPP_VERSION@ -q @FHICLCPP_BASE_QUAL@:debug )
-    setupRequired(cetlib @CETLIB_VERSION@ -q @CETLIB_BASE_QUAL@:debug)
-    setupRequired(cpp0x @CPP0X_VERSION@ -q @CPP0X_BASE_QUAL@:debug)
-    setupRequired(boost @BOOST_VERS@ -q @BOOST_BASE_QUAL@:debug)
 
 Flavor     = ANY
 Qualifiers = "@qualifier@:opt"
@@ -61,9 +52,6 @@ Qualifiers = "@qualifier@:opt"
 
   Action = GetExtraProducts
     setupRequired(fhiclcpp @FHICLCPP_VERSION@ -q @FHICLCPP_BASE_QUAL@:opt )
-    setupRequired(cetlib @CETLIB_VERSION@ -q @CETLIB_BASE_QUAL@:opt)
-    setupRequired(cpp0x @CPP0X_VERSION@ -q @CPP0X_BASE_QUAL@:opt)
-    setupRequired(boost @BOOST_VERS@ -q @BOOST_BASE_QUAL@:opt)
 
 Flavor     = ANY
 Qualifiers = "@qualifier@:prof"
@@ -76,9 +64,6 @@ Qualifiers = "@qualifier@:prof"
 
   Action = GetExtraProducts
     setupRequired(fhiclcpp @FHICLCPP_VERSION@ -q @FHICLCPP_BASE_QUAL@:prof )
-    setupRequired(cetlib @CETLIB_VERSION@ -q @CETLIB_BASE_QUAL@:prof)
-    setupRequired(cpp0x @CPP0X_VERSION@ -q @CPP0X_BASE_QUAL@:prof)
-    setupRequired(boost @BOOST_VERS@ -q @BOOST_BASE_QUAL@:prof)
 
 Common:
   Action = setup
