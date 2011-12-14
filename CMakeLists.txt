@@ -18,6 +18,8 @@
 
 cmake_minimum_required (VERSION 2.8) # use cmake 2.8 or later
 
+project(messagefacility)
+
 # cetbuildtools contains our cmake modules
 SET ( CETBUILDTOOLS_VERSION $ENV{CETBUILDTOOLS_VERSION} )
 IF (NOT CETBUILDTOOLS_VERSION)
