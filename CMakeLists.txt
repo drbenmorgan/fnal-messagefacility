@@ -4,64 +4,41 @@
 #
 #  CMake build file for project MessageFacility
 #
-#   cmake [-DCMAKE_INSTALL_PREFIX=/install/path]
-#         [-DCMAKE_TOOLCHAIN_FILE=/path/to/toolchain/file]
-#         /path/to/source/code
-
 # Create a build directory and an install direcotory which are outside the source code directory
-# Declare the install path from the cmake command line using either a relative or full path
-#
-#   cd .../path/to/build/directory
-#   source .../path/to/MessageFacility/ups/setup_for_development
-#   cmake -DCMAKE_INSTALL_PREFIX=/install/path $TOYCMAKE_SOURCE
-#   make
-#   make test
-#   make install
-#   make package
-#
+#  cd .../path/to/build/directory
+#  source .../path/to/source/code/setup_for_development
+#  cmake [-DCMAKE_INSTALL_PREFIX=/install/path]
+#        -Dqualifier:STRING=$CETPKG_QUAL
+#        -DCMAKE_BUILD_TYPE=$CETPKG_TYPE
+#        $CETPKG_SOURCE
+#  make
+#  make test
+#  make install
+#  make package
 
-# use cmake 2.6 or later
-cmake_minimum_required (VERSION 2.6)
-# project name
-project(MessageFacility)
-# the ups convention is that product names are all lower case, but this is a choice
-SET (product messagefacility)
-SET (version v1_10_01)
-SET (qualifier a4)
+cmake_minimum_required (VERSION 2.8) # use cmake 2.8 or later
 
 # cetbuildtools contains our cmake modules
 SET ( CETBUILDTOOLS_VERSION $ENV{CETBUILDTOOLS_VERSION} )
 IF (NOT CETBUILDTOOLS_VERSION)
     MESSAGE (FATAL_ERROR "ERROR: setup cetbuildtools to get the cmake modules")
 ENDIF()
-set(CMAKE_MODULE_PATH "${CMAKE_ROOT}/Modules")
 set(CMAKE_MODULE_PATH $ENV{CETBUILDTOOLS_DIR}/Modules ${CMAKE_MODULE_PATH})
-message(STATUS "module path is ${CMAKE_MODULE_PATH}" )
 
-# because we want to move these libraries about,
-# do not embed full path in shared libraries or executables
-set (CMAKE_SKIP_RPATH)
+include(CetCMakeEnv)
 
-ENABLE_TESTING()
+if ( NOT qualifier )
+    message (FATAL_ERROR "ERROR: please call cmake with -Dqualifier:STRING=qualifier")
+endif ( NOT qualifier )
+cet_cmake_env( messagefacility v1_10_01 ${qualifier} )
 
-# make sure someone isn't typing cmake in the source code tree
-include(EnsureOutOfSourceBuild)
-cet_ensure_out_of_source_build()
-
-include(SetCompilerFlags)
 cet_set_compiler_flags(DIAGS VIGILANT EXTRA_FLAGS -pedantic)
+if ("${qualifier}" STREQUAL "e1")
+  cet_add_compiler_flags(CXX -std=c++0x;-Wno-deprecated-declarations)
+endif()
+cet_report_compiler_flags()
 
-# define some necessary modules
-include(FindUpsPackage)
-include(FindUpsBoost)
-include(SetFlavorQual)
-include(ParseUpsVersion)
-
-#set package version from ups version
-set_version_from_ups( ${version} )
-#define flavorqual and flavorqual_dir
-set_flavor_qual()
-
+cet_check_gcc()
 
 # these are minimum required versions, not the actual product versions
 find_ups_product( cetbuildtools v1_14_02)
@@ -71,13 +48,6 @@ find_ups_product( fhiclcpp v2_16_00  )
 find_ups_boost( v1_47_0 filesystem
                         thread
                         program_options )
-
-# make sure gcc has been set
-# note that gcc has no qualifier
-SET ( GCC_VERSION $ENV{GCC_VERSION} )
-IF (NOT GCC_VERSION)
-    MESSAGE (FATAL_ERROR "gcc has not been setup")
-ENDIF()
 
 # Use cmake directive include_directories to define include search path
 
