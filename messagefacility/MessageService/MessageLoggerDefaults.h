@@ -151,7 +151,7 @@ public:
         break;
       default:
         // this should never happen!  No user error can get here.
-        bool    Invalid_JobMode_in_ctor_of_MessageLoggerDefaults = false;
+        bool    Invalid_JobMode_in_ctor_of_MessageLoggerDefaults __attribute__((unused)) = false;
         assert (Invalid_JobMode_in_ctor_of_MessageLoggerDefaults);
     } // end of switch on mode
   }
