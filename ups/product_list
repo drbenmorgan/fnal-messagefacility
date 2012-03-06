@@ -4,5 +4,5 @@ setup -B gcc v4_6_1
 
 # set up CET products
 setup cetpkgsupport
-setup cetbuildtools v1_15_08
-setup -B fhiclcpp v2_16_06 -q +$CETPKG_QUAL$extraqual
+setup cetbuildtools v1_15_09
+setup -B fhiclcpp v2_16_07 -q +$CETPKG_QUAL$extraqual
