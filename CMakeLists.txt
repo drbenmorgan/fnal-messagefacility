@@ -8,13 +8,12 @@
 #  cd .../path/to/build/directory
 #  source .../path/to/source/code/setup_for_development
 #  cmake [-DCMAKE_INSTALL_PREFIX=/install/path]
-#        -Dqualifier:STRING=$CETPKG_QUAL
 #        -DCMAKE_BUILD_TYPE=$CETPKG_TYPE
 #        $CETPKG_SOURCE
 #  make
 #  make test
 #  make install
-#  make package
+#  make package (builds distribution tarfile)
 
 cmake_minimum_required (VERSION 2.8) # use cmake 2.8 or later
 
@@ -28,11 +27,7 @@ ENDIF()
 set(CMAKE_MODULE_PATH $ENV{CETBUILDTOOLS_DIR}/Modules ${CMAKE_MODULE_PATH})
 
 include(CetCMakeEnv)
-
-if ( NOT qualifier )
-    message (FATAL_ERROR "ERROR: please call cmake with -Dqualifier:STRING=qualifier")
-endif ( NOT qualifier )
-cet_cmake_env( messagefacility v1_10_09 ${qualifier} )
+cet_cmake_env()
 
 cet_set_compiler_flags(DIAGS VIGILANT WERROR EXTRA_FLAGS -pedantic)
 if ("${qualifier}" STREQUAL "e1")
@@ -43,7 +38,7 @@ cet_report_compiler_flags()
 cet_check_gcc()
 
 # these are minimum required versions, not the actual product versions
-find_ups_product( cetbuildtools v1_16_00 )
+find_ups_product( cetbuildtools v1_17_00 )
 find_ups_product( cpp0x v1_03_02 )
 find_ups_product( cetlib v1_03_02 )
 find_ups_product( fhiclcpp v2_16_02  )

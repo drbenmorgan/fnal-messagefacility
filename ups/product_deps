@@ -5,13 +5,14 @@ defaultqual a7
 product		version
 gcc		v4_6_1
 fhiclcpp 	v2_16_07
-cetbuildtools	v1_16_00
+
+only_for_build cetbuildtools	v1_17_00
 
 # Matrix of qualifiers versus dependent products
-qualifier	fhiclcpp	gcc	cetbuildtools	notes
-a7:debug	a7:debug	-nq-	-b-
-a7:opt		a7:opt		-nq-	-b-
-a7:prof		a7:prof		-nq-	-b-
-e1:debug	e1:debug	-nq-	-b-		-std=c++0x;-Wno-deprecated-declarations
-e1:opt		e1:opt		-nq-	-b-		-std=c++0x;-Wno-deprecated-declarations
-e1:prof		e1:prof		-nq-	-b-		-std=c++0x;-Wno-deprecated-declarations
+qualifier	fhiclcpp	gcc	notes
+a7:debug	a7:debug	-nq-
+a7:opt		a7:opt		-nq-
+a7:prof		a7:prof		-nq-
+e1:debug	e1:debug	-nq-	-std=c++0x;-Wno-deprecated-declarations
+e1:opt		e1:opt		-nq-	-std=c++0x;-Wno-deprecated-declarations
+e1:prof		e1:prof		-nq-	-std=c++0x;-Wno-deprecated-declarations
