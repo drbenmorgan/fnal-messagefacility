@@ -89,7 +89,9 @@
 #include "messagefacility/Utilities/exception.h"
 
 #include <netdb.h>
+#include <ifaddrs.h>
 #include <arpa/inet.h>
+#include <netinet/in.h>
 
 #include <fstream>
 #include <iostream>
@@ -547,8 +549,58 @@ ELadministrator::ELadministrator()
   // host ip address
   hostent *host;
   host = gethostbyname(hostname);
-  char * ip = inet_ntoa( *(struct in_addr *)host->h_addr );
-  hostaddr_ = ip;
+
+  if( host )
+  {
+    // ip address from hostname if the entry exists in /etc/hosts
+    char * ip = inet_ntoa( *(struct in_addr *)host->h_addr );
+    hostaddr_ = ip;
+  }
+  else
+  {
+    // enumerate all network interfaces
+    struct ifaddrs * ifAddrStruct = NULL;
+    struct ifaddrs * ifa = NULL;
+    void * tmpAddrPtr = NULL;
+
+    if( getifaddrs(&ifAddrStruct) ) 
+    {
+      // failed to get addr struct
+      hostaddr_ = "127.0.0.1";
+    }
+    else
+    {
+      // iterate through all interfaces
+      for( ifa=ifAddrStruct; ifa!=NULL; ifa=ifa->ifa_next )
+      {
+        if( ifa->ifa_addr->sa_family==AF_INET )
+        {
+          // a valid IPv4 addres
+          tmpAddrPtr = &((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
+          char addressBuffer[INET_ADDRSTRLEN];
+          inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
+          hostaddr_ = addressBuffer;
+        }
+        else if( ifa->ifa_addr->sa_family==AF_INET6 )
+        {
+          // a valid IPv6 address
+          tmpAddrPtr = &((struct sockaddr_in6 *)ifa->ifa_addr)->sin6_addr;
+          char addressBuffer[INET6_ADDRSTRLEN];
+          inet_ntop(AF_INET6, tmpAddrPtr, addressBuffer, INET6_ADDRSTRLEN);
+          hostaddr_ = addressBuffer;
+        }
+
+        // find first non-local address
+        if( !hostaddr_.empty() 
+            && hostaddr_.compare("127.0.0.1") 
+            && hostaddr_.compare("::1") )
+          break;
+      }
+
+      if( hostaddr_.empty() ) // failed to find anything
+        hostaddr_ = "127.0.0.1";
+    }
+  }
 
   // process id
   pid_t pid = getpid();
