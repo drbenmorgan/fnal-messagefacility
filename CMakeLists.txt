@@ -38,7 +38,7 @@ cet_report_compiler_flags()
 cet_check_gcc()
 
 # these are minimum required versions, not the actual product versions
-find_ups_product( cetbuildtools v1_17_00 )
+find_ups_product( cetbuildtools v2_00_00 )
 find_ups_product( cpp0x v1_03_02 )
 find_ups_product( cetlib v1_03_02 )
 find_ups_product( fhiclcpp v2_16_02  )
