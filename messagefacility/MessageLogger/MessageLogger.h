@@ -168,8 +168,10 @@ public:
    NeverLogger_( )  { }
 
 #if defined __GXX_EXPERIMENTAL_CXX0X__
-  NeverLogger_               ( NeverLogger_ const & ) = delete;
-  NeverLogger_ &  operator = ( NeverLogger_ const & ) = delete;
+  // Need these because we're relying on the behavior of the ternary
+  // operator.
+  NeverLogger_               ( NeverLogger_ const & ) = default;
+  NeverLogger_ &  operator = ( NeverLogger_ const & ) = default;
 
   NeverLogger_               ( NeverLogger_      && ) = default;
   NeverLogger_ &  operator = ( NeverLogger_      && ) = default;
@@ -330,3 +332,7 @@ namespace mf {
 // ======================================================================
 
 #endif  // MessageLogger_MessageLogger_h
+
+// Local Variables:
+// mode: c++
+// End:
