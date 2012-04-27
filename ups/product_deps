@@ -6,7 +6,7 @@ product		version
 gcc		v4_6_1
 fhiclcpp 	v2_16_08
 
-only_for_build cetbuildtools	v2_00_01
+only_for_build cetbuildtools	v2_00_02
 
 # Matrix of qualifiers versus dependent products
 qualifier	fhiclcpp	gcc	notes
