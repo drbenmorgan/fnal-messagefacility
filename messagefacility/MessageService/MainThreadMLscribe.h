@@ -14,7 +14,7 @@
 #include "messagefacility/MessageService/NamedDestination.h"
 #include "messagefacility/MessageService/MessageLoggerDefaults.h"
 
-#include "boost/shared_ptr.hpp"
+#include <memory>
 
 #include <iosfwd>
 #include <vector>
@@ -47,7 +47,7 @@ class MainThreadMLscribe : public AbstractMLscribe
 {
 public:
   // ---  birth/death:
-  MainThreadMLscribe(boost::shared_ptr<ThreadQueue> tqp);
+  MainThreadMLscribe(std::shared_ptr<ThreadQueue> tqp);
   virtual ~MainThreadMLscribe();
 
   // --- receive and act on messages:
@@ -61,7 +61,7 @@ public:
 private:
 
   static ErrorLog                   * static_errorlog_p;
-   boost::shared_ptr<ThreadQueue>   m_queue;
+   std::shared_ptr<ThreadQueue>   m_queue;
 };  // MainThreadMLscribe
 
 

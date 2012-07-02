@@ -34,7 +34,7 @@
 #include "messagefacility/MessageLogger/ELseverityLevel.h"
 #include "messagefacility/MessageLogger/ErrorObj.h"
 
-#include "boost/shared_ptr.hpp"
+#include <memory>
 
 
 namespace mf {
@@ -53,7 +53,7 @@ class ELdestination;
 class ELdestControl  {
 
 public:
-  ELdestControl( boost::shared_ptr<ELdestination> dest );
+  ELdestControl( std::shared_ptr<ELdestination> dest );
   ELdestControl();
   virtual ~ELdestControl();
 
@@ -125,7 +125,7 @@ public:
   // -----  Data implementing the trivial handle pattern:
   //
 protected:
-  boost::shared_ptr<ELdestination> d;
+  std::shared_ptr<ELdestination> d;
 
 };  // ELdestControl
 

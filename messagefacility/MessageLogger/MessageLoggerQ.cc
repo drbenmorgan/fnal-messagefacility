@@ -111,8 +111,8 @@ namespace {
    }
 
   // Changelog 14
-  boost::shared_ptr<StandAloneScribe> obtainStandAloneScribePtr() {
-    static boost::shared_ptr<StandAloneScribe>
+  std::shared_ptr<StandAloneScribe> obtainStandAloneScribePtr() {
+    static std::shared_ptr<StandAloneScribe>
       standAloneScribe_ptr( new StandAloneScribe );
     return standAloneScribe_ptr;
   }
@@ -120,7 +120,7 @@ namespace {
 
 } // end of anonymous namespace
 
-boost::shared_ptr<mf::service::AbstractMLscribe>
+std::shared_ptr<mf::service::AbstractMLscribe>
   MessageLoggerQ::mlscribe_ptr = obtainStandAloneScribePtr();
                                 // changeLog 8, 11, 14
 
@@ -141,7 +141,7 @@ MessageLoggerQ *
 
 void
   MessageLoggerQ::setMLscribe_ptr
-        (boost::shared_ptr<mf::service::AbstractMLscribe> m) // changeLog 8, 14
+        (std::shared_ptr<mf::service::AbstractMLscribe> m) // changeLog 8, 14
 {
   if (!m) {
     mlscribe_ptr = obtainStandAloneScribePtr();

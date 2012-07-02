@@ -27,7 +27,7 @@
 #include "messagefacility/MessageLogger/ELstring.h"
 #include "messagefacility/MessageLogger/ELextendedID.h"
 
-#include "boost/shared_ptr.hpp"
+#include <memory>
 
 namespace mf {
 
@@ -111,7 +111,7 @@ protected:
 protected:
   // --- member data:
   //
-  boost::shared_ptr<std::ostream> os;
+  std::shared_ptr<std::ostream> os;
   int                             charsOnLine;
   mf::ELextendedID               xid;
 

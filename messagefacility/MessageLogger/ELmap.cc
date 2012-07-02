@@ -19,7 +19,6 @@
 
 #include "messagefacility/MessageLogger/ELmap.h"
 
-#include "boost/shared_array.hpp"
 
 // Possible traces
 //#include <iostream>

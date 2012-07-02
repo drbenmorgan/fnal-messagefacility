@@ -71,7 +71,7 @@
 #include "messagefacility/MessageLogger/ELextendedID.h"
 #include "messagefacility/MessageLogger/ErrorObj.h"
 
-#include "boost/shared_ptr.hpp"
+#include <memory>
 
 namespace mf {
 namespace service {
@@ -134,7 +134,7 @@ protected:
 protected:
   void emit( const ELstring & s, bool nl=false );
 
-  boost::shared_ptr<ELsender> sender;
+  std::shared_ptr<ELsender> sender;
 
   void intoBuf ( const ELstring & s );
   void emitXid ( const ELextendedID & xid  );

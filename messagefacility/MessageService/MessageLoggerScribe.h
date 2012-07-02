@@ -13,8 +13,7 @@
 
 #include "fhiclcpp/ParameterSet.h"
 
-#include "boost/shared_ptr.hpp"
-#include "boost/scoped_ptr.hpp"
+#include <memory>
 
 #include <iosfwd>
 #include <vector>
@@ -95,7 +94,7 @@ public:
 
   // ChangeLog 12
   /// --- If queue is NULL, this sets singleThread true
-  explicit MessageLoggerScribe(boost::shared_ptr<ThreadQueue> queue);
+  explicit MessageLoggerScribe(std::shared_ptr<ThreadQueue> queue);
 
   virtual ~MessageLoggerScribe();
 
@@ -236,10 +235,10 @@ private:
   // --- data:
   ELadministrator                   * admin_p;
   ELdestControl                       early_dest;
-  boost::shared_ptr<ErrorLog>         errorlog_p;
-  std::vector<boost::shared_ptr<std::ofstream> > file_ps;
+  std::shared_ptr<ErrorLog>         errorlog_p;
+  std::vector<std::shared_ptr<std::ofstream> > file_ps;
   MsgContext                          msg_context;
-  boost::shared_ptr<PSet>             job_pset_p;
+  std::shared_ptr<PSet>             job_pset_p;
   std::vector<NamedDestination     *> extern_dests;
   std::map<String,std::ostream     *> stream_ps;
   std::vector<String>                 ordinary_destination_filenames;
@@ -254,7 +253,7 @@ private:
   bool                                done;                     // changeLog 9
   bool                                purge_mode;               // changeLog 9
   int                                 count;                    // changeLog 9
-  boost::shared_ptr<ThreadQueue>      m_queue;                  // changeLog 12
+  std::shared_ptr<ThreadQueue>      m_queue;                  // changeLog 12
 
 };  // MessageLoggerScribe
 

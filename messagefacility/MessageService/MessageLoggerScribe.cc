@@ -20,6 +20,9 @@
 #include "messagefacility/MessageService/ErrorLog.h"
 #include "messagefacility/MessageService/ThreadQueue.h"
 #include "messagefacility/Utilities/exception.h"
+
+#include "boost/scoped_ptr.hpp"
+
 #include <cassert>
 #include <dlfcn.h> //dlopen
 #include <fstream>
@@ -32,7 +35,7 @@ namespace mf {
 namespace service {
 
 
-MessageLoggerScribe::MessageLoggerScribe(boost::shared_ptr<ThreadQueue> queue)
+MessageLoggerScribe::MessageLoggerScribe(std::shared_ptr<ThreadQueue> queue)
 : admin_p   ( ELadministrator::instance() )
 , early_dest( admin_p->attach(ELoutput(std::cerr, false)) )
 , errorlog_p( new ErrorLog() )
@@ -134,7 +137,7 @@ void
         ConfigurationHandshake * h_p =
                 static_cast<ConfigurationHandshake *>(operand);
         job_pset_p.reset(static_cast<fhicl::ParameterSet *>(h_p->p));
-        boost::mutex::scoped_lock sl(h_p->m);   // get lock
+        ConfigurationHandshake::lock_guard sl(h_p->m);   // get lock
         try {
           configure_errorlog();
         }
@@ -142,7 +145,7 @@ void
           {
             Place_for_passing_exception_ptr epp = h_p->epp;
             if (!(*epp)) {
-              *epp = boost::shared_ptr<mf::Exception>(new mf::Exception(e));
+              *epp = std::shared_ptr<mf::Exception>(new mf::Exception(e));
             } else {
               Pointer_to_new_exception_on_heap ep = *epp;
               (*ep) << "\n and another exception: \n" << e.what();
@@ -248,7 +251,7 @@ void
       ConfigurationHandshake * h_p =
               static_cast<ConfigurationHandshake *>(operand);
       job_pset_p.reset(static_cast<fhicl::ParameterSet *>(h_p->p));
-      boost::mutex::scoped_lock sl(h_p->m);   // get lock
+      ConfigurationHandshake::lock_guard sl(h_p->m);   // get lock
       h_p->c.notify_all();  // Signal to MessageLoggerQ that we are done
       // finally, release the scoped lock by letting it go out of scope
       break;
@@ -269,7 +272,7 @@ void
       } else {
         ConfigurationHandshake * h_p =
                 static_cast<ConfigurationHandshake *>(operand);
-        boost::mutex::scoped_lock sl(h_p->m);   // get lock
+        ConfigurationHandshake::lock_guard sl(h_p->m);   // get lock
         std::map<std::string, double> * smp =
                 static_cast<std::map<std::string, double> *>(h_p->p);
         triggerFJRmessageSummary(*smp);
@@ -848,7 +851,7 @@ void
     jobReportExists = true;                                     // Changelog 19
     if ( actual_filename == jobReportOption ) jobReportOption = empty_String;
 
-    boost::shared_ptr<std::ofstream> os_sp(new std::ofstream(actual_filename.c_str()));
+    std::shared_ptr<std::ofstream> os_sp(new std::ofstream(actual_filename.c_str()));
     file_ps.push_back(os_sp);
     ELdestControl dest_ctrl;
     dest_ctrl = admin_p->attach( ELfwkJobReport(*os_sp) );
@@ -868,7 +871,7 @@ void
   std::string actual_filename = jobReportOption;
   if ( stream_ps.find(actual_filename)!=stream_ps.end() ) return;
 
-  boost::shared_ptr<std::ofstream> os_sp(new std::ofstream(actual_filename.c_str()));
+  std::shared_ptr<std::ofstream> os_sp(new std::ofstream(actual_filename.c_str()));
   file_ps.push_back(os_sp);
   ELdestControl dest_ctrl;
   dest_ctrl = admin_p->attach( ELfwkJobReport(*os_sp) );
@@ -1019,7 +1022,7 @@ void
     else if( dest_type == "file" )
     {
       bool append = dest_pset.get<bool>("append", false);
-      boost::shared_ptr<std::ofstream>
+      std::shared_ptr<std::ofstream>
           os_sp(new std::ofstream(
                   filename.c_str(),
                   append ? std::ios_base::app : std::ios_base::trunc));
@@ -1222,7 +1225,7 @@ void
       }
       else
       {
-        boost::shared_ptr<std::ofstream> os_sp(new std::ofstream(actual_filename.c_str()));
+        std::shared_ptr<std::ofstream> os_sp(new std::ofstream(actual_filename.c_str()));
         file_ps.push_back(os_sp);
         dest_ctrl = admin_p->attach( ELoutput(*os_sp) );
         stream_ps[actual_filename] = os_sp.get();
@@ -1368,7 +1371,7 @@ void
       }
       else if ( dest_type == "file" )
       {
-        boost::shared_ptr<std::ofstream>
+        std::shared_ptr<std::ofstream>
             os_sp(new std::ofstream(stream_id.c_str()));
         file_ps.push_back(os_sp);
         os_p = os_sp.get();
@@ -1514,7 +1517,7 @@ void
       } else if ( actual_filename == "cerr" ) {
         os_p = &std::cerr;
       } else {
-        boost::shared_ptr<std::ofstream> os_sp(new std::ofstream(actual_filename.c_str()));
+        std::shared_ptr<std::ofstream> os_sp(new std::ofstream(actual_filename.c_str()));
         file_ps.push_back(os_sp);
         os_p = os_sp.get();
       }

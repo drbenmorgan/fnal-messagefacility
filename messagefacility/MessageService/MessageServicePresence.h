@@ -4,9 +4,8 @@
 #include "messagefacility/MessageService/Presence.h"
 #include "messagefacility/MessageService/MainThreadMLscribe.h"
 
-#include "boost/thread/thread.hpp"
-#include "boost/shared_ptr.hpp"
-
+#include <memory>
+#include <thread>
 
 namespace mf  {
 namespace service {
@@ -26,8 +25,8 @@ private:
   void  operator = (MessageServicePresence const &);
 
   // --- data:
-  boost::shared_ptr<ThreadQueue> m_queue;
-  boost::thread  m_scribeThread;
+  std::shared_ptr<ThreadQueue> m_queue;
+  std::thread  m_scribeThread;
 
 };  // MessageServicePresence
 

@@ -3,7 +3,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include <boost/shared_ptr.hpp>
 
 #include "FWCore/PluginManager/interface/PluginManager.h"
 #include "FWCore/PluginManager/interface/standard.h"
@@ -34,9 +33,9 @@ void work()
   }
 
   // Load the message service plug-in
-  boost::shared_ptr<edm::Presence> theMessageServicePresence;
+  std::shared_ptr<edm::Presence> theMessageServicePresence;
   try {
-    theMessageServicePresence = boost::shared_ptr<edm::Presence>(edm::PresenceFactory::get()->makePresence("MessageServicePresence").release());
+    theMessageServicePresence = std::shared_ptr<edm::Presence>(edm::PresenceFactory::get()->makePresence("MessageServicePresence").release());
   } catch(cms::Exception& e) {
     std::cerr << e.what() << std::endl;
     return;

@@ -159,7 +159,7 @@ void ErrorLog::setSubroutine( const ELstring & subName )  {
 
 void ErrorLog::switchChannel( const ELstring & channelName ) {
 
-  std::list<boost::shared_ptr<ELdestination> >::iterator d;
+  std::list<std::shared_ptr<ELdestination> >::iterator d;
   for ( d = a->sinks().begin();  d != a->sinks().end();  ++d )
     (*d) -> switchChannel( channelName );
 
@@ -234,7 +234,7 @@ ErrorLog & ErrorLog::operator()( mf::ErrorObj & msg )  {
               << std::endl;
     a->attach(ELoutput(std::cerr));
   }
-  std::list<boost::shared_ptr<ELdestination> >::iterator d;
+  std::list<std::shared_ptr<ELdestination> >::iterator d;
   for ( d = a->sinks().begin();  d != a->sinks().end();  ++d )
     if (  (*d)->log( msg )  )
       msg.setReactedTo ( true );

@@ -24,14 +24,14 @@
 #include "messagefacility/MessageLogger/MessageLoggerQ.h"
 #include "messagefacility/Utilities/UnixSignalHandlers.h"
 
-#include <boost/bind.hpp>
+#include <algorithm>
 
 using namespace mf::service;
 
 
 namespace  {
 void
-  runMessageLoggerScribe(boost::shared_ptr<ThreadQueue> queue)
+  runMessageLoggerScribe(std::shared_ptr<ThreadQueue> queue)
 {
   sigset_t oldset;
   mf::disableAllSigs(&oldset);
@@ -53,7 +53,7 @@ MessageServicePresence::MessageServicePresence()
   , m_queue (new ThreadQueue)
   , m_scribeThread
          ( ( (void) MessageLoggerQ::instance() // ensure Q's static data init'd
-            , boost::bind(&runMessageLoggerScribe, m_queue)
+             , std::bind(&runMessageLoggerScribe, m_queue)
                                 // start a new thread, run rMLS(m_queue)
                                 // ChangeLog 2
           ) )
@@ -66,7 +66,7 @@ MessageServicePresence::MessageServicePresence()
           // first executing the before-the-comma statement.
 {
   MessageLoggerQ::setMLscribe_ptr(
-    boost::shared_ptr<mf::service::AbstractMLscribe>
+    std::shared_ptr<mf::service::AbstractMLscribe>
         (new MainThreadMLscribe(m_queue)));
                                                                 // change log 3
   //std::cout << "MessageServicePresence ctor\n";
@@ -77,7 +77,7 @@ MessageServicePresence::~MessageServicePresence()
   MessageLoggerQ::MLqEND();
   m_scribeThread.join();
   MessageLoggerQ::setMLscribe_ptr
-    (boost::shared_ptr<mf::service::AbstractMLscribe>());   // change log 3
+    (std::shared_ptr<mf::service::AbstractMLscribe>());   // change log 3
 }
 
 } // end of namespace service

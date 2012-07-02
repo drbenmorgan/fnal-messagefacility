@@ -7,9 +7,7 @@
 //
 // ======================================================================
 
-#include "boost/noncopyable.hpp"
-#include "boost/scoped_ptr.hpp"
-#include "boost/thread/mutex.hpp"
+#include <mutex>
 #include "cpp0x/memory"
 #include "cpp0x/string"
 #include "fhiclcpp/ParameterSet.h"
@@ -305,7 +303,7 @@ public:
   std::shared_ptr<Presence> MFPresence;
   std::shared_ptr<service::MessageLogger> theML;
 
-  boost::mutex m;
+  std::mutex m;
 
 private:
   static std::string commonPSet( );

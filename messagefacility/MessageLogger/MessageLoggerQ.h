@@ -3,7 +3,7 @@
 
 #include "messagefacility/MessageLogger/ELseverityLevel.h"
 
-#include "boost/shared_ptr.hpp"
+#include <memory>
 
 #include <string>
 #include <map>
@@ -64,7 +64,7 @@ public:
 
   // ---  bookkeeping for single-thread mode
   static  void  setMLscribe_ptr
-     (boost::shared_ptr<mf::service::AbstractMLscribe>  m);
+     (std::shared_ptr<mf::service::AbstractMLscribe>  m);
 
   // ---  helper for scribes
   static bool handshaked ( const OpCode & op );
@@ -91,7 +91,7 @@ private:
   void  operator = ( MessageLoggerQ const & );
 
   // --- data:
-  static  boost::shared_ptr<mf::service::AbstractMLscribe> mlscribe_ptr;
+  static  std::shared_ptr<mf::service::AbstractMLscribe> mlscribe_ptr;
   static  mf::ELseverityLevel threshold;
   static  std::set<std::string> squelchSet;
 

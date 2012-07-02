@@ -72,8 +72,8 @@ int main(int argc, char* argv[]) {
 //     In particular, the job hangs as soon as the output buffer fills up.
 //     That's because, without the message service, there is no mechanism for
 //     emptying the buffers.
-    boost::shared_ptr<edm::Presence> theMessageServicePresence;
-    theMessageServicePresence = boost::shared_ptr<edm::Presence>(edm::PresenceFactory::get()->
+    std::shared_ptr<edm::Presence> theMessageServicePresence;
+    theMessageServicePresence = std::shared_ptr<edm::Presence>(edm::PresenceFactory::get()->
       makePresence("MessageServicePresence").release());
 
 // C.  Manufacture a configuration and establish it.
@@ -102,8 +102,8 @@ int main(int argc, char* argv[]) {
       "}";
 
 
-    boost::shared_ptr<std::vector<edm::ParameterSet> > pServiceSets;
-    boost::shared_ptr<edm::ParameterSet>          params_;
+    std::shared_ptr<std::vector<edm::ParameterSet> > pServiceSets;
+    std::shared_ptr<edm::ParameterSet>          params_;
     edm::makeParameterSets(config, params_, pServiceSets);
 
 // D.  Create the services.

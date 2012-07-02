@@ -56,7 +56,7 @@
 #include "messagefacility/MessageLogger/ELseverityLevel.h"
 #include "messagefacility/MessageLogger/ErrorObj.h"
 
-#include "boost/shared_ptr.hpp"
+#include <memory>
 
 namespace mf {
 namespace service {
@@ -142,7 +142,7 @@ protected:
   ELcontextSupplier           & context() const;
   const ELseverityLevel       & abortThreshold() const;
   const ELseverityLevel       &  exitThreshold() const;
-  std::list<boost::shared_ptr<ELdestination> >  & sinks();
+  std::list<std::shared_ptr<ELdestination> >  & sinks();
   const ELseverityLevel       & highSeverity() const;
   int                           severityCounts( int lev ) const;
 
@@ -172,10 +172,10 @@ private:
   // ---  traditional member data:
   //
   ELstring                   process_;
-  boost::shared_ptr<ELcontextSupplier> context_;
+  std::shared_ptr<ELcontextSupplier> context_;
   ELseverityLevel            abortThreshold_;
   ELseverityLevel            exitThreshold_;
-  std::list<boost::shared_ptr<ELdestination> > sinks_;
+  std::list<std::shared_ptr<ELdestination> > sinks_;
   ELseverityLevel            highSeverity_;
   int                        severityCounts_[ ELseverityLevel::nLevels ];
   mf::ErrorObj               msg;
@@ -186,7 +186,7 @@ private:
   ELstring                   application_;
   long                       pid_;
 
-  std::map < ELstring, boost::shared_ptr<ELdestination> > attachedDestinations;
+  std::map < ELstring, std::shared_ptr<ELdestination> > attachedDestinations;
 
 };  // ELadministrator
 

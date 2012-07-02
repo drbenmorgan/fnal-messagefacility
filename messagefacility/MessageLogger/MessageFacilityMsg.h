@@ -8,7 +8,7 @@
 #ifndef MESSAGEFACILITYMSG_H_
 #define MESSAGEFACILITYMSG_H_
 
-#include "boost/shared_ptr.hpp"
+#include <memory>
 
 #include <string>
 
@@ -58,7 +58,7 @@ public:
         std::string message()     const;
 
 private:
-        boost::shared_ptr<ErrorObj> ep;
+        std::shared_ptr<ErrorObj> ep;
         bool empty_;
 };
 

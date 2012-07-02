@@ -1,9 +1,8 @@
-//#define NDEBUG
+#include "messagefacility/MessageLogger/MessageLogger.h"
 
 #include <iostream>
 
-#include "messagefacility/MessageLogger/MessageLogger.h"
-#include "boost/thread.hpp"
+#include <thread>
 
 using namespace mf;
 
@@ -36,7 +35,7 @@ int main()
   SetContext("pre-event");
 
   // Start up another logger in a separate thread
-  boost::thread loggerThread(anotherLogger);
+  std::thread loggerThread(anotherLogger);
 
   // Issue messages with different severity levels
   LogError("cat1|cat2") << "This is an ERROR message.";

@@ -567,7 +567,7 @@ void StartMessageFacility(
 {
   MessageFacilityService & mfs = MessageFacilityService::instance();
 
-  boost::mutex::scoped_lock lock(mfs.m);
+  std::lock_guard<std::mutex> lock(mfs.m);
 
   if( !mfs.MFServiceEnabled )
   {
@@ -609,7 +609,7 @@ void SetApplicationName(std::string const & application)
 
   if( ! mfs.MFServiceEnabled )    return;
 
-  boost::mutex::scoped_lock lock(mfs.m);
+  std::lock_guard<std::mutex> lock(mfs.m);
 
   service::ELadministrator::instance()->setApplication(application);
   SetModuleName(application);

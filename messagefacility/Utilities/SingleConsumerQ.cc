@@ -10,8 +10,8 @@ namespace mf
     queue_(max_queue_depth),
     fpos_(),
     bpos_(),
-    pool_lock_(),
-    queue_lock_(),
+    pool_mutex_(),
+    queue_mutex_(),
     pool_cond_(),
     pop_cond_(),
     push_cond_()
@@ -28,7 +28,7 @@ namespace mf
   SingleConsumerQ::Buffer SingleConsumerQ::getProducerBuffer()
   {
     // get lock
-    boost::mutex::scoped_lock sl(pool_lock_);
+    std::unique_lock<std::mutex> sl(pool_mutex_);
     // wait for buffer to appear
     while(pos_ < 0)
       {
@@ -42,7 +42,7 @@ namespace mf
   void SingleConsumerQ::releaseProducerBuffer(void* v)
   {
     // get lock
-    boost::mutex::scoped_lock sl(pool_lock_);
+    std::lock_guard<std::mutex> sl(pool_mutex_);
     ++pos_;
     buffer_pool_[pos_] = v;
     pool_cond_.notify_all();
@@ -51,7 +51,7 @@ namespace mf
   void SingleConsumerQ::commitProducerBuffer(void* v, int len)
   {
     // get lock
-    boost::mutex::scoped_lock sl(queue_lock_);
+    std::unique_lock<std::mutex> sl(queue_mutex_);
     // if full, wait for item to be removed
     while((bpos_+max_queue_depth_)==fpos_)
       {
@@ -68,7 +68,7 @@ namespace mf
   SingleConsumerQ::Buffer SingleConsumerQ::getConsumerBuffer()
   {
     // get lock
-    boost::mutex::scoped_lock sl(queue_lock_);
+    std::unique_lock<std::mutex> sl(queue_mutex_);
     // if empty, wait for item to appear
     while(bpos_==fpos_)
       {
