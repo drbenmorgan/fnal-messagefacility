@@ -1,5 +1,5 @@
 parent messagefacility v1_10_10
-defaultqual a7
+defaultqual e2
 #
 # define product/version pairs
 product		version
@@ -10,9 +10,9 @@ only_for_build cetbuildtools	v2_01_02
 
 # Matrix of qualifiers versus dependent products
 qualifier	fhiclcpp	gcc	notes
-a7:debug	a7:debug	-nq-
-a7:opt		a7:opt		-nq-
-a7:prof		a7:prof		-nq-
+a8:debug	a8:debug	-nq-
+a8:opt		a8:opt		-nq-
+a8:prof		a8:prof		-nq-
 e2:debug	e2:debug	-nq-	-std=c++0x;-Wno-deprecated-declarations
 e2:opt		e2:opt		-nq-	-std=c++0x;-Wno-deprecated-declarations
 e2:prof		e2:prof		-nq-	-std=c++0x;-Wno-deprecated-declarations
