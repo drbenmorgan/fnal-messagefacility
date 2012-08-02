@@ -18,6 +18,7 @@ SET (srcFiles
 
 LINK_LIBRARIES ( ${CETLIB}
                  ${Boost_THREAD_LIBRARY}
+                 -lpthread
                  )
 
 ADD_LIBRARY (Utilities SHARED ${srcFiles})
