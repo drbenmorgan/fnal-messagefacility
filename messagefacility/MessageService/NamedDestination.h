@@ -18,10 +18,10 @@ namespace service {
       , dest_p_(dp)
       {}
     std::string const & name() const {return name_;}
-    std::auto_ptr<ELdestination> & dest_p() {return dest_p_;}
+    std::unique_ptr<ELdestination> & dest_p() {return dest_p_;}
   private:
     std::string name_;
-    std::auto_ptr<ELdestination> dest_p_;
+    std::unique_ptr<ELdestination> dest_p_;
   };
 }        // end of namespace service
 }       // end of namespace mf

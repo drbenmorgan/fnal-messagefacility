@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -65,7 +66,7 @@ void work()
   std::cout << "Testing JobReport" << std::endl;
   std::ostringstream ost;
   {
-  std::auto_ptr<edm::JobReport> theReport(new edm::JobReport(&ost) );
+  std::unique_ptr<edm::JobReport> theReport(new edm::JobReport(&ost) );
 
 
 

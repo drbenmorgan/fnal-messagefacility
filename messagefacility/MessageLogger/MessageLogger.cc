@@ -11,6 +11,8 @@
 #include "messagefacility/MessageLogger/MessageDrop.h"
 #include "messagefacility/MessageService/ELadministrator.h"
 #include "messagefacility/MessageService/MessageServicePresence.h"
+
+#include <memory>
 #include <sstream>
 
 using namespace mf;
@@ -360,7 +362,7 @@ fhicl::ParameterSet MessageFacilityService::ConfigurationFile(
   }
 
   std::string fname;
-  std::auto_ptr<cet::filepath_maker> policy_ptr(new cet::filepath_maker());
+  std::unique_ptr<cet::filepath_maker> policy_ptr(new cet::filepath_maker());
 
   if (sub_start==0)  // env embedded in the filename
   {
