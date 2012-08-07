@@ -1,10 +1,10 @@
-parent messagefacility v1_10_12
+parent messagefacility v1_10_13
 defaultqual e2
 #
 # define product/version pairs
 product		version
 gcc		v4_7_1
-fhiclcpp 	v2_16_11
+fhiclcpp 	v2_16_12
 
 only_for_build cetbuildtools	v2_01_04
 
@@ -13,6 +13,6 @@ qualifier	fhiclcpp	gcc	notes
 a8:debug	a8:debug	-nq-
 a8:opt		a8:opt		-nq-
 a8:prof		a8:prof		-nq-
-e2:debug	e2:debug	-nq-	-std=c++0x;-Wno-deprecated-declarations
-e2:opt		e2:opt		-nq-	-std=c++0x;-Wno-deprecated-declarations
-e2:prof		e2:prof		-nq-	-std=c++0x;-Wno-deprecated-declarations
+e2:debug	e2:debug	-nq-	-std=c++0x
+e2:opt		e2:opt		-nq-	-std=c++0x
+e2:prof		e2:prof		-nq-	-std=c++0x
