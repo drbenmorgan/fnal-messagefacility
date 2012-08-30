@@ -39,21 +39,14 @@ cet_report_compiler_flags()
 cet_check_gcc()
 
 # these are minimum required versions, not the actual product versions
-find_ups_product( cetbuildtools v2_00_00 )
-find_ups_product( cpp0x v1_03_02 )
-find_ups_product( cetlib v1_03_02 )
-find_ups_product( fhiclcpp v2_16_02  )
+# find_cet_product defines variables for external libraries and executables
+find_cet_product( cetbuildtools v2_02_00 )
+find_cet_product( cpp0x v1_03_02 )
+find_cet_product( cetlib v1_03_02 )
+find_cet_product( fhiclcpp v2_16_02  )
 find_ups_boost( v1_48_0 filesystem
                         thread
                         program_options )
-
-# let cmake define variables for external libraries and executables
-
-# define CETLIB
-find_library( CETLIB NAMES cetlib PATHS $ENV{CETLIB_LIB} )
-
-# define FHICLCPP
-find_library( FHICLCPP NAMES fhiclcpp PATHS $ENV{FHICLCPP_LIB} )
 
 # The environment has been established, now generate the Makefiles.
 
