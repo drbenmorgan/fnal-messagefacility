@@ -1,6 +1,6 @@
 #ifndef MessageFacility_Utilities_SingleConsumerQ_h
 #define MessageFacility_Utilities_SingleConsumerQ_h
-
+#ifndef __GCCXML__
 // -*- C++ -*-
 
 /*
@@ -136,4 +136,5 @@ namespace mf {
 
 
 }
+#endif
 #endif

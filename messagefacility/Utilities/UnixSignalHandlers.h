@@ -1,6 +1,6 @@
 #ifndef MessageFacility_Utilities_UnixSignalHandlers_h
 #define MessageFacility_Utilities_UnixSignalHandlers_h
-
+#ifndef __GCCXML__
 /*----------------------------------------------------------------------
 
 UnixSignalHandlers: A set of little utility functions to establish
@@ -16,4 +16,5 @@ namespace mf {
     void disableAllSigs(sigset_t* oldset);
 
 }  // end of namespace mf
+#endif
 #endif

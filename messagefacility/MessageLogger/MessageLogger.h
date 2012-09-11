@@ -7,7 +7,9 @@
 //
 // ======================================================================
 
+#ifndef __GCCXML__
 #include <mutex>
+#endif
 #include "cpp0x/memory"
 #include "cpp0x/string"
 #include "fhiclcpp/ParameterSet.h"
@@ -300,11 +302,12 @@ public:
 
   bool   MFServiceEnabled;
 
+#ifndef __GCCXML__
   std::shared_ptr<Presence> MFPresence;
   std::shared_ptr<service::MessageLogger> theML;
 
   std::mutex m;
-
+#endif
 private:
   static std::string commonPSet( );
 };

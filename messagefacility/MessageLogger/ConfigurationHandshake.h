@@ -1,6 +1,6 @@
 #ifndef MessageFacility_MessageLogger_ConfigurationHandshake_h
 #define MessageFacility_MessageLogger_ConfigurationHandshake_h
-
+#ifndef __GCCXML__
 #include "messagefacility/Utilities/exception.h"
 
 #include <memory>
@@ -27,9 +27,9 @@ struct ConfigurationHandshake {
       (void * p_in, Place_for_passing_exception_ptr epp_in) :
                               p(p_in), m(), c(), epp(epp_in) {}
 };
-
 }  // namespace mf
 
 
+#endif
 
 #endif  // MessageFacility_MessageLogger_ConfigurationHandshake_h

@@ -1,3 +1,4 @@
+#ifndef __GCCXML__
 #ifndef THREADSAFEERRORLOG_H
 #define MessageFacility_MessageService_ThreadSafeErrorLog_h
 
@@ -143,3 +144,4 @@ inline ThreadSafeErrorLog<Mutex> &
 
 
 #endif  // THREADSAFEERRORLOG_H
+#endif

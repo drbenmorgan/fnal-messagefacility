@@ -1,6 +1,6 @@
 #ifndef MessageFacility_MessageService_MessageServicePresence_h
 #define MessageFacility_MessageService_MessageServicePresence_h
-
+#ifndef __GCCXML__
 #include "messagefacility/MessageService/Presence.h"
 #include "messagefacility/MessageService/MainThreadMLscribe.h"
 
@@ -34,5 +34,5 @@ private:
 }   // end of namespace service
 }  // namespace mf
 
-
+#endif
 #endif  // MessageFacility_MessageService_MessageServicePresence_h
