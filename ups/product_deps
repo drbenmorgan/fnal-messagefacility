@@ -1,12 +1,12 @@
-parent messagefacility v1_10_14
+parent messagefacility v1_10_15
 defaultqual e2
 #
 # define product/version pairs
 product		version
 gcc		v4_7_1
-fhiclcpp 	v2_17_00
+fhiclcpp 	v2_17_01
 
-only_for_build cetbuildtools	v2_03_01
+only_for_build cetbuildtools	v2_03_02
 
 # Matrix of qualifiers versus dependent products
 qualifier	fhiclcpp	gcc	notes
