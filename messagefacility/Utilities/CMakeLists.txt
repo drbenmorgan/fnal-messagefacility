@@ -16,39 +16,13 @@ SET (srcFiles
     UnixSignalHandlers.cc
     )
 
-LINK_LIBRARIES ( ${CETLIB}
-                 ${Boost_THREAD_LIBRARY}
-                 -lpthread
-                 )
-
-ADD_LIBRARY (Utilities SHARED ${srcFiles})
-ADD_LIBRARY (UtilitiesS STATIC ${srcFiles})
-
-SET_TARGET_PROPERTIES (Utilities
-    PROPERTIES OUTPUT_NAME MF_Utilities
-    )
-SET_TARGET_PROPERTIES (UtilitiesS
-    PROPERTIES OUTPUT_NAME MF_Utilities
-    )
-SET_TARGET_PROPERTIES(Utilities  PROPERTIES CLEAN_DIRECT_OUTPUT 1)
-SET_TARGET_PROPERTIES(UtilitiesS PROPERTIES CLEAN_DIRECT_OUTPUT 1)
-
-# install files
 FILE (GLOB includeFiles *.h )
 
-INSTALL (FILES ${includeFiles}
-    DESTINATION ${product}/${version}/include/messagefacility/Utilities
-    )
+cet_make_library( LIBRARY_NAME MF_Utilities
+        	  SOURCE ${srcFiles}
+        	  LIBRARIES ${CETLIB} ${Boost_THREAD_LIBRARY} -lpthread
+        	  WITH_STATIC_LIBRARY )
 
-INSTALL (FILES CMakeLists.txt
-               ${includeFiles}
-               ${srcFiles}
-    DESTINATION ${product}/${version}/source/messagefacility/Utilities
-    )
-
-INSTALL (TARGETS Utilities UtilitiesS
-    RUNTIME DESTINATION ${flavorqual_dir}/bin
-    LIBRARY DESTINATION ${flavorqual_dir}/lib
-    ARCHIVE DESTINATION ${flavorqual_dir}/lib
-    )
-
+# install files
+install_headers()
+install_source( EXTRAS CMakeLists.txt )

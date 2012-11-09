@@ -22,7 +22,7 @@ set ( ALSO_BUILD )
 
 set ( ALSO_RUN )
 
-link_libraries( MessageLogger )
+link_libraries( MF_MessageLogger )
 
 # ----------------------------------------------------------------------
 # Build most tests:

@@ -32,54 +32,11 @@ SET (MSsrcFiles
        ../MessageService/ThreadQueue.cc
     )
 
-LINK_LIBRARIES (
- Utilities
- ${FHICLCPP}
- ${Boost_THREAD_LIBRARY}
- dl
- )
-
-ADD_LIBRARY (MessageLogger SHARED ${srcFiles} ${MSsrcFiles} )
-ADD_LIBRARY (MessageLoggerS STATIC ${srcFiles} ${MSsrcFiles} )
-
-SET_TARGET_PROPERTIES (MessageLogger
-    PROPERTIES OUTPUT_NAME MF_MessageLogger
-    )
-SET_TARGET_PROPERTIES (MessageLoggerS
-    PROPERTIES OUTPUT_NAME MF_MessageLogger
-    )
-SET_TARGET_PROPERTIES(MessageLogger  PROPERTIES CLEAN_DIRECT_OUTPUT 1)
-SET_TARGET_PROPERTIES(MessageLoggerS PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+cet_make_library( LIBRARY_NAME MF_MessageLogger
+        	  SOURCE  ${srcFiles} ${MSsrcFiles}
+        	  LIBRARIES MF_Utilities ${FHICLCPP} ${Boost_THREAD_LIBRARY} dl
+        	  WITH_STATIC_LIBRARY )
 
 # install files
-FILE (GLOB includeFiles *.h *.icc )
-
-INSTALL (FILES ${includeFiles}
-    DESTINATION ${product}/${version}/include/messagefacility/MessageLogger/
-    )
-
-INSTALL (FILES CMakeLists.txt
-               ${includeFiles}
-               ${srcFiles}
-    DESTINATION ${product}/${version}/source/messagefacility/MessageLogger/
-    )
-
-FILE (GLOB MSincludeFiles ../MessageService/*.h ../MessageService/*.icc )
-
-INSTALL (FILES ${MSincludeFiles}
-    DESTINATION ${product}/${version}/include/messagefacility/MessageService
-    )
-
-INSTALL (FILES ../MessageService/CMakeLists.txt
-               ${MSincludeFiles}
-                     ${MSsrcFiles}
-    DESTINATION ${product}/${version}/source/messagefacility/MessageService
-    )
-
-
-
-INSTALL (TARGETS MessageLogger MessageLoggerS
-    RUNTIME DESTINATION ${flavorqual_dir}/bin
-    LIBRARY DESTINATION ${flavorqual_dir}/lib
-    ARCHIVE DESTINATION ${flavorqual_dir}/lib
-    )
+install_headers( EXTRAS classes.h )
+install_source( EXTRAS CMakeLists.txt )

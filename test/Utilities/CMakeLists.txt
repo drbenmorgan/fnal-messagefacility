@@ -17,7 +17,7 @@ set ( ALSO_BUILD )
 
 set ( ALSO_RUN )
 
-link_libraries( Utilities )
+link_libraries( MF_Utilities )
 
 # ----------------------------------------------------------------------
 # Build most tests:
