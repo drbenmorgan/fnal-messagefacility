@@ -41,10 +41,7 @@ cet_check_gcc()
 # these are minimum required versions, not the actual product versions
 # find_ups_product defines variables for external libraries and executables
 find_ups_product( cetbuildtools v3_02_00 )
-find_ups_product( cpp0x v1_03_02 )
-find_ups_product( cetlib v1_03_02 )
 find_ups_product( fhiclcpp v2_17_00  )
-find_ups_boost( v1_50_0 )
 
 # The environment has been established, now generate the Makefiles.
 
