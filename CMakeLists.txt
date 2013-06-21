@@ -29,19 +29,12 @@ set(CMAKE_MODULE_PATH $ENV{CETBUILDTOOLS_DIR}/Modules ${CMAKE_MODULE_PATH})
 include(CetCMakeEnv)
 cet_cmake_env()
 
-cet_set_compiler_flags(DIAGS VIGILANT WERROR NO_UNDEFINED EXTRA_FLAGS -pedantic)
-cet_have_qual("e3")
-if (${CET_HAVE_QUAL})
-  cet_add_compiler_flags(CXX -std=c++11)
-endif()
-cet_have_qual("e2")
-if (${CET_HAVE_QUAL})
-  cet_add_compiler_flags(CXX -std=c++11)
-endif()
-cet_have_qual("e3")
-if (${CET_HAVE_QUAL})
-  cet_add_compiler_flags(CXX -std=c++11)
-endif()
+cet_set_compiler_flags(DIAGS VIGILANT
+  WERROR
+  NO_UNDEFINED
+  EXTRA_FLAGS -pedantic
+  EXTRA_CXX_FLAGS -std=c++11
+  )
 cet_report_compiler_flags()
 
 cet_check_gcc()
