@@ -99,9 +99,12 @@ public:
 
   // -----  Active methods invoked by the framework:
   //
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wwrite-strings"
   virtual void summary( ELdestControl & dest, char * title="" );
   virtual void summary( std::ostream  & os  , char * title="" );
   virtual void summary( ELstring      & s   , char * title="" );
+#pragma GCC diagnostic pop
   virtual void summary( );
   virtual void summaryForJobReport( std::map<std::string, double> & sm);
 
