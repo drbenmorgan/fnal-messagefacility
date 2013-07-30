@@ -4,7 +4,7 @@ defaultqual e4
 # define product/version pairs
 product		version
 gcc		v4_8_1
-fhiclcpp 	v2_17_05
+fhiclcpp 	v2_17_06
 
 only_for_build cetbuildtools	v3_05_01
 
