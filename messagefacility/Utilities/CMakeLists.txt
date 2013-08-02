@@ -20,7 +20,12 @@ FILE (GLOB includeFiles *.h )
 
 cet_make_library( LIBRARY_NAME MF_Utilities
         	  SOURCE ${srcFiles}
-        	  LIBRARIES ${CETLIB} ${Boost_THREAD_LIBRARY} -lpthread
+            LIBRARIES ${CETLIB}
+            ${Boost_FILESYSTEM_LIBRARY}
+            ${Boost_REGEX_LIBRARY}
+            ${Boost_SYSTEM_LIBRARY}
+            ${Boost_THREAD_LIBRARY}
+            -lpthread
         	  WITH_STATIC_LIBRARY )
 
 # install files
