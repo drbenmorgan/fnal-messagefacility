@@ -6,6 +6,7 @@
 
 #include "messagefacility/MessageService/MessageLoggerScribe.h"
 
+#include "cetlib/shlib_utils.h"
 #include "cetlib/container_algorithms.h"
 #include "cpp0x/algorithm"
 #include "cpp0x/string"
@@ -340,7 +341,8 @@ void
     clean_slate_configuration = false;                          // Change Log 22
   }
 
-  void *hndl = dlopen("libMF_ExtModules.so", RTLD_NOW );
+  std::string ext(cet::shlib_prefix() + "MF_ExtModules" + cet::shlib_suffix());
+  void *hndl = dlopen(ext.c_str(), RTLD_NOW );
   if(hndl == NULL) {
     LogError("preconfiguration") << dlerror();
   }
