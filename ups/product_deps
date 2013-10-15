@@ -1,10 +1,10 @@
-parent messagefacility v1_10_25
+parent messagefacility v1_10_26
 defaultqual e4
 #
 # define product/version pairs
 product		version
 gcc		v4_8_1
-fhiclcpp 	v2_17_11
+fhiclcpp 	v2_17_12
 
 only_for_build cetbuildtools	v3_06_07
 
