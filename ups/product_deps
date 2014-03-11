@@ -4,12 +4,21 @@ defaultqual e5
 # define product/version pairs
 product		version
 gcc		v4_8_2
+icc		v14_0_2
 fhiclcpp 	v2_18_00
 
-only_for_build cetbuildtools	v3_08_00
+only_for_build cetbuildtools	v3_09_00
 
 # Matrix of qualifiers versus dependent products
-qualifier	fhiclcpp	gcc	notes
-e5:debug	e5:debug	-nq-	-std=c++11
-e5:opt		e5:opt		-nq-	-std=c++11
-e5:prof		e5:prof		-nq-	-std=c++11
+qualifier	fhiclcpp	gcc	icc	compiler	notes
+e5:debug	e5:debug	-nq-	-	gcc
+e5:opt		e5:opt		-nq-	-	gcc
+e5:prof		e5:prof		-nq-	-	gcc
+i1:debug	e5:debug	-nq-	i1	icc
+i1:prof		e5:prof		-nq-	i1	icc
+
+# Local Variables:
+# tab-width: 8
+# End:
+
+# vi:set ts=8 noexpandtab:

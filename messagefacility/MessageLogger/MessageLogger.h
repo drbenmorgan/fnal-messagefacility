@@ -80,17 +80,17 @@ namespace mf  {
 //   so we mark the containing class as explicitly noncopyable
 
 class mf::MaybeLogger_
-#if ! defined __GXX_EXPERIMENTAL_CXX0X__
+#if __cplusplus < 201103L
   : public boost::noncopyable
-#endif  // __GXX_EXPERIMENTAL_CXX0X__
+#endif
 {
 private:
   // data:
-#if defined __GXX_EXPERIMENTAL_CXX0X__
+#if __cplusplus >= 201103L
   std::unique_ptr<MessageSender> ap;
 #else
   std::auto_ptr<MessageSender> ap;
-#endif  // __GXX_EXPERIMENTAL_CXX0X__
+#endif
 
 protected:
   // c'tor:
@@ -122,7 +122,11 @@ class mf::CopyableLogger_
 {
 private:
   // data:
+#if __cplusplus >= 201103L
+  std::unique_ptr<MessageSender> ap;
+#else
   std::auto_ptr<MessageSender> ap;
+#endif
 
   // no copy assignment
   void  operator = ( CopyableLogger_ const & );
@@ -167,7 +171,7 @@ public:
   // c'tor:
    NeverLogger_( )  { }
 
-#if defined __GXX_EXPERIMENTAL_CXX0X__
+#if __cplusplus >= 201103L
   // Need these because we're relying on the behavior of the ternary
   // operator.
   NeverLogger_               ( NeverLogger_ const & ) = default;
@@ -179,7 +183,7 @@ public:
   // use compiler-generated d'tor
 #else
   // use compiler-generated copy c'tor, copy assignment, and d'tor
-#endif  // __GXX_EXPERIMENTAL_CXX0X__
+#endif
 
   // streamers:
   template< class T >
