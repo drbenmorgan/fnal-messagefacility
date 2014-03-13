@@ -146,7 +146,7 @@ void
           {
             Place_for_passing_exception_ptr epp = h_p->epp;
             if (!(*epp)) {
-              *epp = std::shared_ptr<mf::Exception>(new mf::Exception(e));
+              *epp = std::make_shared<mf::Exception>(e);
             } else {
               Pointer_to_new_exception_on_heap ep = *epp;
               (*ep) << "\n and another exception: \n" << e.what();

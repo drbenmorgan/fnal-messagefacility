@@ -7,6 +7,7 @@
 #include "messagefacility/MessageLogger/MessageLogger.h"
 
 #include "cetlib/filepath_maker.h"
+#include "cetlib/make_unique.h"
 #include "fhiclcpp/make_ParameterSet.h"
 #include "messagefacility/MessageLogger/MessageDrop.h"
 #include "messagefacility/MessageService/ELadministrator.h"
@@ -362,7 +363,7 @@ fhicl::ParameterSet MessageFacilityService::ConfigurationFile(
   }
 
   std::string fname;
-  std::unique_ptr<cet::filepath_maker> policy_ptr(new cet::filepath_maker());
+  auto policy_ptr = cet::make_unique<cet::filepath_maker>();
 
   if (sub_start==0)  // env embedded in the filename
   {

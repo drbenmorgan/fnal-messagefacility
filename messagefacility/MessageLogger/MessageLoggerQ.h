@@ -64,7 +64,7 @@ public:
 
   // ---  bookkeeping for single-thread mode
   static  void  setMLscribe_ptr
-     (std::shared_ptr<mf::service::AbstractMLscribe>  m);
+     (std::shared_ptr<mf::service::AbstractMLscribe> const & m);
 
   // ---  helper for scribes
   static bool handshaked ( const OpCode & op );
