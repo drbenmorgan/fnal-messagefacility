@@ -7,7 +7,7 @@ gcc		v4_8_2
 icc		v14_0_2
 fhiclcpp 	v2_18_02
 
-only_for_build cetbuildtools	v3_09_01
+only_for_build cetbuildtools	v3_09_02
 
 # Matrix of qualifiers versus dependent products
 qualifier	fhiclcpp	gcc	icc	compiler	notes
