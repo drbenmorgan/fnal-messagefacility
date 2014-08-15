@@ -1,23 +1,25 @@
-parent messagefacility v1_11_11
-defaultqual e5
+parent messagefacility v1_11_12
+defaultqual e6
 #
 fcldir -
 #
 # define product/version pairs
 product		version
-gcc		v4_8_2
-icc		v14_0_2
-fhiclcpp 	v2_20_00
-cetbuildtools	v4_00_00	-	only_for_build
+fhiclcpp 	v3_00_01
+cetbuildtools	v4_00_01	-	only_for_build
 end_product_list
 
+
 # Matrix of qualifiers versus dependent products
-qualifier	fhiclcpp	gcc	icc	compiler	notes
-e5:debug	e5:debug	-nq-	-	gcc
-e5:opt		e5:opt		-nq-	-	gcc
-e5:prof		e5:prof		-nq-	-	gcc
-i1:debug	e5:debug	-nq-	i1	icc
-i1:prof		e5:prof		-nq-	i1	icc
+qualifier	fhiclcpp	compiler	notes
+e5:debug	e5:debug	gcc
+e5:opt		e5:opt		gcc
+e5:prof		e5:prof		gcc
+e6:debug	e6:debug	gcc
+e6:opt		e6:opt		gcc
+e6:prof		e6:prof		gcc
+i1:debug	e5:debug	icc
+i1:prof		e5:prof		icc
 end_qualifier_list
 
 # Local Variables:
