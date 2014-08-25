@@ -1,12 +1,12 @@
-parent messagefacility v1_11_12
+parent messagefacility v1_11_13
 defaultqual e6
 #
 fcldir -
 #
 # define product/version pairs
 product		version
-fhiclcpp 	v3_00_01
-cetbuildtools	v4_00_01	-	only_for_build
+fhiclcpp 	v3_01_00
+cetbuildtools	v4_01_01	-	only_for_build
 end_product_list
 
 
