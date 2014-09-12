@@ -171,10 +171,10 @@ private:
   {
     T t = def;
     try {
-      t = p.template getUntrackedParameter<T>(id, def);
+      t = p.template get<T>(id, def);
     } catch (...) {
       try {
-        t = p.template getParameter<T>(id);
+        t = p.template get<T>(id);
       } catch (...) {
         // Since PSetValidation will catch such errors, we simply proceed as
         // best we can in case we are setting up the logger just to contain the

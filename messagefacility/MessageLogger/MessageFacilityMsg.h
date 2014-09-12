@@ -12,6 +12,8 @@
 
 #include <string>
 
+#include <sys/time.h>
+
 namespace mf {
 
 class ErrorObj;

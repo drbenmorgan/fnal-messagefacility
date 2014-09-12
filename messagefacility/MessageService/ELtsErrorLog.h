@@ -103,16 +103,6 @@ protected:
 
 };  // ELtsErrorLog
 
-
-// ----------------------------------------------------------------------
-// Message Continuation:
-//  Global methods for physicists logging errors:
-//   Basic streaming for non-integer types:
-// ----------------------------------------------------------------------
-
-template <class T>
-inline void ELtsItem ( ELtsErrorLog & e, const T & t );
-
 // ----------------------------------------------------------------------
 // Message Continuation:
 //   streaming for char []
