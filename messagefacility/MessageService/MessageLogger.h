@@ -128,3 +128,6 @@ namespace mf  {
 
 #endif  // MessageFacility_MessageService_MessageLogger_h
 
+// Local variables:
+// mode: c++
+// End:

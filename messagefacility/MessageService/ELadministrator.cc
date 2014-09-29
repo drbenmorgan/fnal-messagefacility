@@ -170,23 +170,6 @@ void ELadministrator::setExitThreshold( const ELseverityLevel & sev )  {
 
 }  // setExitThreshold()
 
-ELdestControl ELadministrator::attach( const ELdestination & sink )  {
-
-  std::shared_ptr<ELdestination> dest(sink.clone());
-  sinks().push_back( dest );
-  return ELdestControl( dest );
-
-}  // attach()
-
-ELdestControl ELadministrator::attach(  const ELdestination & sink,
-                                        const ELstring & name )     {
-  std::shared_ptr<ELdestination> dest(sink.clone());
-  attachedDestinations[name] = dest;
-  sinks().push_back( dest );
-  return ELdestControl( dest );
-} // attach()
-
-
 bool ELadministrator::getELdestControl ( const ELstring & name,
                                          ELdestControl & theDestControl ) {
 
@@ -280,7 +263,7 @@ const ELseverityLevel & ELadministrator::exitThreshold() const  {
   return exitThreshold_;
 }
 
-std::list<std::shared_ptr<ELdestination> > & ELadministrator::sinks()  { return sinks_; }
+std::list<std::unique_ptr<ELdestination>> & ELadministrator::sinks()  { return sinks_; }
 
 
 const ELseverityLevel & ELadministrator::highSeverity() const  {
@@ -342,7 +325,6 @@ void ELadministrator::finishMsg()  {
     std::cerr << "=:=:=: finshMsg() returns from editErrorObj( msg ) \n";
   #endif
 
-  std::list<std::shared_ptr<ELdestination> >::iterator d;
   bool mrt;
   #ifdef ELadTRACE_FINISH
     int destCounter = 0;
@@ -350,18 +332,18 @@ void ELadministrator::finishMsg()  {
   if ( sinks().begin() == sinks().end() )  {                   // $$ JV:1
     std::cerr << "\nERROR LOGGED WITHOUT DESTINATION!\n";
     std::cerr << "Attaching destination \"cerr\" to ELadministrator by default\n\n";
-    std::shared_ptr<ELdestination> dest(new ELoutput(cerr));
-    this->sinks().push_back(dest);
+    this->sinks().emplace_back( new ELoutput(cerr) );
   }
-  for ( d = sinks().begin();  d != sinks().end();  ++d )  {
-    #ifdef ELadTRACE_FINISH
-      std::cerr << "  =:=:=: log(msg) for a destination number "
-           << ++destCounter << " called ... \n";
-    #endif
-    mrt = (*d)->log( msg );
-    #ifdef ELadTRACE_FINISH
-      std::cerr << "  =:=:=: log(msg) for a destination returned " << mrt << "\n";
-    #endif
+
+  for ( auto& d : sinks() ) {
+#ifdef ELadTRACE_FINISH
+    std::cerr << "  =:=:=: log(msg) for a destination number "
+              << ++destCounter << " called ... \n";
+#endif
+    mrt = d->log( msg );
+#ifdef ELadTRACE_FINISH
+    std::cerr << "  =:=:=: log(msg) for a destination returned " << mrt << "\n";
+#endif
     if ( mrt )
       msg.setReactedTo(true);
   }
@@ -389,18 +371,14 @@ void ELadministrator::clearMsg()  {
 
 void ELadministrator::setThresholds( const ELseverityLevel & sev )  {
 
-  std::list<std::shared_ptr<ELdestination> >::iterator d;
-  for ( d = sinks().begin();  d != sinks().end();  ++d )
-    (*d)->threshold = sev;
+  for( auto & d : sinks() ) d->threshold = sev;
 
 }  // setThresholds()
 
 
 void ELadministrator::setLimits( const ELstring & id, int limit )  {
 
-  std::list<std::shared_ptr<ELdestination> >::iterator d;
-  for ( d = sinks().begin();  d != sinks().end();  ++d )
-    (*d)->limits.setLimit( id, limit );
+  for( auto & d : sinks() ) d->limits.setLimit( id, limit );
 
 }  // setLimits()
 
@@ -408,61 +386,47 @@ void ELadministrator::setLimits( const ELstring & id, int limit )  {
 void ELadministrator::setIntervals
                         ( const ELseverityLevel & sev, int interval )  {
 
-  std::list<std::shared_ptr<ELdestination> >::iterator d;
-  for ( d = sinks().begin();  d != sinks().end();  ++d )
-    (*d)->limits.setInterval( sev, interval );
+  for( auto & d : sinks() ) d->limits.setInterval( sev, interval );
 
 }  // setIntervals()
 
 void ELadministrator::setIntervals( const ELstring & id, int interval )  {
 
-  std::list<std::shared_ptr<ELdestination> >::iterator d;
-  for ( d = sinks().begin();  d != sinks().end();  ++d )
-    (*d)->limits.setInterval( id, interval );
+  for( auto & d : sinks() ) d->limits.setInterval( id, interval );
 
 }  // setIntervals()
 
 
 void ELadministrator::setLimits( const ELseverityLevel & sev, int limit )  {
 
-  std::list<std::shared_ptr<ELdestination> >::iterator d;
-  for ( d = sinks().begin();  d != sinks().end();  ++d )
-    (*d)->limits.setLimit( sev, limit );
+  for( auto & d : sinks() ) d->limits.setLimit( sev, limit );
 
 }  // setLimits()
 
 
 void ELadministrator::setTimespans( const ELstring & id, int seconds )  {
 
-  std::list<std::shared_ptr<ELdestination> >::iterator d;
-  for ( d = sinks().begin();  d != sinks().end();  ++d )
-    (*d)->limits.setTimespan( id, seconds );
+  for ( auto & d : sinks() ) d->limits.setTimespan( id, seconds );
 
 }  // setTimespans()
 
 
 void ELadministrator::setTimespans( const ELseverityLevel & sev, int seconds )  {
 
-  std::list<std::shared_ptr<ELdestination> >::iterator d;
-  for ( d = sinks().begin();  d != sinks().end();  ++d )
-    (*d)->limits.setTimespan( sev, seconds );
+  for ( auto & d: sinks() ) d->limits.setTimespan( sev, seconds );
 
 }  // setTimespans()
 
 
 void ELadministrator::wipe()  {
 
-  std::list<std::shared_ptr<ELdestination> >::iterator d;
-  for ( d = sinks().begin();  d != sinks().end();  ++d )
-    (*d)->limits.wipe();
+  for ( auto & d : sinks() ) d->limits.wipe();
 
 }  // wipe()
 
 void ELadministrator::finish()  {
 
-  std::list<std::shared_ptr<ELdestination> >::iterator d;
-  for ( d = sinks().begin();  d != sinks().end();  ++d )
-    (*d)->finish();
+  for ( auto & d : sinks() ) d->finish();
 
 }  // wipe()
 

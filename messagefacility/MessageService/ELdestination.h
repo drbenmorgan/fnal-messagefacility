@@ -67,7 +67,7 @@ public:
   // -----  Methods invoked by the ELadministrator:
   //
 public:
-  virtual ELdestination * clone() const = 0;
+  //  virtual ELdestination * clone() const = 0;
   virtual bool log( const mf::ErrorObj & msg );
 
   virtual void summarization(
@@ -185,3 +185,7 @@ private:
 
 
 #endif  // FWCore_MessageService_ELdestination_h
+
+// Local variables:
+// mode: c++
+// End:

@@ -15,7 +15,8 @@ CONFIGURE_FILE (
 
 set ( TEST_LIST
       MFTest
-      mfexample
+      MFTimingService
+#      mfexample
     )
 
 set ( ALSO_BUILD )
@@ -42,7 +43,7 @@ endforeach ( test ${TEST_LIST} ${ALSO_BUILD} )
 
 # FIXME MFTest and mfexample need working new-style configurations.
 foreach ( test ${TEST_LIST} ${ALSO_RUN} )
-#  add_test ( ${test} ${EXECUTABLE_OUTPUT_PATH}/${test} )
+  add_test ( ${test} ${EXECUTABLE_OUTPUT_PATH}/${test} )
 endforeach ( test ${TEST_LIST} )
 
 # Non-standard tests:

@@ -18,6 +18,7 @@ SET (MSsrcFiles
        ../MessageService/ELoutput.cc
        ../MessageService/ELrecv.cc
        ../MessageService/ELstatistics.cc
+       ../MessageService/ELsyslog.cc
        ../MessageService/ELtsErrorLog.cc
        ../MessageService/ErrorLog.cc
        ../MessageService/HardwiredDefaults.cc

@@ -203,3 +203,7 @@ ErrorLog & operator<<( ErrorLog & e, const char s[] );
 
 
 #endif  // MessageFacility_MessageService_ErrorLog_h
+
+// Local variables:
+// mode: c++
+// End;

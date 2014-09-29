@@ -13,15 +13,42 @@
 
 #include "messagefacility/MessageLogger/MessageLogger.h"
 
-void anotherLogger()
-{
-  // Set module name
-  mf::SetModuleName("anotherLogger");
+void runModule( const std::string& modulename ) {
+  mf::SetModuleName(modulename);
+  
+  // Post begin job
+  mf::SetContext("postBeginJob");
+  mf::LogAbsolute("TimeReport")
+    << "TimeReport> Report activated\n"
+    "TimeReport> Report columns headings for events: "
+    "eventnum runnum timetaken\n"
+    "TimeReport> Report columns headings for modules: "
+    "eventnum runnum modulelabel modulename timetaken";
+  
+  // Post end job 
+  mf::SetContext("postEndJob");
+  mf::LogAbsolute("TimeReport")                            // Changelog 1
+    << "TimeReport> Time report complete in "
+    << 0.0402123 << " seconds\n"
+    << " Time Summary: \n"
+    << " Min: " << 303  << "\n"
+    << " Max: " << 5555 << "\n"
+    << " Avg: " << 4000 << "\n";
 
-  mf::LogWarning("warn1 | warn2") << "Followed by a WARNING message.";
-  mf::LogDebug("debug")           << "The debug message in the other thread";
+  // Post event processing
+  mf::SetContext("postEventProcessing");
+  mf::LogAbsolute("TimeEvent")
+    << "TimeEvent> "
+    << "run: 1   subRun: 2    event: 456 " << .0440404;
 
-  return;
+  // Post Module
+  mf::SetContext("postModule");
+  mf::LogAbsolute("TimeModule")
+    << "TimeModule> "
+    << "run: 1   subRun: 2    event: 456 " 
+    << "someString "
+    << modulename << " "
+    << 0.04404;
 }
 
 int main()
@@ -59,52 +86,8 @@ int main()
   
   // Set module name for the main thread
   mf::SetApplicationName("MessageFacility");
-  mf::SetModuleName("MFTest");
-  mf::SetContext("pre-event");
-  
-  // Start up another logger in a separate thread
-  //boost::thread loggerThread(anotherLogger);
-
-  mf::LogInfo linfo("info");
-  linfo << " vint contains: ";
-
-  std::vector<int> vint{ { 1, 2, 5, 89, 3 } };
-
-  auto       i = std::begin(vint);
-  auto const e = std::end  (vint);
-  while (i != e) {
-    linfo << *i;
-    if (++i != e) {
-      linfo << ", ";
-    }
-  }
-
-  // Issue messages with different severity levels
-  mf::LogError("err1|err2") << "This is an ERROR message.";
-  mf::LogWarning("warning") << "Followed by a WARNING message.";
-  
-  // Switch context
-  mf::SetContext("pro-event");
-
-  //mf::SwitchChannel(2);
-
-  // Log Debugs
-  for(int i = 0; i != 5; ++i)
-  {
-    mf::LogError("catError")     << "Error information.";
-    mf::LogWarning("catWarning") << "Warning information.";
-    mf::LogInfo("catInfo")       << "Info information.";
-    LOG_DEBUG("debug")           << "DEBUG information.";
-
-    //sleep(1);
-  }
-
-  // Thread join
-  //loggerThread.join();
-
-  mf::LogStatistics();
-
-  //sleep(2);
+  runModule("module1");
+  runModule("module5");
 
   return 0;
 }

@@ -60,18 +60,21 @@ public:
   ELoutput( const ELoutput & orig );
   virtual ~ELoutput();
 
+  // Disable copy assignment
+  ELoutput & operator=( const ELoutput & ) = delete;
+
   // ---  Methods invoked by the ELadministrator:
   //
 public:
-  virtual
-  ELoutput *
-  clone() const;
+  //  virtual
+  //  ELoutput *
+  //  clone() const;
   // Used by attach() to put the destination on the ELadministrators list
                 //-| There is a note in Design Notes about semantics
                 //-| of copying a destination onto the list:  ofstream
                 //-| ownership is passed to the new copy.
 
-  virtual bool log( const mf::ErrorObj & msg );
+  virtual bool log( const mf::ErrorObj & msg ) override;
 
   // ---  Methods invoked through the ELdestControl handle:
   //
@@ -87,7 +90,9 @@ protected:
   // ---  Internal Methods -- Users should not invoke these:
   //
 protected:
-  virtual void emit( const ELstring & s, bool nl=false );
+  
+  bool do_log( const mf::ErrorObj & msg ); // Called within virtual log
+  void emit( std::ostream& os, const ELstring & s, bool nl=false );
 
   virtual void suppressTime();        virtual void includeTime();
   virtual void suppressMillisecond(); virtual void includeMillisecond();
@@ -107,13 +112,13 @@ protected:
   virtual void changeFile (const ELstring & filename);
   virtual void flush();
 
-
 protected:
   // --- member data:
   //
   std::shared_ptr<std::ostream> os;
-  int                             charsOnLine;
-  mf::ELextendedID               xid;
+  std::ostringstream            oss; // Needed for ELsyslog
+  int                           charsOnLine;
+  mf::ELextendedID              xid;
 
   bool wantTimestamp
   ,    wantMillisecond
@@ -128,10 +133,6 @@ protected:
   ,    preambleMode
   ;
 
-  // --- Verboten method:
-  //
-  ELoutput & operator=( const ELoutput & orig );
-
 };  // ELoutput
 
 
@@ -143,3 +144,7 @@ protected:
 
 
 #endif // MessageFacility_MessageService_ELoutput_h
+
+// Local variables:
+// mode: c++
+// End:

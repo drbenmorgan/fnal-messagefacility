@@ -48,6 +48,8 @@
 //
 //  7  mf 6/20/08       MessageLoggerScribeIsRunning to let the scribe convey
 //                      that it is active.
+//
+//  8  kjk 9/25/14      Disable copy/move functions
 
 // user include files
 
@@ -75,6 +77,12 @@ public:
   bool warningEnabled;
   static unsigned char messageLoggerScribeIsRunning;    // change log 7
   static mf::Exception * ex_p;                          // change log 4
+
+  // Disable copy/move
+  MessageDrop ( const MessageDrop&  ) = delete;         
+  MessageDrop (       MessageDrop&& ) = delete;         
+  MessageDrop& operator = ( const MessageDrop&  ) = delete;
+  MessageDrop& operator = (       MessageDrop&& ) = delete;
 };
 
 static const unsigned char  MLSCRIBE_RUNNING_INDICATOR = 29; // change log 7
@@ -83,3 +91,7 @@ static const unsigned char  MLSCRIBE_RUNNING_INDICATOR = 29; // change log 7
 
 
 #endif // MessageLogger_MessageDrop_h
+
+// Local Variables:
+// mode: c++
+// End:

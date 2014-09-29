@@ -21,6 +21,7 @@
 //  6/23/03 mf  changeFile(), flush()
 //  5/18/06 mf  setInterval
 //  6/19/08 mf  summaryForJobReport()
+//  9/30/14 kjk Give ownership of d to ELadministrator
 // ----------------------------------------------------------------------
 
 
@@ -41,35 +42,35 @@ namespace service {
 // ----------------------------------------------------------------------
 
 
-ELdestControl::ELdestControl( std::shared_ptr<ELdestination> dest )
-: d ( dest )
-{
-  #ifdef ELdestinationCONSTRUCTOR_TRACE
+  ELdestControl::ELdestControl( std::unique_ptr<ELdestination>& dest )
+    : d ( dest.get() )
+  {
+#ifdef ELdestinationCONSTRUCTOR_TRACE
     std::cerr << "Constructor for ELdestControl\n";
-  #endif
-}  // ELdestControl()
+#endif
+  }  // ELdestControl()
 
 
-ELdestControl::ELdestControl( )
-: d ( )
-{
-  #ifdef ELdestinationCONSTRUCTOR_TRACE
+  ELdestControl::ELdestControl( )
+  : d ( nullptr )
+  {
+#ifdef ELdestinationCONSTRUCTOR_TRACE
     std::cerr << "Default Constructor for ELdestControl\n";
-  #endif
-}  // ELdestControl()
+#endif
+  }  // ELdestControl()
 
 
-ELdestControl::~ELdestControl()  {
-  #ifdef ELdestinationCONSTRUCTOR_TRACE
+  ELdestControl::~ELdestControl()  {
+#ifdef ELdestinationCONSTRUCTOR_TRACE
     std::cerr << "Destructor for ELdestControl\n";
-  #endif
-}  // ~ELdestControl()
+#endif
+  }  // ~ELdestControl()
+  
 
-
-// ----------------------------------------------------------------------
-// Behavior control methods invoked by the framework
-// ----------------------------------------------------------------------
-
+  // ----------------------------------------------------------------------
+  // Behavior control methods invoked by the framework
+  // ----------------------------------------------------------------------
+  
 ELdestControl & ELdestControl::setThreshold( const ELseverityLevel & sv )  {
   if (d) d->threshold = sv;
   return  * this;

@@ -25,6 +25,7 @@
 // 10/18/01 mf  Corrected default in summary title =0 to empty string
 //  6/23/03 mf  changeFile() and flush()
 //  6/19/08 mf  summaryForJobReport()
+//  9/25/14 kjk Give ownership of destination to ELadministrator
 //
 // ----------------------------------------------------------------------
 
@@ -53,7 +54,7 @@ class ELdestination;
 class ELdestControl  {
 
 public:
-  ELdestControl( std::shared_ptr<ELdestination> dest );
+  ELdestControl( std::unique_ptr<ELdestination>& dest );
   ELdestControl();
   virtual ~ELdestControl();
 
@@ -128,7 +129,7 @@ public:
   // -----  Data implementing the trivial handle pattern:
   //
 protected:
-  std::shared_ptr<ELdestination> d;
+  ELdestination* d; // destination owned by ELadministrator
 
 };  // ELdestControl
 
@@ -141,3 +142,7 @@ protected:
 
 
 #endif // FWCore_MessageService_ELdestControl_h
+
+// Local Variables:
+// mode: c++
+// End:

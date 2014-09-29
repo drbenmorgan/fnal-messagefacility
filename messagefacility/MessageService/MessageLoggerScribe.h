@@ -82,7 +82,11 @@ namespace service {
 //  13 - 02/18/10 ql
 //       Trim the leading and trailing whitespaces in parsing categories in
 //       order to get the consistency in category names
-// -----------------------------------------------------------------------
+//
+//  14 - 09/30/14 kjk
+//       Add syslog option, and remove configure_external_dest which
+//       will not be used
+//       -----------------------------------------------------------------------
 
 class ThreadQueue;
 class ErrorLog;
@@ -131,7 +135,6 @@ private:
                       , fhicl::ParameterSet const & dest_pset
                       );
   void  configure_default_fwkJobReport( ELdestControl & dest_ctrl); //ChangeLog 4
-  void  configure_external_dests( );
 
   // --- util function to trim leading and trailing whitespaces from a string
   std::string trim_copy(std::string const src);                 // ChangeLog 13
@@ -236,10 +239,9 @@ private:
   ELadministrator                   * admin_p;
   ELdestControl                       early_dest;
   std::shared_ptr<ErrorLog>         errorlog_p;
-  std::vector<std::shared_ptr<std::ofstream> > file_ps;
+  std::vector<std::shared_ptr<std::ostream> > ostream_ps; // used to keep objects alive
   MsgContext                          msg_context;
-  std::shared_ptr<PSet>             job_pset_p;
-  std::vector<NamedDestination     *> extern_dests;
+  std::shared_ptr<PSet>               job_pset_p;
   std::map<String,std::ostream     *> stream_ps;
   std::vector<String>                 ordinary_destination_filenames;
   std::vector<ELdestControl>          statisticsDestControls;
@@ -263,3 +265,7 @@ private:
 
 
 #endif  // MessageFacility_MessageService_MessageLoggerScribe_h
+
+// Local Variables:
+// mode: c++
+// End:

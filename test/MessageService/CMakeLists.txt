@@ -40,43 +40,47 @@ set ( TEST_LIST_CC
     )
 
 set ( TEST_LIST_CPP
-      makeJobReport
-      standAloneTest
-      testLoggerInCmsRun
-      trivial_main
-      u1
-      unitTestsGroup_1
-      unitTestsGroup_2
-      unitTestsGroup_3
-      unitTestsGroup_4
-      unitTestsGroup_5
-      unitTestsGroup_6
-      unitTestsLimits
-      unitTestsMultithread_1
-      unitTestsMultithread_2
-      unitTestsMultithread_3
-      unitTestsStandAlone
-      unitTestsStatistics
+     makeJobReport
+     standAloneTest
+     testLoggerInCmsRun
+     trivial_main
+     u1
+     unitTestsGroup_1
+     unitTestsGroup_2
+     unitTestsGroup_3
+     unitTestsGroup_4
+     unitTestsGroup_5
+     unitTestsGroup_6
+     unitTestsLimits
+     unitTestsMultithread_1
+     unitTestsMultithread_2
+     unitTestsMultithread_3
+     unitTestsStandAlone
+     unitTestsStatistics
     )
 
-set ( ALSO_BUILD_CC )
-
-set ( ALSO_BUILD_CPP )
+set ( TEST_LIST_CPPNEW
+     forKicks
+    )
 
 set ( ALSO_RUN )
 
-link_libraries( MessageService )
+link_libraries( MF_MessageLogger )
 
 # ----------------------------------------------------------------------
 # Build most tests:
 
 foreach ( test ${TEST_LIST_CPP} ${ALSO_BUILD_CPP} )
-  add_executable ( ${test} ${test}.cpp )
+#  add_executable ( ${test} ${test}.cpp )
 endforeach ( test ${TEST_LIST_CPP} ${ALSO_BUILD_CPP} )
 
 foreach ( test ${TEST_LIST_CC} ${ALSO_BUILD_CC} )
-  add_executable ( ${test} ${test}.cc )
+#  add_executable ( ${test} ${test}.cc )
 endforeach ( test ${TEST_LIST_CC} ${ALSO_BUILD_CC} )
+
+foreach ( test ${TEST_LIST_CPPNEW} ${ALSO_BUILD_CPPNEW} )
+  add_executable ( ${test} ${test}.cpp )
+endforeach ( test ${TEST_LIST_CPPNEW} ${ALSO_BUILD_CPPNEW} )
 
 # ----------------------------------------------------------------------
 # Build tests with special requirements:
@@ -87,9 +91,9 @@ endforeach ( test ${TEST_LIST_CC} ${ALSO_BUILD_CC} )
 # ----------------------------------------------------------------------
 # Run tests:
 
-foreach ( test ${TEST_LIST} ${ALSO_RUN} )
+foreach ( test ${TEST_LIST_CPPNEW} ${ALSO_RUN} )
   add_test ( ${test} ${EXECUTABLE_OUTPUT_PATH}/${test} )
-endforeach ( test ${TEST_LIST} )
+endforeach ( test ${TEST_LIST_CPPNEW} )
 
 # Non-standard tests:
 

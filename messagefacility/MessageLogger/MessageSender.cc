@@ -43,7 +43,7 @@ MessageSender::~MessageSender()
 {
   try
     {
-      //std::cout << "MessageSender dtor; ErrorObj at: " << errorobj_p << '\n';
+      // std::cout << "MessageSender dtor; ErrorObj at: " << errorobj_p << '\n';
 
       // surrender ownership of our ErrorObj, transferring ownership
       // (via the intermediate MessageLoggerQ) to the MessageLoggerScribe
@@ -72,7 +72,6 @@ MessageSender::~MessageSender()
         }
         freshError = true;
       }
-
       MessageLoggerQ::MLqLOG(errorobj_p);
     }
   catch ( ... )

@@ -247,3 +247,6 @@ extern bool  operator>= ( ELseverityLevel const & e1
 
 #endif  // MessageLogger_ELseverityLevel_h
 
+// Local variables:
+// mode: c++
+// End:
