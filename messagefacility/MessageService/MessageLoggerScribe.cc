@@ -941,7 +941,6 @@ namespace mf {
           if(dest_type == "file")         stream_id = filename;
           else if(dest_type == "cout")    stream_id = std::string("cout");
           else if(dest_type == "cerr")    stream_id = std::string("cerr");
-          else if(dest_type == "syslog")  stream_id = std::string("syslog");
           else                            stream_id = dest_type + "_" + psetname;
 
 
@@ -993,12 +992,6 @@ namespace mf {
                   auto os_sp = std::make_shared<std::ofstream>( stream_id.c_str() );
                   ostream_ps.push_back(os_sp);
                   os_p = os_sp.get();
-                }
-              else if ( dest_type == "syslog" )
-                {
-                  auto oss_sp = std::make_shared<std::ostringstream>();
-                  ostream_ps.push_back( oss_sp );
-                  os_p = oss_sp.get();
                 }
               else   // all other extension types
                 {
