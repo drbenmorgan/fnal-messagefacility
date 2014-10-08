@@ -316,12 +316,6 @@ namespace mf {
         clean_slate_configuration = false;                          // Change Log 22
       }
 
-      std::string ext(cet::shlib_prefix() + "MF_ExtModules" + cet::shlib_suffix());
-      void *hndl = dlopen(ext.c_str(), RTLD_NOW );
-      if(hndl == NULL) {
-        LogError("preconfiguration") << dlerror();
-      }
-
       configure_fwkJobReports();                                    // Change Log 16
       configure_ordinary_destinations();                            // Change Log 16
       configure_statistics();                                       // Change Log 16
@@ -787,19 +781,19 @@ namespace mf {
             {
               const bool append = dest_pset.get<bool>("append", false);
 
-              auto os_sp = 
+              auto os_sp =
                 std::make_shared<std::ofstream>
                 (
                  filename.c_str(),
                  append ? std::ios_base::app : std::ios_base::trunc
                  );
-              
+
               ostream_ps.push_back(os_sp);
               os_p = os_sp.get();
               dest_ctrl = admin_p->attach( ELoutput(*os_sp) );
               stream_ps[filename] = os_sp.get();
             }
-          else if ( dest_type == "syslog" ) 
+          else if ( dest_type == "syslog" )
             {
               auto oss_sp = std::make_shared<std::ostringstream>();
               ostream_ps.push_back(oss_sp);
