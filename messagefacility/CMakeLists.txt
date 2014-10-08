@@ -1,4 +1,3 @@
-
 include(CetMake)
 
 add_subdirectory(MessageLogger)

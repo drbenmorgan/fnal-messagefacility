@@ -26,7 +26,6 @@
 #include "boost/scoped_ptr.hpp"
 
 #include <cassert>
-#include <dlfcn.h> //dlopen
 #include <fstream>
 #include <iostream>
 #include <signal.h>
