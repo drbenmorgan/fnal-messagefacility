@@ -68,15 +68,8 @@ public:
   // -----  Methods invoked by the ELadministrator:
   //
 public:
-  virtual
-  ELstatistics *
-  clone() const;
-    // Used by attach() to put the destination on the ELadministrators list
-                //-| There is a note in Design Notes about semantics
-                //-| of copying a destination onto the list:  ofstream
-                //-| ownership is passed to the new copy.
 
-  virtual bool log( const mf::ErrorObj & msg );
+  virtual bool log( const mf::ErrorObj & msg ) override;
 
   // output( const ELstring & item, const ELseverityLevel & sev )
   // from base class

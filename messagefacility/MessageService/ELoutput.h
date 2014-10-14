@@ -32,114 +32,107 @@
 namespace mf {
 
 
-// ----------------------------------------------------------------------
-// prerequisite classes:
-// ----------------------------------------------------------------------
+  // ----------------------------------------------------------------------
+  // prerequisite classes:
+  // ----------------------------------------------------------------------
 
-class ErrorObj;
-namespace service {
+  class ErrorObj;
+  namespace service {
 
-class ELdestControl;
+    class ELdestControl;
 
 
-// ----------------------------------------------------------------------
-// ELoutput:
-// ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // ELoutput:
+    // ----------------------------------------------------------------------
+    
+    class ELoutput : public ELdestination  {
+      
+      friend class ELdestControl;
+      
+    public:
+      
+      // ---  Birth/death:
+      //
+      ELoutput();
+      ELoutput( std::ostream & os, bool emitAtStart = false );      // 6/11/07 mf
+      ELoutput( const ELstring & fileName, bool emitAtStart = false );
+      ELoutput( const ELoutput & orig );
+      virtual ~ELoutput();
 
-class ELoutput : public ELdestination  {
+      // Disable copy assignment
+      ELoutput & operator=( const ELoutput & ) = delete;
 
-  friend class ELdestControl;
+      // ---  Methods invoked by the ELadministrator:
+      //
+    public:
 
-public:
+      virtual bool log( const mf::ErrorObj & msg ) override;
 
-  // ---  Birth/death:
-  //
-  ELoutput();
-  ELoutput( std::ostream & os, bool emitAtStart = false );      // 6/11/07 mf
-  ELoutput( const ELstring & fileName, bool emitAtStart = false );
-  ELoutput( const ELoutput & orig );
-  virtual ~ELoutput();
+      // ---  Methods invoked through the ELdestControl handle:
+      //
+    protected:
+      // trivial clearSummary(), wipe(), zero() from base class
+      // trivial three summary(..) from base class
 
-  // Disable copy assignment
-  ELoutput & operator=( const ELoutput & ) = delete;
+      // ---  Data affected by methods of specific ELdestControl handle:
+      //
+    protected:
+      // ELoutput uses the generic ELdestControl handle
 
-  // ---  Methods invoked by the ELadministrator:
-  //
-public:
-  //  virtual
-  //  ELoutput *
-  //  clone() const;
-  // Used by attach() to put the destination on the ELadministrators list
-                //-| There is a note in Design Notes about semantics
-                //-| of copying a destination onto the list:  ofstream
-                //-| ownership is passed to the new copy.
-
-  virtual bool log( const mf::ErrorObj & msg ) override;
-
-  // ---  Methods invoked through the ELdestControl handle:
-  //
-protected:
-    // trivial clearSummary(), wipe(), zero() from base class
-    // trivial three summary(..) from base class
-
-  // ---  Data affected by methods of specific ELdestControl handle:
-  //
-protected:
-    // ELoutput uses the generic ELdestControl handle
-
-  // ---  Internal Methods -- Users should not invoke these:
-  //
-protected:
+      // ---  Internal Methods -- Users should not invoke these:
+      //
+    protected:
   
-  bool do_log( const mf::ErrorObj & msg ); // Called within virtual log
-  void emit( std::ostream& os, const ELstring & s, bool nl=false );
+      bool do_log( const mf::ErrorObj & msg ); // Called within virtual log
+      void emit( std::ostream& os, const ELstring & s, bool nl=false );
 
-  virtual void suppressTime();        virtual void includeTime();
-  virtual void suppressMillisecond(); virtual void includeMillisecond();
-  virtual void suppressModule();      virtual void includeModule();
-  virtual void suppressSubroutine();  virtual void includeSubroutine();
-  virtual void suppressText();        virtual void includeText();
-  virtual void suppressContext();     virtual void includeContext();
-  virtual void suppressSerial();      virtual void includeSerial();
-  virtual void useFullContext();      virtual void useContext();
-  virtual void separateTime();        virtual void attachTime();
-  virtual void separateEpilogue();    virtual void attachEpilogue();
+      virtual void suppressTime();        virtual void includeTime();
+      virtual void suppressMillisecond(); virtual void includeMillisecond();
+      virtual void suppressModule();      virtual void includeModule();
+      virtual void suppressSubroutine();  virtual void includeSubroutine();
+      virtual void suppressText();        virtual void includeText();
+      virtual void suppressContext();     virtual void includeContext();
+      virtual void suppressSerial();      virtual void includeSerial();
+      virtual void useFullContext();      virtual void useContext();
+      virtual void separateTime();        virtual void attachTime();
+      virtual void separateEpilogue();    virtual void attachEpilogue();
 
-  virtual void summarization ( const ELstring & fullTitle
-                             , const ELstring & sumLines );
+      virtual void summarization ( const ELstring & fullTitle
+                                   , const ELstring & sumLines );
 
-  virtual void changeFile (std::ostream & os);
-  virtual void changeFile (const ELstring & filename);
-  virtual void flush();
+      virtual void changeFile (std::ostream & os);
+      virtual void changeFile (const ELstring & filename);
+      virtual void flush();
 
-protected:
-  // --- member data:
-  //
-  std::shared_ptr<std::ostream> os;
-  std::ostringstream            oss; // Needed for ELsyslog
-  int                           charsOnLine;
-  mf::ELextendedID              xid;
+    protected:
+      // --- member data:
+      //
+      std::shared_ptr<std::ostream> os;
+      std::ostringstream            oss; // Needed for ELsyslog
+      int                           charsOnLine;
+      mf::ELextendedID              xid;
 
-  bool wantTimestamp
-  ,    wantMillisecond
-  ,    wantModule
-  ,    wantSubroutine
-  ,    wantText
-  ,    wantSomeContext
-  ,    wantSerial
-  ,    wantFullContext
-  ,    wantTimeSeparate
-  ,    wantEpilogueSeparate
-  ,    preambleMode
-  ;
+      bool wantTimestamp
+        ,    wantMillisecond
+        ,    wantModule
+        ,    wantSubroutine
+        ,    wantText
+        ,    wantSomeContext
+        ,    wantSerial
+        ,    wantFullContext
+        ,    wantTimeSeparate
+        ,    wantEpilogueSeparate
+        ,    preambleMode
+        ;
 
-};  // ELoutput
-
-
-// ----------------------------------------------------------------------
+    };  // ELoutput
 
 
-}        // end of namespace service
+    // ----------------------------------------------------------------------
+
+
+  }        // end of namespace service
 }        // end of namespace mf
 
 

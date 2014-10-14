@@ -174,7 +174,7 @@ bool ELadministrator::getELdestControl ( const ELstring & name,
                                          ELdestControl & theDestControl ) {
 
   if ( attachedDestinations.find(name) != attachedDestinations.end() ) {
-    theDestControl = ELdestControl ( attachedDestinations[name] );
+    theDestControl = ELdestControl ( cet::exempt_ptr<ELdestination>( attachedDestinations[name].get() ) );
     return true;
   } else {
     return false;
@@ -527,7 +527,7 @@ ELadministrator::ELadministrator()
     struct ifaddrs * ifa = NULL;
     void * tmpAddrPtr = NULL;
 
-    if( getifaddrs(&ifAddrStruct) ) 
+    if( getifaddrs(&ifAddrStruct) )
     {
       // failed to get addr struct
       hostaddr_ = "127.0.0.1";
@@ -555,8 +555,8 @@ ELadministrator::ELadministrator()
         }
 
         // find first non-local address
-        if( !hostaddr_.empty() 
-            && hostaddr_.compare("127.0.0.1") 
+        if( !hostaddr_.empty()
+            && hostaddr_.compare("127.0.0.1")
             && hostaddr_.compare("::1") )
           break;
       }

@@ -57,6 +57,8 @@
 #include "messagefacility/MessageLogger/ELseverityLevel.h"
 #include "messagefacility/MessageLogger/ErrorObj.h"
 
+#include "cetlib/exempt_ptr.h"
+
 #include <memory>
 #include <type_traits>
 #include <utility>
@@ -118,10 +120,10 @@ public:
   //
   //  ELdestControl attach( const ELdestination & sink );
   template <typename DEST>
-  ELdestControl attach( DEST&& sink, 
+  ELdestControl attach( DEST&& sink,
                         typename std::enable_if<std::is_base_of<ELdestination,DEST>::value>::type* = 0 ) {
     sinks().emplace_back( new DEST( std::forward<DEST>(sink) ) );
-    return ELdestControl( sinks().back() );
+    return ELdestControl( cet::exempt_ptr<ELdestination>( sinks().back().get() ) );
   }
 
   template <typename DEST>
@@ -129,9 +131,16 @@ public:
                         typename std::enable_if<std::is_base_of<ELdestination,DEST>::value>::type* = 0 ) {
     sinks().emplace_back( new DEST( std::forward<DEST>(sink) ) );
     attachedDestinations[name] = sinks().back();
-    return ELdestControl( sinks().back() );
+    return ELdestControl( cet::exempt_ptr<ELdestination>( sinks().back().get() ) );
   }
-  
+
+  template <typename DEST>
+  ELdestControl attach( std::unique_ptr<DEST>&& dest,
+                        typename std::enable_if<std::is_base_of<ELdestination,DEST>::value>::type* = 0 ) {
+    sinks().push_back( std::move(dest) );
+    return ELdestControl( cet::exempt_ptr<ELdestination>( sinks().back().get() ) );
+  }
+
   bool getELdestControl ( const ELstring & name, ELdestControl & theControl );
 
   // ---  handle severity information:

@@ -36,151 +36,161 @@
 #include "messagefacility/MessageLogger/ErrorObj.h"
 #include "messagefacility/MessageLogger/ELextendedID.h"
 
+#include "cetlib/PluginTypeDeducer.h"
 #include "fhiclcpp/ParameterSet.h"
 
 namespace mf {
-namespace service {
+  namespace service {
+    class ELdestination;
 
-// ----------------------------------------------------------------------
-// prerequisite classes:
-// ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // prerequisite classes:
+    // ----------------------------------------------------------------------
 
-class ELdestControl;
-class ELadministrator;
+    class ELdestControl;
+    class ELadministrator;
+  }
+}
 
+namespace cet {
+  template <> struct PluginTypeDeducer<mf::service::ELdestination> {
+    static std::string const value;
+  };
+}
 
-// ----------------------------------------------------------------------
-// ELdestination:
-// ----------------------------------------------------------------------
+namespace mf {
+  namespace service {
 
+    // ----------------------------------------------------------------------
+    // ELdestination:
+    // ----------------------------------------------------------------------
 
-class ELdestination  {
+    class ELdestination  {
 
-  friend class ELadministrator;
-  friend class ELdestControl;
+      friend class ELadministrator;
+      friend class ELdestControl;
 
-public:
+    public:
 
-  ELdestination();
-  virtual ~ELdestination();
+      ELdestination();
+      virtual ~ELdestination();
 
-  // -----  Methods invoked by the ELadministrator:
-  //
-public:
-  //  virtual ELdestination * clone() const = 0;
-  virtual bool log( const mf::ErrorObj & msg );
+      // -----  Methods invoked by the ELadministrator:
+      //
+    public:
+      virtual bool log( const mf::ErrorObj & msg );
 
-  virtual void summarization(
-                const mf::ELstring & title,
-                const mf::ELstring & sumLines );
+      virtual void summarization(
+                                 const mf::ELstring & title,
+                                 const mf::ELstring & sumLines );
 
-  virtual ELstring getNewline() const;
+      virtual ELstring getNewline() const;
 
-  virtual bool switchChannel( const mf::ELstring & channelName );
+      virtual bool switchChannel( const mf::ELstring & channelName );
 
-  virtual void finish();
+      virtual void finish();
 
-  // -----  Methods invoked through the ELdestControl handle:
-  //
-protected:
-  virtual void clearSummary();
-  virtual void wipe();
-  virtual void zero();
-  virtual void filterModule( ELstring const & moduleName );
-  virtual void excludeModule( ELstring const & moduleName );
-  virtual void ignoreModule( ELstring const & moduleName );
-  virtual void respondToModule( ELstring const & moduleName );
-  virtual bool thisShouldBeIgnored(const ELstring & s) const;
+      // -----  Methods invoked through the ELdestControl handle:
+      //
+    protected:
+      virtual void clearSummary();
+      virtual void wipe();
+      virtual void zero();
+      virtual void filterModule( ELstring const & moduleName );
+      virtual void excludeModule( ELstring const & moduleName );
+      virtual void ignoreModule( ELstring const & moduleName );
+      virtual void respondToModule( ELstring const & moduleName );
+      virtual bool thisShouldBeIgnored(const ELstring & s) const;
 
-  virtual void summary( ELdestControl & dest, const ELstring & title="" );
-  virtual void summary( std::ostream  & os  , const ELstring & title="" );
-  virtual void summary( ELstring      & s   , const ELstring & title="" );
-  virtual void summary( );
-  virtual void summaryForJobReport(std::map<std::string, double> & sm);
+      virtual void summary( ELdestControl & dest, const ELstring & title="" );
+      virtual void summary( std::ostream  & os  , const ELstring & title="" );
+      virtual void summary( ELstring      & s   , const ELstring & title="" );
+      virtual void summary( );
+      virtual void summaryForJobReport(std::map<std::string, double> & sm);
 
-  virtual void setTableLimit( int n );
+      virtual void setTableLimit( int n );
 
-  virtual std::map<ELextendedID,StatsCount> statisticsMap() const;
+      virtual std::map<ELextendedID,StatsCount> statisticsMap() const;
 
-  virtual void changeFile (std::ostream & os);
-  virtual void changeFile (const ELstring & filename);
-  virtual void flush();
+      virtual void changeFile (std::ostream & os);
+      virtual void changeFile (const ELstring & filename);
+      virtual void flush();
 
-  // -----  Select output format options:
-  //
-private:
-  virtual void suppressText();           virtual void includeText(); // $$ jvr
-  virtual void suppressModule();         virtual void includeModule();
-  virtual void suppressSubroutine();     virtual void includeSubroutine();
-  virtual void suppressTime();           virtual void includeTime();
-  virtual void suppressMillisecond();    virtual void includeMillisecond();
-  virtual void suppressContext();        virtual void includeContext();
-  virtual void suppressSerial();         virtual void includeSerial();
-  virtual void useFullContext();         virtual void useContext();
-  virtual void separateTime();           virtual void attachTime();
-  virtual void separateEpilogue();       virtual void attachEpilogue();
-  virtual void noTerminationSummary();
-  virtual int  setLineLength(int len);   virtual int  getLineLength() const;
+      // -----  Select output format options:
+      //
+    private:
+      virtual void suppressText();           virtual void includeText(); // $$ jvr
+      virtual void suppressModule();         virtual void includeModule();
+      virtual void suppressSubroutine();     virtual void includeSubroutine();
+      virtual void suppressTime();           virtual void includeTime();
+      virtual void suppressMillisecond();    virtual void includeMillisecond();
+      virtual void suppressContext();        virtual void includeContext();
+      virtual void suppressSerial();         virtual void includeSerial();
+      virtual void useFullContext();         virtual void useContext();
+      virtual void separateTime();           virtual void attachTime();
+      virtual void separateEpilogue();       virtual void attachEpilogue();
+      virtual void noTerminationSummary();
+      virtual int  setLineLength(int len);   virtual int  getLineLength() const;
 
-  // -----  Data affected by methods of the ELdestControl handle:
-  //
-protected:
-  ELseverityLevel threshold;
-  ELseverityLevel traceThreshold;
-  ELlimitsTable   limits;
-  ELstring        preamble;
-  ELstring        newline;
-  ELstring        indent;
-  int             lineLength;
-  bool            ignoreMostModules;
-  ELset_string    respondToThese;
-  bool            respondToMostModules;
-  ELset_string    ignoreThese;
-                                        // Fix $001 2/13/01 mf
+      // -----  Data affected by methods of the ELdestControl handle:
+      //
+    protected:
+      ELseverityLevel threshold;
+      ELseverityLevel traceThreshold;
+      ELlimitsTable   limits;
+      ELstring        preamble;
+      ELstring        newline;
+      ELstring        indent;
+      int             lineLength;
+      bool            ignoreMostModules;
+      ELset_string    respondToThese;
+      bool            respondToMostModules;
+      ELset_string    ignoreThese;
+      // Fix $001 2/13/01 mf
 #ifndef DEFECT_NO_STATIC_CONST_INIT
-  static const int defaultLineLength = 80;
+      static const int defaultLineLength = 80;
 #else
-  static const int defaultLineLength;
+      static const int defaultLineLength;
 #endif
 
-  // -----  Verboten methods:
-  //
-private:
-  ELdestination( const ELdestination & orig );
-  ELdestination& operator= ( const ELdestination & orig );
+      // -----  Verboten methods:
+      //
+    private:
+      ELdestination( const ELdestination & orig );
+      ELdestination& operator= ( const ELdestination & orig );
 
-};  // ELdestination
+    };  // ELdestination
 
-struct close_and_delete {
-  void operator()(std::ostream* os) const;
-};
+    struct close_and_delete {
+      void operator()(std::ostream* os) const;
+    };
 
-// Destination factory for loading destinations dynamically
-struct ELdestinationFactory
-{
-  typedef std::map<std::string, ELdestination*(*)(std::string const &, fhicl::ParameterSet const &)> map_type;
+    // Destination factory for loading destinations dynamically
+    struct ELdestinationFactory
+    {
+      typedef std::map<std::string, ELdestination*(*)(std::string const &, fhicl::ParameterSet const &)> map_type;
 
-public:
-  static void reg( std::string type_str,
-      ELdestination* (*f)(std::string const &, fhicl::ParameterSet const &));
+    public:
+      static void reg( std::string type_str,
+                       ELdestination* (*f)(std::string const &, fhicl::ParameterSet const &));
 
-  static ELdestination * createInstance ( std::string const & type,
-      std::string const & name,
-      fhicl::ParameterSet const & pset );
+      static ELdestination * createInstance ( std::string const & type,
+                                              std::string const & name,
+                                              fhicl::ParameterSet const & pset );
 
-private:
-  ELdestinationFactory() {};
+    private:
+      ELdestinationFactory() {};
 
-  static map_type * getMap()
-  {
-    if(!map) map = new map_type;
-    return map;
-  }
+      static map_type * getMap()
+      {
+        if(!map) map = new map_type;
+        return map;
+      }
 
-  static map_type * map;
-};
+      static map_type * map;
+    };
 
-}        // end of namespace service
+  }        // end of namespace service
 }        // end of namespace mf
 
 

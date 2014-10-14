@@ -39,7 +39,6 @@ MessageLogger
 MessageLoggerScribe
 MessageServicePresence
 MsgContext
-NamedDestination
 ThreadSafeErrorLog
 
 \subsection modules Modules

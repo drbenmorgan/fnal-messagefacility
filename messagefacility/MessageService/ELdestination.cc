@@ -7,11 +7,16 @@
 #include "messagefacility/MessageService/ELdestination.h"
 
 #include "messagefacility/MessageService/ELdestControl.h"
+
 #include <fstream>
 #include <iostream>
 
 // Possible Traces:
 // #define ELdestinationCONSTRUCTOR_TRACE
+
+std::string const 
+cet::PluginTypeDeducer<mf::service::ELdestination>::
+value = "ELdestination";
 
 namespace mf {
 namespace service {
@@ -287,3 +292,4 @@ ELdestinationFactory::createInstance (std::string const & type_str,
 
 } // end of namespace service
 } // end of namespace mf
+

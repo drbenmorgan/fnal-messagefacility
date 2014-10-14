@@ -42,8 +42,8 @@ namespace service {
 // ----------------------------------------------------------------------
 
 
-  ELdestControl::ELdestControl( std::unique_ptr<ELdestination>& dest )
-    : d ( dest.get() )
+  ELdestControl::ELdestControl( cet::exempt_ptr<ELdestination> dest )
+    : d ( dest )
   {
 #ifdef ELdestinationCONSTRUCTOR_TRACE
     std::cerr << "Constructor for ELdestControl\n";
@@ -65,12 +65,12 @@ namespace service {
     std::cerr << "Destructor for ELdestControl\n";
 #endif
   }  // ~ELdestControl()
-  
+
 
   // ----------------------------------------------------------------------
   // Behavior control methods invoked by the framework
   // ----------------------------------------------------------------------
-  
+
 ELdestControl & ELdestControl::setThreshold( const ELseverityLevel & sv )  {
   if (d) d->threshold = sv;
   return  * this;

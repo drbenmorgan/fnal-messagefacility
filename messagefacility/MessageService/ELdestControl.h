@@ -35,109 +35,111 @@
 #include "messagefacility/MessageLogger/ELseverityLevel.h"
 #include "messagefacility/MessageLogger/ErrorObj.h"
 
+#include "cetlib/exempt_ptr.h"
+
 #include <memory>
 
 
 namespace mf {
-namespace service {
+  namespace service {
 
-// ----------------------------------------------------------------------
-// prerequisite classes:
-// ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // prerequisite classes:
+    // ----------------------------------------------------------------------
 
-class ELdestination;
+    class ELdestination;
 
-// ----------------------------------------------------------------------
-// ELdestControl:
-// ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // ELdestControl:
+    // ----------------------------------------------------------------------
 
-class ELdestControl  {
+    class ELdestControl  {
 
-public:
-  ELdestControl( std::unique_ptr<ELdestination>& dest );
-  ELdestControl();
-  virtual ~ELdestControl();
+    public:
+      ELdestControl( cet::exempt_ptr<ELdestination> dest );
+      ELdestControl();
+      virtual ~ELdestControl();
 
-  // -----  Behavior control methods invoked by the framework:
-  //
-  virtual ELdestControl & setThreshold( const ELseverityLevel & sv );
-  virtual ELdestControl & setTraceThreshold( const ELseverityLevel & sv );
-  virtual ELdestControl & setLimit( const ELstring & s, int n );
-  virtual ELdestControl & setLimit( const ELseverityLevel & sv, int n );
-  virtual ELdestControl & setInterval( const ELstring & s, int interval );
-  virtual ELdestControl & setInterval( const ELseverityLevel& sv, int interval);
-  virtual ELdestControl & setTimespan( const ELstring& s, int n );
-  virtual ELdestControl & setTimespan( const ELseverityLevel & sv, int n );
+      // -----  Behavior control methods invoked by the framework:
+      //
+      virtual ELdestControl & setThreshold( const ELseverityLevel & sv );
+      virtual ELdestControl & setTraceThreshold( const ELseverityLevel & sv );
+      virtual ELdestControl & setLimit( const ELstring & s, int n );
+      virtual ELdestControl & setLimit( const ELseverityLevel & sv, int n );
+      virtual ELdestControl & setInterval( const ELstring & s, int interval );
+      virtual ELdestControl & setInterval( const ELseverityLevel& sv, int interval);
+      virtual ELdestControl & setTimespan( const ELstring& s, int n );
+      virtual ELdestControl & setTimespan( const ELseverityLevel & sv, int n );
 
-  virtual ELdestControl & setTableLimit( int n );
+      virtual ELdestControl & setTableLimit( int n );
 
-  // -----  Select output format options:
-  //
-  virtual void suppressText();           virtual void includeText();  // $$ jvr
-  virtual void suppressModule();         virtual void includeModule();
-  virtual void suppressSubroutine();     virtual void includeSubroutine();
-  virtual void suppressTime();           virtual void includeTime();
-  virtual void suppressMillisecond();    virtual void includeMillisecond();
-  virtual void suppressContext();        virtual void includeContext();
-  virtual void suppressSerial();         virtual void includeSerial();
-  virtual void useFullContext();         virtual void useContext();
-  virtual void separateTime();           virtual void attachTime();
-  virtual void separateEpilogue();       virtual void attachEpilogue();
-  virtual void noTerminationSummary();
-  virtual int  setLineLength(int len);   virtual int  getLineLength() const;
+      // -----  Select output format options:
+      //
+      virtual void suppressText();           virtual void includeText();  // $$ jvr
+      virtual void suppressModule();         virtual void includeModule();
+      virtual void suppressSubroutine();     virtual void includeSubroutine();
+      virtual void suppressTime();           virtual void includeTime();
+      virtual void suppressMillisecond();    virtual void includeMillisecond();
+      virtual void suppressContext();        virtual void includeContext();
+      virtual void suppressSerial();         virtual void includeSerial();
+      virtual void useFullContext();         virtual void useContext();
+      virtual void separateTime();           virtual void attachTime();
+      virtual void separateEpilogue();       virtual void attachEpilogue();
+      virtual void noTerminationSummary();
+      virtual int  setLineLength(int len);   virtual int  getLineLength() const;
 
-  virtual void filterModule    ( ELstring const & moduleName );
-  virtual void excludeModule   ( ELstring const & moduleName );
-  virtual void respondToModule ( ELstring const & moduleName );
-  virtual void ignoreModule    ( ELstring const & moduleName );
+      virtual void filterModule    ( ELstring const & moduleName );
+      virtual void excludeModule   ( ELstring const & moduleName );
+      virtual void respondToModule ( ELstring const & moduleName );
+      virtual void ignoreModule    ( ELstring const & moduleName );
 
-  virtual ELdestControl & clearSummary();
-  virtual ELdestControl & wipe();
-  virtual ELdestControl & zero();
+      virtual ELdestControl & clearSummary();
+      virtual ELdestControl & wipe();
+      virtual ELdestControl & zero();
 
-  virtual ELdestControl & setPreamble( const ELstring & preamble );
-  virtual ELdestControl & setNewline( const ELstring & newline );
+      virtual ELdestControl & setPreamble( const ELstring & preamble );
+      virtual ELdestControl & setNewline( const ELstring & newline );
 
-  // -----  Active methods invoked by the framework:
-  //
+      // -----  Active methods invoked by the framework:
+      //
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wwrite-strings"
-  virtual void summary( ELdestControl & dest, char * title="" );
-  virtual void summary( std::ostream  & os  , char * title="" );
-  virtual void summary( ELstring      & s   , char * title="" );
+      virtual void summary( ELdestControl & dest, char * title="" );
+      virtual void summary( std::ostream  & os  , char * title="" );
+      virtual void summary( ELstring      & s   , char * title="" );
 #pragma GCC diagnostic pop
-  virtual void summary( );
-  virtual void summaryForJobReport( std::map<std::string, double> & sm);
+      virtual void summary( );
+      virtual void summaryForJobReport( std::map<std::string, double> & sm);
 
-  virtual std::map<ELextendedID , StatsCount> statisticsMap() const;
+      virtual std::map<ELextendedID , StatsCount> statisticsMap() const;
 
-  virtual bool log( mf::ErrorObj & msg );  // Backdoor to log a formed message
-                                            // to only this destination.
+      virtual bool log( mf::ErrorObj & msg );  // Backdoor to log a formed message
+      // to only this destination.
 
-  virtual void changeFile (std::ostream & os);
-  virtual void changeFile (const ELstring & filename);
-  virtual void flush();
+      virtual void changeFile (std::ostream & os);
+      virtual void changeFile (const ELstring & filename);
+      virtual void flush();
 
-  // -----  Helper methods invoked by other ErrorLogger classes
+      // -----  Helper methods invoked by other ErrorLogger classes
 
-  virtual void summarization( const ELstring & title
-                            , const ELstring & sumLines
-                            );
+      virtual void summarization( const ELstring & title
+                                  , const ELstring & sumLines
+                                  );
 
-  ELstring getNewline() const;
+      ELstring getNewline() const;
 
-  // -----  Data implementing the trivial handle pattern:
-  //
-protected:
-  ELdestination* d; // destination owned by ELadministrator
+      // -----  Data implementing the trivial handle pattern:
+      //
+    protected:
+      cet::exempt_ptr<ELdestination> d; // destination owned by ELadministrator
 
-};  // ELdestControl
-
-
-// ----------------------------------------------------------------------
+    };  // ELdestControl
 
 
-}        // end of namespace service
+    // ----------------------------------------------------------------------
+
+
+  }        // end of namespace service
 }        // end of namespace mf
 
 

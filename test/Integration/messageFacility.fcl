@@ -1,12 +1,18 @@
 # Configuration file for messageFacility test
 
-process_name: test
+process_name: ELpluginTest
 
 message : {
    destinations :  {
       log1 : { type : file }
       log2 : { type : cerr }
       log3 : { type : syslog }
+      log4 : { type : ELpluginTest }
+#      statistics : {
+#         dest1 : { type : cout }
+#         dest2 : { type : file }
+#         dest3 : { type : syslog }
+#      }
    }
 }
 

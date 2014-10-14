@@ -36,115 +36,111 @@
 namespace mf {
 
 
-// ----------------------------------------------------------------------
-// Prerequisite classes:
-// ----------------------------------------------------------------------
+  // ----------------------------------------------------------------------
+  // Prerequisite classes:
+  // ----------------------------------------------------------------------
 
-class ELcontextSupplier;
-class ErrorLog;
-class ELadministrator;
-class ELcout;
+  class ErrorLog;
+
+  // ----------------------------------------------------------------------
+  // ErrorObj:
+  // ----------------------------------------------------------------------
+
+  class ErrorObj  {
+
+  public:
+    // --- birth/death:
+    //
+    ErrorObj( const ELseverityLevel & sev,
+              const ELstring & id,
+              bool verbatim = false );
+    ErrorObj( const ErrorObj & orig );  // Same serial number and everything!
+    virtual ~ErrorObj();
+
+    // --- accessors:
+    //
+    int                    serial() const;
+    const ELextendedID &   xid() const;
+    const ELstring &       idOverflow() const;
+    timeval                timestamp() const;
+    const ELlist_string &  items() const;
+    bool                   reactedTo() const;
+    ELstring               fullText() const;
+    ELstring               context() const;
+    bool                   is_verbatim() const;
+
+    // mutators:
+    //
+    virtual void  setSeverity  ( const ELseverityLevel & sev );
+    virtual void  setID        ( const ELstring & ID );
+    virtual void  setModule    ( const ELstring & module );
+    virtual void  setSubroutine( const ELstring & subroutine );
+    virtual void  setContext   ( const ELstring & context );
+    virtual void  setProcess   ( const ELstring & proc );
+    virtual void  setHostName  ( const ELstring & hostname );
+    virtual void  setHostAddr  ( const ELstring & hostaddr );
+    virtual void  setApplication(const ELstring & application );
+    virtual void  setPID       ( long             pid );
+    virtual void  setTimestamp ( const timeval & t );
+    //-| process is always determined through ErrorLog or
+    //-| an ELdestControl, both of which talk to ELadministrator.
+
+    // -----  Methods for ErrorLog or for physicists logging errors:
+    //
+    template< class T >
+      inline ErrorObj &  opltlt ( const T & t );
+    ErrorObj &  opltlt ( const char s[] );
+    inline ErrorObj &  operator<< ( std::ostream&(*f)(std::ostream&) );
+    inline ErrorObj &  operator<< ( std::ios_base&(*f)(std::ios_base&) );
+
+    virtual ErrorObj &  eo_emit( const ELstring & txt );
+
+    // ---  mutators for use by ELadministrator and ELtsErrorLog
+    //
+    virtual void  set( const ELseverityLevel & sev, const ELstring & id );
+    virtual void  clear();
+    virtual void  setReactedTo ( bool r );
+
+  private:
+    // ---  class-wide serial number stamper:
+    //
+    static int     ourSerial;
+
+    // ---  data members:
+    //
+    int            mySerial;
+    ELextendedID   myXid;
+    ELstring       myIdOverflow;
+    timeval        myTimestamp;
+    ELlist_string  myItems;
+    bool           myReactedTo;
+    ELstring       myContext;
+    std::ostringstream myOs;
+    std::string    emptyString;
+    bool           verbatim;
+
+  };  // ErrorObj
 
 
-// ----------------------------------------------------------------------
-// ErrorObj:
-// ----------------------------------------------------------------------
+  // ----------------------------------------------------------------------
 
-class ErrorObj  {
 
-public:
-  // --- birth/death:
-  //
-  ErrorObj( const ELseverityLevel & sev,
-            const ELstring & id,
-            bool verbatim = false );
-  ErrorObj( const ErrorObj & orig );  // Same serial number and everything!
-  virtual ~ErrorObj();
-
-  // --- accessors:
-  //
-  int                    serial() const;
-  const ELextendedID &   xid() const;
-  const ELstring &       idOverflow() const;
-  timeval                timestamp() const;
-  const ELlist_string &  items() const;
-  bool                   reactedTo() const;
-  ELstring               fullText() const;
-  ELstring               context() const;
-  bool                   is_verbatim() const;
-
-  // mutators:
-  //
-  virtual void  setSeverity  ( const ELseverityLevel & sev );
-  virtual void  setID        ( const ELstring & ID );
-  virtual void  setModule    ( const ELstring & module );
-  virtual void  setSubroutine( const ELstring & subroutine );
-  virtual void  setContext   ( const ELstring & context );
-  virtual void  setProcess   ( const ELstring & proc );
-  virtual void  setHostName  ( const ELstring & hostname );
-  virtual void  setHostAddr  ( const ELstring & hostaddr );
-  virtual void  setApplication(const ELstring & application );
-  virtual void  setPID       ( long             pid );
-  virtual void  setTimestamp ( const timeval & t );
-                //-| process is always determined through ErrorLog or
-                //-| an ELdestControl, both of which talk to ELadministrator.
-
-  // -----  Methods for ErrorLog or for physicists logging errors:
+  // -----  Method for ErrorLog or for physicists logging errors:
   //
   template< class T >
-  inline ErrorObj &  opltlt ( const T & t );
-         ErrorObj &  opltlt ( const char s[] );
-  inline ErrorObj &  operator<< ( std::ostream&(*f)(std::ostream&) );
-  inline ErrorObj &  operator<< ( std::ios_base&(*f)(std::ios_base&) );
+    inline ErrorObj &  operator<<( ErrorObj & e, const T & t );
 
-  virtual ErrorObj &  eo_emit( const ELstring & txt );
-
-  // ---  mutators for use by ELadministrator and ELtsErrorLog
-  //
-  virtual void  set( const ELseverityLevel & sev, const ELstring & id );
-  virtual void  clear();
-  virtual void  setReactedTo ( bool r );
-
-private:
-  // ---  class-wide serial number stamper:
-  //
-  static int     ourSerial;
-
-  // ---  data members:
-  //
-  int            mySerial;
-  ELextendedID   myXid;
-  ELstring       myIdOverflow;
-  timeval        myTimestamp;
-  ELlist_string  myItems;
-  bool           myReactedTo;
-  ELstring       myContext;
-  std::ostringstream myOs;
-  std::string    emptyString;
-  bool           verbatim;
-
-};  // ErrorObj
+  ErrorObj &  operator<<( ErrorObj & e, const char s[] );
 
 
-// ----------------------------------------------------------------------
+  // ----------------------------------------------------------------------
 
 
-// -----  Method for ErrorLog or for physicists logging errors:
-//
-template< class T >
-inline ErrorObj &  operator<<( ErrorObj & e, const T & t );
+  // ----------------------------------------------------------------------
+  // Global functions:
+  // ----------------------------------------------------------------------
 
-ErrorObj &  operator<<( ErrorObj & e, const char s[] );
-
-
-// ----------------------------------------------------------------------
-
-
-// ----------------------------------------------------------------------
-// Global functions:
-// ----------------------------------------------------------------------
-
-void endmsg( ErrorLog & );
+  void endmsg( ErrorLog & );
 
 }        // end of namespace edm
 
@@ -156,7 +152,7 @@ void endmsg( ErrorLog & );
 // The icc file contains the template for operator<< (ErrorObj&, T)
 
 #define ERROROBJ_ICC
-  #include "messagefacility/MessageLogger/ErrorObj.icc"
+#include "messagefacility/MessageLogger/ErrorObj.icc"
 #undef  ERROROBJ_ICC
 
 
@@ -164,3 +160,7 @@ void endmsg( ErrorLog & );
 
 
 #endif // MessageLogger_ErrorObj_h
+
+// Local variables:
+// mode: c++
+// End:

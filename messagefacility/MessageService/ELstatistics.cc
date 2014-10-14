@@ -153,14 +153,6 @@ ELstatistics::~ELstatistics()  {
 // Methods invoked by the ELadministrator
 // ----------------------------------------------------------------------
 
-ELstatistics *
-ELstatistics::clone() const  {
-
-  return  new ELstatistics( *this );
-
-}  // clone()
-
-
 bool  ELstatistics::log( const mf::ErrorObj & msg )  {
 
   #ifdef ELstatsLOG_TRACE
@@ -453,7 +445,7 @@ void  ELstatistics::summaryForJobReport (std::map<std::string, double> & sm) {
 
   struct part3  {
     long n, t;
-    part3() : n(0L), t(0L)  { ; }
+    part3() : n(0L), t(0L)  {}
   }  p3[ELseverityLevel::nLevels];
 
   std::set<std::string>::iterator gcEnd = groupedCategories.end();
