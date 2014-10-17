@@ -17,5 +17,5 @@ cet_make_library( LIBRARY_NAME MF_MessageLogger
                   ${Boost_THREAD_LIBRARY} )
 
 # install files
-install_headers( EXTRAS classes.h )
+install_headers()
 install_source()

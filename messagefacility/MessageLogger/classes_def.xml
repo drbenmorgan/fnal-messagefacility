@@ -1,6 +1,0 @@
-<lcgdict>
- <class name="mf::ErrorSummaryEntry"/>
- <class name="mf::ELseverityLevel"/>
- <class name="std::vector<mf::ErrorSummaryEntry>"/>
-</lcgdict>
-
