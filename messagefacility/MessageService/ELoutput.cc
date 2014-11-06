@@ -64,7 +64,7 @@
 //  5 3/27/09  mf       Properly treat charsOnLine, which had been fouled due to
 //                      change 3.  In log() and emit().
 //
-//  6 9/26/14 kjk       Put log() code into do_log() so that ELsyslog can call 
+//  6 9/26/14 kjk       Put log() code into do_log() so that ELsyslog can call
 //                      do_log().
 // ----------------------------------------------------------------------
 
@@ -295,13 +295,13 @@ namespace mf {
     // ----------------------------------------------------------------------
     // Protected ELoutput functions:
     // ----------------------------------------------------------------------
- 
+
     bool ELoutput::do_log( const mf::ErrorObj & msg )  {
 
 #ifdef ELoutputTRACE_LOG
       std::cerr << "    =:=:=: Log to an ELoutput \n";
 #endif
-      
+
       xid = msg.xid();      // Save the xid.
 
       // See if this message is to be acted upon, and add it to limits table
@@ -480,7 +480,7 @@ namespace mf {
             if (item_count==2) {
               if (!(*it).compare("--")) {
                 ++it; ++it; ++it; item_count+=3;
-                if (!insertNewlineAfterHeader) emit( *os, "", true);
+                if (!insertNewlineAfterHeader) emit( oss, "", true);
                 continue;
               }
             }
