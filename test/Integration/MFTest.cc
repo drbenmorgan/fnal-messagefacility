@@ -53,17 +53,22 @@ int main()
 
   // Start MessageFacility Service
   mf::StartMessageFacility(
-			   mf::MessageFacilityService::MultiThread,
-			   main_pset.get<fhicl::ParameterSet>("message")
+                           mf::MessageFacilityService::MultiThread,
+                           main_pset.get<fhicl::ParameterSet>("message")
                            );
-  
+
   // Set module name for the main thread
   mf::SetApplicationName("MessageFacility");
   mf::SetModuleName("MFTest");
   mf::SetContext("pre-event");
-  
+
   // Start up another logger in a separate thread
   //boost::thread loggerThread(anotherLogger);
+
+  // Memory Check output
+  mf::LogWarning("MemoryCheck") << "MemoryCheck: module G4:g4run VSIZE 1030.34 0 RSS 357.043 0.628906";
+  mf::LogWarning("MemoryCheck") << "MemoryCheck: module G4:g4run VSIZE 1030.34 0 RSS 357.25 0.199219";
+  mf::LogWarning("MemoryCheck") << "MemoryCheck: module G4:g4run VSIZE 1030.34 5.2 RSS 357.453 0.1875";
 
   mf::LogInfo linfo("info");
   linfo << " vint contains: ";
@@ -82,7 +87,7 @@ int main()
   // Issue messages with different severity levels
   mf::LogError("err1|err2") << "This is an ERROR message.";
   mf::LogWarning("warning") << "Followed by a WARNING message.";
-  
+
   // Switch context
   mf::SetContext("pro-event");
 

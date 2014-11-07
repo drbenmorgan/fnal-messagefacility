@@ -31,7 +31,6 @@ ARGF.each do |l|
     
     # Create header table 
     db.execute( "CREATE TABLE IF NOT EXISTS MessageHeaders(
-    Id INTEGER PRIMARY KEY,
     Timestamp TEXT, 
     Hostname TEXT, 
     Hostaddress TEXT,
@@ -80,7 +79,6 @@ ARGF.each do |l|
         
         # TimeEvent db
         db.execute( "CREATE TABLE IF NOT EXISTS TimeEvent(
-        Id INTEGER PRIMARY KEY,
         HeaderId INTEGER,
         Run    INTEGER,
         Subrun INTEGER,
@@ -114,7 +112,6 @@ ARGF.each do |l|
         
         #TimeModule db
         db.execute( "CREATE TABLE IF NOT EXISTS TimeModule(
-       Id INTEGER PRIMARY KEY,
         HeaderId INTEGER,
         Run    INTEGER,
         Subrun INTEGER,
@@ -132,6 +129,7 @@ ARGF.each do |l|
 
     elsif mem_delim_present && message.match("MemoryCheck:")
 
+      type       = String.new
       modulename = String.new
       modulelabel= String.new
       vsize      = -1
@@ -143,7 +141,8 @@ ARGF.each do |l|
       payload=message.slice((mem_delim_present+1)..(message.length) ).split(%r{\s|:})
 
       payload.each_with_index do |e,i|
-        if e.eql?("module")
+        if i.eql?(1)
+          type       = payload[i]
           modulename = payload[i+1]
           modulelabel= payload[i+2]
         elsif e.eql?("VSIZE")
@@ -159,8 +158,8 @@ ARGF.each do |l|
 
       #MemoryCheck db
       db.execute( "CREATE TABLE IF NOT EXISTS MemoryCheck(
-        Id INTEGER PRIMARY KEY,
          HeaderId INTEGER,
+         Type TEXT,
          ModuleName TEXT,
          ModuleLabel TEXT,
          Vsize FLOAT,
@@ -170,21 +169,28 @@ ARGF.each do |l|
          Remainder TEXT 
          )" )
       
-      db.execute( "INSERT INTO MemoryCheck(HeaderId,ModuleName,ModuleLabel,Vsize,VsizeDelta,RSS,RSSDelta,Remainder) 
-                   Values(?,?,?,?,?,?,?,?)",
-                  [hid,modulename,modulelabel,vsize,vsizedelta,rss,rssdelta,remainder] )
+      db.execute( "INSERT INTO MemoryCheck(HeaderId,Type,ModuleName,ModuleLabel,Vsize,VsizeDelta,RSS,RSSDelta,Remainder) 
+                   Values(?,?,?,?,?,?,?,?,?)",
+                  [hid,type,modulename,modulelabel,vsize,vsizedelta,rss,rssdelta,remainder] )
       
     else # everything else  
 
       # Create general message table
       db.execute( "CREATE TABLE IF NOT EXISTS UserMessages(
-      Id INTEGER PRIMARY KEY,
       HeaderId INTEGER,
       Message TEXT
       )" )
       
       db.execute( "INSERT INTO UserMessages(HeaderId, Message) VALUES( ?,? )",
-                  [ hid, message ] )
+                  [ hid, 
+                    message.sub(%r{^\#012},"") # Beginning of user
+                                               # message begins with a
+                                               # newline ("#012"
+                                               # according to syslog).
+                                               # So let's strip it for
+                                               # now and fix the C++
+                                               # code later.
+                  ] ) 
     end
 
   rescue SQLite3::Exception => e
