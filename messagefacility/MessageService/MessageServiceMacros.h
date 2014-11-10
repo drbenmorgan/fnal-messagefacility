@@ -3,13 +3,15 @@
 
 #include "cetlib/PluginTypeDeducer.h"
 #include "messagefacility/MessageService/ELdestination.h"
+#include "fhiclcpp/ParameterSet.h"
 
 #include <memory>
 
 #define DEFINE_MF_PLUGIN_MAKER(klass)                                   \
   extern "C" {                                                          \
-    auto makePlugin()                                                   \
-    { return std::unique_ptr<mf::service::ELdestination>( new klass() );} \
+    auto makePlugin( const fhicl::ParameterSet& pset,                   \
+                     std::shared_ptr<std::ostream>& os_sp)              \
+    { return std::unique_ptr<mf::service::ELdestination>( new klass( pset, *os_sp) );} \
   }
 
 #define DEFINE_MF_PLUGIN(klass)                                    \

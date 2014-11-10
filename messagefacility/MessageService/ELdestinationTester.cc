@@ -12,6 +12,7 @@
 #include "cetlib/filepath_maker.h"
 
 #include "messagefacility/MessageLogger/MessageLogger.h"
+#include "messagefacility/MessageService/ELdestinationTester.h"
 
 void anotherLogger()
 {
@@ -24,10 +25,10 @@ void anotherLogger()
   return;
 }
 
-int main()
+int main(int, char* argv[])
 {
 
-  const std::string config_string ("messageFacility.fcl");
+  const std::string config_string (argv[1]);
   cet::filepath_lookup_nonabsolute filepath("FHICL_FILE_PATH");
 
   fhicl::ParameterSet main_pset;

@@ -1,0 +1,8 @@
+# Configuration file for messageFacility test
+
+process_name: TestCerrDest
+
+message : {
+   destinations : { log : { type : cerr } }
+}
+

@@ -2,6 +2,8 @@
 #include "messagefacility/MessageLogger/ErrorObj.h"
 #include "messagefacility/MessageService/MessageServiceMacros.h"
 
+#include "fhiclcpp/ParameterSet.h"
+
 #include <iostream>
 
 // ----------------------------------------------------------------------
@@ -16,7 +18,7 @@
 // }
 // DEFINE_MF_PLUGIN(something::ELplugin)
 //
-// At a minimum, the class needs to have a 
+// At a minimum, the class needs to have a
 //
 //     bool log( const mf::ErrorObj & msg ) override;
 //
@@ -30,21 +32,21 @@
 
 
 namespace mfPluginTest {
-  
+
   // Declaration
   class ELpluginTest : public mf::service::ELdestination {
   public:
-    
-    ELpluginTest() = default;
-    
+
+    ELpluginTest(const fhicl::ParameterSet&,std::ostream&){}
+
     virtual bool log( const mf::ErrorObj & msg ) override {
       return do_log( msg );
     }
-    
+
   private:
-    
+
     bool do_log( const mf::ErrorObj & msg );
-    
+
   };
 
   // Implementation
