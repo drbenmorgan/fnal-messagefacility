@@ -124,38 +124,10 @@ ELdestControl & ELdestControl::setTableLimit( int n )  {
   return  * this;
 }
 
+  void ELdestControl::formatSuppress(mf::flag_enum FLAG) { if (d) d->format.suppress( FLAG ); }
+  void ELdestControl::formatInclude (mf::flag_enum FLAG) { if (d) d->format.include ( FLAG ); }
 
-void ELdestControl::suppressText()  { if (d) d->suppressText(); }  // $$ jvr
-void ELdestControl::includeText()   { if (d) d->includeText();  }
-
-void ELdestControl::suppressModule()  { if (d) d->suppressModule(); }
-void ELdestControl::includeModule()   { if (d) d->includeModule();  }
-
-void ELdestControl::suppressSubroutine()  { if (d) d->suppressSubroutine(); }
-void ELdestControl::includeSubroutine()   { if (d) d->includeSubroutine();  }
-
-void ELdestControl::suppressTime()  { if (d) d->suppressTime(); }
-void ELdestControl::includeTime()   { if (d) d->includeTime();  }
-
-void ELdestControl::suppressMillisecond()  { if (d) d->suppressMillisecond(); }
-void ELdestControl::includeMillisecond()   { if (d) d->includeMillisecond();  }
-
-void ELdestControl::suppressContext()  { if (d) d->suppressContext(); }
-void ELdestControl::includeContext()   { if (d) d->includeContext();  }
-
-void ELdestControl::suppressSerial()  { if (d) d->suppressSerial(); }
-void ELdestControl::includeSerial()   { if (d) d->includeSerial();  }
-
-void ELdestControl::useFullContext()  { if (d) d->useFullContext(); }
-void ELdestControl::useContext()      { if (d) d->useContext();  }
-
-void ELdestControl::separateTime()  { if (d) d->separateTime(); }
-void ELdestControl::attachTime()    { if (d) d->attachTime();   }
-
-void ELdestControl::separateEpilogue()  { if (d) d->separateEpilogue(); }
-void ELdestControl::attachEpilogue()    { if (d) d->attachEpilogue();   }
-
-void ELdestControl::noTerminationSummary()  {if (d) d->noTerminationSummary(); }
+  void ELdestControl::noTerminationSummary()  {if (d) d->noTerminationSummary(); }
 
 ELdestControl & ELdestControl::setPreamble( const ELstring & preamble )  {
   if (d) d->preamble = preamble;

@@ -34,6 +34,7 @@
 #include "messagefacility/MessageLogger/ELmap.h"
 #include "messagefacility/MessageLogger/ELseverityLevel.h"
 #include "messagefacility/MessageLogger/ErrorObj.h"
+#include "messagefacility/MessageService/MsgFormatSettings.h"
 
 #include "cetlib/exempt_ptr.h"
 
@@ -75,18 +76,13 @@ namespace mf {
 
       // -----  Select output format options:
       //
-      virtual void suppressText();           virtual void includeText();  // $$ jvr
-      virtual void suppressModule();         virtual void includeModule();
-      virtual void suppressSubroutine();     virtual void includeSubroutine();
-      virtual void suppressTime();           virtual void includeTime();
-      virtual void suppressMillisecond();    virtual void includeMillisecond();
-      virtual void suppressContext();        virtual void includeContext();
-      virtual void suppressSerial();         virtual void includeSerial();
-      virtual void useFullContext();         virtual void useContext();
-      virtual void separateTime();           virtual void attachTime();
-      virtual void separateEpilogue();       virtual void attachEpilogue();
+      void formatSuppress(mf::flag_enum FLAG);
+      void formatInclude (mf::flag_enum FLAG);
+
       virtual void noTerminationSummary();
-      virtual int  setLineLength(int len);   virtual int  getLineLength() const;
+
+      virtual int  setLineLength(int len);
+      virtual int  getLineLength() const;
 
       virtual void filterModule    ( ELstring const & moduleName );
       virtual void excludeModule   ( ELstring const & moduleName );
