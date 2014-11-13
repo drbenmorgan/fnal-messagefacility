@@ -116,27 +116,6 @@ ELstatistics::ELstatistics( int spaceLimit, std::ostream & osp )
 }  // ELstatistics()
 
 
-ELstatistics::ELstatistics( const ELstatistics & orig)
-: ELdestination     (                         )
-, tableLimit        ( orig.tableLimit         )
-, stats             ( orig.stats              )
-, updatedStats      ( orig.updatedStats       )
-, termStream        ( orig.termStream         )
-, printAtTermination( orig.printAtTermination )
-{
-
-  #ifdef ELstatisticsCONSTRUCTOR_TRACE
-    std::cerr << "Copy constructor for ELstatistics()\n";
-  #endif
-
-  ignoreMostModules    = orig.ignoreMostModules;
-  respondToThese       = orig.respondToThese;
-  respondToMostModules = orig.respondToMostModules;
-  ignoreThese          = orig.ignoreThese;
-
-}  // ELstatistics()
-
-
 ELstatistics::~ELstatistics()  {
 
   #ifdef ELstatisticsCONSTRUCTOR_TRACE

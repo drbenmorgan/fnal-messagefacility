@@ -9,7 +9,7 @@ cet_make_exec( ELdestinationTester
                SOURCE ELdestinationTester.cc
                LIBRARIES MF_MessageLogger )
 
-# add_subdirectory(plugins)
+add_subdirectory(plugins)
 
 install_headers()
 install_source()

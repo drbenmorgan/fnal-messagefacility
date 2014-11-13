@@ -21,111 +21,75 @@
 namespace mf {
 
 
-// ----------------------------------------------------------------------
-// prerequisite classes:
-// ----------------------------------------------------------------------
+  // ----------------------------------------------------------------------
+  // prerequisite classes:
+  // ----------------------------------------------------------------------
 
-class ErrorObj;
-namespace service {
-class ELdestControl;
+  class ErrorObj;
 
+  namespace service {
 
-// ----------------------------------------------------------------------
-// ELfwkJobReport:
-// ----------------------------------------------------------------------
+    class ELdestControl;
 
-class ELfwkJobReport : public ELdestination  {
+    // ----------------------------------------------------------------------
+    // ELfwkJobReport:
+    // ----------------------------------------------------------------------
 
-  friend class ELdestControl;
+    class ELfwkJobReport : public ELdestination  {
 
-public:
+      friend class ELdestControl;
 
-  // ---  Birth/death:
-  //
-  ELfwkJobReport();
-  ELfwkJobReport( std::ostream & os, bool emitAtStart = true );
-  ELfwkJobReport( const ELstring & fileName, bool emitAtStart = true );
-  ELfwkJobReport( const ELfwkJobReport & orig );
-  virtual ~ELfwkJobReport();
+    public:
 
-  // ---  Methods invoked by the ELadministrator:
-  //
-public:
-  virtual
-  ELfwkJobReport *
-  clone() const;
-  // Used by attach() to put the destination on the ELadministrators list
-                //-| There is a note in Design Notes about semantics
-                //-| of copying a destination onto the list:  ofstream
-                //-| ownership is passed to the new copy.
+      // ---  Birth/death:
+      //
+      ELfwkJobReport();
+      ELfwkJobReport( std::ostream & os, bool emitAtStart = true );
+      ELfwkJobReport( const ELstring & fileName, bool emitAtStart = true );
 
-  virtual bool log( const ErrorObj & msg );
+      virtual ~ELfwkJobReport();
 
-  // ---  Methods invoked through the ELdestControl handle:
-  //
-protected:
-    // trivial clearSummary(), wipe(), zero() from base class
-    // trivial three summary(..) from base class
+      // Copy c'tor/assignment not allowed
+      ELfwkJobReport( const ELfwkJobReport & orig ) = delete;
+      ELfwkJobReport & operator=( const ELfwkJobReport & orig );
 
-  // ---  Data affected by methods of specific ELdestControl handle:
-  //
-protected:
-    // ELfwkJobReport uses the generic ELdestControl handle
+    public:
 
-  // ---  Internal Methods -- Users should not invoke these:
-  //
-protected:
-  virtual void emit( const ELstring & s, bool nl=false );
+      virtual bool log( const ErrorObj & msg );
 
-  virtual void suppressTime();        virtual void includeTime();
-  virtual void suppressModule();      virtual void includeModule();
-  virtual void suppressSubroutine();  virtual void includeSubroutine();
-  virtual void suppressText();        virtual void includeText();
-  virtual void suppressContext();     virtual void includeContext();
-  virtual void suppressSerial();      virtual void includeSerial();
-  virtual void useFullContext();      virtual void useContext();
-  virtual void separateTime();        virtual void attachTime();
-  virtual void separateEpilogue();    virtual void attachEpilogue();
+      // ---  Internal Methods -- Users should not invoke these:
+      //
+    protected:
+      void emit( const ELstring & s, bool nl=false );
 
-  virtual void summarization ( const ELstring & fullTitle
-                             , const ELstring & sumLines );
+      virtual void summarization ( const ELstring & fullTitle,
+                                   const ELstring & sumLines );
 
-  virtual void changeFile (std::ostream & os);
-  virtual void changeFile (const ELstring & filename);
-  virtual void flush();
-  virtual void finish();
+      virtual void changeFile (std::ostream & os);
+      virtual void changeFile (const ELstring & filename);
+      virtual void flush();
+      virtual void finish();
 
 
-protected:
-  // --- member data:
-  //
-  std::shared_ptr<std::ostream> os;
-  int                             charsOnLine;
-  ELextendedID                    xid;
+    protected:
+      // --- member data:
+      //
+      std::shared_ptr<std::ostream> os;
+      int                           charsOnLine;
+      ELextendedID                  xid;
 
-  bool wantTimestamp
-  ,    wantModule
-  ,    wantSubroutine
-  ,    wantText
-  ,    wantSomeContext
-  ,    wantSerial
-  ,    wantFullContext
-  ,    wantTimeSeparate
-  ,    wantEpilogueSeparate
-  ;
-
-  // --- Verboten method:
-  //
-  ELfwkJobReport & operator=( const ELfwkJobReport & orig );
-
-};  // ELfwkJobReport
+    };  // ELfwkJobReport
 
 
-// ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
 
 
-}        // end of namespace service
+  }        // end of namespace service
 }        // end of namespace mf
 
 
 #endif // FWCore_MessageService_ELfwkJobReport_h
+
+// Local variables:
+// mode: c++
+// End:

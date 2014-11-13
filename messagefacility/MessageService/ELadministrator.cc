@@ -84,7 +84,7 @@
 #include "messagefacility/MessageService/ELadministrator.h"
 #include "messagefacility/MessageService/ELdestination.h"
 #include "messagefacility/MessageService/ELcontextSupplier.h"
-#include "messagefacility/MessageService/ELoutput.h"
+#include "messagefacility/MessageService/ELostreamOutput.h"
 
 #include "messagefacility/Utilities/exception.h"
 
@@ -332,7 +332,7 @@ void ELadministrator::finishMsg()  {
   if ( sinks().begin() == sinks().end() )  {                   // $$ JV:1
     std::cerr << "\nERROR LOGGED WITHOUT DESTINATION!\n";
     std::cerr << "Attaching destination \"cerr\" to ELadministrator by default\n\n";
-    this->sinks().emplace_back( new ELoutput(cerr) );
+    this->sinks().emplace_back( std::make_unique<ELostreamOutput>(cerr) );
   }
 
   for ( auto& d : sinks() ) {

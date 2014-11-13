@@ -35,7 +35,7 @@ namespace service {
 // ----------------------------------------------------------------------
 
 ELcollected::ELcollected( const ELsender & snd )
-: ELoutput()
+: ELostreamOutput()
 , sender  ( snd.clone() )
 {
 
@@ -43,24 +43,7 @@ ELcollected::ELcollected( const ELsender & snd )
     std::cout << "Constructor for ELcollected(ELsender)\n";
   #endif
 
-  // Unlike ELoutput, we do not emit Error Log established message.
-
-}  // ELcollected()
-
-
-ELcollected::ELcollected( const ELcollected & orig )
-: ELoutput( orig        )
-, sender  ( orig.sender->clone() )              // $$ mf 9/15/00
-{
-
-  #ifdef ELcollectedCONSTRUCTOR_TRACE
-    std::cout << "Copy constructor for ELcollected\n";
-  #endif
-
-  ignoreMostModules    = orig.ignoreMostModules;
-  respondToThese       = orig.respondToThese;
-  respondToMostModules = orig.respondToMostModules;
-  ignoreThese          = orig.ignoreThese;
+  // Unlike ELostreamOutput, we do not emit Error Log established message.
 
 }  // ELcollected()
 
@@ -73,21 +56,8 @@ ELcollected::~ELcollected()  {
 }  // ~ELcollected()
 
 
-
-// ----------------------------------------------------------------------
-// Methods invoked by the ELadministrator:
-// ----------------------------------------------------------------------
-
-ELcollected *
-ELcollected::clone() const  {
-
-  return  new ELcollected( *this );
-
-} // clone()
-
-
 // Remainder are from base class.
-
+
 // =======
 // intoBuf
 // =======
@@ -135,7 +105,7 @@ void ELcollected::emit( const ELstring & s, bool nl )  {
   if (s.length() == 0)  {
     if ( nl )  {
       intoBuf( newline );
-      charsOnLine = 0;
+      format.charsOnLine = 0;
     }
     return;
   }
@@ -222,7 +192,7 @@ bool ELcollected::log( const mf::ErrorObj & msg )  {
 
   // collected each item in the message:
   //
-  if ( wantText )  {
+    if ( format.want(TEXT) )  {
     ELlist_string::const_iterator it;
     for ( it = msg.items().begin();  it != msg.items().end();  ++it )  {
   #ifdef ELcollectedTRACE_LOG

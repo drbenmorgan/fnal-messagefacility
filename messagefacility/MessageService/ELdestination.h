@@ -31,6 +31,7 @@
 
 #include "messagefacility/MessageService/ELlimitsTable.h"
 #include "messagefacility/MessageService/ELset.h"
+#include "messagefacility/MessageService/MsgFormatSettings.h"
 
 #include "messagefacility/MessageLogger/ELstring.h"
 #include "messagefacility/MessageLogger/ErrorObj.h"
@@ -40,6 +41,7 @@
 #include "fhiclcpp/ParameterSet.h"
 
 namespace mf {
+
   namespace service {
     class ELdestination;
 
@@ -72,7 +74,10 @@ namespace mf {
 
     public:
 
-      ELdestination();
+      ELdestination(const fhicl::ParameterSet& pset);
+
+      ELdestination() : ELdestination( fhicl::ParameterSet() ) {}
+
       virtual ~ELdestination();
 
       // -----  Methods invoked by the ELadministrator:
@@ -84,6 +89,7 @@ namespace mf {
                                  const mf::ELstring & title,
                                  const mf::ELstring & sumLines );
 
+
       virtual ELstring getNewline() const;
 
       virtual bool switchChannel( const mf::ELstring & channelName );
@@ -93,6 +99,15 @@ namespace mf {
       // -----  Methods invoked through the ELdestControl handle:
       //
     protected:
+
+      void emit( std::ostream& os, const ELstring & s, const bool nl = false );
+
+      virtual bool checkSeverity(const mf::ErrorObj& msg);
+      virtual void fillPrefix(std::ostringstream& oss, const mf::ErrorObj& msg);
+      virtual void fillUsrMsg(std::ostringstream& oss, const mf::ErrorObj& msg);
+      virtual void fillSuffix(std::ostringstream& oss, const mf::ErrorObj& msg);
+      virtual void routePayload(const std::ostringstream& oss, const mf::ErrorObj& msg);
+
       virtual void clearSummary();
       virtual void wipe();
       virtual void zero();
@@ -119,22 +134,17 @@ namespace mf {
       // -----  Select output format options:
       //
     private:
-      virtual void suppressText();           virtual void includeText(); // $$ jvr
-      virtual void suppressModule();         virtual void includeModule();
-      virtual void suppressSubroutine();     virtual void includeSubroutine();
-      virtual void suppressTime();           virtual void includeTime();
-      virtual void suppressMillisecond();    virtual void includeMillisecond();
-      virtual void suppressContext();        virtual void includeContext();
-      virtual void suppressSerial();         virtual void includeSerial();
-      virtual void useFullContext();         virtual void useContext();
-      virtual void separateTime();           virtual void attachTime();
-      virtual void separateEpilogue();       virtual void attachEpilogue();
-      virtual void noTerminationSummary();
-      virtual int  setLineLength(int len);   virtual int  getLineLength() const;
+
+      virtual void noTerminationSummary(){}
+      virtual int  getLineLength() const;
+      virtual int  setLineLength(int len);
 
       // -----  Data affected by methods of the ELdestControl handle:
       //
     protected:
+
+      mf::MsgFormatSettings format;
+
       ELseverityLevel threshold;
       ELseverityLevel traceThreshold;
       ELlimitsTable   limits;
@@ -156,38 +166,13 @@ namespace mf {
       // -----  Verboten methods:
       //
     private:
-      ELdestination( const ELdestination & orig );
-      ELdestination& operator= ( const ELdestination & orig );
+      ELdestination( const ELdestination & orig ) = delete;
+      ELdestination& operator= ( const ELdestination & orig ) = delete;
 
     };  // ELdestination
 
     struct close_and_delete {
       void operator()(std::ostream* os) const;
-    };
-
-    // Destination factory for loading destinations dynamically
-    struct ELdestinationFactory
-    {
-      typedef std::map<std::string, ELdestination*(*)(std::string const &, fhicl::ParameterSet const &)> map_type;
-
-    public:
-      static void reg( std::string type_str,
-                       ELdestination* (*f)(std::string const &, fhicl::ParameterSet const &));
-
-      static ELdestination * createInstance ( std::string const & type,
-                                              std::string const & name,
-                                              fhicl::ParameterSet const & pset );
-
-    private:
-      ELdestinationFactory() {};
-
-      static map_type * getMap()
-      {
-        if(!map) map = new map_type;
-        return map;
-      }
-
-      static map_type * map;
     };
 
   }        // end of namespace service

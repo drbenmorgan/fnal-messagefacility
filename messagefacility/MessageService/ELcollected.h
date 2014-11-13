@@ -64,7 +64,7 @@
 //
 // ----------------------------------------------------------------------
 
-#include "messagefacility/MessageService/ELoutput.h"
+#include "messagefacility/MessageService/ELostreamOutput.h"
 #include "messagefacility/MessageService/ELsender.h"
 
 #include "messagefacility/MessageLogger/ELstring.h"
@@ -74,82 +74,69 @@
 #include <memory>
 
 namespace mf {
-namespace service {
+  namespace service {
 
 
-// ----------------------------------------------------------------------
-// prerequisite classes:
-// ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // prerequisite classes:
+    // ----------------------------------------------------------------------
 
-class ELoutput;
-class ELdestControl;
-
-
-// ----------------------------------------------------------------------
-// ELcollected:
-// ----------------------------------------------------------------------
-
-class ELcollected : public ELoutput  {
-
-  friend class ELdestControl;
-
-public:
-
-  // -----  Birth/death:
-  //
-  ELcollected( const ELsender & sender );
-  ELcollected( const ELcollected & orig );
-  ELcollected( ELoutput * d);
-  virtual ~ELcollected();
-
-  // -----  Methods invoked by the ELadministrator:
-  //
-public:
-  virtual
-  ELcollected *
-  clone() const;
-  // Used by attach() to put the destination on the ELadministrators list
-                //-| There is a note in Design Notes about semantics
-                //-| of copying a destination onto the list:  ofstream
-                //-| ownership is passed to the new copy.
-
-  virtual bool log( const mf::ErrorObj & msg );
-
-  // -----  Methods invoked through the ELdestControl handle:
-  //
-protected:
-    // trivial clearSummary(), wipe(), zero() from base class
-    // trivial three summary(..) from base class
-
-  // -----  Data fundamental to the ELcollected destination:
-  //
-
-  // -----  Data affected by methods of specific ELdestControl handle:
-  //
-protected:
-    // ELcollected uses the generic ELdestControl handle
-
-  // -----  Internal Methods -- Users should not invoke these:
-  //
-protected:
-  void emit( const ELstring & s, bool nl=false );
-
-  std::shared_ptr<ELsender> sender;
-
-  void intoBuf ( const ELstring & s );
-  void emitXid ( const ELextendedID & xid  );
-
-  ELstring buf;
+    class ELostreamOutput;
+    class ELdestControl;
 
 
-};  // ELcollected
+    // ----------------------------------------------------------------------
+    // ELcollected:
+    // ----------------------------------------------------------------------
+
+    class ELcollected : public ELostreamOutput  {
+
+      friend class ELdestControl;
+
+    public:
+
+      // -----  Birth/death:
+      //
+      ELcollected( const ELsender & sender );
+      ELcollected( ELostreamOutput * d);
+      virtual ~ELcollected();
+
+      // disable copy/c'tor and assignement
+      ELcollected( const ELcollected & orig ) = delete;
+      ELcollected& operator=(const ELcollected & orig ) = delete;
 
 
-// ----------------------------------------------------------------------
+      // -----  Methods invoked by the ELadministrator:
+      //
+    public:
+
+      virtual bool log( const mf::ErrorObj & msg );
+
+      // -----  Internal Methods -- Users should not invoke these:
+      //
+    protected:
+      void emit( const ELstring & s, bool nl=false );
+
+      std::shared_ptr<ELsender> sender;
+
+      void intoBuf ( const ELstring & s );
+      void emitXid ( const ELextendedID & xid  );
+
+      ELstring buf;
 
 
-}        // end of namespace service
+    };  // ELcollected
+
+
+    // ----------------------------------------------------------------------
+
+
+  }        // end of namespace service
 }        // end of namespace mf
 
 
 #endif // MessageService_ELcollected_h
+
+// Local variables:
+// mode: c++
+// End:

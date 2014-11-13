@@ -38,7 +38,7 @@
 #include "messagefacility/MessageService/ErrorLog.h"
 #include "messagefacility/MessageService/ELadministrator.h"
 #include "messagefacility/MessageService/ELdestination.h"
-#include "messagefacility/MessageService/ELoutput.h"
+#include "messagefacility/MessageService/ELostreamOutput.h"
 #include "messagefacility/MessageService/ELrecv.h"
 #include "messagefacility/MessageService/ELcontextSupplier.h"
 
@@ -230,11 +230,11 @@ ErrorLog & ErrorLog::operator()( mf::ErrorObj & msg )  {
     std::cerr << "\nERROR LOGGED WITHOUT DESTINATION!\n";
     std::cerr << "Attaching destination \"cerr\" to ELadministrator by default\n"
               << std::endl;
-    a->attach( ELoutput(std::cerr));
+    a->attach( std::make_unique<ELostreamOutput>(std::cerr) );
   }
   for ( auto & d : a->sinks() ) {
     if (  d->log( msg )  )
-      msg.setReactedTo ( true );    
+      msg.setReactedTo ( true );
   }
 
   possiblyAbOrEx ( msg.xid().severity.getLevel(),
