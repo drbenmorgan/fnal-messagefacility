@@ -84,48 +84,52 @@ ELdestControl & ELdestControl::setTraceThreshold( const ELseverityLevel & sv )  
 
 
 ELdestControl & ELdestControl::setLimit( const ELstring & s, int n )  {
-  if (d) d->limits.setLimit( s, n );
+  if (d) d->stats_.limits().setLimit( s, n );
   return  * this;
 }
 
 
 ELdestControl & ELdestControl::setInterval
                                 ( const ELseverityLevel & sv, int interval )  {
-  if (d) d->limits.setInterval( sv, interval );
+  if (d) d->stats_.limits().setInterval( sv, interval );
   return  * this;
 }
 
 ELdestControl & ELdestControl::setInterval( const ELstring & s, int interval )  {
-  if (d) d->limits.setInterval( s, interval );
+  if (d) d->stats_.limits().setInterval( s, interval );
   return  * this;
 }
 
 
 ELdestControl & ELdestControl::setLimit( const ELseverityLevel & sv, int n )  {
-  if (d) d->limits.setLimit( sv, n );
+  if (d) d->stats_.limits().setLimit( sv, n );
   return  * this;
 }
 
 
 ELdestControl & ELdestControl::setTimespan( const ELstring & s, int n )  {
-  if (d) d->limits.setTimespan( s, n );
+  if (d) d->stats_.limits().setTimespan( s, n );
   return  * this;
 }
 
 
 ELdestControl & ELdestControl::setTimespan( const ELseverityLevel & sv, int n )  {
-  if (d) d->limits.setTimespan( sv, n );
+  if (d) d->stats_.limits().setTimespan( sv, n );
   return  * this;
 }
 
 
 ELdestControl & ELdestControl::setTableLimit( int n )  {
-  if (d) d->limits.setTableLimit( n );
+  if (d) d->stats_.limits().setTableLimit( n );
   return  * this;
 }
 
-  void ELdestControl::formatSuppress(mf::flag_enum FLAG) { if (d) d->format.suppress( FLAG ); }
-  void ELdestControl::formatInclude (mf::flag_enum FLAG) { if (d) d->format.include ( FLAG ); }
+  bool ELdestControl::resetStats() {
+    return d ? d->stats_.reset_ : false;
+  }
+
+  void ELdestControl::formatSuppress(mf::service::flag_enum FLAG) { if (d) d->format_.suppress( FLAG ); }
+  void ELdestControl::formatInclude (mf::service::flag_enum FLAG) { if (d) d->format_.include ( FLAG ); }
 
   void ELdestControl::noTerminationSummary()  {if (d) d->noTerminationSummary(); }
 
@@ -178,11 +182,6 @@ ELdestControl & ELdestControl::setNewline( const ELstring & newline )  {
 // ----------------------------------------------------------------------
 
 // *** Active methods invoked by the framework ***
-
-void ELdestControl::summary( ELdestControl & dest, char * title )  {
-  if (d) d->summary( dest, title );
-}
-
 
 void ELdestControl::summary( std::ostream & os, char * title )  {
   if (d) d->summary( os, title );

@@ -74,10 +74,14 @@ namespace mf {
 
       virtual ELdestControl & setTableLimit( int n );
 
+      // -----  Statistics resetting
+      //
+      bool resetStats();
+
       // -----  Select output format options:
       //
-      void formatSuppress(mf::flag_enum FLAG);
-      void formatInclude (mf::flag_enum FLAG);
+      void formatSuppress(mf::service::flag_enum FLAG);
+      void formatInclude (mf::service::flag_enum FLAG);
 
       virtual void noTerminationSummary();
 
@@ -100,7 +104,6 @@ namespace mf {
       //
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wwrite-strings"
-      virtual void summary( ELdestControl & dest, char * title="" );
       virtual void summary( std::ostream  & os  , char * title="" );
       virtual void summary( ELstring      & s   , char * title="" );
 #pragma GCC diagnostic pop

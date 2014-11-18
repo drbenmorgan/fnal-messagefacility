@@ -1,26 +1,19 @@
-#include "cetlib/PluginTypeDeducer.h"
+#include "messagefacility/MessageService/MessageLoggerDefaults.h"
+#include "messagefacility/MessageService/plugins/formatFilename.h"
+
 #include "fhiclcpp/ParameterSet.h"
 
-#include "messagefacility/MessageService/ELdestination.h"
-#include "messagefacility/MessageService/ELostreamOutput.h"
-#include "messagefacility/MessageService/MessageLoggerDefaults.h"
-
-#include <fstream>
-#include <iostream>
-#include <memory>
-
 using namespace mf::service;
-using fhicl::ParameterSet;
 
-extern "C" {
-
-  auto makePlugin( const std::string& psetname,
-                   const ParameterSet& pset ){
-
+namespace mfplugins {
+  
+  std::string formatFilename( const std::string& psetname,
+                              const fhicl::ParameterSet& pset ) {
+    
     // Determine the destination file name to use if no explicit filename is
     // supplied in the .fcl file.
     std::string filename_default = pset.get<std::string>("output", std::string() );
-
+    
     if ( filename_default.empty() ) {
       auto messageLoggerDefaults = MessageLoggerDefaults( MessageLoggerDefaults::mode("grid") );
       filename_default = messageLoggerDefaults.output(psetname);
@@ -44,13 +37,8 @@ extern "C" {
     if (filename.find('.') == std::string::npos)
       filename += ".log";
 
-    const bool append = pset.get<bool>("append", false);
+    return filename;
 
-    return std::make_unique<ELostreamOutput>
-      ( pset.get<ParameterSet>( "format", ParameterSet() ),
-        filename, append );
   }
-
+  
 }
-
-DEFINE_BASIC_PLUGINTYPE_FUNC(ELdestination)

@@ -24,6 +24,12 @@ cet_test( messagefacility_destination_cerr_t HANDBUILT
   TEST_ARGS messageFacility_cerr.fcl
   )
 
+# cerr_withStatistics test
+cet_test( messagefacility_destination_cerr_wStatistics_t HANDBUILT
+  TEST_EXEC ELdestinationTester
+  TEST_ARGS messageFacility_cerr_wStatistics.fcl
+  )
+
 # file test
 cet_test( messagefacility_destination_file_t HANDBUILT
   TEST_EXEC ELdestinationTester
@@ -35,3 +41,9 @@ cet_test( messagefacility_destination_syslog_t HANDBUILT
   TEST_EXEC ELdestinationTester
   TEST_ARGS messageFacility_syslog.fcl
   )          
+
+# statistics test
+cet_test( messagefacility_destination_statistics_t HANDBUILT
+  TEST_EXEC ELdestinationTester
+  TEST_ARGS messageFacility_statistics.fcl
+  )

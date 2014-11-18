@@ -96,8 +96,8 @@ namespace mf {
     // Constructors:
     // ----------------------------------------------------------------------
 
-    ELostreamOutput::ELostreamOutput( const fhicl::ParameterSet& psetFormat )
-      : ELdestination( psetFormat )
+    ELostreamOutput::ELostreamOutput( const fhicl::ParameterSet& pset )
+      : ELdestination( pset )
       , os           ( &std::cerr, do_nothing_deleter() )
       , xid          ()
     {
@@ -112,9 +112,9 @@ namespace mf {
 
     }  // ELostreamOutput()
 
-    ELostreamOutput::ELostreamOutput( const fhicl::ParameterSet& psetFormat,
+    ELostreamOutput::ELostreamOutput( const fhicl::ParameterSet& pset,
                                       std::ostream & os_ , bool emitAtStart )
-      : ELdestination( psetFormat )
+      : ELdestination( pset )
       , os           ( &os_, do_nothing_deleter() )
       , xid          ()
     {
@@ -125,20 +125,20 @@ namespace mf {
 
       // Enh 001 2/13/01 mf
       if (emitAtStart) {
-        bool tprm = format.preambleMode;
-        format.preambleMode = true;
+        bool tprm = format_.preambleMode;
+        format_.preambleMode = true;
         emit( *os, "\n=================================================", true );
         emit( *os, "\nMessage Log File written by MessageLogger service \n" );
         emit( *os, "\n=================================================\n", true );
-        format.preambleMode = tprm;
+        format_.preambleMode = tprm;
       }
 
     }  // ELostreamOutput()
 
 
-    ELostreamOutput::ELostreamOutput( const fhicl::ParameterSet& psetFormat,
+    ELostreamOutput::ELostreamOutput( const fhicl::ParameterSet& pset,
                                       const ELstring & fileName, const bool append, bool emitAtStart )
-      : ELdestination( psetFormat )
+      : ELdestination( pset )
       , os           ( new std::ofstream( fileName.c_str() ,
                                           append ? std::ios::app : std::ios::trunc ),
                        close_and_delete())
@@ -149,8 +149,8 @@ namespace mf {
       std::cerr << "Constructor for ELostreamOutput( " << fileName << " )\n";
 #endif
 
-      bool tprm = format.preambleMode;
-      format.preambleMode = true;
+      bool tprm = format_.preambleMode;
+      format_.preambleMode = true;
       if ( os && *os )  {
 #ifdef ELostreamOutputCONSTRUCTOR_TRACE
         std::cerr << "          Testing if os is owned\n";
@@ -192,7 +192,7 @@ namespace mf {
         emit( *os, "\n=======================================================\n",
               true );
       }
-      format.preambleMode = tprm;
+      format_.preambleMode = tprm;
 
 #ifdef ELostreamOutputCONSTRUCTOR_TRACE
       std::cerr << "Constructor for ELostreamOutput completed.\n";
@@ -214,7 +214,8 @@ namespace mf {
     // Protected ELostreamOutput functions:
     // ----------------------------------------------------------------------
 
-    void ELostreamOutput::routePayload( const std::ostringstream& oss, const mf::ErrorObj& ) {
+    void ELostreamOutput::routePayload( const std::ostringstream& oss,
+                                        const mf::ErrorObj& ) {
 
       *os << oss.str();
       flush();
@@ -238,7 +239,7 @@ namespace mf {
       // title:
       //
       ELstring title( fullTitle, 0, titleMaxLength );
-      int q = (lineLength - title.length() - 2) / 2;
+      int q = (lineLength_ - title.length() - 2) / 2;
       ELstring line(q, '=');
       emit( *os, "", true );
       emit( *os, line );
@@ -254,7 +255,7 @@ namespace mf {
       // finish:
       //
       emit( *os, "", true );
-      emit( *os, ELstring(lineLength, '='), true );
+      emit( *os, ELstring(lineLength_, '='), true );
 
     }  // summarization()
 

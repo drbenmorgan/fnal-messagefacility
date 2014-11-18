@@ -1,0 +1,16 @@
+# Configuration file for messageFacility test
+
+process_name: TestStatisticsDest
+
+message : {
+   destinations : {
+      statistics : { 
+         dest1 : { 
+            type  : cerr 
+            reset : true
+         }
+      }
+
+   }
+}
+

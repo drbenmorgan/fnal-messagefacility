@@ -7,7 +7,6 @@
 #include <iostream>
 #include <memory>
 
-using fhicl::ParameterSet;
 using mf::service::ELostreamOutput;
 
 extern "C" {
@@ -15,8 +14,7 @@ extern "C" {
   auto makePlugin( const std::string&,
                    const fhicl::ParameterSet& pset) {
 
-    return std::make_unique<ELostreamOutput>
-      ( pset.get<ParameterSet>("format",ParameterSet() ), std::cout );
+    return std::make_unique<ELostreamOutput>( pset, std::cerr );
 
   }
 

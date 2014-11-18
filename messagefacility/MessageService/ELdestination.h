@@ -29,9 +29,9 @@
 //
 // ----------------------------------------------------------------------
 
-#include "messagefacility/MessageService/ELlimitsTable.h"
 #include "messagefacility/MessageService/ELset.h"
 #include "messagefacility/MessageService/MsgFormatSettings.h"
+#include "messagefacility/MessageService/MsgStatistics.h"
 
 #include "messagefacility/MessageLogger/ELstring.h"
 #include "messagefacility/MessageLogger/ErrorObj.h"
@@ -102,10 +102,13 @@ namespace mf {
 
       void emit( std::ostream& os, const ELstring & s, const bool nl = false );
 
-      virtual bool checkSeverity(const mf::ErrorObj& msg);
+      bool passLogMsgThreshold  (const mf::ErrorObj& msg);
+      bool passLogStatsThreshold(const mf::ErrorObj& msg) const;
+
       virtual void fillPrefix(std::ostringstream& oss, const mf::ErrorObj& msg);
       virtual void fillUsrMsg(std::ostringstream& oss, const mf::ErrorObj& msg);
       virtual void fillSuffix(std::ostringstream& oss, const mf::ErrorObj& msg);
+
       virtual void routePayload(const std::ostringstream& oss, const mf::ErrorObj& msg);
 
       virtual void clearSummary();
@@ -117,7 +120,6 @@ namespace mf {
       virtual void respondToModule( ELstring const & moduleName );
       virtual bool thisShouldBeIgnored(const ELstring & s) const;
 
-      virtual void summary( ELdestControl & dest, const ELstring & title="" );
       virtual void summary( std::ostream  & os  , const ELstring & title="" );
       virtual void summary( ELstring      & s   , const ELstring & title="" );
       virtual void summary( );
@@ -143,30 +145,26 @@ namespace mf {
       //
     protected:
 
-      mf::MsgFormatSettings format;
+      MsgStatistics     stats_;
+      MsgFormatSettings format_;
 
       ELseverityLevel threshold;
       ELseverityLevel traceThreshold;
-      ELlimitsTable   limits;
       ELstring        preamble;
       ELstring        newline;
       ELstring        indent;
-      int             lineLength;
+      std::size_t     lineLength_;
       bool            ignoreMostModules;
       ELset_string    respondToThese;
       bool            respondToMostModules;
       ELset_string    ignoreThese;
-      // Fix $001 2/13/01 mf
-#ifndef DEFECT_NO_STATIC_CONST_INIT
-      static const int defaultLineLength = 80;
-#else
-      static const int defaultLineLength;
-#endif
+
+      bool userWantsStats_;
 
       // -----  Verboten methods:
       //
     private:
-      ELdestination( const ELdestination & orig ) = delete;
+      ELdestination            ( const ELdestination & orig ) = delete;
       ELdestination& operator= ( const ELdestination & orig ) = delete;
 
     };  // ELdestination

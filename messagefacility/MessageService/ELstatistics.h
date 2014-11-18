@@ -29,12 +29,14 @@
 
 #include "messagefacility/MessageLogger/ELextendedID.h"
 #include "messagefacility/MessageLogger/ELmap.h"
-#include "messagefacility/MessageLogger/ELstring.h"
 
+#include <iostream>
+#include <memory>
 #include <set>
 
-namespace mf {
+namespace fhicl { class ParameterSet; }
 
+namespace mf {
 
   // ----------------------------------------------------------------------
   // prerequisite classes:
@@ -57,11 +59,13 @@ namespace mf {
 
     public:
       // -----  constructor/destructor:
-      ELstatistics();
-      ELstatistics( std::ostream & osp );
-      ELstatistics( int spaceLimit );
-      ELstatistics( int spaceLimit, std::ostream & osp );
-      virtual ~ELstatistics();
+      ELstatistics( const fhicl::ParameterSet& pset, std::ostream & osp );
+      ELstatistics( const fhicl::ParameterSet& pset, int, std::ostream & osp );
+      ELstatistics( const fhicl::ParameterSet& pset, const std::string& filename, const bool append);
+
+      // -----  delegating constructors
+      ELstatistics( const fhicl::ParameterSet& pset )      : ELstatistics( pset, std::cerr )    {}
+      ELstatistics( const fhicl::ParameterSet& pset, int ) : ELstatistics( pset, 0, std::cerr ) {}
 
       // copy c'tor/assignment disabled
       ELstatistics( const ELstatistics& ) = delete;
@@ -73,9 +77,6 @@ namespace mf {
     public:
 
       virtual bool log( const mf::ErrorObj & msg ) override;
-
-      // output( const ELstring & item, const ELseverityLevel & sev )
-      // from base class
 
       // ----- Methods invoked by the MessageLoggerScribe, bypassing destControl
       //
@@ -91,9 +92,8 @@ namespace mf {
       virtual void wipe();
       virtual void zero();
 
-      virtual void summary( ELdestControl & dest, const ELstring & title="" );
-      virtual void summary( std::ostream  & os  , const ELstring & title="" );
-      virtual void summary( ELstring      & s   , const ELstring & title="" );
+      virtual void summary( std::ostream  & os  , const std::string & title="" );
+      virtual void summary( std::string   & s   , const std::string & title="" );
       virtual void summary( );
       void noTerminationSummary();
 
@@ -101,26 +101,13 @@ namespace mf {
 
       virtual void summaryForJobReport (std::map<std::string, double> & sm);
 
-      // summarization( const ELstring & sumLines, const ELstring & sumLines )
-      // from base class
-
       // -----  Data affected by methods of specific ELdestControl handle:
       //
     protected:
-      int            tableLimit;
-      ELmap_stats    stats;
-      bool           updatedStats;
-      std::ostream & termStream;
-
-      bool           printAtTermination;
+      bool                        updatedStats_;
+      std::shared_ptr<std::ostream> termStream_;
 
       static std::set<std::string> groupedCategories;               // 8/16/07 mf
-      static ELstring formSummary(ELmap_stats & stats);             // 8/16/07 mf
-
-      // ----  Helper methods specific to MessageLogger applicaton
-      //
-    private:
-      std::string dualLogName(std::string const & s);
 
     };  // ELstatistics
 

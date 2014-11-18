@@ -119,21 +119,6 @@ public:
   // ---  furnish/recall destinations:
   //
 
-  // template <typename DEST>
-  // ELdestControl attach( std::unique_ptr<DEST>&& sink,
-  //                       typename std::enable_if<std::is_base_of<ELdestination,DEST>::value>::type* = 0 ) {
-  //   sinks().emplace_back( std::move(sink) );
-  //   return ELdestControl( cet::exempt_ptr<ELdestination>( sinks().back().get() ) );
-  // }
-
-  // template <typename DEST>
-  // ELdestControl attach( DEST&& sink, const ELstring & name,
-  //                       typename std::enable_if<std::is_base_of<ELdestination,DEST>::value>::type* = 0 ) {
-  //   sinks().push_back( std::make_unique<DEST>(sink) );
-  //   attachedDestinations[name] = sinks().back();
-  //   return ELdestControl( cet::exempt_ptr<ELdestination>( sinks().back().get() ) );
-  // }
-
   template <typename DEST>
   ELdestControl attach( std::unique_ptr<DEST>&& dest,
                         typename std::enable_if<std::is_base_of<ELdestination,DEST>::value>::type* = 0 ) {

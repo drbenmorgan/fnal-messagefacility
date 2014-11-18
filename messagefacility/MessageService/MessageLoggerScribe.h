@@ -22,7 +22,7 @@
 
 namespace mf {
   namespace service {
-    
+
     // ----------------------------------------------------------------------
     //
     // MessageLoggerScribe.h
@@ -96,21 +96,16 @@ namespace mf {
     public:
       // ---  birth/death:
 
-      // ChangeLog 12
+      enum config_type { ORDINARY, STATISTICS, FWKJOBREPORT };
+
       /// --- If queue is NULL, this sets singleThread true
       explicit MessageLoggerScribe(std::shared_ptr<ThreadQueue> queue);
 
       virtual ~MessageLoggerScribe();
 
       // --- receive and act on messages:
-      virtual
-      void  run();
-      virtual                                                       // changelog 10
-      void  runCommand(MessageLoggerQ::OpCode  opcode, void * operand);
-      // changeLog 9
-
-      // --- obtain a pointer to the errorlog
-      //static ErrorLog * getErrorLog_ptr() {return static_errorlog_p;}
+      virtual void run();
+      virtual void runCommand(MessageLoggerQ::OpCode  opcode, void * operand);
 
     private:
       // --- convenience typedefs
@@ -126,20 +121,24 @@ namespace mf {
       void triggerFJRmessageSummary(std::map<std::string, double> & sm);
 
       // --- handle details of configuring via a ParameterSet:
-      void  configure_errorlog( );
-      void  configure_fwkJobReports( );                             // Change Log 3
-      void  configure_ordinary_destinations( );                     // Change Log 3
-      void  configure_statistics( );                                // Change Log 3
-      void  configure_dest( ELdestControl & dest_ctrl
-                            , String const & dest_pset_name
-                            , fhicl::ParameterSet const & dest_pset
-                            );
-      void  configure_default_fwkJobReport( ELdestControl & dest_ctrl); //ChangeLog 4
+      void  configure_errorlog();
+      void  configure_fwkJobReports();
+      void  configure_destinations();
+
+      void  make_destinations( const fhicl::ParameterSet& dests,
+                               const std::vector<std::string>& dest_list,
+                               const config_type config );
+
+      void  configure_dest( ELdestControl& dest_ctrl,
+                            const String& dest_pset_name,
+                            const PSet& dest_pset );
+
+      void  configure_default_fwkJobReport( ELdestControl & dest_ctrl);
 
       // --- util function to trim leading and trailing whitespaces from a string
-      std::string trim_copy(std::string const src);                 // ChangeLog 13
+      std::string trim_copy(std::string const src);
 
-#define VALIDATE_ELSEWHERE                                      // ChangeLog 11
+#define VALIDATE_ELSEWHERE
 
 #ifdef OLDSTYLE
       template <class T>
@@ -166,10 +165,10 @@ namespace mf {
         T t;
         t = p.template getUntrackedParameter<T>(id, def);
         return t;
-      }                                                             // changelog 2
+      }
 #else
 #ifdef VALIDATE_ELSEWHERE
-      template <class T>                                            // ChangeLog 11
+      template <class T>
       T getAparameter ( PSet const& p, std::string const & id, T const & def )
       {
         T t = def;
@@ -189,7 +188,7 @@ namespace mf {
 #else  // Do not tolerate errors
       template <class T>
       T  getAparameter ( PSet const& p, std::string const & id, T const & def )
-      {                                                             // changelog 7
+      {
         T t;
         try {
           t = p.template getUntrackedParameter<T>(id, def);
@@ -233,7 +232,6 @@ namespace mf {
 
       // --- other helpers
       void parseCategories (std::string const & s, std::vector<std::string> & cats);
-      //void setStaticErrorLog_ptr() {static_errorlog_p = errorlog_p.get();}
 
       // --- data:
       ELadministrator                   * admin_p;
@@ -242,12 +240,10 @@ namespace mf {
       std::vector<std::shared_ptr<std::ostream> > ostream_ps; // used to keep objects alive
       MsgContext                          msg_context;
       std::shared_ptr<PSet>               job_pset_p;
-      std::map<String,std::ostream     *> stream_ps;
-      std::vector<String>                 ordinary_destination_filenames;
+      std::vector<String>                 stream_ids;
+      std::vector<ELdestControl>          destControls_;
       std::vector<ELdestControl>          statisticsDestControls;
-      std::vector<bool>                   statisticsResets;
       std::string                         jobReportOption;
-      //static ErrorLog                 * static_errorlog_p;
       bool                                clean_slate_configuration;
       MessageLoggerDefaults               messageLoggerDefaults;
       bool                                active;
@@ -258,9 +254,19 @@ namespace mf {
       std::shared_ptr<ThreadQueue>        m_queue;                  // changeLog 12
 
       cet::BasicPluginFactory             pluginFactory_;
-      std::unique_ptr<ELdestination>      plugin_;
-  
-      std::unique_ptr<ELdestination>  makePlugin_(const std::string& libspec);
+      cet::BasicPluginFactory             pluginStatsFactory_;
+
+      vString fetch_ordinary_destinations   ( fhicl::ParameterSet& pset );
+      vString fetch_statistics_destinations ( fhicl::ParameterSet& pset );
+
+      bool duplicate_destination( const std::string& type,
+                                  const std::string& filename,
+                                  const config_type config );
+
+      std::unique_ptr<ELdestination>  makePlugin_( cet::BasicPluginFactory& pluginFactory,
+                                                   const std::string& libspec,
+                                                   const std::string& psetname,
+                                                   const PSet& pset );
 
     };  // MessageLoggerScribe
 
