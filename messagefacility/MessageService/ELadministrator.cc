@@ -378,7 +378,7 @@ void ELadministrator::setThresholds( const ELseverityLevel & sev )  {
 
 void ELadministrator::setLimits( const ELstring & id, int limit )  {
 
-  for( auto & d : sinks() ) d->stats_.limits().setLimit( id, limit );
+  for( auto & d : sinks() ) d->stats.limits.setLimit( id, limit );
 
 }  // setLimits()
 
@@ -386,41 +386,41 @@ void ELadministrator::setLimits( const ELstring & id, int limit )  {
 void ELadministrator::setIntervals
                         ( const ELseverityLevel & sev, int interval )  {
 
-  for( auto & d : sinks() ) d->stats_.limits().setInterval( sev, interval );
+  for( auto & d : sinks() ) d->stats.limits.setInterval( sev, interval );
 
 }  // setIntervals()
 
 void ELadministrator::setIntervals( const ELstring & id, int interval )  {
 
-  for( auto & d : sinks() ) d->stats_.limits().setInterval( id, interval );
+  for( auto & d : sinks() ) d->stats.limits.setInterval( id, interval );
 
 }  // setIntervals()
 
 
 void ELadministrator::setLimits( const ELseverityLevel & sev, int limit )  {
 
-  for( auto & d : sinks() ) d->stats_.limits().setLimit( sev, limit );
+  for( auto & d : sinks() ) d->stats.limits.setLimit( sev, limit );
 
 }  // setLimits()
 
 
 void ELadministrator::setTimespans( const ELstring & id, int seconds )  {
 
-  for ( auto & d : sinks() ) d->stats_.limits().setTimespan( id, seconds );
+  for ( auto & d : sinks() ) d->stats.limits.setTimespan( id, seconds );
 
 }  // setTimespans()
 
 
 void ELadministrator::setTimespans( const ELseverityLevel & sev, int seconds )  {
 
-  for ( auto & d: sinks() ) d->stats_.limits().setTimespan( sev, seconds );
+  for ( auto & d: sinks() ) d->stats.limits.setTimespan( sev, seconds );
 
 }  // setTimespans()
 
 
 void ELadministrator::wipe()  {
 
-  for ( auto & d : sinks() ) d->stats_.limits().wipe();
+  for ( auto & d : sinks() ) d->stats.limits.wipe();
 
 }  // wipe()
 

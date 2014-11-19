@@ -10,23 +10,6 @@
 //                 a list of ELdestination* as well as the objects those
 //                 list elements point to.
 //
-// 7/5/98 mf    Created file.
-// 6/16/99 jvr  Allows suppress/include options on destinations
-// 7/1/99 mf    Forward-declared ELdestControl for strict C++ (thanks cg).
-// 7/2/99  jvr  Added separate/attachTime, Epilogue, and Serial options
-// 12/20/99 mf  Added virtual destructor.
-// 6/7/00  web  Consolidated ELdestination/X; add filterModule()
-// 6/14/00 web  Declare classes before granting friendship.
-// 10/4/00 mf   Add excludeModule
-// 1/15/01 mf   setLineLength()
-// 2/13/01 mf   fix written by pc to accomodate NT problem with
-//              static init { $001$ }.  Corresponding fix is in .cc file.
-// 3/13/01 mf   statisticsMap()
-// 04/04/01 mf  add ignoreMOdule and respondToModule
-// 6/23/03 mf   changeFile() and flush()
-// 1/10/06 mf   finish
-// 6/19/08 mf   summaryForJobReport()
-//
 // ----------------------------------------------------------------------
 
 #include "messagefacility/MessageService/ELset.h"
@@ -145,21 +128,21 @@ namespace mf {
       //
     protected:
 
-      MsgStatistics     stats_;
-      MsgFormatSettings format_;
+      MsgStatistics     stats;
+      MsgFormatSettings format;
 
       ELseverityLevel threshold;
       ELseverityLevel traceThreshold;
       ELstring        preamble;
       ELstring        newline;
       ELstring        indent;
-      std::size_t     lineLength_;
+      std::size_t     lineLength;
       bool            ignoreMostModules;
       ELset_string    respondToThese;
       bool            respondToMostModules;
       ELset_string    ignoreThese;
 
-      bool userWantsStats_;
+      bool userWantsStats;
 
       // -----  Verboten methods:
       //
@@ -173,8 +156,8 @@ namespace mf {
       void operator()(std::ostream* os) const;
     };
 
-  }        // end of namespace service
-}        // end of namespace mf
+  } // end of namespace service
+}   // end of namespace mf
 
 
 #endif  // FWCore_MessageService_ELdestination_h

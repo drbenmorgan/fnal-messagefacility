@@ -12,7 +12,7 @@
 
 // Possible Traces:
 // #define MsgStatisticsCONSTRUCTOR_TRACE
-// #define ELstatsLOG_TRACE
+// #define MsgStatisticsLOG_TRACE
 
 
 namespace mf {
@@ -23,13 +23,13 @@ namespace mf {
     // ----------------------------------------------------------------------
 
     MsgStatistics::MsgStatistics( const fhicl::ParameterSet& pset, int spaceLimit )
-      : tableLimit_        ( spaceLimit    )
-      , limits_            (       )
-      , statsMap_          (       )
-      , updatedStats_      ( false )
-      , reset_             ( pset.get<bool>( "reset"          , false ) || // for statistics dest.
-                             pset.get<bool>( "resetStatistics", false ) )  // for ordinary dest.
-      , printAtTermination_( pset.get<bool>( "printAtTermination", true)  )
+      : tableLimit        ( spaceLimit    )
+      , limits            (       )
+      , statsMap          (       )
+      , updatedStats      ( false )
+      , reset             ( pset.get<bool>( "reset"          , false ) || // for statistics dest.
+                            pset.get<bool>( "resetStatistics", false ) )  // for ordinary dest.
+      , printAtTermination( true  )
     {
 
 #ifdef MsgStatisticsCONSTRUCTOR_TRACE
@@ -44,24 +44,24 @@ namespace mf {
 
     bool  MsgStatistics::log( const mf::ErrorObj & msg )  {
 
-#ifdef ELstatsLOG_TRACE
+#ifdef MsgStatisticsLOG_TRACE
       std::cerr << "  =:=:=: Log to an MsgStatistics\n";
 #endif
 
       // Account for this message, making a new table entry if needed:
       //
-      ELmap_stats::iterator s = statsMap_.find( msg.xid() );
-      if ( s == statsMap_.end() )  {
-        if ( tableLimit_ < 0  ||  static_cast<int>(statsMap_.size()) < tableLimit_ )  {
-          statsMap_[msg.xid()] = StatsCount();
-          s = statsMap_.find( msg.xid() );
+      ELmap_stats::iterator s = statsMap.find( msg.xid() );
+      if ( s == statsMap.end() )  {
+        if ( tableLimit < 0  ||  static_cast<int>(statsMap.size()) < tableLimit )  {
+          statsMap[msg.xid()] = StatsCount();
+          s = statsMap.find( msg.xid() );
         }
       }
-#ifdef ELstatsLOG_TRACE
+#ifdef MsgStatisticsLOG_TRACE
       std::cerr << "    =:=:=: Message accounted for in stats \n";
 #endif
-      if ( s != statsMap_.end() )  {
-#ifdef ELstatsLOG_TRACE
+      if ( s != statsMap.end() )  {
+#ifdef MsgStatisticsLOG_TRACE
         std::cerr << "    =:=:=: Message not last stats \n";
         std::cerr << "    =:=:=: getContextSupplier \n";
         const ELcontextSupplier & csup
@@ -78,8 +78,8 @@ namespace mf {
                          getContextSupplier().summaryContext(), msg.reactedTo() );
 #endif
 
-        updatedStats_ = true;
-#ifdef ELstatsLOG_TRACE
+        updatedStats = true;
+#ifdef MsgStatisticsLOG_TRACE
         std::cerr << "    =:=:=: Updated stats \n";
 #endif
       }
@@ -89,7 +89,7 @@ namespace mf {
       // to the message, the statistics destination does not count:
       //
 
-#ifdef ELstatsLOG_TRACE
+#ifdef MsgStatisticsLOG_TRACE
       std::cerr << "  =:=:=: log(msg) done (stats) \n";
 #endif
 
@@ -105,9 +105,9 @@ namespace mf {
 
     void  MsgStatistics::clearSummary()  {
 
-      limits_.zero();
+      limits.zero();
       ELmap_stats::iterator s;
-      for ( s = statsMap_.begin();  s != statsMap_.end();  ++s )  {
+      for ( s = statsMap.begin();  s != statsMap.end();  ++s )  {
         (*s).second.n = 0;
         (*s).second.context1 = (*s).second.context2 = (*s).second.contextLast = "";
       }
@@ -117,15 +117,15 @@ namespace mf {
 
     void  MsgStatistics::wipe()  {
 
-      limits_.wipe();
-      statsMap_.erase( statsMap_.begin(), statsMap_.end() );  //statsMap_.clear();
+      limits.wipe();
+      statsMap.erase( statsMap.begin(), statsMap.end() );  //statsMap.clear();
 
     }  // wipe()
 
 
     void  MsgStatistics::zero()  {
 
-      limits_.zero();
+      limits.zero();
 
     }  // zero()
 
@@ -152,7 +152,7 @@ namespace mf {
 
       std::set<std::string>::iterator gcEnd = groupedCategories.end();
       std::set<std::string> gCats = groupedCategories;  // TEMP FOR DEBUGGING SANITY
-      for ( ELmap_stats::const_iterator i = statsMap_.begin();  i != statsMap_.end();  ++i )  {
+      for ( ELmap_stats::const_iterator i = statsMap.begin();  i != statsMap.end();  ++i )  {
 
         // If this is a grouped category, wait till later to output its stats
         std::string cat = (*i).first.id;
@@ -201,7 +201,7 @@ namespace mf {
         int groupAggregateN = 0;
         ELseverityLevel severityLevel;
         bool groupIgnored = true;
-        for ( ELmap_stats::const_iterator i = statsMap_.begin();  i != statsMap_.end();  ++i )  {
+        for ( ELmap_stats::const_iterator i = statsMap.begin();  i != statsMap.end();  ++i )  {
           if ( (*i).first.id == *g ) {
             if (groupTotal==0) severityLevel = (*i).first.severity;
             groupIgnored &= (*i).second.ignoredFlag;
@@ -241,7 +241,7 @@ namespace mf {
       // -----  Summary part II:
       //
       n = 0;
-      for ( ELmap_stats::const_iterator i = statsMap_.begin();  i != statsMap_.end();  ++i )  {
+      for ( ELmap_stats::const_iterator i = statsMap.begin();  i != statsMap.end();  ++i )  {
         std::string cat = (*i).first.id;
         if ( groupedCategories.find(cat) != gcEnd )
           {                                                           // 8/16/07 mf
@@ -283,7 +283,7 @@ namespace mf {
 
 
     std::map<ELextendedID , StatsCount> MsgStatistics::statisticsMap() const {
-      return std::map<ELextendedID , StatsCount> ( statsMap_ );
+      return std::map<ELextendedID , StatsCount> ( statsMap );
     }
 
 
@@ -299,7 +299,7 @@ namespace mf {
       std::set<std::string> gCats = groupedCategories;  // TEMP FOR DEBUGGING SANITY
 
       // ----- Part I:  The ungrouped categories
-      for ( ELmap_stats::const_iterator i = statsMap_.begin();  i != statsMap_.end();  ++i )  {
+      for ( ELmap_stats::const_iterator i = statsMap.begin();  i != statsMap.end();  ++i )  {
 
         // If this is a grouped category, wait till later to output its stats
         std::string cat = (*i).first.id;
@@ -334,7 +334,7 @@ namespace mf {
         int groupTotal = 0;
         int groupAggregateN = 0;
         ELseverityLevel severityLevel;
-        for ( ELmap_stats::const_iterator i = statsMap_.begin();  i != statsMap_.end();  ++i )  {
+        for ( ELmap_stats::const_iterator i = statsMap.begin();  i != statsMap.end();  ++i )  {
           if ( (*i).first.id == *g ) {
             if (groupTotal==0) severityLevel = (*i).first.severity;
             groupAggregateN += (*i).second.aggregateN;

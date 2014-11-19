@@ -61,6 +61,8 @@ namespace mf {
       ELdestControl();
       virtual ~ELdestControl();
 
+      explicit operator bool() const { return d != nullptr; }
+
       // -----  Behavior control methods invoked by the framework:
       //
       virtual ELdestControl & setThreshold( const ELseverityLevel & sv );
@@ -77,6 +79,8 @@ namespace mf {
       // -----  Statistics resetting
       //
       bool resetStats();
+      void setResetStats( const bool flag );
+      void userWantsStats();
 
       // -----  Select output format options:
       //

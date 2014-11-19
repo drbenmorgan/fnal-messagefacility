@@ -93,7 +93,7 @@ bool ELerrorList::log( const mf::ErrorObj & msg )  {
   //
   if ( msg.xid().severity < threshold )        return false;
   if ( thisShouldBeIgnored(msg.xid().module) ) return false;
-  if ( ! stats_.limits().add( msg.xid() )      )        return false;
+  if ( ! stats.limits.add( msg.xid() )      )        return false;
 
   #ifdef ELerrorListTRACE_LOG
     std::cerr << "    =:=:=: Limits table work done \n";

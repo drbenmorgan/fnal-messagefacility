@@ -154,7 +154,7 @@ bool ELcollected::log( const mf::ErrorObj & msg )  {
   //
   if ( msg.xid().severity < threshold  )  return false;
   if ( thisShouldBeIgnored(xid.module) )  return false;
-  if ( ! stats_.limits().add( msg.xid() )      )   return false;
+  if ( ! stats.limits.add( msg.xid() )      )   return false;
 
   #ifdef ELcollectedTRACE_LOG
     std::cout << "    =:=:=: Limits table work done \n";
@@ -191,7 +191,7 @@ bool ELcollected::log( const mf::ErrorObj & msg )  {
 
   // collected each item in the message:
   //
-    if ( format_.want(TEXT) )  {
+    if ( format.want(TEXT) )  {
     ELlist_string::const_iterator it;
     for ( it = msg.items().begin();  it != msg.items().end();  ++it )  {
   #ifdef ELcollectedTRACE_LOG

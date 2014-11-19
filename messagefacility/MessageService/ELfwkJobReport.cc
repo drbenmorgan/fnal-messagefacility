@@ -148,7 +148,7 @@ namespace mf {
            (xid.id == "postEventProcessing") ||
            (xid.id == "postEndJob")             ) return false;
       if ( thisShouldBeIgnored(xid.module) )  return false;
-      if ( ! stats_.limits().add( msg.xid() )       )  return false;
+      if ( ! stats.limits.add( msg.xid() )       )  return false;
 
 #ifdef ELfwkJobReportTRACE_LOG
       std::cerr << "    =:=:=: Limits table work done \n";
@@ -173,7 +173,7 @@ namespace mf {
 
       // Output each item in the message:
       //
-      if ( format_.want( TEXT ) )  {
+      if ( format.want( TEXT ) )  {
         ELlist_string::const_iterator it;
         for ( it = msg.items().begin();  it != msg.items().end();  ++it )  {
 #ifdef ELfwkJobReportTRACE_LOG
@@ -228,7 +228,7 @@ namespace mf {
 #ifdef ELfwkJobReport_EMIT_TRACE
       std::cerr << "[][][] in emit:  charsOnLine is " << charsOnLine << '\n';
       std::cerr << "[][][] in emit:  s.length() " << s.length() << '\n';
-      std::cerr << "[][][] in emit:  lineLength is " << lineLength_ << '\n';
+      std::cerr << "[][][] in emit:  lineLength is " << lineLength << '\n';
 #endif
 
       if (s.length() == 0)  {
@@ -261,7 +261,7 @@ namespace mf {
       // title:
       //
       ELstring title( fullTitle, 0, titleMaxLength );
-      int q = (lineLength_ - title.length() - 2) / 2;
+      int q = (lineLength - title.length() - 2) / 2;
       ELstring line(q, '=');
       emit( "", true );
       emit( line );
@@ -277,7 +277,7 @@ namespace mf {
       // finish:
       //
       emit( "", true );
-      emit( ELstring(lineLength_, '='), true );
+      emit( ELstring(lineLength, '='), true );
 
     }  // summarization()
 

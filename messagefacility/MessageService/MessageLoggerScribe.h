@@ -62,7 +62,8 @@ namespace mf {
 
       void  make_destinations( const fhicl::ParameterSet& dests,
                                const std::vector<std::string>& dest_list,
-                               const config_type config );
+                               const config_type config,
+                               const bool should_throw );
 
       void  configure_dest( ELdestControl& dest_ctrl,
                             const String& dest_pset_name,
@@ -80,31 +81,39 @@ namespace mf {
       ELadministrator                   * admin_p;
       ELdestControl                       early_dest;
       std::shared_ptr<ErrorLog>           errorlog_p;
-      std::vector<std::shared_ptr<std::ostream> > ostream_ps; // used to keep objects alive
       MsgContext                          msg_context;
       std::shared_ptr<PSet>               job_pset_p;
-      std::vector<String>                 stream_ids;
-      std::vector<ELdestControl>          destControls_;
+      std::map<String,ELdestControl>      destIdControlMap;
       std::vector<ELdestControl>          statisticsDestControls;
       std::string                         jobReportOption;
       bool                                clean_slate_configuration;
       MessageLoggerDefaults               messageLoggerDefaults;
       bool                                active;
-      bool                                singleThread;             // changeLog 9
-      bool                                done;                     // changeLog 9
-      bool                                purge_mode;               // changeLog 9
-      int                                 count;                    // changeLog 9
-      std::shared_ptr<ThreadQueue>        m_queue;                  // changeLog 12
+      bool                                singleThread;
+      bool                                done;
+      bool                                purge_mode;
+      int                                 count;
+      std::shared_ptr<ThreadQueue>        m_queue;
 
-      cet::BasicPluginFactory             pluginFactory_;
-      cet::BasicPluginFactory             pluginStatsFactory_;
+      cet::BasicPluginFactory             pluginFactory;
+      cet::BasicPluginFactory             pluginStatsFactory;
 
       vString fetch_ordinary_destinations   ( fhicl::ParameterSet& pset );
       vString fetch_statistics_destinations ( fhicl::ParameterSet& pset );
 
-      bool duplicate_destination( const std::string& type,
-                                  const std::string& filename,
-                                  const config_type config );
+      void checkType( const std::string& type,
+                      const config_type config );
+
+      String createId( std::set<std::string>& existing_ids,
+                       const std::string& type,
+                       const std::string& filename,
+                       const fhicl::ParameterSet& pset = fhicl::ParameterSet() );
+
+      std::pair<String,ELdestControl>
+      checkForExistingDestination( const std::string& output_id,
+                                   const config_type config,
+                                   const bool should_throw,
+                                   const fhicl::ParameterSet& pset = fhicl::ParameterSet() );
 
       std::unique_ptr<ELdestination>  makePlugin_( cet::BasicPluginFactory& pluginFactory,
                                                    const std::string& libspec,

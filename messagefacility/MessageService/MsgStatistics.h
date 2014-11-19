@@ -48,10 +48,6 @@ namespace mf {
   public:
 
     bool log( const mf::ErrorObj & msg );
-    ELlimitsTable& limits() { return limits_; }
-
-    bool updatedStats()       const { return updatedStats_;       }
-    bool printAtTermination() const { return printAtTermination_; }
 
     ELstring formSummary();
 
@@ -68,12 +64,12 @@ namespace mf {
     std::map<ELextendedID,StatsCount> statisticsMap() const;
     void summaryForJobReport (std::map<std::string, double> & sm);
 
-    int            tableLimit_;
-    ELlimitsTable  limits_;
-    ELmap_stats    statsMap_;
-    bool           updatedStats_;
-    bool           reset_;
-    bool           printAtTermination_;
+    int            tableLimit;
+    ELlimitsTable  limits;
+    ELmap_stats    statsMap;
+    bool           updatedStats;
+    bool           reset;
+    bool           printAtTermination;
 
   protected:
 

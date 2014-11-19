@@ -60,7 +60,7 @@ namespace mfplugins {
   void ELsyslog::fillPrefix( std::ostringstream& oss,const ErrorObj & msg ) {
     const auto& xid = msg.xid();
 
-    oss << mf::formatTime( msg.timestamp(), format_.want( mf::service::MILLISECOND) )+ELstring("|");  // timestamp
+    oss << mf::formatTime( msg.timestamp(), format.want( mf::service::MILLISECOND) )+ELstring("|");  // timestamp
     oss << xid.hostname+ELstring("|");                                 // host name
     oss << xid.hostaddr+ELstring("|");                                 // host address
     oss << xid.severity.getName()+ELstring("|");                       // severity

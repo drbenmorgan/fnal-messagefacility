@@ -6,23 +6,6 @@
 // ELstatistics is a subclass of ELdestination representing the
 //              provided statistics (for summary) keeping.
 //
-// 7/8/98 mf    Created file.
-// 7/2/99 jvr   Added noTerminationSummary() function
-// 12/20/99 mf  Added virtual destructor.
-// 6/7/00 web   Reflect consolidation of ELdestination/X; consolidate
-//              ELstatistics/X.
-// 6/14/00 web  Declare classes before granting friendship.
-// 10/4/00 mf   Add filterModule() and excludeModule()
-// 1/15/00 mf   line length control: changed ELoutputLineLen to
-//              the base class lineLen (no longer static const)
-// 3/13/01 mf   statisticsMap()
-//  4/4/01 mf   Removed moduleOfInterest and moduleToExclude, in favor
-//              of using base class method.
-// 1/17/06 mf   summary() for use in MessageLogger
-// 8/16/07 mf   noteGroupedCategory(cat) to support grouping of modules in
-//              specified categories.  Also, a static vector of such categories.
-// 6/19/08 mf   summaryForJobReport() for use in CMS framework
-//
 // ----------------------------------------------------------------------
 
 #include "messagefacility/MessageService/ELdestination.h"
@@ -81,7 +64,7 @@ namespace mf {
       // ----- Methods invoked by the MessageLoggerScribe, bypassing destControl
       //
     public:
-      static void noteGroupedCategory(std::string const & cat);  // 8/16/07 mf
+      static void noteGroupedCategory(std::string const & cat);
 
 
       // -----  Methods invoked through the ELdestControl handle:
@@ -104,10 +87,9 @@ namespace mf {
       // -----  Data affected by methods of specific ELdestControl handle:
       //
     protected:
-      bool                        updatedStats_;
-      std::shared_ptr<std::ostream> termStream_;
+      std::shared_ptr<std::ostream> termStream;
 
-      static std::set<std::string> groupedCategories;               // 8/16/07 mf
+      static std::set<std::string> groupedCategories;
 
     };  // ELstatistics
 

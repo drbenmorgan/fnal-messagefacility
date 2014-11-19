@@ -6,23 +6,6 @@
 // ELostreamOutput  is a subclass of ELdestination representing the standard
 //                  provided destination.
 //
-//  7/8/98  mf      Created file.
-//  6/17/99 jvr     Made output format options available for ELdestControl only
-//   7/2/99 jvr     Added separate/attachTime, Epilogue, and Serial options
-//  2/22/00 mf      Changed myDetX to myOutputX (to avoid future puzzlement!)
-//                  and added ELoutput(ox) to cacilitate inherited classes.
-//   6/7/00 web     Consolidated ELoutput/X; add filterModule()
-//  6/14/00 web     Declare classes before granting friendship; remove using
-//  10/4/00 mf      add excludeModule()
-//   4/4/01 mf      Removed moduleOfInterest and moduleToExclude, in favor
-//                  of using base class method.
-//  6/23/03 mf      changeFile(), flush()
-//  6/11/07 mf      changed default for emitAtStart to false
-// 11/13/14 kjk     Considerable reorganization -- most of the functionality
-//                  moved to ELdestination
-// 11/13/14 kjk     Rename to ELostreamOutput and use as template for ostream
-//                  plugins
-//
 // ----------------------------------------------------------------------
 
 #include "messagefacility/MessageLogger/ELstring.h"

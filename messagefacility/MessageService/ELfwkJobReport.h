@@ -55,7 +55,7 @@ namespace mf {
 
     public:
 
-      virtual bool log( const ErrorObj & msg );
+      virtual bool log( const ErrorObj & msg ) override;
 
       // ---  Internal Methods -- Users should not invoke these:
       //

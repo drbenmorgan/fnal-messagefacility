@@ -31,6 +31,13 @@
 #include <signal.h>
 #include <string>
 
+namespace {
+
+  const bool yes_throw = true;
+  const bool no_throw  = false;
+
+}
+
 namespace mf {
   namespace service {
 
@@ -38,7 +45,6 @@ namespace mf {
       : admin_p   ( ELadministrator::instance() )
       , early_dest( admin_p->attach( std::make_unique<ELostreamOutput>( std::cerr, false)) )
       , errorlog_p( new ErrorLog() )
-      , ostream_ps   ( )
       , job_pset_p( )
       , jobReportOption( )
       , clean_slate_configuration( true )
@@ -49,8 +55,8 @@ namespace mf {
       , purge_mode (false)
       , count (false)
       , m_queue(queue)
-      , pluginFactory_("mfPlugin")
-      , pluginStatsFactory_("mfStatsPlugin")
+      , pluginFactory("mfPlugin")
+      , pluginStatsFactory("mfStatsPlugin")
     {
       admin_p->setContextSupplier(msg_context);
     }
@@ -68,11 +74,7 @@ namespace mf {
       MessageLoggerQ::OpCode  opcode;
       void *                  operand;
 
-      MessageDrop::instance()->messageLoggerScribeIsRunning =
-        MLSCRIBE_RUNNING_INDICATOR;
-      //  std::cerr << "MessageLoggerScribe::run(): \n";
-      //  std::cerr << "messageLoggerScribeIsRunning = "
-      //      << (int)MessageDrop::instance()->messageLoggerScribeIsRunning << "\n";
+      MessageDrop::instance()->messageLoggerScribeIsRunning = MLSCRIBE_RUNNING_INDICATOR;
 
       do  {
         m_queue->consume(opcode, operand);  // grab next work item from Q
@@ -270,30 +272,30 @@ namespace mf {
 
     //=============================================================================
     void MessageLoggerScribe::log ( ErrorObj *  errorobj_p ) {
-      ELcontextSupplier& cs =
-        const_cast<ELcontextSupplier&>(admin_p->getContextSupplier());
-      MsgContext& mc = dynamic_cast<MsgContext&>(cs);
+
+      ELcontextSupplier& cs = const_cast<ELcontextSupplier&>(admin_p->getContextSupplier());
+      MsgContext& mc        = dynamic_cast<MsgContext&>(cs);
       mc.setContext(errorobj_p->context());
+
       std::vector<std::string> categories;
       parseCategories(errorobj_p->xid().id, categories);
+
       for (unsigned int icat = 0; icat < categories.size(); ++icat) {
         errorobj_p->setID(categories[icat]);
         (*errorlog_p)( *errorobj_p );  // route the message text
       }
+
     }
 
     //=============================================================================
     void
     MessageLoggerScribe::configure_errorlog()
     {
-      vString  empty_vString;
-      String   empty_String;
-      PSet     empty_PSet;
 
       // The following is present to test pre-configuration message handling:
-      String preconfiguration_message = job_pset_p->get<std::string>("generate_preconfiguration_message", empty_String);
+      String preconfiguration_message = job_pset_p->get<std::string>("generate_preconfiguration_message", std::string() );
 
-      if (preconfiguration_message != empty_String) {
+      if ( !preconfiguration_message.empty() ) {
         // To test a preconfiguration message without first going thru the
         // configuration we are about to do, we issue the message (so it sits
         // on the queue), then copy the processing that the LOG_A_MESSAGE case
@@ -311,7 +313,7 @@ namespace mf {
         }
       }
 
-      if ( !stream_ids.empty() ) {
+      if ( !destIdControlMap.empty() ) {
         LogWarning ("multiLogConfig")
           << "The message logger has been configured multiple times";
         clean_slate_configuration = false;
@@ -514,6 +516,8 @@ namespace mf {
         fwkJobReports = messageLoggerDefaults.fwkJobReports;
       }
 
+      std::set<std::string> existing_ids;
+
       // establish each fwkJobReports destination:
       for( vString::const_iterator it = fwkJobReports.begin()
              ; it != fwkJobReports.end()
@@ -550,14 +554,18 @@ namespace mf {
             actual_filename += ".xml";
           }
 
-          if ( duplicate_destination( "file", actual_filename, FWKJOBREPORT ) ) continue;
+          const std::string outputId = createId( existing_ids, "file", actual_filename );
+
+          auto idControlPair = checkForExistingDestination( outputId, FWKJOBREPORT, yes_throw );
+
+          // use already-specified configuration if ELdestination* is not equal to nullptr
+          if ( idControlPair.second ) continue;
+
           jobReportExists = true;
           if ( actual_filename == jobReportOption ) jobReportOption = empty_String;
 
-          auto os_sp = std::make_shared<std::ofstream>(actual_filename.c_str());
-          ostream_ps.push_back(os_sp);
-          ELdestControl dest_ctrl;
-          dest_ctrl = admin_p->attach( std::make_unique<ELfwkJobReport>(*os_sp) );
+          ELdestControl dest_ctrl = admin_p->attach( std::make_unique<ELfwkJobReport>( actual_filename ) );
+          destIdControlMap.emplace( idControlPair.first, dest_ctrl );
 
           // now configure this destination:
           configure_dest(dest_ctrl, psetname, fjr_pset);
@@ -572,12 +580,17 @@ namespace mf {
       // Check that this report is not already on order -- here the duplicate
       // name would not be a configuration error, but we shouldn't do it twice
       std::string actual_filename = jobReportOption;
-      if ( duplicate_destination( "file", actual_filename, FWKJOBREPORT ) ) return;
 
-      std::shared_ptr<std::ofstream> os_sp(new std::ofstream(actual_filename.c_str()));
-      ostream_ps.push_back(os_sp);
-      ELdestControl dest_ctrl;
-      dest_ctrl = admin_p->attach( std::make_unique<ELfwkJobReport>(*os_sp) );
+      std::set<std::string> tmpIdSet;
+      const std::string outputId = createId( tmpIdSet, "file", actual_filename );
+
+      auto idControlPair = checkForExistingDestination( outputId, FWKJOBREPORT, no_throw );
+
+      // use already-specified configuration if ELdestination* is not equal to nullptr
+      if ( idControlPair.second ) return;
+
+      ELdestControl dest_ctrl = admin_p->attach( std::make_unique<ELfwkJobReport>( actual_filename ) );
+      destIdControlMap.emplace( idControlPair.first, dest_ctrl );
 
       // now configure this destination, in the jobreport default manner:
       configure_default_fwkJobReport (dest_ctrl);
@@ -591,10 +604,10 @@ namespace mf {
       PSet dests = job_pset_p->get<fhicl::ParameterSet>("destinations");
 
       const vString ordinaryDestinations   = fetch_ordinary_destinations  ( dests );
-      make_destinations( dests, ordinaryDestinations  , ORDINARY   );
+      make_destinations( dests, ordinaryDestinations  , ORDINARY, yes_throw  );
 
       const vString statisticsDestinations = fetch_statistics_destinations( dests );
-      make_destinations( dests, statisticsDestinations, STATISTICS );
+      make_destinations( dests, statisticsDestinations, STATISTICS, no_throw );
 
     }
 
@@ -603,7 +616,10 @@ namespace mf {
     MessageLoggerScribe::
     make_destinations( const fhicl::ParameterSet& dests,
                        const std::vector<std::string>& dest_list,
-                       const config_type configuration ) {
+                       const config_type configuration,
+                       const bool should_throw ){
+
+      std::set<std::string> ids;
 
       for( const auto& psetname : dest_list ) {
 
@@ -615,26 +631,35 @@ namespace mf {
         if (is_placeholder) continue;
 
         // grab the destination type and filename
-        String dest_type     = dest_pset.get<std::string>("type");
-        String dest_filename = dest_pset.get<std::string>("filename",std::string());
+        const String dest_type = dest_pset.get<std::string>("type");
+        checkType( dest_type, configuration );
 
-        if ( duplicate_destination( dest_type, dest_filename, configuration ) ) continue;
+        const std::string outputId = createId( ids, dest_type, std::string(), dest_pset );
 
-        // attach the current destination, keeping a control handle to it:
+        auto idControlPair = checkForExistingDestination( outputId,
+                                                          configuration,
+                                                          should_throw,
+                                                          dest_pset );
+
+        // use already-specified configuration if ELdestination* is not equal to nullptr
+        if ( idControlPair.second ) continue;
+
         const std::string libspec = dest_type;
 
-        auto& pluginFactory =
+        auto& plugin_factory =
           configuration == STATISTICS ?
-          pluginStatsFactory_ :
-          pluginFactory_ ;
+          pluginStatsFactory :
+          pluginFactory;
 
-        ELdestControl dest_ctrl = admin_p->attach( makePlugin_( pluginFactory,
+        // attach the current destination, keeping a control handle to it:
+        ELdestControl dest_ctrl = admin_p->attach( makePlugin_( plugin_factory,
                                                                 libspec,
                                                                 psetname,
                                                                 dest_pset )
                                                    );
 
-        destControls_.push_back( dest_ctrl );
+        destIdControlMap.emplace( idControlPair.first, dest_ctrl );
+
         configure_dest(dest_ctrl, psetname, dest_pset);
 
         // Suppress the desire to do an extra termination summary just because
@@ -688,7 +713,8 @@ namespace mf {
     void
     MessageLoggerScribe::triggerStatisticsSummaries() {
 
-      for ( auto destControl : destControls_ ) {
+      for ( auto idControlPair : destIdControlMap ) {
+        auto& destControl = idControlPair.second;
         destControl.summary();
         if ( destControl.resetStats() ) destControl.wipe();
       }
@@ -726,8 +752,8 @@ namespace mf {
         for ( const auto& dest : destinations ) {
 
           fhicl::ParameterSet tmp;
-          tmp.put<std::string>( "type"    , std::string("file")     );
-          tmp.put<std::string>( "filename", std::string("cerr.log") );
+          tmp.put<std::string>( "type"    , "file"     );
+          tmp.put<std::string>( "filename", "cerr.log" );
           dests.put<fhicl::ParameterSet>( dest, tmp );
 
         }
@@ -759,8 +785,8 @@ namespace mf {
         for ( const auto& dest : statsDests ) {
 
           fhicl::ParameterSet tmp;
-          tmp.put<std::string>( "type"    , std::string("file")           );
-          tmp.put<std::string>( "filename", std::string("cerr_stats.log") );
+          tmp.put<std::string>( "type"    , "file"           );
+          tmp.put<std::string>( "filename", "cerr_stats.log" );
           dests.put<fhicl::ParameterSet>( dest, tmp );
 
         }
@@ -771,87 +797,154 @@ namespace mf {
     }
 
     //=============================================================================
-    bool
+    void
     MessageLoggerScribe::
-    duplicate_destination( const std::string& type,
-                           const std::string& filename,
-                           const config_type configuration ) {
+    checkType( const std::string& type,
+               const config_type configuration ) {
 
-      std::string prefix;
+      if ( configuration != STATISTICS ) return;
 
-      if      ( configuration == FWKJOBREPORT ) prefix = "fwkJobReport";
-      else if ( configuration == ORDINARY     ) prefix = "ordinary";
-      else if ( configuration == STATISTICS   ) prefix = "statistics";
+      // Check for ostream-supported types for statistics
+      if ( !cet::search_all( std::set<std::string>{"cout","cerr","file"}, type ) ) {
 
-      std::string stream_id;
+        throw mf::Exception ( mf::errors::Configuration )
+          <<"\n"
+          <<"Unsupported type [ " << type << " ] chosen for statistics printout.\n"
+          <<"Must choose ostream type: \"cout\", \"cerr\", or \"file\""
+          <<"\n";
+      }
 
-      if ( type == "cout" || type == "cerr" ) stream_id = type;
-      else if ( type == "file" ) stream_id = filename;
-      else stream_id = type+":"+filename;
+    }
 
-      stream_id = prefix+":"+stream_id;
+    //=============================================================================
+    std::string
+    MessageLoggerScribe::
+    createId( std::set<std::string>& existing_ids,
+              const std::string& type,
+              const std::string& file_name,
+              const fhicl::ParameterSet& pset ) {
 
-        //---------------------------------------------------------
-        // Check for supported statistics type
-        //---------------------------------------------------------
+      std::string output_id;
+      if ( type == "cout" || type == "cerr" || type == "syslog" ) {
+        output_id = type;
+      }
+      else {
+        //
+        // 'file_name' is empty for ordinary/statistics destinations
+        //
+        //   - the FHiCL parameter 'filename' must have an associated
+        //     value for non-cout/cerr/syslog destinations
+        //
+        const std::string filename = file_name.empty() ? pset.get<std::string>("filename") : file_name;
 
-        if ( configuration == STATISTICS ) {
-
-          // Check for ostream-supported types
-          if ( !cet::search_all( std::set<std::string>{"cout","cerr","file"}, type ) ) {
-
-            throw mf::Exception ( mf::errors::Configuration )
-              <<"\n"
-              <<"Unsupported type [ " << type << " ] chosen for statistics printout.\n"
-              <<"Must choose ostream type: \"cout\", \"cerr\", or \"file\""
-              <<"\n";
-          }
-
+        if ( type == "file" ) {
+          output_id = filename;
+        }
+        else {
+          output_id = type+":"+filename;
         }
 
-        //---------------------------------------------------------
-        // Check that this is not a duplicate id
-        //---------------------------------------------------------
+      }
 
-        std::string config_str;
-        if      ( configuration == FWKJOBREPORT ) config_str = "Framework Job Report";
-        else if ( configuration == ORDINARY     ) config_str = "MessageLogger";
-        else if ( configuration == STATISTICS   ) config_str = "MessageLogger Statistics";
+      // Emplace and check that output_id doesn't already exist
+      if ( !existing_ids.emplace( output_id ).second ) {
+        throw mf::Exception( mf::errors::Configuration )
+          << "\n"
+          << " Output identifier: \"" << output_id
+          << " already specified within ordinary/statistics/fwkJobReport block in FHiCL file"
+          << "\n";
+      }
 
-        if ( cet::search_all( stream_ids, stream_id ) )
-          {
-            if (clean_slate_configuration) {
-              throw mf::Exception ( mf::errors::Configuration )
-                <<"\n"
-                <<"Duplicate name for a " << config_str << " Destination: "
-                <<stream_id
-                <<"\n";
-            } else {
-              LogWarning("duplicateDestination")
-                <<"Duplicate name for a " << config_str << " Destination: "
-                << stream_id
-                << "\n" << "Only original configuration instructions are used";
+      return output_id;
+
+    }
+
+    //=============================================================================
+    std::pair<std::string,ELdestControl>
+    MessageLoggerScribe::
+    checkForExistingDestination( const std::string& output_id,
+                                 const config_type configuration,
+                                 const bool should_throw,
+                                 const fhicl::ParameterSet& pset) {
+
+      std::string config_str;
+      if      ( configuration == FWKJOBREPORT ) config_str = "Framework Job Report";
+      else if ( configuration == ORDINARY     ) config_str = "MessageLogger";
+      else if ( configuration == STATISTICS   ) config_str = "MessageLogger Statistics";
+
+      auto destIdControlPair = destIdControlMap.find(output_id);
+
+      if ( destIdControlPair != destIdControlMap.end() )
+        {
+
+          std::ostringstream except_msg;
+          except_msg << "Duplicate name for a " << config_str << " Destination: " << output_id << "\n";
+
+          std::ostringstream orig_config_msg;
+          orig_config_msg << "\n" << "Only original configuration instructions are used." << "\n";
+
+          if (clean_slate_configuration) {
+
+            if ( should_throw ) {
+              throw mf::Exception( mf::errors::Configuration ) << "\n" << except_msg.str();
             }
+            else LogWarning("duplicateDestination") << except_msg.str();
+
+          } else { // !clean_slate_configuration
+
+            LogWarning("duplicateDestination") << except_msg.str()
+                                               << orig_config_msg.str();
+
           }
+        }
 
-        stream_ids.push_back(stream_id);
+      //------------------------------------------------------------------
+      // Handle statistics case where duplicate destinations are okay
+      //------------------------------------------------------------------
 
-        return false;
+      // If the destination already exists, send a default-constructed
+      // ELdestControl object, which includes an ELdestination ptr
+      // that points to nullptr.  The functions that call
+      // checkForExistingDestination then check if the ELdestination
+      // does not point to nullptr to determine if a new ELdestination
+      // object should be attached to admin_p.
+      ELdestControl destControl;
+
+      if ( destIdControlPair != destIdControlMap.end() ) {
+
+        destControl = destIdControlPair->second;
+
+        // If user specifies the destination twice and the
+        // configuration is STATISTICS, then the
+        // ELdestination.userWantsStats_ flag needs to be set to
+        // 'true' so that statistics are output.
+
+        if ( configuration == STATISTICS ) {
+          destControl.userWantsStats();
+
+          bool reset = false;
+          if ( pset.get_if_present<bool>("reset",reset) ) destControl.setResetStats( reset );
+        }
+
+      }
+
+      return std::make_pair( output_id, destControl );
+
     }
 
     //=============================================================================
     std::unique_ptr<ELdestination>
     MessageLoggerScribe::
-    makePlugin_(cet::BasicPluginFactory& pluginFactory,
+    makePlugin_(cet::BasicPluginFactory& plugin_factory,
                 const std::string& libspec,
                 const std::string& psetname,
                 const fhicl::ParameterSet& pset) {
 
       std::unique_ptr<ELdestination> result;
       try {
-        auto const pluginType = pluginFactory.pluginType(libspec);
+        auto const pluginType = plugin_factory.pluginType(libspec);
         if (pluginType == cet::PluginTypeDeducer<ELdestination>::value) {
-          result = pluginFactory.makePlugin<std::unique_ptr<ELdestination> >(libspec, psetname, pset );
+          result = plugin_factory.makePlugin<std::unique_ptr<ELdestination> >(libspec, psetname, pset );
         } else {
           throw Exception(errors::Configuration, "MessageLoggerScribe: ")
             << "unrecognized plugin type "
@@ -869,4 +962,3 @@ namespace mf {
 
   } // end of namespace service
 } // end of namespace mf
-

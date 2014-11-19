@@ -38,19 +38,19 @@ namespace mf {
     }
 
     ELdestination::ELdestination( const fhicl::ParameterSet& pset )
-      : stats_        ( pset )
-      , format_       ( pset.get<fhicl::ParameterSet>( "format", fhicl::ParameterSet() ) )
+      : stats         ( pset )
+      , format        ( pset.get<fhicl::ParameterSet>( "format", fhicl::ParameterSet() ) )
       , threshold     ( ELzeroSeverity    )
       , traceThreshold( ELhighestSeverity )
       , preamble      ( "%MSG"            )
       , newline       ( "\n"              )
       , indent        ( "      "          )
-      , lineLength_   ( defaultLineLength )
+      , lineLength    ( defaultLineLength )
       , ignoreMostModules (false)
       , respondToThese()
       , respondToMostModules (false)
       , ignoreThese()
-      , userWantsStats_( pset.get<bool>("outputStatistics",false) )
+      , userWantsStats( pset.get<bool>("outputStatistics",false) )
     {
 
 #ifdef ELdestination_CONSTRUCTOR_TRACE
@@ -78,7 +78,7 @@ namespace mf {
 
 #ifdef ELdestination_EMIT_TRACE
       std::cerr << "[][][] in emit:  s.length() " << s.length() << '\n';
-      std::cerr << "[][][] in emit:  lineLength is " << lineLength_ << '\n';
+      std::cerr << "[][][] in emit:  lineLength is " << lineLength << '\n';
 #endif
 
       std::size_t charsOnLine(0);
@@ -100,10 +100,10 @@ namespace mf {
       //checking -2 because the very last char is sometimes a ' ' inserted
       //by ErrorLog::operator<<
 
-      if (format_.preambleMode) {
+      if (format.preambleMode) {
         //Accounts for newline @ the beginning of the ELstring     JV:2
         if ( first == '\n'
-             || (charsOnLine + static_cast<int>(s.length())) > lineLength_ )  {
+             || (charsOnLine + static_cast<int>(s.length())) > lineLength )  {
 #ifdef ELdestination_EMIT_TRACE
           std::cerr << "[][][] in emit: about to << to os \n";
 #endif
@@ -143,7 +143,7 @@ namespace mf {
         else       {                              charsOnLine += s.length(); }
       }
 
-      if (!format_.preambleMode) {
+      if (!format.preambleMode) {
         os << s;
       }
 
@@ -182,7 +182,7 @@ namespace mf {
       //
       if ( xid.severity < threshold )  return false;
       if ( xid.severity < ELsevere && thisShouldBeIgnored(xid.module) ) return false;
-      if ( xid.severity < ELsevere && !stats_.limits().add( xid ) ) return false;
+      if ( xid.severity < ELsevere && !stats.limits.add( xid ) ) return false;
 
 #ifdef ELoutputTRACE_LOG
       std::cerr << "    =:=:=: Limits table work done \n";
@@ -195,7 +195,7 @@ namespace mf {
 
       // Output the prologue:
       //
-      format_.preambleMode = true;
+      format.preambleMode = true;
 
       auto xid = msg.xid();      // Save the xid.
 
@@ -215,7 +215,7 @@ namespace mf {
       //
       if  ( !msg.is_verbatim()  )
         {
-          if ( format_.want( SERIAL ) )  {
+          if ( format.want( SERIAL ) )  {
             std::ostringstream s;
             s << msg.serial();
             emit( oss, "[serial #" + s.str() + ELstring("] ") );
@@ -225,7 +225,7 @@ namespace mf {
 #ifdef OUTPUT_FORMATTED_ERROR_MESSAGES
       // Output each item in the message (before the epilogue):
       //
-      if ( format_.want( TEXT ) )  {
+      if ( format.want( TEXT ) )  {
         ELlist_string::const_iterator it;
         for ( it = msg.items().begin();  it != msg.items().end();  ++it )  {
 #ifdef ELoutputTRACE_LOG
@@ -241,21 +241,21 @@ namespace mf {
       bool needAspace = true;
       if  ( !msg.is_verbatim()  )
         {
-          if ( format_.want( EPILOGUE_SEPARATE ) )  {
+          if ( format.want( EPILOGUE_SEPARATE ) )  {
             if ( xid.module.length() + xid.subroutine.length() > 0 )  {
               emit( oss,"\n");
               needAspace = false;
             }
-            else if ( format_.want( TIMESTAMP ) && !format_.want( TIME_SEPARATE ) )  {
+            else if ( format.want( TIMESTAMP ) && !format.want( TIME_SEPARATE ) )  {
               emit( oss,"\n");
               needAspace = false;
             }
           }
-          if ( format_.want( MODULE ) && (xid.module.length() > 0) )  {
+          if ( format.want( MODULE ) && (xid.module.length() > 0) )  {
             if (needAspace) { emit( oss,ELstring(" ")); needAspace = false; }
             emit( oss, xid.module + ELstring(" ") );
           }
-          if ( format_.want( SUBROUTINE ) && (xid.subroutine.length() > 0) )  {
+          if ( format.want( SUBROUTINE ) && (xid.subroutine.length() > 0) )  {
             if (needAspace) { emit( oss,ELstring(" ")); needAspace = false; }
             emit( oss, xid.subroutine + "()" + ELstring(" ") );
           }
@@ -269,13 +269,13 @@ namespace mf {
       //
       if  ( !msg.is_verbatim() )
         {
-          if ( format_.want( TIMESTAMP ) )  {
-            if ( format_.want( TIME_SEPARATE ) )  {
+          if ( format.want( TIMESTAMP ) )  {
+            if ( format.want( TIME_SEPARATE ) )  {
               emit( oss, ELstring("\n") );
               needAspace = false;
             }
             if (needAspace) { emit( oss,ELstring(" ")); needAspace = false; }
-            emit( oss, mf::formatTime( msg.timestamp(), format_.want( MILLISECOND ) ) + ELstring(" ") );
+            emit( oss, mf::formatTime( msg.timestamp(), format.want( MILLISECOND ) ) + ELstring(" ") );
           }
         }
 
@@ -283,11 +283,11 @@ namespace mf {
       std::cerr << "    =:=:=: TimeStamp done \n";
 #endif
 
-      // Provide the context informat_ion:
+      // Provide the context information:
       //
       if  ( !msg.is_verbatim() )
         {
-          if ( format_.want( SOME_CONTEXT ) ) {
+          if ( format.want( SOME_CONTEXT ) ) {
             if (needAspace) { emit( oss,ELstring(" ")); needAspace = false; }
 #ifdef ELoutputTRACE_LOG
             std::cerr << "    =:=:=:>> context supplier is at 0x"
@@ -297,7 +297,7 @@ namespace mf {
                       << ELadministrator::instance()->getContextSupplier().context()
                       << '\n';
 #endif
-            if ( format_.want( FULL_CONTEXT ) )  {
+            if ( format.want( FULL_CONTEXT ) )  {
               emit( oss, ELadministrator::instance()->getContextSupplier().fullContext());
 #ifdef ELoutputTRACE_LOG
               std::cerr << "    =:=:=: fullContext done: \n";
@@ -314,7 +314,7 @@ namespace mf {
       // Provide traceback information:
       //
 
-      format_.insertNewlineAfterHeader = (
+      format.insertNewlineAfterHeader = (
                                          (msg.xid().severity != ELsuccess)
                                          && (msg.xid().severity != ELinfo   )
                                          && (msg.xid().severity != ELwarning)
@@ -326,10 +326,10 @@ namespace mf {
           if ( msg.xid().severity >= traceThreshold )  {
             emit( oss, ELstring("\n")
                   + ELadministrator::instance()->getContextSupplier().traceRoutine()
-                  , format_.insertNewlineAfterHeader );
+                  , format.insertNewlineAfterHeader );
           }
           else  {                                        //else statement added JV:1
-            emit( oss, "", format_.insertNewlineAfterHeader);
+            emit( oss, "", format.insertNewlineAfterHeader);
           }
         }
 #ifdef ELoutputTRACE_LOG
@@ -343,8 +343,8 @@ namespace mf {
 
 #ifndef OUTPUT_FORMATTED_ERROR_MESSAGES
 
-      format_.preambleMode = false;
-      if ( format_.want( TEXT ) )  {
+      format.preambleMode = false;
+      if ( format.want( TEXT ) )  {
         ELlist_string::const_iterator it;
         int item_count = 0;
         for ( it = msg.items().begin();  it != msg.items().end();  ++it )  {
@@ -356,11 +356,11 @@ namespace mf {
             if (item_count==2) {
               if (!(*it).compare("--")) {
                 ++it; ++it; ++it; item_count+=3;
-                if (!format_.insertNewlineAfterHeader) emit( oss, "", true);
+                if (!format.insertNewlineAfterHeader) emit( oss, "", true);
                 continue;
               }
             }
-            if ( !format_.insertNewlineAfterHeader && (item_count == 3) ) {
+            if ( !format.insertNewlineAfterHeader && (item_count == 3) ) {
               // in a LogDebug message, the first 3 items are FILE, :, and LINE
               emit( oss, *it, true );
             } else {
@@ -393,7 +393,7 @@ namespace mf {
 
     bool ELdestination::log( const mf::ErrorObj & msgObj )  {
 
-      if (  userWantsStats_ && passLogStatsThreshold( msgObj ) ) stats_.log( msgObj );
+      if (  userWantsStats && passLogStatsThreshold( msgObj ) ) stats.log( msgObj );
 
       if ( !passLogMsgThreshold  ( msgObj ) ) return false;
 
@@ -429,9 +429,9 @@ namespace mf {
     }  // clearSummary()
 
 
-    void ELdestination::wipe()  { stats_.limits().wipe(); }
+    void ELdestination::wipe()  { stats.limits.wipe(); }
 
-    void ELdestination::zero()  { stats_.limits().zero(); }
+    void ELdestination::zero()  { stats.limits.zero(); }
 
     void ELdestination::respondToModule( ELstring const & moduleName )  {
       if (moduleName=="*") {
@@ -469,12 +469,12 @@ namespace mf {
 
     void ELdestination::summary( )  {
 
-      if ( userWantsStats_ &&
-           stats_.updatedStats() &&
-           stats_.printAtTermination() )
+      if ( userWantsStats &&
+           stats.updatedStats &&
+           stats.printAtTermination )
         {
           std::ostringstream payload;
-          payload << stats_.formSummary();
+          payload << stats.formSummary();
           routePayload( payload, mf::ErrorObj(ELzeroSeverity, noosMsg) );
         }
 
@@ -501,7 +501,7 @@ namespace mf {
 
     void ELdestination::finish() {  }
 
-    void ELdestination::setTableLimit( int n )  { stats_.limits().setTableLimit( n ); }
+    void ELdestination::setTableLimit( int n )  { stats.limits.setTableLimit( n ); }
 
 
     void ELdestination::summarization( const ELstring & title
@@ -542,12 +542,12 @@ namespace mf {
     ELstring ELdestination::getNewline() const  { return newline; }
 
     int ELdestination::setLineLength (int len) {
-      int temp=lineLength_;
-      lineLength_ = len;
+      int temp=lineLength;
+      lineLength = len;
       return temp;
     }
 
-    int ELdestination::getLineLength () const { return lineLength_; }
+    int ELdestination::getLineLength () const { return lineLength; }
 
 
     // ----------------------------------------------------------------------
