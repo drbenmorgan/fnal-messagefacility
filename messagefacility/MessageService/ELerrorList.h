@@ -22,71 +22,64 @@
 #include <list>
 
 namespace mf {
-namespace service {
+  namespace service {
 
 
-// ----------------------------------------------------------------------
-// prerequisite classes:
-// ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // prerequisite classes:
+    // ----------------------------------------------------------------------
 
-class ELdestControl;
-
-
-// ----------------------------------------------------------------------
-// ELerrorList:
-// ----------------------------------------------------------------------
-
-class ELerrorList : public ELdestination  {
-
-  friend class ELdestControl;
-
-public:
-  // --- PUBLIC member data:  this list is the whole point of the class!
-  //
-  std::list<mf::ErrorObj> & errorObjs;
-
-public:
-
-  // ---  Birth/death:
-  //
-  ELerrorList ( std::list<mf::ErrorObj> & errorList );
-  ELerrorList ( const ELerrorList & orig );
-  virtual ~ELerrorList();
-
-  // ---  Methods invoked by the ELadministrator:
-  //
-  virtual
-  ELerrorList *
-  clone() const;
-  // Used by attach() to put the destination on the ELadministrators list
-                //-| There is a note in Design Notes about semantics
-                //-| of copying a destination onto the list:  ofstream
-                //-| ownership is passed to the new copy.
-
-  virtual bool log( const mf::ErrorObj & msg );
-
-  // ---  Methods invoked through the ELdestControl handle:
-  //
-protected:
-    // trivial clearSummary(), wipe(), zero() from base class
-    // trivial three summary(..) from base class
-
-protected:
-  // --- member data:
-  //
-
-  // --- Verboten method:
-  //
-  ELerrorList & operator=( const ELerrorList & orig );
-
-};  // ELerrorList
+    class ELdestControl;
 
 
-// ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // ELerrorList:
+    // ----------------------------------------------------------------------
+
+    class ELerrorList : public ELdestination  {
+
+      friend class ELdestControl;
+
+    public:
+      // --- PUBLIC member data:  this list is the whole point of the class!
+      //
+      std::list<mf::ErrorObj> & errorObjs;
+
+    public:
+
+      // ---  Birth/death:
+      //
+      ELerrorList ( std::list<mf::ErrorObj> & errorList );
+      ELerrorList ( const ELerrorList & orig );
+      virtual ~ELerrorList();
+
+      // --- disable assignment
+      ELerrorList & operator=( const ELerrorList & orig ) = delete;
 
 
-}        // end of namespace service
+      // ---  Methods invoked by the ELadministrator:
+      //
+
+      virtual void log( mf::ErrorObj & msg ) override;
+
+      // ---  Methods invoked through the ELdestControl handle:
+      //
+    protected:
+      // trivial clearSummary(), wipe(), zero() from base class
+      // trivial three summary(..) from base class
+
+    };  // ELerrorList
+
+
+    // ----------------------------------------------------------------------
+
+
+  }        // end of namespace service
 }        // end of namespace mf
 
 
 #endif // FWCore_MessageService_ELerrorList_h
+
+// Local variables:
+// mode: c++
+// End:

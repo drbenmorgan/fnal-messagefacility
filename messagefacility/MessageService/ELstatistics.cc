@@ -36,7 +36,7 @@ namespace mf {
       , termStream   ( &osp, do_nothing_deleter() )
     {
 #ifdef ELstatisticsCONSTRUCTOR_TRACE
-      std::cerr << "Constructor for ELstatistics(osp)\n";
+      std::cerr << "Constructor for ELstatistics(pset,osp)\n";
 #endif
     }  // ELstatistics()
 
@@ -44,7 +44,8 @@ namespace mf {
       : ELstatistics( pset, osp )
     {
 #ifdef ELstatisticsCONSTRUCTOR_TRACE
-      std::cerr << "Constructor for ELstatistics(spaceLimit,osp)\n";
+      std::cerr << "Constructor for ELstatistics(pset,spaceLimit,osp)\n";
+      std::cerr << "Address of ostream: " << &osp << std::endl;
 #endif
     }  // ELstatistics()
 
@@ -57,7 +58,7 @@ namespace mf {
                             close_and_delete() )
     {
 #ifdef ELstatisticsCONSTRUCTOR_TRACE
-      std::cerr << "Constructor for ELstatistics(osp)\n";
+      std::cerr << "Constructor for ELstatistics(pset,filename,append)\n";
 #endif
     }  // ELstatistics()
 
@@ -65,9 +66,8 @@ namespace mf {
     // Methods invoked by the ELadministrator
     // ----------------------------------------------------------------------
 
-    bool  ELstatistics::log( const mf::ErrorObj& msg ) {
+    void  ELstatistics::log( mf::ErrorObj& msg ) {
       if ( passLogStatsThreshold( msg ) ) stats.log( msg );
-      return true;
     }
 
     void  ELstatistics::clearSummary(){ stats.clearSummary(); }

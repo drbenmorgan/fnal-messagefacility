@@ -325,7 +325,6 @@ void ELadministrator::finishMsg()  {
     std::cerr << "=:=:=: finshMsg() returns from editErrorObj( msg ) \n";
   #endif
 
-  bool mrt;
   #ifdef ELadTRACE_FINISH
     int destCounter = 0;
   #endif
@@ -340,12 +339,10 @@ void ELadministrator::finishMsg()  {
     std::cerr << "  =:=:=: log(msg) for a destination number "
               << ++destCounter << " called ... \n";
 #endif
-    mrt = d->log( msg );
+    d->log( msg );
 #ifdef ELadTRACE_FINISH
-    std::cerr << "  =:=:=: log(msg) for a destination returned " << mrt << "\n";
+    std::cerr << "  =:=:=: log(msg) for a destination successful \n";
 #endif
-    if ( mrt )
-      msg.setReactedTo(true);
   }
 
   msgIsActive = false;

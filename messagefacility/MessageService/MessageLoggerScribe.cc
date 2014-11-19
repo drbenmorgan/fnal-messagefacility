@@ -33,8 +33,8 @@
 
 namespace {
 
-  const bool yes_throw = true;
-  const bool no_throw  = false;
+  const bool throw_on_clean_slate     = true;
+  const bool no_throw_on_clean_slate  = false;
 
 }
 
@@ -555,17 +555,16 @@ namespace mf {
           }
 
           const std::string outputId = createId( existing_ids, "file", actual_filename );
+          const bool   duplicateDest = duplicateDestination( outputId, FWKJOBREPORT, throw_on_clean_slate );
 
-          auto idControlPair = checkForExistingDestination( outputId, FWKJOBREPORT, yes_throw );
-
-          // use already-specified configuration if ELdestination* is not equal to nullptr
-          if ( idControlPair.second ) continue;
+          // use already-specified configuration if destination exists
+          if ( duplicateDest ) continue;
 
           jobReportExists = true;
           if ( actual_filename == jobReportOption ) jobReportOption = empty_String;
 
           ELdestControl dest_ctrl = admin_p->attach( std::make_unique<ELfwkJobReport>( actual_filename ) );
-          destIdControlMap.emplace( idControlPair.first, dest_ctrl );
+          destIdControlMap.emplace( outputId, dest_ctrl );
 
           // now configure this destination:
           configure_dest(dest_ctrl, psetname, fjr_pset);
@@ -583,14 +582,13 @@ namespace mf {
 
       std::set<std::string> tmpIdSet;
       const std::string outputId = createId( tmpIdSet, "file", actual_filename );
+      const bool   duplicateDest = duplicateDestination( outputId, FWKJOBREPORT, no_throw_on_clean_slate );
 
-      auto idControlPair = checkForExistingDestination( outputId, FWKJOBREPORT, no_throw );
-
-      // use already-specified configuration if ELdestination* is not equal to nullptr
-      if ( idControlPair.second ) return;
+      // use already-specified configuration if destination exists
+      if ( duplicateDest ) return;
 
       ELdestControl dest_ctrl = admin_p->attach( std::make_unique<ELfwkJobReport>( actual_filename ) );
-      destIdControlMap.emplace( idControlPair.first, dest_ctrl );
+      destIdControlMap.emplace( outputId, dest_ctrl );
 
       // now configure this destination, in the jobreport default manner:
       configure_default_fwkJobReport (dest_ctrl);
@@ -604,10 +602,10 @@ namespace mf {
       PSet dests = job_pset_p->get<fhicl::ParameterSet>("destinations");
 
       const vString ordinaryDestinations   = fetch_ordinary_destinations  ( dests );
-      make_destinations( dests, ordinaryDestinations  , ORDINARY, yes_throw  );
+      make_destinations( dests, ordinaryDestinations  , ORDINARY  , no_throw_on_clean_slate );
 
       const vString statisticsDestinations = fetch_statistics_destinations( dests );
-      make_destinations( dests, statisticsDestinations, STATISTICS, no_throw );
+      make_destinations( dests, statisticsDestinations, STATISTICS, no_throw_on_clean_slate );
 
     }
 
@@ -635,14 +633,12 @@ namespace mf {
         checkType( dest_type, configuration );
 
         const std::string outputId = createId( ids, dest_type, std::string(), dest_pset );
+        const bool   duplicateDest = duplicateDestination( outputId,
+                                                           configuration,
+                                                           should_throw );
 
-        auto idControlPair = checkForExistingDestination( outputId,
-                                                          configuration,
-                                                          should_throw,
-                                                          dest_pset );
-
-        // use already-specified configuration if ELdestination* is not equal to nullptr
-        if ( idControlPair.second ) continue;
+        // Use previously defined configuration of duplicated destination
+        if ( duplicateDest ) continue;
 
         const std::string libspec = dest_type;
 
@@ -658,7 +654,7 @@ namespace mf {
                                                                 dest_pset )
                                                    );
 
-        destIdControlMap.emplace( idControlPair.first, dest_ctrl );
+        destIdControlMap.emplace( outputId, dest_ctrl );
 
         configure_dest(dest_ctrl, psetname, dest_pset);
 
@@ -848,11 +844,16 @@ namespace mf {
 
       // Emplace and check that output_id doesn't already exist
       if ( !existing_ids.emplace( output_id ).second ) {
-        throw mf::Exception( mf::errors::Configuration )
-          << "\n"
-          << " Output identifier: \"" << output_id
-          << " already specified within ordinary/statistics/fwkJobReport block in FHiCL file"
-          << "\n";
+        //
+        // Current usage case is to NOT throw.  So the output_id will
+        // be returned and duplicateDestination() check will emit a
+        // warning message that a duplicate destination is being used.
+        //
+        // throw mf::Exception( mf::errors::Configuration )
+        //   << "\n"
+        //   << " Output identifier: \"" << output_id << "\""
+        //   << " already specified within ordinary/statistics/fwkJobReport block in FHiCL file"
+        //   << "\n";
       }
 
       return output_id;
@@ -860,12 +861,11 @@ namespace mf {
     }
 
     //=============================================================================
-    std::pair<std::string,ELdestControl>
+    bool
     MessageLoggerScribe::
-    checkForExistingDestination( const std::string& output_id,
-                                 const config_type configuration,
-                                 const bool should_throw,
-                                 const fhicl::ParameterSet& pset) {
+    duplicateDestination( const std::string& output_id,
+                          const config_type configuration,
+                          const bool should_throw ) {
 
       std::string config_str;
       if      ( configuration == FWKJOBREPORT ) config_str = "Framework Job Report";
@@ -874,61 +874,47 @@ namespace mf {
 
       auto destIdControlPair = destIdControlMap.find(output_id);
 
-      if ( destIdControlPair != destIdControlMap.end() )
-        {
+      if ( destIdControlPair == destIdControlMap.end() ) return false;
 
-          std::ostringstream except_msg;
-          except_msg << "Duplicate name for a " << config_str << " Destination: " << output_id << "\n";
-
-          std::ostringstream orig_config_msg;
-          orig_config_msg << "\n" << "Only original configuration instructions are used." << "\n";
-
-          if (clean_slate_configuration) {
-
-            if ( should_throw ) {
-              throw mf::Exception( mf::errors::Configuration ) << "\n" << except_msg.str();
-            }
-            else LogWarning("duplicateDestination") << except_msg.str();
-
-          } else { // !clean_slate_configuration
-
-            LogWarning("duplicateDestination") << except_msg.str()
-                                               << orig_config_msg.str();
-
-          }
-        }
+      // For duplicate destinations
+      const std::string hrule = "\n============================================================================ \n";
+      std::ostringstream except_msg, orig_config_msg;
+      except_msg      << hrule
+                      << "\n    Duplicate name for a " << config_str << " destination: \"" << output_id << "\"";
+      orig_config_msg << "\n    Only original configuration instructions are used. \n"
+                      << hrule;
 
       //------------------------------------------------------------------
       // Handle statistics case where duplicate destinations are okay
       //------------------------------------------------------------------
 
-      // If the destination already exists, send a default-constructed
-      // ELdestControl object, which includes an ELdestination ptr
-      // that points to nullptr.  The functions that call
-      // checkForExistingDestination then check if the ELdestination
-      // does not point to nullptr to determine if a new ELdestination
-      // object should be attached to admin_p.
-      ELdestControl destControl;
+      // If user specifies the destination twice and the
+      // configuration is STATISTICS, then the
+      // ELdestination.userWantsStats_ flag needs to be set to
+      // 'true' so that statistics are output.
 
-      if ( destIdControlPair != destIdControlMap.end() ) {
+      if ( configuration == STATISTICS ) {
+        destIdControlPair->second.userWantsStats();
+        return true; // don't emit warning for statistics
+      }
 
-        destControl = destIdControlPair->second;
+      // Emit error message for everything else
+      if (clean_slate_configuration) {
 
-        // If user specifies the destination twice and the
-        // configuration is STATISTICS, then the
-        // ELdestination.userWantsStats_ flag needs to be set to
-        // 'true' so that statistics are output.
-
-        if ( configuration == STATISTICS ) {
-          destControl.userWantsStats();
-
-          bool reset = false;
-          if ( pset.get_if_present<bool>("reset",reset) ) destControl.setResetStats( reset );
+        if ( should_throw ) {
+          throw mf::Exception( mf::errors::Configuration ) << "\n" << except_msg.str();
         }
+        else LogError("duplicateDestination") << except_msg.str()
+                                              << orig_config_msg.str();
+
+      } else { // !clean_slate_configuration
+
+        LogWarning("duplicateDestination") << except_msg.str()
+                                           << orig_config_msg.str();
 
       }
 
-      return std::make_pair( output_id, destControl );
+      return true;
 
     }
 

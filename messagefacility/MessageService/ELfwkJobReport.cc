@@ -123,7 +123,7 @@ namespace mf {
     // Methods invoked by the ELadministrator:
     // ----------------------------------------------------------------------
 
-    bool ELfwkJobReport::log( const mf::ErrorObj & msg )  {
+    void ELfwkJobReport::log( mf::ErrorObj & msg )  {
 
 #ifdef ELfwkJobReportTRACE_LOG
       std::cerr << "    =:=:=: Log to an ELfwkJobReport \n";
@@ -132,13 +132,13 @@ namespace mf {
       xid = msg.xid();      // Save the xid.
 
       // Change log 1:  React ONLY to category FwkJob
-      if (xid.id != "FwkJob") return false;
+      if (xid.id != "FwkJob") return;
 
       // See if this message is to be acted upon
       // (this is redundant if we are reacting only to FwkJob)
       // and add it to limits table if it was not already present:
       //
-      if ( msg.xid().severity < threshold  )  return false;
+      if ( msg.xid().severity < threshold  )  return;
 
       if ( (xid.id == "BeginningJob")        ||
            (xid.id == "postBeginJob")        ||
@@ -146,9 +146,9 @@ namespace mf {
            (xid.id == "preModule")           ||
            (xid.id == "postModule")          ||
            (xid.id == "postEventProcessing") ||
-           (xid.id == "postEndJob")             ) return false;
-      if ( thisShouldBeIgnored(xid.module) )  return false;
-      if ( ! stats.limits.add( msg.xid() )       )  return false;
+           (xid.id == "postEndJob")         ) return;
+      if ( thisShouldBeIgnored(xid.module)  ) return;
+      if ( ! stats.limits.add( msg.xid() )  ) return;
 
 #ifdef ELfwkJobReportTRACE_LOG
       std::cerr << "    =:=:=: Limits table work done \n";
@@ -207,7 +207,7 @@ namespace mf {
       std::cerr << "  =:=:=: log(msg) done: \n";
 #endif
 
-      return true;
+      msg.setReactedTo( true );
 
     }  // log()
 

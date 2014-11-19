@@ -1,0 +1,21 @@
+%MSG-e err1:  MFTest {Timestamp} pre-event 
+This is an ERROR message.
+%MSG
+%MSG-e err2:  MFTest {Timestamp} pre-event 
+This is an ERROR message.
+%MSG
+%MSG-e catError:  MFTest {Timestamp} pro-event 
+Error information.
+%MSG
+%MSG-e catError:  MFTest {Timestamp} pro-event 
+Error information.
+%MSG
+%MSG-e catError:  MFTest {Timestamp} pro-event 
+Error information.
+%MSG
+%MSG-e catError:  MFTest {Timestamp} pro-event 
+Error information.
+%MSG
+%MSG-e catError:  MFTest {Timestamp} pro-event 
+Error information.
+%MSG

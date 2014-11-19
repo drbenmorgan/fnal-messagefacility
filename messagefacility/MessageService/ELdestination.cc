@@ -12,6 +12,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 
 // Possible Traces:
 // #define ELdestination_CONSTRUCTOR_TRACE
@@ -46,6 +47,7 @@ namespace mf {
       , newline       ( "\n"              )
       , indent        ( "      "          )
       , lineLength    ( defaultLineLength )
+      , charsOnLine   ( 0 )
       , ignoreMostModules (false)
       , respondToThese()
       , respondToMostModules (false)
@@ -68,10 +70,7 @@ namespace mf {
 
     }  // ~ELdestination()
 
-    // --------------------------------------------------------
-    //   emit function
-    // --------------------------------------------------------
-
+    //=============================================================================
     void ELdestination::emit( std::ostream& os,
                               const ELstring & s,
                               const bool nl )  {
@@ -81,11 +80,10 @@ namespace mf {
       std::cerr << "[][][] in emit:  lineLength is " << lineLength << '\n';
 #endif
 
-      std::size_t charsOnLine(0);
-
       if (s.length() == 0)  {
         if ( nl )  {
           os << newline << std::flush;
+          charsOnLine = 0;
         }
         return;
       }
@@ -101,6 +99,7 @@ namespace mf {
       //by ErrorLog::operator<<
 
       if (format.preambleMode) {
+
         //Accounts for newline @ the beginning of the ELstring     JV:2
         if ( first == '\n'
              || (charsOnLine + static_cast<int>(s.length())) > lineLength )  {
@@ -153,12 +152,7 @@ namespace mf {
 
     }  // emit()
 
-
-
-    // ----------------------------------------------------------------------
-    // Methods invoked by the ELadministrator:
-    // ----------------------------------------------------------------------
-
+    //=============================================================================
     bool ELdestination::passLogStatsThreshold( const mf::ErrorObj & msg ) const {
 
       // See if this message is to be counted.
@@ -169,12 +163,12 @@ namespace mf {
 
     }
 
+    //=============================================================================
     bool ELdestination::passLogMsgThreshold( const mf::ErrorObj & msg ) {
 
 #ifdef ELoutputTRACE_LOG
       std::cerr << "    =:=:=: Log to an ELoutput \n";
 #endif
-
       auto xid = msg.xid();      // Save the xid.
 
       // See if this message is to be acted upon, and add it to limits table
@@ -190,9 +184,9 @@ namespace mf {
       return true;
     }
 
+    //=============================================================================
     void ELdestination::fillPrefix( std::ostringstream& oss,
                                     const mf::ErrorObj& msg){
-
       // Output the prologue:
       //
       format.preambleMode = true;
@@ -200,6 +194,7 @@ namespace mf {
       auto xid = msg.xid();      // Save the xid.
 
       if  ( !msg.is_verbatim()  ) {
+        charsOnLine = 0;
         emit( oss, preamble );
         emit( oss, xid.severity.getSymbol() );
         emit( oss, " " );
@@ -235,7 +230,6 @@ namespace mf {
         }
       }
 #endif
-
       // Provide further identification:
       //
       bool needAspace = true;
@@ -338,6 +332,7 @@ namespace mf {
 
     }
 
+    //=============================================================================
     void ELdestination::fillUsrMsg ( std::ostringstream& oss,
                                      const mf::ErrorObj& msg){
 
@@ -374,6 +369,7 @@ namespace mf {
 #endif
     }
 
+    //=============================================================================
     void ELdestination::fillSuffix( std::ostringstream& oss,
                                     const mf::ErrorObj& msg){
 
@@ -389,13 +385,18 @@ namespace mf {
 
     }
 
+    //=============================================================================
     void ELdestination::routePayload(const std::ostringstream&, const mf::ErrorObj&){}
 
-    bool ELdestination::log( const mf::ErrorObj & msgObj )  {
 
-      if (  userWantsStats && passLogStatsThreshold( msgObj ) ) stats.log( msgObj );
+    // ----------------------------------------------------------------------
+    // Methods invoked by the ELadministrator:
+    // ----------------------------------------------------------------------
 
-      if ( !passLogMsgThreshold  ( msgObj ) ) return false;
+    //=============================================================================
+    void ELdestination::log( mf::ErrorObj & msgObj )  {
+
+      if ( !passLogMsgThreshold  ( msgObj ) ) return;
 
       std::ostringstream payload;
       fillPrefix( payload, msgObj );
@@ -404,9 +405,13 @@ namespace mf {
 
       routePayload( payload, msgObj );
 
-      return true;
+      msgObj.setReactedTo ( true );
+
+      if ( userWantsStats && passLogStatsThreshold( msgObj ) ) stats.log( msgObj );
+
     }
 
+    //=============================================================================
     bool ELdestination::switchChannel( const mf::ELstring & /*channelName*/ )
     { return false; }
 
@@ -474,8 +479,9 @@ namespace mf {
            stats.printAtTermination )
         {
           std::ostringstream payload;
-          payload << stats.formSummary();
-          routePayload( payload, mf::ErrorObj(ELzeroSeverity, noosMsg) );
+          payload << "\n=============================================\n\n"
+                  << "MessageLogger Summary" << std::endl << stats.formSummary();
+            routePayload( payload, mf::ErrorObj(ELzeroSeverity, noosMsg) );
         }
 
     }

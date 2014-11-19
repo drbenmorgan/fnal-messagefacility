@@ -110,6 +110,8 @@ namespace mf {
       if (d) d->stats.reset = flag;
     }
 
+    bool ELdestControl::statsFlag() { return d->userWantsStats; }
+
     void ELdestControl::userWantsStats() {
       if (d) d->userWantsStats = true;
     }
@@ -205,12 +207,8 @@ namespace mf {
     }
 
 
-    bool ELdestControl::log( mf::ErrorObj & msg )  {
-      if (d) {
-        return d->log( msg );
-      } else {
-        return false;
-      }
+    void ELdestControl::log( mf::ErrorObj & msg )  {
+      if (d) d->log( msg );
     }
 
     void ELdestControl::summarization( const ELstring & title

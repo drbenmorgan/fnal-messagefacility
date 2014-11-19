@@ -232,9 +232,9 @@ ErrorLog & ErrorLog::operator()( mf::ErrorObj & msg )  {
               << std::endl;
     a->attach( std::make_unique<ELostreamOutput>(std::cerr) );
   }
+
   for ( auto & d : a->sinks() ) {
-    if (  d->log( msg )  )
-      msg.setReactedTo ( true );
+    d->log( msg );
   }
 
   possiblyAbOrEx ( msg.xid().severity.getLevel(),

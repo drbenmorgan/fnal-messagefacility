@@ -27,221 +27,218 @@
 //#define ELcollected_EMIT_TRACE
 
 namespace mf {
-namespace service {
+  namespace service {
 
 
-// ----------------------------------------------------------------------
-// Constructors:
-// ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // Constructors:
+    // ----------------------------------------------------------------------
 
-ELcollected::ELcollected( const ELsender & snd )
-: ELostreamOutput()
-, sender  ( snd.clone() )
-{
+    ELcollected::ELcollected( const ELsender & snd )
+  : ELostreamOutput()
+  , sender  ( snd.clone() )
+    {
 
-  #ifdef ELcollectedCONSTRUCTOR_TRACE
-    std::cout << "Constructor for ELcollected(ELsender)\n";
-  #endif
+#ifdef ELcollectedCONSTRUCTOR_TRACE
+      std::cout << "Constructor for ELcollected(ELsender)\n";
+#endif
 
-  // Unlike ELostreamOutput, we do not emit Error Log established message.
+      // Unlike ELostreamOutput, we do not emit Error Log established message.
 
-}  // ELcollected()
-
-
-ELcollected::~ELcollected()  {
-
-  #ifdef ELcollectedCONSTRUCTOR_TRACE
-    std::cout << "Destructor for ELcollected)\n";
-  #endif
-}  // ~ELcollected()
+    }  // ELcollected()
 
 
-// Remainder are from base class.
+    ELcollected::~ELcollected()  {
 
-// =======
-// intoBuf
-// =======
-
-void ELcollected::intoBuf( const ELstring & s )  {
-
-  buf += s;
-  buf += '\0';
-
-} // intoBuf();
+#ifdef ELcollectedCONSTRUCTOR_TRACE
+      std::cout << "Destructor for ELcollected)\n";
+#endif
+    }  // ~ELcollected()
 
 
-// ========
-// emitXid
-// ========
+    // Remainder are from base class.
 
-void ELcollected::emitXid( const ELextendedID & xid )  {
+    // =======
+    // intoBuf
+    // =======
 
-  buf = "";
+    void ELcollected::intoBuf( const ELstring & s )  {
 
-  intoBuf ( xid.process    );
-  intoBuf ( xid.module     );
-  intoBuf ( xid.subroutine );
-  intoBuf ( xid.id         );
-  std::ostringstream ost;
-  ost << xid.severity.getLevel();
-  intoBuf ( ost.str() );
+      buf += s;
+      buf += '\0';
 
-} // emitXid
+    } // intoBuf();
 
-
-// =====
-// emit
-// =====
 
-void ELcollected::emit( const ELstring & s, bool nl )  {
+    // ========
+    // emitXid
+    // ========
 
-  #ifdef ELcollected_EMIT_TRACE
-    std::cout << "[][][] in emit:  s.length() " << s.length() << "\n";
-  #endif
+    void ELcollected::emitXid( const ELextendedID & xid )  {
 
-  // A forced newline is something that needs to be transmitted.
-  // We shall insert it as its own item.
+      buf = "";
 
-  if (s.length() == 0)  {
-    if ( nl )  {
-      intoBuf( newline );
-    }
-    return;
-  }
+      intoBuf ( xid.process    );
+      intoBuf ( xid.module     );
+      intoBuf ( xid.subroutine );
+      intoBuf ( xid.id         );
+      std::ostringstream ost;
+      ost << xid.severity.getLevel();
+      intoBuf ( ost.str() );
 
-  // Setting up for indentation if you start with a nweline, or if the length
-  // exceeds column 80, is not done here, it is done on the server.
-
-  #ifdef ELcollected_EMIT_TRACE
-    std::cout << "[][][] in emit: about to << s to buf: " << s << " \n";
-  #endif
-
-  // Place the item into the buffer
-
-  intoBuf (s);
-
-  // Accounting for trailing \n is done at the server.
-
-  // A forced trailing newline is something that needs to be transmitted.
-  // We shall insert it as its own item.
-
-  if ( nl )  {
-    intoBuf (newline);
-  }
-
-  #ifdef ELcollected_EMIT_TRACE
-    std::cout << "[][][] in emit: completed \n";
-  #endif
-
-}  // emit()
-
+    } // emitXid
 
 
-// ====
-// log
-// ====
+    // =====
+    // emit
+    // =====
 
-bool ELcollected::log( const mf::ErrorObj & msg )  {
+    void ELcollected::emit( const ELstring & s, bool nl )  {
 
-  #ifdef ELcollectedTRACE_LOG
-    std::cout << "    =:=:=: Log to an ELcollected \n";
-  #endif
+#ifdef ELcollected_EMIT_TRACE
+      std::cout << "[][][] in emit:  s.length() " << s.length() << "\n";
+#endif
 
-  xid = msg.xid();      // Save the xid.
+      // A forced newline is something that needs to be transmitted.
+      // We shall insert it as its own item.
 
-  // See if this message is to be acted upon, and add it to limits table
-  // if it was not already present:
-  //
-  if ( msg.xid().severity < threshold  )  return false;
-  if ( thisShouldBeIgnored(xid.module) )  return false;
-  if ( ! stats.limits.add( msg.xid() )      )   return false;
+      if (s.length() == 0)  {
+        if ( nl )  {
+          intoBuf( newline );
+        }
+        return;
+      }
 
-  #ifdef ELcollectedTRACE_LOG
-    std::cout << "    =:=:=: Limits table work done \n";
-  #endif
+      // Setting up for indentation if you start with a nweline, or if the length
+      // exceeds column 80, is not done here, it is done on the server.
 
-  // start the buffer with the xid
+#ifdef ELcollected_EMIT_TRACE
+      std::cout << "[][][] in emit: about to << s to buf: " << s << " \n";
+#endif
 
-  emitXid (xid);
+      // Place the item into the buffer
 
-  //
+      intoBuf (s);
 
-  #ifdef ELcollectedTRACE_LOG
-    std::cout << "    =:=:=: xid emitted \n";
-  #endif
+      // Accounting for trailing \n is done at the server.
 
-  // Provide the context information.  The server side will use this to prime
-  // its special context supplier.  We will send over all three types of
-  // context, even though probably only 1 or 2 will be needed.
+      // A forced trailing newline is something that needs to be transmitted.
+      // We shall insert it as its own item.
 
-  emit( ELadministrator::instance()->
-                        getContextSupplier().summaryContext());
-  emit( ELadministrator::instance()->
-                        getContextSupplier().context());
-  emit( ELadministrator::instance()->
-                        getContextSupplier().fullContext());
+      if ( nl )  {
+        intoBuf (newline);
+      }
 
-  #ifdef ELcollectedTRACE_LOG
-    std::cout << "    =:=:=: Context done: \n";
-  #endif
+#ifdef ELcollected_EMIT_TRACE
+      std::cout << "[][][] in emit: completed \n";
+#endif
 
-  // No prologue separate from what the server will issue.
-
-  // No serial number of message separate from what the server will issue.
-
-  // collected each item in the message:
-  //
-    if ( format.want(TEXT) )  {
-    ELlist_string::const_iterator it;
-    for ( it = msg.items().begin();  it != msg.items().end();  ++it )  {
-  #ifdef ELcollectedTRACE_LOG
-    std::cout << "      =:=:=: Item:  " << *it <<"\n";
-  #endif
-      emit( *it );
-    }
-  }
-
-  // DO NOT Provide further identification such as module and subroutine;
-  // the server side will provide that using the xid you have sent it, if
-  // the server side user wants it.
-
-  // DO NOT provide time stamp; it would duplicate server's stamp!
-
-  // Provide traceback information:
-  //
-  if ( msg.xid().severity >= traceThreshold )  {
-    emit( ELstring("\n")
-          + ELadministrator::instance()->getContextSupplier().traceRoutine()
-        , true );
-  }
-  else  {                                        //else statement added JV:1
-    emit( "", true );
-  }
-  #ifdef ELcollectedTRACE_LOG
-    std::cout << "    =:=:=: Trace routine done: \n";
-  #endif
-
-  // Message has been fully processed through emit; now put in an extra
-  // zero, and send out the buffer.
-  //
-
-  buf += char(0);
-  int nbuf = buf.length();
-
-  sender->send ( nbuf, buf.data() );
-
-  #ifdef ELcollectedTRACE_LOG
-    std::cout << "  =:=:=: log(msg) done: \n";
-  #endif
-
-  return true;
-
-}  // log()
+    }  // emit()
 
 
-// ----------------------------------------------------------------------
+
+    // ====
+    // log
+    // ====
+
+    void ELcollected::log( mf::ErrorObj & msg )  {
+
+#ifdef ELcollectedTRACE_LOG
+      std::cout << "    =:=:=: Log to an ELcollected \n";
+#endif
+
+      xid = msg.xid();      // Save the xid.
+
+      // See if this message is to be acted upon, and add it to limits table
+      // if it was not already present:
+      //
+      if ( msg.xid().severity < threshold   )  return;
+      if ( thisShouldBeIgnored(xid.module)  )  return;
+      if ( ! stats.limits.add( msg.xid() )  )  return;
+
+#ifdef ELcollectedTRACE_LOG
+      std::cout << "    =:=:=: Limits table work done \n";
+#endif
+
+      // start the buffer with the xid
+
+      emitXid (xid);
+
+      //
+
+#ifdef ELcollectedTRACE_LOG
+      std::cout << "    =:=:=: xid emitted \n";
+#endif
+
+      // Provide the context information.  The server side will use this to prime
+      // its special context supplier.  We will send over all three types of
+      // context, even though probably only 1 or 2 will be needed.
+
+      emit( ELadministrator::instance()->getContextSupplier().summaryContext());
+      emit( ELadministrator::instance()->getContextSupplier().context());
+      emit( ELadministrator::instance()->getContextSupplier().fullContext());
+
+#ifdef ELcollectedTRACE_LOG
+      std::cout << "    =:=:=: Context done: \n";
+#endif
+
+      // No prologue separate from what the server will issue.
+
+      // No serial number of message separate from what the server will issue.
+
+      // collected each item in the message:
+      //
+      if ( format.want(TEXT) )  {
+        ELlist_string::const_iterator it;
+        for ( it = msg.items().begin();  it != msg.items().end();  ++it )  {
+#ifdef ELcollectedTRACE_LOG
+          std::cout << "      =:=:=: Item:  " << *it <<"\n";
+#endif
+          emit( *it );
+        }
+      }
+
+      // DO NOT Provide further identification such as module and subroutine;
+      // the server side will provide that using the xid you have sent it, if
+      // the server side user wants it.
+
+      // DO NOT provide time stamp; it would duplicate server's stamp!
+
+      // Provide traceback information:
+      //
+      if ( msg.xid().severity >= traceThreshold )  {
+        emit( ELstring("\n")
+              + ELadministrator::instance()->getContextSupplier().traceRoutine()
+              , true );
+      }
+      else  {                                        //else statement added JV:1
+        emit( "", true );
+      }
+#ifdef ELcollectedTRACE_LOG
+      std::cout << "    =:=:=: Trace routine done: \n";
+#endif
+
+      // Message has been fully processed through emit; now put in an extra
+      // zero, and send out the buffer.
+      //
+
+      buf += char(0);
+      int nbuf = buf.length();
+
+      sender->send ( nbuf, buf.data() );
+
+#ifdef ELcollectedTRACE_LOG
+      std::cout << "  =:=:=: log(msg) done: \n";
+#endif
+
+      msg.setReactedTo( true );
+
+    }  // log()
 
 
-} // end of namespace service
+    // ----------------------------------------------------------------------
+
+
+  } // end of namespace service
 } // end of namespace mf
 

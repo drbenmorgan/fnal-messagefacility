@@ -59,7 +59,7 @@ namespace mf {
       //
     public:
 
-      virtual bool log( const mf::ErrorObj & msg ) override;
+      virtual void log( mf::ErrorObj & msg ) override;
 
       // ----- Methods invoked by the MessageLoggerScribe, bypassing destControl
       //

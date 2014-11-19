@@ -1,0 +1,8 @@
+process_name: TestFileDest_UseMilliseconds
+
+message : {
+   destinations : { 
+      log_useMilliseconds : { type : file  filename : "useMilliseconds.log"  useMilliseconds : true     }
+   }
+}
+

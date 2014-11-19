@@ -326,10 +326,10 @@ void ELtsErrorLog::dispatch ( mf::ErrorObj & msg )  {
               << std::endl;
     a->attach( std::make_unique<ELostreamOutput>(std::cerr) );
   }
-  for ( auto & d : a->sinks() )
-    if (  d->log( msg )  )
-      msg.setReactedTo (true );
 
+  for ( auto & d : a->sinks() ) {
+    d->log( msg );
+  }
 
   if ( msg.xid().severity.getLevel() >= a->abortThreshold().getLevel()
                        &&

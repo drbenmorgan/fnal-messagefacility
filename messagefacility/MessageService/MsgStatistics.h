@@ -47,7 +47,7 @@ namespace mf {
     //
   public:
 
-    bool log( const mf::ErrorObj & msg );
+    void log( const mf::ErrorObj & msg );
 
     ELstring formSummary();
 

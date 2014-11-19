@@ -79,6 +79,7 @@ namespace mf {
       // -----  Statistics resetting
       //
       bool resetStats();
+      bool statsFlag();
       void setResetStats( const bool flag );
       void userWantsStats();
 
@@ -116,8 +117,8 @@ namespace mf {
 
       virtual std::map<ELextendedID , StatsCount> statisticsMap() const;
 
-      virtual bool log( mf::ErrorObj & msg );  // Backdoor to log a formed message
-      // to only this destination.
+      virtual void log( mf::ErrorObj & msg );  // Backdoor to log a formed message
+                                               // to only this destination.
 
       virtual void changeFile (std::ostream & os);
       virtual void changeFile (const ELstring & filename);

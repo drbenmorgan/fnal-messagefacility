@@ -110,7 +110,7 @@ namespace mf {
       //
     public:
 
-      virtual bool log( const mf::ErrorObj & msg );
+      virtual void log( mf::ErrorObj & msg );
 
       // -----  Internal Methods -- Users should not invoke these:
       //

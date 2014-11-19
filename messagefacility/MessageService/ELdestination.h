@@ -66,7 +66,7 @@ namespace mf {
       // -----  Methods invoked by the ELadministrator:
       //
     public:
-      virtual bool log( const mf::ErrorObj & msg );
+      virtual void log( mf::ErrorObj & msg );
 
       virtual void summarization(
                                  const mf::ELstring & title,
@@ -137,6 +137,7 @@ namespace mf {
       ELstring        newline;
       ELstring        indent;
       std::size_t     lineLength;
+      std::size_t     charsOnLine;
       bool            ignoreMostModules;
       ELset_string    respondToThese;
       bool            respondToMostModules;

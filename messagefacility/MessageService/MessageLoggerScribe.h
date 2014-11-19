@@ -109,11 +109,9 @@ namespace mf {
                        const std::string& filename,
                        const fhicl::ParameterSet& pset = fhicl::ParameterSet() );
 
-      std::pair<String,ELdestControl>
-      checkForExistingDestination( const std::string& output_id,
-                                   const config_type config,
-                                   const bool should_throw,
-                                   const fhicl::ParameterSet& pset = fhicl::ParameterSet() );
+      bool duplicateDestination( const std::string& output_id,
+                                 const config_type config,
+                                 const bool should_throw );
 
       std::unique_ptr<ELdestination>  makePlugin_( cet::BasicPluginFactory& pluginFactory,
                                                    const std::string& libspec,

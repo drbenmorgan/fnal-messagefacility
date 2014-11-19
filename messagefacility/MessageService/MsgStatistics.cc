@@ -42,7 +42,7 @@ namespace mf {
     // Methods invoked by the ELadministrator
     // ----------------------------------------------------------------------
 
-    bool  MsgStatistics::log( const mf::ErrorObj & msg )  {
+    void MsgStatistics::log( const mf::ErrorObj & msg )  {
 
 #ifdef MsgStatisticsLOG_TRACE
       std::cerr << "  =:=:=: Log to an MsgStatistics\n";
@@ -61,6 +61,7 @@ namespace mf {
       std::cerr << "    =:=:=: Message accounted for in stats \n";
 #endif
       if ( s != statsMap.end() )  {
+
 #ifdef MsgStatisticsLOG_TRACE
         std::cerr << "    =:=:=: Message not last stats \n";
         std::cerr << "    =:=:=: getContextSupplier \n";
@@ -92,9 +93,6 @@ namespace mf {
 #ifdef MsgStatisticsLOG_TRACE
       std::cerr << "  =:=:=: log(msg) done (stats) \n";
 #endif
-
-      return false;
-
 
     }  // log()
 
@@ -177,6 +175,7 @@ namespace mf {
         }
         // -----  Emit detailed message information:
         //
+
         s << right << std::setw( 5) << ++n                                     << ' '
           << left  << std::setw(20) << (*i).first.id.substr(0,20)              << ' '
           << left  << std::setw( 2) << (*i).first.severity.getSymbol()         << ' '
