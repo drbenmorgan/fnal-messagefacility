@@ -34,6 +34,7 @@
 #include "messagefacility/MessageLogger/ELmap.h"
 #include "messagefacility/MessageLogger/ELseverityLevel.h"
 #include "messagefacility/MessageLogger/ErrorObj.h"
+#include "messagefacility/MessageService/MsgFormatSettings.h"
 
 #include "cetlib/exempt_ptr.h"
 
@@ -60,6 +61,8 @@ namespace mf {
       ELdestControl();
       virtual ~ELdestControl();
 
+      explicit operator bool() const { return d != nullptr; }
+
       // -----  Behavior control methods invoked by the framework:
       //
       virtual ELdestControl & setThreshold( const ELseverityLevel & sv );
@@ -73,20 +76,22 @@ namespace mf {
 
       virtual ELdestControl & setTableLimit( int n );
 
+      // -----  Statistics resetting
+      //
+      bool resetStats();
+      bool statsFlag();
+      void setResetStats( const bool flag );
+      void userWantsStats();
+
       // -----  Select output format options:
       //
-      virtual void suppressText();           virtual void includeText();  // $$ jvr
-      virtual void suppressModule();         virtual void includeModule();
-      virtual void suppressSubroutine();     virtual void includeSubroutine();
-      virtual void suppressTime();           virtual void includeTime();
-      virtual void suppressMillisecond();    virtual void includeMillisecond();
-      virtual void suppressContext();        virtual void includeContext();
-      virtual void suppressSerial();         virtual void includeSerial();
-      virtual void useFullContext();         virtual void useContext();
-      virtual void separateTime();           virtual void attachTime();
-      virtual void separateEpilogue();       virtual void attachEpilogue();
+      void formatSuppress(mf::service::flag_enum FLAG);
+      void formatInclude (mf::service::flag_enum FLAG);
+
       virtual void noTerminationSummary();
-      virtual int  setLineLength(int len);   virtual int  getLineLength() const;
+
+      virtual int  setLineLength(int len);
+      virtual int  getLineLength() const;
 
       virtual void filterModule    ( ELstring const & moduleName );
       virtual void excludeModule   ( ELstring const & moduleName );
@@ -104,7 +109,6 @@ namespace mf {
       //
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wwrite-strings"
-      virtual void summary( ELdestControl & dest, char * title="" );
       virtual void summary( std::ostream  & os  , char * title="" );
       virtual void summary( ELstring      & s   , char * title="" );
 #pragma GCC diagnostic pop
@@ -113,8 +117,8 @@ namespace mf {
 
       virtual std::map<ELextendedID , StatsCount> statisticsMap() const;
 
-      virtual bool log( mf::ErrorObj & msg );  // Backdoor to log a formed message
-      // to only this destination.
+      virtual void log( mf::ErrorObj & msg );  // Backdoor to log a formed message
+                                               // to only this destination.
 
       virtual void changeFile (std::ostream & os);
       virtual void changeFile (const ELstring & filename);

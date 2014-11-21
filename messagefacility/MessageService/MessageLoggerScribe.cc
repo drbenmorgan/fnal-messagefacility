@@ -16,9 +16,8 @@
 #include "messagefacility/MessageLogger/MessageLoggerQ.h"
 #include "messagefacility/MessageService/ELadministrator.h"
 #include "messagefacility/MessageService/ELfwkJobReport.h"
-#include "messagefacility/MessageService/ELoutput.h"
+#include "messagefacility/MessageService/ELostreamOutput.h"
 #include "messagefacility/MessageService/ELstatistics.h"
-#include "messagefacility/MessageService/ELsyslog.h"
 #include "messagefacility/MessageService/ErrorLog.h"
 #include "messagefacility/MessageService/ThreadQueue.h"
 #include "messagefacility/Utilities/exception.h"
@@ -32,57 +31,61 @@
 #include <signal.h>
 #include <string>
 
+namespace {
+
+  const bool throw_on_clean_slate     = true;
+  const bool no_throw_on_clean_slate  = false;
+
+}
+
 namespace mf {
   namespace service {
 
     MessageLoggerScribe::MessageLoggerScribe(std::shared_ptr<ThreadQueue> queue)
-  : admin_p   ( ELadministrator::instance() )
-  , early_dest( admin_p->attach( ELoutput(std::cerr, false)) )
-  , errorlog_p( new ErrorLog() )
-  , ostream_ps   ( )
-  , job_pset_p( )
-  , jobReportOption( )
-  , clean_slate_configuration( true )
-  , messageLoggerDefaults(MessageLoggerDefaults::mode("grid"))
-  , active( true )
-  , singleThread (queue.get() == 0)                               // changeLog 36
-  , done (false)                                                  // changeLog 32
-  , purge_mode (false)                                            // changeLog 32
-  , count (false)                                                 // changeLog 32
-  , m_queue(queue)                                                // changeLog 36
-  , pluginFactory_()
+      : admin_p   ( ELadministrator::instance() )
+      , early_dest( admin_p->attach( std::make_unique<ELostreamOutput>( std::cerr, false)) )
+      , errorlog_p( new ErrorLog() )
+      , job_pset_p( )
+      , jobReportOption( )
+      , clean_slate_configuration( true )
+      , messageLoggerDefaults(MessageLoggerDefaults::mode("grid"))
+      , active( true )
+      , singleThread (queue.get() == 0)
+      , done (false)
+      , purge_mode (false)
+      , count (false)
+      , m_queue(queue)
+      , pluginFactory("mfPlugin")
+      , pluginStatsFactory("mfStatsPlugin")
     {
       admin_p->setContextSupplier(msg_context);
     }
 
+    //=============================================================================
     MessageLoggerScribe::~MessageLoggerScribe()
     {
       admin_p->finish();
     }
 
-
+    //=============================================================================
     void
     MessageLoggerScribe::run()
     {
       MessageLoggerQ::OpCode  opcode;
       void *                  operand;
 
-      MessageDrop::instance()->messageLoggerScribeIsRunning =
-        MLSCRIBE_RUNNING_INDICATOR;     // ChangeLog 30
-      //  std::cerr << "MessageLoggerScribe::run(): \n";
-      //  std::cerr << "messageLoggerScribeIsRunning = "
-      //      << (int)MessageDrop::instance()->messageLoggerScribeIsRunning << "\n";
+      MessageDrop::instance()->messageLoggerScribeIsRunning = MLSCRIBE_RUNNING_INDICATOR;
 
       do  {
         m_queue->consume(opcode, operand);  // grab next work item from Q
-        // changeLog 36
         runCommand (opcode, operand);
       } while(! done);
 
     }  // MessageLoggerScribe::run()
 
+    //=============================================================================
     void
-    MessageLoggerScribe::runCommand(                              // changeLog 32
+    MessageLoggerScribe::runCommand(
                                     MessageLoggerQ::OpCode  opcode,
                                     void * operand)
     {
@@ -95,7 +98,7 @@ namespace mf {
         assert( operand == 0 );
         done = true;
         MessageDrop::instance()->messageLoggerScribeIsRunning =
-          (unsigned char) -1;                               // ChangeLog 30
+          (unsigned char) -1;
         break;
       }
       case MessageLoggerQ::LOG_A_MESSAGE:  {
@@ -127,7 +130,7 @@ namespace mf {
         delete errorobj_p;  // dispose of the message text
         break;
       }
-      case MessageLoggerQ::CONFIGURE:  {                  // changelog 17
+      case MessageLoggerQ::CONFIGURE:  {
         if (singleThread) {
           job_pset_p.reset(static_cast<fhicl::ParameterSet *>(operand));
           configure_errorlog();
@@ -178,7 +181,7 @@ namespace mf {
           }
         break;
       }
-      case MessageLoggerQ::JOBREPORT:  {                  // change log 19
+      case MessageLoggerQ::JOBREPORT:  {
         std::string* jobReportOption_p =
           static_cast<std::string*>(operand);
         try {
@@ -204,7 +207,7 @@ namespace mf {
         // in MessageLogger.cc (service version)
         break;
       }
-      case MessageLoggerQ::JOBMODE:  {                    // change log 24
+      case MessageLoggerQ::JOBMODE:  {
         std::string* jobMode_p =
           static_cast<std::string*>(operand);
 
@@ -221,7 +224,7 @@ namespace mf {
         active = false;
         break;
       }
-      case MessageLoggerQ::FLUSH_LOG_Q:  {                        // changelog 26
+      case MessageLoggerQ::FLUSH_LOG_Q:  {
         if (singleThread) return;
         ConfigurationHandshake * h_p =
           static_cast<ConfigurationHandshake *>(operand);
@@ -231,14 +234,14 @@ namespace mf {
         // finally, release the scoped lock by letting it go out of scope
         break;
       }
-      case MessageLoggerQ::GROUP_STATS:  {                        // change log 27
+      case MessageLoggerQ::GROUP_STATS:  {
         std::string* cat_p =
           static_cast<std::string*>(operand);
         ELstatistics::noteGroupedCategory(*cat_p);
         delete cat_p;  // dispose of the message text
         break;
       }
-      case MessageLoggerQ::FJR_SUMMARY:  {                        // changelog 29
+      case MessageLoggerQ::FJR_SUMMARY:  {
         if (singleThread) {
           std::map<std::string, double> * smp =
             static_cast<std::map<std::string, double> *>(operand);
@@ -267,36 +270,37 @@ namespace mf {
 
     }  // MessageLoggerScribe::runCommand(opcode, operand)
 
+    //=============================================================================
     void MessageLoggerScribe::log ( ErrorObj *  errorobj_p ) {
-      ELcontextSupplier& cs =
-        const_cast<ELcontextSupplier&>(admin_p->getContextSupplier());
-      MsgContext& mc = dynamic_cast<MsgContext&>(cs);
+
+      ELcontextSupplier& cs = const_cast<ELcontextSupplier&>(admin_p->getContextSupplier());
+      MsgContext& mc        = dynamic_cast<MsgContext&>(cs);
       mc.setContext(errorobj_p->context());
+
       std::vector<std::string> categories;
       parseCategories(errorobj_p->xid().id, categories);
+
       for (unsigned int icat = 0; icat < categories.size(); ++icat) {
         errorobj_p->setID(categories[icat]);
         (*errorlog_p)( *errorobj_p );  // route the message text
       }
+
     }
 
+    //=============================================================================
     void
     MessageLoggerScribe::configure_errorlog()
     {
-      vString  empty_vString;
-      String   empty_String;
-      PSet     empty_PSet;
 
       // The following is present to test pre-configuration message handling:
-      String preconfiguration_message
-        = job_pset_p->get<std::string>
-        ("generate_preconfiguration_message", empty_String);
-      if (preconfiguration_message != empty_String) {
+      String preconfiguration_message = job_pset_p->get<std::string>("generate_preconfiguration_message", std::string() );
+
+      if ( !preconfiguration_message.empty() ) {
         // To test a preconfiguration message without first going thru the
         // configuration we are about to do, we issue the message (so it sits
         // on the queue), then copy the processing that the LOG_A_MESSAGE case
         // does.  We suppress the timestamp to allow for automated unit testing.
-        early_dest.suppressTime();
+        early_dest.formatSuppress( TIMESTAMP );
         LogError ("preconfiguration") << preconfiguration_message;
         if (!singleThread) {
           MessageLoggerQ::OpCode  opcode;
@@ -309,46 +313,40 @@ namespace mf {
         }
       }
 
-      if ( !stream_ps.empty() ) {
+      if ( !destIdControlMap.empty() ) {
         LogWarning ("multiLogConfig")
           << "The message logger has been configured multiple times";
-        clean_slate_configuration = false;                          // Change Log 22
+        clean_slate_configuration = false;
       }
 
-      configure_fwkJobReports();                                    // Change Log 16
-      configure_ordinary_destinations();                            // Change Log 16
-      configure_statistics();                                       // Change Log 16
+      configure_fwkJobReports();
+      configure_destinations();
 
     }  // MessageLoggerScribe::configure_errorlog()
 
 
-
-
+    //=============================================================================
     void
-    MessageLoggerScribe::configure_dest( ELdestControl & dest_ctrl
-                                         , String const & dest_pset_name
-                                         , fhicl::ParameterSet const & dest_pset
-                                         )
+    MessageLoggerScribe::configure_dest( ELdestControl& dest_ctrl,
+                                         String const & dest_pset_name,
+                                         fhicl::ParameterSet const & dest_pset )
     {
-      static const int NO_VALUE_SET = -45654;                       // change log 2
-      vString  empty_vString;
-      PSet     empty_PSet;
-      String   empty_String;
+      static const int NO_VALUE_SET = -45654;
+      PSet empty_PSet;
 
-      // Defaults:                                                  // change log 3a
+      // Defaults:
       const std::string COMMON_DEFAULT_THRESHOLD = "INFO";
       const         int COMMON_DEFAULT_LIMIT     = NO_VALUE_SET;
-      const         int COMMON_DEFAULT_INTERVAL  = NO_VALUE_SET;    // change log 6
+      const         int COMMON_DEFAULT_INTERVAL  = NO_VALUE_SET;
       const         int COMMON_DEFAULT_TIMESPAN  = NO_VALUE_SET;
 
-      char const*  severity_array[] = {"WARNING", "INFO", "ERROR", "DEBUG"};
-      vString const  severities(severity_array+0, severity_array+4);
+      const vString severities {"WARNING", "INFO", "ERROR", "DEBUG"};
 
       // grab the pset for category list for this destination
       PSet cats_pset = dest_pset.get<fhicl::ParameterSet>("categories", empty_PSet);
 
       // grab list of categories
-      vString  categories = cats_pset.get_pset_keys();
+      vString  categories  = cats_pset.get_pset_keys();
       vString::iterator it = categories.begin();
       while(it!=categories.end()) {
         if(*it == "default") it=categories.erase(it);
@@ -356,122 +354,93 @@ namespace mf {
       }
 
       // grab list of hardwired categories (hardcats) -- these are to be added
-      // to the list of categories -- change log 24
+      // to the list of categories
       {
         std::vector<std::string> hardcats = messageLoggerDefaults.categories;
         // combine the lists, not caring about possible duplicates (for now)
         cet::copy_all( hardcats, std::back_inserter(categories) );
       }  // no longer need hardcats
 
-      // See if this is just a placeholder                  // change log 9
-      bool is_placeholder
-        = dest_pset.get<bool>("placeholder", false);
+      // See if this is just a placeholder
+      bool is_placeholder = dest_pset.get<bool>("placeholder", false);
       if (is_placeholder) return;
 
       // default threshold for the destination
-      String default_threshold = empty_String;
+      String default_threshold;
 
       // grab this destination's default limit/interval/timespan:
       PSet  category_default_pset = cats_pset.get<fhicl::ParameterSet>("default", empty_PSet);
 
-      int  dest_default_limit
-        = category_default_pset.get<int>("limit", COMMON_DEFAULT_LIMIT);
-      int  dest_default_interval
-        = category_default_pset.get<int>("reportEvery", COMMON_DEFAULT_INTERVAL);
-      int  dest_default_timespan
-        = category_default_pset.get<int>("timespan", COMMON_DEFAULT_TIMESPAN);
+      int  dest_default_limit    = category_default_pset.get<int>("limit"      , COMMON_DEFAULT_LIMIT   );
+      int  dest_default_interval = category_default_pset.get<int>("reportEvery", COMMON_DEFAULT_INTERVAL);
+      int  dest_default_timespan = category_default_pset.get<int>("timespan"   , COMMON_DEFAULT_TIMESPAN);
 
       if ( dest_default_limit != NO_VALUE_SET )
         {
           if ( dest_default_limit < 0 ) dest_default_limit = 2000000000;
           dest_ctrl.setLimit("*", dest_default_limit );
-        }                                             // change log 1b, 2a, 2b
+        }
       if ( dest_default_interval != NO_VALUE_SET )
-        {  // change log 6
+        {
           dest_ctrl.setInterval("*", dest_default_interval );
         }
       if ( dest_default_timespan != NO_VALUE_SET )
         {
           if ( dest_default_timespan < 0 ) dest_default_timespan = 2000000000;
           dest_ctrl.setTimespan("*", dest_default_timespan );
-        }                                             // change log 1b, 2a, 2b
+        }
 
       // establish this destination's threshold:
       String dest_threshold = dest_pset.get<std::string>("threshold", default_threshold);
 
-      if (dest_threshold == empty_String) {
-        dest_threshold = default_threshold;
-      }
-      if (dest_threshold == empty_String) {
-        dest_threshold = messageLoggerDefaults.threshold(dest_pset_name);
-      }
-      if (dest_threshold == empty_String) {
-        dest_threshold = COMMON_DEFAULT_THRESHOLD;
-      }
+      if ( dest_threshold.empty() ) dest_threshold = default_threshold;
+      if ( dest_threshold.empty() ) dest_threshold = messageLoggerDefaults.threshold(dest_pset_name);
+      if ( dest_threshold.empty() ) dest_threshold = COMMON_DEFAULT_THRESHOLD;
 
-      ELseverityLevel  threshold_sev(dest_threshold);
+      ELseverityLevel threshold_sev(dest_threshold);
       dest_ctrl.setThreshold(threshold_sev);
 
       // establish this destination's limit/interval/timespan for each category:
-      PSet default_category_pset = cats_pset.get<fhicl::ParameterSet>("default", empty_PSet);
+      const PSet default_category_pset = cats_pset.get<fhicl::ParameterSet>("default", empty_PSet);
 
-      for( vString::const_iterator id_it = categories.begin()
-             ; id_it != categories.end()
-             ; ++id_it
-           )
+      for( const auto& category : categories )
         {
-          String  msgID = *id_it;
+          const PSet category_pset = cats_pset.get<fhicl::ParameterSet>(category, default_category_pset);
 
-          PSet category_pset
-            = cats_pset.get<fhicl::ParameterSet>(msgID, default_category_pset);
-
-          int  category_default_limit
-            = default_category_pset.get<int>("limit", NO_VALUE_SET);
-          int  limit
-            = category_pset.get<int>("limit", category_default_limit);
+          const int category_default_limit = default_category_pset.get<int>("limit", NO_VALUE_SET);
+          int limit = category_pset.get<int>("limit", category_default_limit);
           if (limit == NO_VALUE_SET) limit = dest_default_limit;
-          // change log 7
-          int  category_default_interval
-            = default_category_pset.get<int>("reportEvery", NO_VALUE_SET);
-          int  interval
-            = category_pset.get<int>("reportEvery",category_default_interval);
-          if (interval == NO_VALUE_SET) interval = dest_default_interval;
-          // change log 6  and then 7
-          int  category_default_timespan
-            = default_category_pset.get<int>("timespan", NO_VALUE_SET);
-          int  timespan
-            = category_pset.get<int>("timespan", category_default_timespan);
-          if (timespan == NO_VALUE_SET) timespan = dest_default_timespan;
-          // change log 7
 
-          std::string category = msgID;
-          if ( limit     == NO_VALUE_SET )  {                         // change log 24
-            limit = messageLoggerDefaults.limit(dest_pset_name,category);
-          }
-          if ( interval     == NO_VALUE_SET )  {                      // change log 24
-            interval = messageLoggerDefaults.reportEvery(dest_pset_name,category);
-          }
-          if ( timespan     == NO_VALUE_SET )  {                      // change log 24
-            timespan = messageLoggerDefaults.timespan(dest_pset_name,category);
-          }
+          const int category_default_interval = default_category_pset.get<int>("reportEvery", NO_VALUE_SET);
+          int interval = category_pset.get<int>("reportEvery",category_default_interval);
+          if (interval == NO_VALUE_SET) interval = dest_default_interval;
+
+          const int category_default_timespan = default_category_pset.get<int>("timespan", NO_VALUE_SET);
+          int  timespan  = category_pset.get<int>("timespan", category_default_timespan);
+          if ( timespan  == NO_VALUE_SET ) timespan = dest_default_timespan;
+
+
+          if ( limit     == NO_VALUE_SET ) limit    = messageLoggerDefaults.limit      (dest_pset_name,category);
+          if ( interval  == NO_VALUE_SET ) interval = messageLoggerDefaults.reportEvery(dest_pset_name,category);
+          if ( timespan  == NO_VALUE_SET ) timespan = messageLoggerDefaults.timespan   (dest_pset_name,category);
+
 
           if( limit     != NO_VALUE_SET )  {
             if ( limit < 0 ) limit = 2000000000;
-            dest_ctrl.setLimit(msgID, limit);
-          }                                           // change log 2a, 2b
+            dest_ctrl.setLimit(category, limit);
+          }
           if( interval  != NO_VALUE_SET )  {
-            dest_ctrl.setInterval(msgID, interval);
-          }                                           // change log 6
+            dest_ctrl.setInterval(category, interval);
+          }
           if( timespan  != NO_VALUE_SET )  {
             if ( timespan < 0 ) timespan = 2000000000;
-            dest_ctrl.setTimespan(msgID, timespan);
-          }                                           // change log 2a, 2b
+            dest_ctrl.setTimespan(category, timespan);
+          }
 
         }  // for
 
       // establish this destination's linebreak policy:
-      bool noLineBreaks
-        = dest_pset.get<bool> ("noLineBreaks", false);
+      bool noLineBreaks = dest_pset.get<bool> ("noLineBreaks", false);
       if (noLineBreaks) {
         dest_ctrl.setLineLength(32000);
       }
@@ -484,44 +453,43 @@ namespace mf {
       }
 
       // if indicated, suppress time stamps in this destination's output
-      bool suppressTime
-        = dest_pset.get<bool> ("noTimeStamps", false);
+      bool suppressTime = dest_pset.get<bool> ("noTimeStamps", false);
       if (suppressTime) {
-        dest_ctrl.suppressTime();
+        dest_ctrl.formatSuppress( TIMESTAMP );
       }
 
       // enable or disable milliseconds in the timestamp
-      bool millisecondTimestamp
-        = dest_pset.get<bool> ("useMilliseconds", false);
+      bool millisecondTimestamp = dest_pset.get<bool> ("useMilliseconds", false);
       if (millisecondTimestamp) {
-        dest_ctrl.includeMillisecond();
+        dest_ctrl.formatInclude( MILLISECOND );
       }
 
     }  // MessageLoggerScribe::configure_dest()
 
+    //=============================================================================
     void
     MessageLoggerScribe::configure_default_fwkJobReport
     ( ELdestControl & dest_ctrl )
     {
 
       dest_ctrl.setLimit("*", 0 );
-      String  msgID = "FwkJob";
-      int FwkJob_limit = 10000000;
+      const String msgID     = "FwkJob";
+      const int FwkJob_limit = 10000000;
       dest_ctrl.setLimit(msgID, FwkJob_limit);
       dest_ctrl.setLineLength(32000);
-      dest_ctrl.suppressTime();
+      dest_ctrl.formatSuppress( TIMESTAMP );
 
     }  // MessageLoggerScribe::configure_default_fwkJobReport()
 
-
+    //=============================================================================
     void
-    MessageLoggerScribe::configure_fwkJobReports()                // Changelog 16
+    MessageLoggerScribe::configure_fwkJobReports()
     {
       vString  empty_vString;
       String   empty_String;
       PSet     empty_PSet;
 
-      // decide whether to configure any job reports at all         // Changelog 19
+      // decide whether to configure any job reports at all
       bool jobReportExists  = false;
       bool enableJobReports = false;
 #ifdef DEFINE_THIS_TO_MAKE_REPORTS_THE_DEFAULT
@@ -543,10 +511,12 @@ namespace mf {
         = job_pset_p->get<std::vector<std::string> >("fwkJobReports", empty_vString);
 
       // Use the default list of fwkJobReports if and only if the grabbed list is
-      // empty                                                      // change log 24
+      // empty
       if (fwkJobReports.empty()) {
         fwkJobReports = messageLoggerDefaults.fwkJobReports;
       }
+
+      std::set<std::string> existing_ids;
 
       // establish each fwkJobReports destination:
       for( vString::const_iterator it = fwkJobReports.begin()
@@ -557,14 +527,13 @@ namespace mf {
           String filename = *it;
           String psetname = filename;
 
-          // check that this destination is not just a placeholder // change log 20
+          // check that this destination is not just a placeholder
           PSet  fjr_pset = job_pset_p->get<fhicl::ParameterSet>(psetname, empty_PSet);
           bool is_placeholder
             = fjr_pset.get<bool>("placeholder", false);
           if (is_placeholder) continue;
 
           // Modify the file name if extension or name is explicitly specified
-          // change log 14
           String explicit_filename
             = fjr_pset.get<std::string>("filename", empty_String);
           if (explicit_filename != empty_String) filename = explicit_filename;
@@ -579,442 +548,125 @@ namespace mf {
           }
 
           // Attach a default extension of .xml if there is no extension on a file
-          std::string actual_filename = filename;                     // change log 4
+          std::string actual_filename = filename;
           const std::string::size_type npos = std::string::npos;
           if ( filename.find('.') == npos ) {
             actual_filename += ".xml";
           }
 
-          // Check that this is not a duplicate name                 // change log 18
-          if ( stream_ps.find(actual_filename)!=stream_ps.end() ) {
-            if (clean_slate_configuration) {                          // change log 22
-              throw mf::Exception ( mf::errors::Configuration )
-                <<"Duplicate name for a MessageLogger Framework Job Report Destination: "
-                << actual_filename
-                << "\n";
-            } else {
-              LogWarning("duplicateDestination")
-                <<"Duplicate name for a MessageLogger Framework Job Report Destination: "
-                << actual_filename
-                << "\n" << "Only original configuration instructions are used";
-              continue;
-            }
-          }
+          const std::string outputId = createId( existing_ids, "file", actual_filename );
+          const bool   duplicateDest = duplicateDestination( outputId, FWKJOBREPORT, throw_on_clean_slate );
 
-          jobReportExists = true;                                     // Changelog 19
+          // use already-specified configuration if destination exists
+          if ( duplicateDest ) continue;
+
+          jobReportExists = true;
           if ( actual_filename == jobReportOption ) jobReportOption = empty_String;
 
-          std::shared_ptr<std::ofstream> os_sp(new std::ofstream(actual_filename.c_str()));
-          ostream_ps.push_back(os_sp);
-          ELdestControl dest_ctrl;
-          dest_ctrl = admin_p->attach( ELfwkJobReport(*os_sp) );
-          stream_ps[actual_filename] = os_sp.get();
+          ELdestControl dest_ctrl = admin_p->attach( std::make_unique<ELfwkJobReport>( actual_filename ) );
+          destIdControlMap.emplace( outputId, dest_ctrl );
 
           // now configure this destination:
           configure_dest(dest_ctrl, psetname, fjr_pset);
 
         }  // for [it = fwkJobReports.begin() to end()]
 
-      // Now possibly add the file specified by --jobReport         // Changelog 19
+      // Now possibly add the file specified by --jobReport
       if (jobReportOption==empty_String) return;
       if (jobReportExists && ( jobReportOption=="*" )) return;
       if (jobReportOption=="*") jobReportOption = "FrameworkJobReport.xml";
+
       // Check that this report is not already on order -- here the duplicate
       // name would not be a configuration error, but we shouldn't do it twice
       std::string actual_filename = jobReportOption;
-      if ( stream_ps.find(actual_filename)!=stream_ps.end() ) return;
 
-      std::shared_ptr<std::ofstream> os_sp(new std::ofstream(actual_filename.c_str()));
-      ostream_ps.push_back(os_sp);
-      ELdestControl dest_ctrl;
-      dest_ctrl = admin_p->attach( ELfwkJobReport(*os_sp) );
-      stream_ps[actual_filename] = os_sp.get();
+      std::set<std::string> tmpIdSet;
+      const std::string outputId = createId( tmpIdSet, "file", actual_filename );
+      const bool   duplicateDest = duplicateDestination( outputId, FWKJOBREPORT, no_throw_on_clean_slate );
+
+      // use already-specified configuration if destination exists
+      if ( duplicateDest ) return;
+
+      ELdestControl dest_ctrl = admin_p->attach( std::make_unique<ELfwkJobReport>( actual_filename ) );
+      destIdControlMap.emplace( outputId, dest_ctrl );
 
       // now configure this destination, in the jobreport default manner:
       configure_default_fwkJobReport (dest_ctrl);
 
     }
 
-    void
-    MessageLoggerScribe::configure_ordinary_destinations()        // Changelog 16
+    //=============================================================================
+    void MessageLoggerScribe::configure_destinations()
     {
-      vString  empty_vString;
-      String   empty_String;
-      PSet     empty_PSet;
-
       // grab list of destinations:
-      PSet dests = job_pset_p->get<fhicl::ParameterSet>("destinations");//, empty_PSet);
-      vString  destinations = dests.get_pset_keys();
+      PSet dests = job_pset_p->get<fhicl::ParameterSet>("destinations");
 
-      // exclude statistic destinations:
-      {
-        vString::iterator it = destinations.begin();
-        while(it!=destinations.end()) {
-          if(*it == "statistics") it=destinations.erase(it);
-          else ++it;
-        }
-      }
+      const vString ordinaryDestinations   = fetch_ordinary_destinations  ( dests );
+      make_destinations( dests, ordinaryDestinations  , ORDINARY  , no_throw_on_clean_slate );
 
-      // Use the default list of destinations if and only if the grabbed list is
-      // empty                                                      // change log 24
-      if (destinations.empty()) {
-        destinations = messageLoggerDefaults.destinations;
-      }
+      const vString statisticsDestinations = fetch_statistics_destinations( dests );
+      make_destinations( dests, statisticsDestinations, STATISTICS, no_throw_on_clean_slate );
 
-      // dial down the early destination if other dest's are supplied:
-      if( ! destinations.empty() )
-        early_dest.setThreshold(ELhighestSeverity);
+    }
 
-      // establish each destination:
-      for( vString::const_iterator it = destinations.begin()
-             ; it != destinations.end()
-             ; ++it
-           )
-        {
-
-          String psetname = *it;
-          String filename = psetname;
-
-          // Retrieve the destination pset object
-          PSet  dest_pset = dests.get<fhicl::ParameterSet>(psetname, empty_PSet);
-
-          // check that this destination is not just a placeholder // change log 11
-          bool is_placeholder
-            = dest_pset.get<bool>("placeholder", false);
-          if (is_placeholder) continue;
-
-          // Modify the file name if extension or name is explicitly specified
-          // change log 14
-
-          // Although for an ordinary destination there is no output attribute
-          // for the cfg (you can use filename instead) we provide output() for
-          // uniformity with the statistics destinations.  The "right way" to
-          // work this would have been to provide a filename() method, along with
-          // an extension() method.  We recognize the potential name confusion here
-          // (filename(filename))!
-
-          // grab the destination type
-          //    String dest_type = dest_pset.get<std::string>("type", "file");
-          String dest_type = dest_pset.get<std::string>("type");
-
-          // Determine the destination file name to use if no explicit filename is
-          // supplied in the cfg.
-          String filename_default = dest_pset.get<std::string>("output", empty_String);
-
-          if ( filename_default == empty_String ) {
-            filename_default = messageLoggerDefaults.output(psetname);
-            // change log 31
-            if (filename_default  == empty_String) {
-              filename_default  = filename;
-            }
-          }
-
-          String explicit_filename
-            = dest_pset.get<std::string>("filename", filename_default);
-          String explicit_extension
-            = dest_pset.get<std::string>("extension", empty_String);
-
-          filename = explicit_filename;
-
-          if (explicit_extension != empty_String)
-            {
-              if (explicit_extension[0] == '.')
-                filename = filename + explicit_extension;
-              else
-                filename = filename + "." + explicit_extension;
-            }
-
-          // Attach a default extension of .log if there is no extension on a file
-          if (filename.find('.') == std::string::npos)
-            filename += ".log";
-
-          // Make up a stream_id for duplication checking
-          std::string stream_id;
-
-          if(dest_type == "file")         stream_id = filename;
-          else if(dest_type == "cout")    stream_id = std::string("cout");
-          else if(dest_type == "cerr")    stream_id = std::string("cerr");
-          else if(dest_type == "syslog")  stream_id = std::string("syslog");
-          else                            stream_id = dest_type + "_" + psetname;
-
-          // Check that this is not a duplicate name                  // change log 18
-          if ( stream_ps.find(stream_id)!=stream_ps.end() ) {
-            if (clean_slate_configuration) {                          // change log 22
-              //        throw mf::Exception ( mf::errors::Configuration )
-              LogError("duplicateDestination")                        // change log 35
-                <<"Duplicate name for a MessageLogger Destination: "
-                << stream_id
-                << "\n" << "Only the first configuration instructions are used";
-              continue;
-            } else {
-              LogWarning("duplicateDestination")
-                <<"Duplicate name for a MessageLogger Destination: "
-                << stream_id
-                << "\n" << "Only original configuration instructions are used";
-              continue;
-            }
-          }
-
-          // push the stream_id to ordinary dest filename
-          if(dest_type=="file" || dest_type=="cout" || dest_type=="cerr" || dest_type=="syslog")
-            ordinary_destination_filenames.push_back(stream_id);
-
-          // attach the current destination, keeping a control handle to it:
-          ELdestControl dest_ctrl;
-          std::ostream* os_p = nullptr;
-
-          if( dest_type == "cout" )
-            {
-              os_p = &std::cout;
-              dest_ctrl = admin_p->attach( ELoutput(std::cout) );
-              stream_ps["cout"] = &std::cout;
-            }
-          else if( dest_type == "cerr" )
-            {
-              os_p = &std::cerr;
-              early_dest.setThreshold(ELzeroSeverity);
-              dest_ctrl = early_dest;
-              stream_ps["cerr"] = &std::cerr;
-            }
-          else if( dest_type == "file" )
-            {
-              const bool append = dest_pset.get<bool>("append", false);
-
-              auto os_sp =
-                std::make_shared<std::ofstream>
-                (
-                 filename.c_str(),
-                 append ? std::ios_base::app : std::ios_base::trunc
-                 );
-
-              ostream_ps.push_back(os_sp);
-              os_p = os_sp.get();
-              dest_ctrl = admin_p->attach( ELoutput(*os_sp) );
-              stream_ps[filename] = os_sp.get();
-            }
-          else if ( dest_type == "syslog" )
-            {
-              auto oss_sp = std::make_shared<std::ostringstream>();
-              ostream_ps.push_back(oss_sp);
-              os_p = oss_sp.get();
-              dest_ctrl = admin_p->attach( ELsyslog( *oss_sp ) );
-              stream_ps["syslog"] = oss_sp.get();
-            }
-          else // assume all other destinations are plugins
-            {
-              auto const libspec   = dest_type;
-              dest_ctrl            = admin_p->attach( makePlugin_(libspec) );
-
-              auto oss_sp          = std::make_shared<std::ostringstream>();
-              os_p = oss_sp.get();
-              ostream_ps.push_back(oss_sp);
-              stream_ps[dest_type] = oss_sp.get();
-            }
-
-          // now configure this destination:
-          configure_dest(dest_ctrl, psetname, dest_pset);
-
-          // check if this destination outputs the statistics
-          bool output_stat = dest_pset.get<bool>("outputStatistics", false);
-
-          // build and configure statistic destinations
-          if( output_stat )
-            {
-              if( dest_type == "cout" || dest_type == "cerr" || dest_type == "file" )
-                {
-                  ELdestControl stat_ctrl;
-                  stat_ctrl = admin_p->attach( ELstatistics(*os_p) );
-
-                  statisticsDestControls.push_back(stat_ctrl);
-                  statisticsResets.push_back( dest_pset.get<bool>("resetStatistics", false) );
-
-                  configure_dest(stat_ctrl, psetname, dest_pset);
-
-                  stat_ctrl.noTerminationSummary();
-                }
-              else
-                {
-                  // statistic destination for extension types not supported yet
-                }
-            }
-
-          //(*errorlog_p)( ELinfo, "added_dest") << filename << endmsg;
-
-        }  // for [it = destinations.begin() to end()]
-
-    } // configure_ordinary_destinations
-
-
+    //=============================================================================
     void
-    MessageLoggerScribe::configure_statistics()
-    {
-      vString  empty_vString;
-      String   empty_String;
-      PSet     empty_PSet;
+    MessageLoggerScribe::
+    make_destinations( const fhicl::ParameterSet& dests,
+                       const std::vector<std::string>& dest_list,
+                       const config_type configuration,
+                       const bool should_throw ){
 
-      // grab list of statistics destinations:
-      PSet     dests      = job_pset_p->get<fhicl::ParameterSet>("destinations", empty_PSet);
-      PSet     stats      = dests.get<fhicl::ParameterSet>("statistics", empty_PSet);
-      vString  statistics = stats.get_pset_keys();
+      std::set<std::string> ids;
 
-      bool no_statistics_configured = statistics.empty();           // change log 24
+      for( const auto& psetname : dest_list ) {
 
-      if ( no_statistics_configured ) {
-        // Read the list of staistics destinations from hardwired defaults,
-        // but only if there is also no list of ordinary destinations.
-        // (If a cfg specifies destinations, and no statistics, assume that
-        // is what the user wants.)
-        vString  destinations = dests.get_pset_keys();
-        if (destinations.empty()) {
-          statistics = messageLoggerDefaults.statistics;
-          no_statistics_configured = statistics.empty();
-        }
+        // Retrieve the destination pset object
+        PSet dest_pset = dests.get<fhicl::ParameterSet>(psetname);
+
+        // check that this destination is not just a placeholder
+        bool is_placeholder = dest_pset.get<bool>("placeholder", false);
+        if (is_placeholder) continue;
+
+        // grab the destination type and filename
+        const String dest_type = dest_pset.get<std::string>("type");
+        checkType( dest_type, configuration );
+
+        const std::string outputId = createId( ids, dest_type, std::string(), dest_pset );
+        const bool   duplicateDest = duplicateDestination( outputId,
+                                                           configuration,
+                                                           should_throw );
+
+        // Use previously defined configuration of duplicated destination
+        if ( duplicateDest ) continue;
+
+        const std::string libspec = dest_type;
+
+        auto& plugin_factory =
+          configuration == STATISTICS ?
+          pluginStatsFactory :
+          pluginFactory;
+
+        // attach the current destination, keeping a control handle to it:
+        ELdestControl dest_ctrl = admin_p->attach( makePlugin_( plugin_factory,
+                                                                libspec,
+                                                                psetname,
+                                                                dest_pset )
+                                                   );
+
+        destIdControlMap.emplace( outputId, dest_ctrl );
+
+        configure_dest(dest_ctrl, psetname, dest_pset);
+
+        // Suppress the desire to do an extra termination summary just because
+        // of end-of-job info message for statistics jobs
+        if ( configuration == STATISTICS ) dest_ctrl.noTerminationSummary() ;
+
       }
 
-      // establish each statistics destination:
-      for( vString::const_iterator it = statistics.begin()
-             ; it != statistics.end()
-             ; ++it
-           )
-        {
-          String psetname = *it;
-          String filename = psetname;
+    } // make_destinations()
 
-          PSet stat_pset = stats.get<fhicl::ParameterSet>(psetname, empty_PSet);
-
-          // check that this destination is not just a placeholder // change log 20
-          bool is_placeholder
-            = stat_pset.get<bool>("placeholder", false);
-          if (is_placeholder) continue;
-
-          // grab the statistic destination type
-          String dest_type = stat_pset.get<std::string>("type", "file");
-
-          // Determine the destination file name to use if no explicit filename is
-          // supplied in the cfg.
-          String filename_default = stat_pset.get<std::string>("output", empty_String);
-
-          if ( filename_default == empty_String ) {
-            filename_default = messageLoggerDefaults.output(psetname);
-            if (filename_default  == empty_String) {
-              filename_default  = filename;
-            }
-          }
-
-          String explicit_filename
-            = stat_pset.get<std::string>("filename", filename_default);
-          String explicit_extension
-            = stat_pset.get<std::string>("extension", empty_String);
-
-          filename = explicit_filename;
-
-          if (explicit_extension != empty_String)
-            {
-              if (explicit_extension[0] == '.')
-                filename = filename + explicit_extension;
-              else
-                filename = filename + "." + explicit_extension;
-            }
-
-          // Attach a default extension of .log if there is no extension on a file
-          if (filename.find('.') == std::string::npos)
-            filename += ".log";
-
-          // Make up a stream_id for duplication checking
-          std::string stream_id;
-
-          if(dest_type == "file")         stream_id = filename;
-          else if(dest_type == "cout")    stream_id = std::string("cout");
-          else if(dest_type == "cerr")    stream_id = std::string("cerr");
-          else                            stream_id = dest_type + "_" + psetname;
-
-
-          // Check that this is not a duplicate name -
-          // unless it is an ordinary destination (which stats can share)
-          if ( !cet::search_all(ordinary_destination_filenames, stream_id) )
-            {
-              if ( stream_ps.find(stream_id)!=stream_ps.end() )
-                {
-                  if (clean_slate_configuration)
-                    {                       // change log 22
-                      throw mf::Exception ( mf::errors::Configuration )
-                        <<"Duplicate name for a MessageLogger Statistics Destination: "
-                        << stream_id
-                        << "\n";
-                    }
-                  else
-                    {
-                      LogWarning("duplicateDestination")
-                        <<"Duplicate name for a MessageLogger Statistics Destination: "
-                        << stream_id
-                        << "\n" << "Only original configuration instructions are used";
-                      continue;
-                    }
-                }
-            }
-
-          // create (if statistics file does not match any destination file name)
-          // or note (if statistics file matches a destination file name) the ostream.
-          // But if no statistics destinations were provided in the config, do not
-          // create a new destination for this hardwired statistics - only act if
-          // it is matches a destination.  (shange log 24)
-          bool statistics_destination_is_real = !no_statistics_configured;
-
-          std::ostream* os_p;
-
-          if ( stream_ps.find(stream_id) == stream_ps.end() )
-            {
-              if ( dest_type == "cout" )
-                {
-                  os_p = &std::cout;
-                }
-              else if ( dest_type == "cerr" )
-                {
-                  os_p = &std::cerr;
-                }
-              else if ( dest_type == "file" )
-                {
-                  auto os_sp = std::make_shared<std::ofstream>( stream_id.c_str() );
-                  ostream_ps.push_back(os_sp);
-                  os_p = os_sp.get();
-                }
-              else   // all other extension types
-                {
-                  throw mf::Exception ( mf::errors::Configuration )
-                    << "Not supported statistic destination type \""
-                    << dest_type
-                    << "\"\n";
-                }
-
-              stream_ps[stream_id] = os_p;
-
-            }
-          else
-            {
-              statistics_destination_is_real = true;                    // change log 24
-              os_p = stream_ps[stream_id];
-            }
-
-          if (statistics_destination_is_real) {                       // change log 24
-            // attach the statistics destination, keeping a control handle to it:
-            ELdestControl dest_ctrl;
-            dest_ctrl = admin_p->attach( ELstatistics(*os_p) );
-            statisticsDestControls.push_back(dest_ctrl);
-            bool reset = stat_pset.get<bool>("reset", false);
-            statisticsResets.push_back(reset);
-
-            // now configure this destination:
-            configure_dest(dest_ctrl, psetname, stat_pset);
-
-            // and suppress the desire to do an extra termination summary just because
-            // of end-of-job info messages
-            dest_ctrl.noTerminationSummary();
-          }
-
-        }  // for [it = statistics.begin() to end()]
-
-    } // configure_statistics
-
+    //=============================================================================
     std::string MessageLoggerScribe::trim_copy(std::string const src)
     {
       std::string::size_type len = src.length();
@@ -1027,6 +679,7 @@ namespace mf {
       return src.substr(i,j-i+1);
     }
 
+    //=============================================================================
     void
     MessageLoggerScribe::parseCategories (std::string const & s,
                                           std::vector<std::string> & cats)
@@ -1052,18 +705,22 @@ namespace mf {
       }
     }
 
+    //=============================================================================
     void
     MessageLoggerScribe::triggerStatisticsSummaries() {
-      assert (statisticsDestControls.size() == statisticsResets.size());
-      for (unsigned int i = 0; i != statisticsDestControls.size(); ++i) {
-        statisticsDestControls[i].summary( );
-        if (statisticsResets[i]) statisticsDestControls[i].wipe( );
+
+      for ( auto idControlPair : destIdControlMap ) {
+        auto& destControl = idControlPair.second;
+        destControl.summary();
+        if ( destControl.resetStats() ) destControl.wipe();
       }
+
     }
 
+    //=============================================================================
     void
     MessageLoggerScribe::
-    triggerFJRmessageSummary(std::map<std::string, double> & sm)  // ChangeLog 29
+    triggerFJRmessageSummary(std::map<std::string, double> & sm)
     {
       if (statisticsDestControls.empty()) {
         sm["NoStatisticsDestinationsConfigured"] = 0.0;
@@ -1072,15 +729,208 @@ namespace mf {
       }
     }
 
+    //=============================================================================
+    std::vector<std::string>
+    MessageLoggerScribe::
+    fetch_ordinary_destinations( fhicl::ParameterSet& dests ) {
+
+      const vString keyList = dests.get_pset_keys();
+
+      vString destinations;
+      std::copy_if( keyList.begin(), keyList.end(), std::back_inserter( destinations ),
+                    [](const std::string& dest){ return dest != "statistics"; } );
+
+      // Fill with default (and augment pset) if destinations is empty
+      if(  destinations.empty() ) {
+
+        destinations = messageLoggerDefaults.destinations;
+
+        for ( const auto& dest : destinations ) {
+
+          fhicl::ParameterSet tmp;
+          tmp.put<std::string>( "type"    , "file"     );
+          tmp.put<std::string>( "filename", "cerr.log" );
+          dests.put<fhicl::ParameterSet>( dest, tmp );
+
+        }
+      }
+
+      // Also dial down the early destination if other dest's are supplied:
+      if( !destinations.empty() ) early_dest.setThreshold(ELhighestSeverity);
+
+      return destinations;
+    }
+
+    //=============================================================================
+    std::vector<std::string>
+    MessageLoggerScribe::
+    fetch_statistics_destinations( fhicl::ParameterSet& dests ){
+
+      auto ordinaryDests = dests;
+      dests              = ordinaryDests.get<fhicl::ParameterSet>("statistics", fhicl::ParameterSet() );
+      vString statsDests = dests.get_pset_keys();
+
+      // Read the list of statistics destinations from hardwired
+      // defaults, but only if there is also no list of ordinary
+      // destinations.  (If a FHiCL file specifies destinations, and
+      // no statistics, assume that is what the user wants.)
+      if ( statsDests.empty() && ordinaryDests.get_pset_keys().empty() ) {
+
+        statsDests = messageLoggerDefaults.statistics;
+
+        for ( const auto& dest : statsDests ) {
+
+          fhicl::ParameterSet tmp;
+          tmp.put<std::string>( "type"    , "file"           );
+          tmp.put<std::string>( "filename", "cerr_stats.log" );
+          dests.put<fhicl::ParameterSet>( dest, tmp );
+
+        }
+      }
+
+      return statsDests;
+
+    }
+
+    //=============================================================================
+    void
+    MessageLoggerScribe::
+    checkType( const std::string& type,
+               const config_type configuration ) {
+
+      if ( configuration != STATISTICS ) return;
+
+      // Check for ostream-supported types for statistics
+      if ( !cet::search_all( std::set<std::string>{"cout","cerr","file"}, type ) ) {
+
+        throw mf::Exception ( mf::errors::Configuration )
+          <<"\n"
+          <<"Unsupported type [ " << type << " ] chosen for statistics printout.\n"
+          <<"Must choose ostream type: \"cout\", \"cerr\", or \"file\""
+          <<"\n";
+      }
+
+    }
+
+    //=============================================================================
+    std::string
+    MessageLoggerScribe::
+    createId( std::set<std::string>& existing_ids,
+              const std::string& type,
+              const std::string& file_name,
+              const fhicl::ParameterSet& pset ) {
+
+      std::string output_id;
+      if ( type == "cout" || type == "cerr" || type == "syslog" ) {
+        output_id = type;
+      }
+      else {
+        //
+        // 'file_name' is empty for ordinary/statistics destinations
+        //
+        //   - the FHiCL parameter 'filename' must have an associated
+        //     value for non-cout/cerr/syslog destinations
+        //
+        const std::string filename = file_name.empty() ? pset.get<std::string>("filename") : file_name;
+
+        if ( type == "file" ) {
+          output_id = filename;
+        }
+        else {
+          output_id = type+":"+filename;
+        }
+
+      }
+
+      // Emplace and check that output_id doesn't already exist
+      if ( !existing_ids.emplace( output_id ).second ) {
+        //
+        // Current usage case is to NOT throw.  So the output_id will
+        // be returned and duplicateDestination() check will emit a
+        // warning message that a duplicate destination is being used.
+        //
+        // throw mf::Exception( mf::errors::Configuration )
+        //   << "\n"
+        //   << " Output identifier: \"" << output_id << "\""
+        //   << " already specified within ordinary/statistics/fwkJobReport block in FHiCL file"
+        //   << "\n";
+      }
+
+      return output_id;
+
+    }
+
+    //=============================================================================
+    bool
+    MessageLoggerScribe::
+    duplicateDestination( const std::string& output_id,
+                          const config_type configuration,
+                          const bool should_throw ) {
+
+      std::string config_str;
+      if      ( configuration == FWKJOBREPORT ) config_str = "Framework Job Report";
+      else if ( configuration == ORDINARY     ) config_str = "MessageLogger";
+      else if ( configuration == STATISTICS   ) config_str = "MessageLogger Statistics";
+
+      auto destIdControlPair = destIdControlMap.find(output_id);
+
+      if ( destIdControlPair == destIdControlMap.end() ) return false;
+
+      // For duplicate destinations
+      const std::string hrule = "\n============================================================================ \n";
+      std::ostringstream except_msg, orig_config_msg;
+      except_msg      << hrule
+                      << "\n    Duplicate name for a " << config_str << " destination: \"" << output_id << "\"";
+      orig_config_msg << "\n    Only original configuration instructions are used. \n"
+                      << hrule;
+
+      //------------------------------------------------------------------
+      // Handle statistics case where duplicate destinations are okay
+      //------------------------------------------------------------------
+
+      // If user specifies the destination twice and the
+      // configuration is STATISTICS, then the
+      // ELdestination.userWantsStats_ flag needs to be set to
+      // 'true' so that statistics are output.
+
+      if ( configuration == STATISTICS ) {
+        destIdControlPair->second.userWantsStats();
+        return true; // don't emit warning for statistics
+      }
+
+      // Emit error message for everything else
+      if (clean_slate_configuration) {
+
+        if ( should_throw ) {
+          throw mf::Exception( mf::errors::Configuration ) << "\n" << except_msg.str();
+        }
+        else LogError("duplicateDestination") << except_msg.str()
+                                              << orig_config_msg.str();
+
+      } else { // !clean_slate_configuration
+
+        LogWarning("duplicateDestination") << except_msg.str()
+                                           << orig_config_msg.str();
+
+      }
+
+      return true;
+
+    }
+
+    //=============================================================================
     std::unique_ptr<ELdestination>
     MessageLoggerScribe::
-    makePlugin_(std::string const& libspec)
-    {
+    makePlugin_(cet::BasicPluginFactory& plugin_factory,
+                const std::string& libspec,
+                const std::string& psetname,
+                const fhicl::ParameterSet& pset) {
+
       std::unique_ptr<ELdestination> result;
       try {
-        auto const pluginType = pluginFactory_.pluginType(libspec);
+        auto const pluginType = plugin_factory.pluginType(libspec);
         if (pluginType == cet::PluginTypeDeducer<ELdestination>::value) {
-          result = pluginFactory_.makePlugin<std::unique_ptr<ELdestination> >(libspec);
+          result = plugin_factory.makePlugin<std::unique_ptr<ELdestination> >(libspec, psetname, pset );
         } else {
           throw Exception(errors::Configuration, "MessageLoggerScribe: ")
             << "unrecognized plugin type "
@@ -1096,7 +946,5 @@ namespace mf {
       return result;
     } //
 
-
   } // end of namespace service
 } // end of namespace mf
-

@@ -72,7 +72,7 @@ namespace service {
 // ----------------------------------------------------------------------
 
 class ELcontextSupplier;
-class ELdestination;
+  //class ELdestination;
 class ELadminDestroyer;
 class ErrorLog;
 class ELtsErrorLog;
@@ -118,21 +118,6 @@ public:
 
   // ---  furnish/recall destinations:
   //
-  //  ELdestControl attach( const ELdestination & sink );
-  template <typename DEST>
-  ELdestControl attach( DEST&& sink,
-                        typename std::enable_if<std::is_base_of<ELdestination,DEST>::value>::type* = 0 ) {
-    sinks().emplace_back( new DEST( std::forward<DEST>(sink) ) );
-    return ELdestControl( cet::exempt_ptr<ELdestination>( sinks().back().get() ) );
-  }
-
-  template <typename DEST>
-  ELdestControl attach( DEST&& sink, const ELstring & name,
-                        typename std::enable_if<std::is_base_of<ELdestination,DEST>::value>::type* = 0 ) {
-    sinks().emplace_back( new DEST( std::forward<DEST>(sink) ) );
-    attachedDestinations[name] = sinks().back();
-    return ELdestControl( cet::exempt_ptr<ELdestination>( sinks().back().get() ) );
-  }
 
   template <typename DEST>
   ELdestControl attach( std::unique_ptr<DEST>&& dest,

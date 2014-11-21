@@ -9,8 +9,10 @@
 FILE (GLOB MLsrcFiles *.cc)
 FILE (GLOB MSsrcFiles ../MessageService/*.cc)
 
+LIST ( REMOVE_ITEM MSsrcFiles ../MessageService/ELdestinationTester.cc )
+
 cet_make_library( LIBRARY_NAME MF_MessageLogger
-        	  SOURCE  ${MLsrcFiles} ${MSsrcFiles}
+                  SOURCE  ${MLsrcFiles} ${MSsrcFiles}
         	  LIBRARIES 
                   MF_Utilities 
                   ${FHICLCPP} 

@@ -24,110 +24,92 @@
 // #define ELerrorListTRACE_LOG
 
 namespace mf {
-namespace service {
+  namespace service {
 
 
-// ----------------------------------------------------------------------
-// Constructors:
-// ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // Constructors:
+    // ----------------------------------------------------------------------
 
-ELerrorList::ELerrorList(std::list<mf::ErrorObj> & errorList) :
-                ELdestination (),
-                errorObjs ( errorList )
-{
+    ELerrorList::ELerrorList(std::list<mf::ErrorObj> & errorList) :
+      ELdestination (),
+      errorObjs ( errorList )
+    {
 
-  #ifdef ELerrorListCONSTRUCTOR_TRACE
-    std::cerr << "Constructor for ELerrorList()\n";
-  #endif
+#ifdef ELerrorListCONSTRUCTOR_TRACE
+      std::cerr << "Constructor for ELerrorList()\n";
+#endif
 
-}  // ELerrorList()
+    }  // ELerrorList()
 
-ELerrorList::ELerrorList(const ELerrorList & orig) :
-                ELdestination (),
-                errorObjs ( orig.errorObjs )
-{
+    ELerrorList::ELerrorList(const ELerrorList & orig) :
+      ELdestination (),
+      errorObjs ( orig.errorObjs )
+    {
 
-  #ifdef ELerrorListCONSTRUCTOR_TRACE
-    std::cerr << "Copy Constructor for ELerrorList()\n";
-  #endif
+#ifdef ELerrorListCONSTRUCTOR_TRACE
+      std::cerr << "Copy Constructor for ELerrorList()\n";
+#endif
 
-  ignoreMostModules    = orig.ignoreMostModules;
-  respondToThese       = orig.respondToThese;
-  respondToMostModules = orig.respondToMostModules;
-  ignoreThese          = orig.ignoreThese;
+      ignoreMostModules    = orig.ignoreMostModules;
+      respondToThese       = orig.respondToThese;
+      respondToMostModules = orig.respondToMostModules;
+      ignoreThese          = orig.ignoreThese;
 
-}  // ELerrorList()
-
-
-ELerrorList::~ELerrorList()  {
-
-  #ifdef ELerrorListCONSTRUCTOR_TRACE
-    std::cerr << "Destructor for ELerrorList\n";
-  #endif
-
-}  // ~ELerrorList()
+    }  // ELerrorList()
 
 
-// ----------------------------------------------------------------------
-// Methods invoked by the ELadministrator:
-// ----------------------------------------------------------------------
+    ELerrorList::~ELerrorList()  {
 
-ELerrorList *
-ELerrorList::clone() const  {
+#ifdef ELerrorListCONSTRUCTOR_TRACE
+      std::cerr << "Destructor for ELerrorList\n";
+#endif
 
-  return new ELerrorList( *this );
-
-} // clone()
+    }  // ~ELerrorList()
 
 
-bool ELerrorList::log( const mf::ErrorObj & msg )  {
+    // ----------------------------------------------------------------------
+    // Methods invoked by the ELadministrator:
+    // ----------------------------------------------------------------------
 
-  #ifdef ELerrorListTRACE_LOG
-    std::cerr << "    =:=:=: Log to an ELerrorList \n";
-  #endif
+    void ELerrorList::log( mf::ErrorObj & msg )  {
 
-  mf::ErrorObj m (msg);
+#ifdef ELerrorListTRACE_LOG
+      std::cerr << "    =:=:=: Log to an ELerrorList \n";
+#endif
 
-  // See if this message is to be acted upon, and add it to limits table
-  // if it was not already present:
-  //
-  if ( msg.xid().severity < threshold )        return false;
-  if ( thisShouldBeIgnored(msg.xid().module) ) return false;
-  if ( ! limits.add( msg.xid() )      )        return false;
+      mf::ErrorObj m (msg);
 
-  #ifdef ELerrorListTRACE_LOG
-    std::cerr << "    =:=:=: Limits table work done \n";
-  #endif
+      // See if this message is to be acted upon, and add it to limits table
+      // if it was not already present:
+      //
+      if ( msg.xid().severity < threshold        ) return;
+      if ( thisShouldBeIgnored(msg.xid().module) ) return;
+      if ( ! stats.limits.add( msg.xid() )       ) return;
 
-  // add a last item to the message:  The fullContext string supplied.
+#ifdef ELerrorListTRACE_LOG
+      std::cerr << "    =:=:=: Limits table work done \n";
+#endif
 
-  m.eo_emit(ELadministrator::instance()->getContextSupplier().fullContext());
+      // add a last item to the message:  The fullContext string supplied.
 
-  // Now just put m on the list:
+      m.eo_emit(ELadministrator::instance()->getContextSupplier().fullContext());
 
-  errorObjs.push_back(m);
+      // Now just put m on the list:
 
-  // Done; message has been fully processed:
-  //
+      errorObjs.push_back(m);
 
-  #ifdef ELerrorListTRACE_LOG
-    std::cerr << "  =:=:=: log(msg) done: \n";
-  #endif
+      // Done; message has been fully processed:
+      //
 
-  return true;
+#ifdef ELerrorListTRACE_LOG
+      std::cerr << "  =:=:=: log(msg) done: \n";
+#endif
 
-}  // log()
+      msg.setReactedTo( true );
 
-
-// Remainder are from base class.
-
-
-// ----------------------------------------------------------------------
-// errorList methods:
-// ----------------------------------------------------------------------
+    }  // log()
 
 
-// ----------------------------------------------------------------------
-
-} // end of namespace service
+  } // end of namespace service
 } // end of namespace mf

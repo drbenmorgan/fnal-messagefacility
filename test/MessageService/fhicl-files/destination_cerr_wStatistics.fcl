@@ -1,0 +1,13 @@
+# Configuration file for messageFacility test
+
+process_name: TestCerr_wStatisticsDest
+
+message : {
+   destinations : { 
+      log : { 
+         type             : cerr 
+         outputStatistics : true
+      } 
+   }
+}
+

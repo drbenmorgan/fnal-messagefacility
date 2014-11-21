@@ -1,0 +1,48 @@
+%MSG-w MemoryCheck:  MFTest {Timestamp} pre-event 
+MemoryCheck: module G4:g4run VSIZE 1030.34 0 RSS 357.043 0.628906
+%MSG
+%MSG-w MemoryCheck:  MFTest {Timestamp} pre-event 
+MemoryCheck: module G4:g4run VSIZE 1030.34 0 RSS 357.25 0.199219
+%MSG
+%MSG-w MemoryCheck:  MFTest {Timestamp} pre-event 
+MemoryCheck: module G4:g4run VSIZE 1030.34 5.2 RSS 357.453 0.1875
+%MSG
+%MSG-e err1:  MFTest {Timestamp} pre-event 
+This is an ERROR message.
+%MSG
+%MSG-e err2:  MFTest {Timestamp} pre-event 
+This is an ERROR message.
+%MSG
+%MSG-w warning:  MFTest {Timestamp} pre-event 
+Followed by a WARNING message.
+%MSG
+%MSG-e catError:  MFTest {Timestamp} pro-event 
+Error information.
+%MSG
+%MSG-w catWarning:  MFTest {Timestamp} pro-event 
+Warning information.
+%MSG
+%MSG-e catError:  MFTest {Timestamp} pro-event 
+Error information.
+%MSG
+%MSG-w catWarning:  MFTest {Timestamp} pro-event 
+Warning information.
+%MSG
+%MSG-e catError:  MFTest {Timestamp} pro-event 
+Error information.
+%MSG
+%MSG-w catWarning:  MFTest {Timestamp} pro-event 
+Warning information.
+%MSG
+%MSG-e catError:  MFTest {Timestamp} pro-event 
+Error information.
+%MSG
+%MSG-w catWarning:  MFTest {Timestamp} pro-event 
+Warning information.
+%MSG
+%MSG-e catError:  MFTest {Timestamp} pro-event 
+Error information.
+%MSG
+%MSG-w catWarning:  MFTest {Timestamp} pro-event 
+Warning information.
+%MSG

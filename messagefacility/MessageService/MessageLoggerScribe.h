@@ -22,70 +22,6 @@
 
 namespace mf {
   namespace service {
-    
-    // ----------------------------------------------------------------------
-    //
-    // MessageLoggerScribe.h
-    //
-    // Changes:
-    //
-    //   1 - 2/6/07  mf
-    //      Set up ability to get a remembered pointer to the ErrorLog of an
-    //      instance of MessageLoggerScribe, from a non-member function, via
-    //      getErrorLog_ptr(), and a corresponding routine to remember the pointer
-    //      as setStaticErrorLog_ptr().  Needed if we decide to send an explicit
-    //      message from the scribe.
-    //
-    //   2 - ?/?/? before 3/1/07 jm
-    //       Modify parameter getting template so as not to catch tracked ones
-    //       (that is, to crash if user mistakenly does not say untracked)
-    //
-    //   3 - 3/13/07 mf
-    //       Added configure_ordinary_destinations, configure_fwkJobReports,
-    //       and configure_statistics to allow these to be broken out of
-    //       configure_errorlog.
-    //
-    //   4 - 3/26/07 mf
-    //       Added configure_default_fwkJobReport, which implements the config
-    //       originally placed in the .cfi file.
-    //
-    //   5 - 6/15/07 mf
-    //       Accommodations for use of MessageLoggerDefault structure
-    //
-    //   6 - 7/24/07 mf
-    //       Instace variable indicating that we really are logging what is sent.
-    //       This is to be able to supress the <generator> info sent at exit by
-    //       the JobReport, in the case where no .cfg file was given.
-    //
-    //   7 - 4/8/08 mf
-    //       Modified getAparameter behavior when tracked parameter is found,
-    //       for nicer output message.
-    //
-    //   8 - 6/19/08 mf
-    //       triggerFJRmessageSummary
-    //
-    //   9 - 10/21/08 mf
-    //       variables and routines in preparation for single-thread
-    //
-    //  10 - 10/22/08 mf
-    //       derivation from AbstractMLscribe to allow for single-thread calling
-    //       from MessageLoggerQ without introducing coupling to MessageService
-    //
-    //  11 - 5/26/09 mf
-    //       restore getAparameter behavior to NOT throw for tracked, since
-    //       now this will be caught when validating the PSet.
-    //
-    //  12 - 8/10/09 mf, cj
-    //       member data  to hold shared pointer to thread queue
-    //
-    //  13 - 02/18/10 ql
-    //       Trim the leading and trailing whitespaces in parsing categories in
-    //       order to get the consistency in category names
-    //
-    //  14 - 09/30/14 kjk
-    //       Add syslog option, and remove configure_external_dest which
-    //       will not be used
-    //       -----------------------------------------------------------------------
 
     class ThreadQueue;
     class ELadministrator;
@@ -96,21 +32,15 @@ namespace mf {
     public:
       // ---  birth/death:
 
-      // ChangeLog 12
+      enum config_type { ORDINARY, STATISTICS, FWKJOBREPORT };
+
       /// --- If queue is NULL, this sets singleThread true
       explicit MessageLoggerScribe(std::shared_ptr<ThreadQueue> queue);
-
       virtual ~MessageLoggerScribe();
 
       // --- receive and act on messages:
-      virtual
-      void  run();
-      virtual                                                       // changelog 10
-      void  runCommand(MessageLoggerQ::OpCode  opcode, void * operand);
-      // changeLog 9
-
-      // --- obtain a pointer to the errorlog
-      //static ErrorLog * getErrorLog_ptr() {return static_errorlog_p;}
+      virtual void run();
+      virtual void runCommand(MessageLoggerQ::OpCode  opcode, void * operand);
 
     private:
       // --- convenience typedefs
@@ -126,141 +56,67 @@ namespace mf {
       void triggerFJRmessageSummary(std::map<std::string, double> & sm);
 
       // --- handle details of configuring via a ParameterSet:
-      void  configure_errorlog( );
-      void  configure_fwkJobReports( );                             // Change Log 3
-      void  configure_ordinary_destinations( );                     // Change Log 3
-      void  configure_statistics( );                                // Change Log 3
-      void  configure_dest( ELdestControl & dest_ctrl
-                            , String const & dest_pset_name
-                            , fhicl::ParameterSet const & dest_pset
-                            );
-      void  configure_default_fwkJobReport( ELdestControl & dest_ctrl); //ChangeLog 4
+      void  configure_errorlog();
+      void  configure_fwkJobReports();
+      void  configure_destinations();
+
+      void  make_destinations( const fhicl::ParameterSet& dests,
+                               const std::vector<std::string>& dest_list,
+                               const config_type config,
+                               const bool should_throw );
+
+      void  configure_dest( ELdestControl& dest_ctrl,
+                            const String& dest_pset_name,
+                            const PSet& dest_pset );
+
+      void  configure_default_fwkJobReport( ELdestControl & dest_ctrl);
 
       // --- util function to trim leading and trailing whitespaces from a string
-      std::string trim_copy(std::string const src);                 // ChangeLog 13
-
-#define VALIDATE_ELSEWHERE                                      // ChangeLog 11
-
-#ifdef OLDSTYLE
-      template <class T>
-      T getAparameter ( PSet const& p, std::string const & id, T const & def )
-      {
-        T t;
-        try {
-          t = p.template getUntrackedParameter<T>(id, def);
-        } catch (...) {
-          t = p.template getParameter<T>(id);
-          std::cerr << "Tracked parameter " << id
-                    << " used in MessageLogger configuration.\n"
-                    << "Use of tracked parameters for the message service "
-                    << "is deprecated.\n"
-                    << "The .cfg file should be modified to make this untracked.\n";
-        }
-        return t;
-      }
-#else
-#ifdef SIMPLESTYLE
-      template <class T>
-      T getAparameter ( PSet const& p, std::string const & id, T const & def )
-      {
-        T t;
-        t = p.template getUntrackedParameter<T>(id, def);
-        return t;
-      }                                                             // changelog 2
-#else
-#ifdef VALIDATE_ELSEWHERE
-      template <class T>                                            // ChangeLog 11
-      T getAparameter ( PSet const& p, std::string const & id, T const & def )
-      {
-        T t = def;
-        try {
-          t = p.template get<T>(id, def);
-        } catch (...) {
-          try {
-            t = p.template get<T>(id);
-          } catch (...) {
-            // Since PSetValidation will catch such errors, we simply proceed as
-            // best we can in case we are setting up the logger just to contain the
-            // validation-caught error messages.
-          }
-        }
-        return t;
-      }
-#else  // Do not tolerate errors
-      template <class T>
-      T  getAparameter ( PSet const& p, std::string const & id, T const & def )
-      {                                                             // changelog 7
-        T t;
-        try {
-          t = p.template getUntrackedParameter<T>(id, def);
-        } catch (cms::Exception& e) {
-          try {
-            t = p.template getParameter<T>(id);
-          } catch (...) {
-            // if we get here, this was NOT a simple tracked parameter goof.
-            // we should just rethrow the ORIGINAL error
-            e.raise();
-          }
-          std::cerr << "Tracked parameter " << id
-                    << " used in MessageLogger configuration.\n"
-                    << "Use of tracked parameters for the message service "
-                    << "is not allowed.\n"
-                    << "The .cfg file should be modified to make this untracked.\n";
-          e.raise();
-        } catch (...) {
-          // This is not the usual tracked/untracked error; we can't add useful info
-          throw;
-        }
-        return t;
-      }
-
-#endif // VALIDATE_ELSEWHERE
-#endif // SIMPLESTYLE
-#endif // OLD_STYLE and the else Do not tolerate errors
-
-#ifdef REMOVE
-      template <class T>
-      T  getCategoryDefault ( PSet * p,
-                              std::string const & id,
-                              std::string const & def  )
-      {
-        T t;
-        t = p->template getUntrackedParameter<T>(id, def);
-        return t;
-      }
-#endif
-
+      std::string trim_copy(std::string const src);
 
       // --- other helpers
       void parseCategories (std::string const & s, std::vector<std::string> & cats);
-      //void setStaticErrorLog_ptr() {static_errorlog_p = errorlog_p.get();}
 
       // --- data:
       ELadministrator                   * admin_p;
       ELdestControl                       early_dest;
       std::shared_ptr<ErrorLog>           errorlog_p;
-      std::vector<std::shared_ptr<std::ostream> > ostream_ps; // used to keep objects alive
       MsgContext                          msg_context;
       std::shared_ptr<PSet>               job_pset_p;
-      std::map<String,std::ostream     *> stream_ps;
-      std::vector<String>                 ordinary_destination_filenames;
+      std::map<String,ELdestControl>      destIdControlMap;
       std::vector<ELdestControl>          statisticsDestControls;
-      std::vector<bool>                   statisticsResets;
       std::string                         jobReportOption;
-      //static ErrorLog                 * static_errorlog_p;
       bool                                clean_slate_configuration;
       MessageLoggerDefaults               messageLoggerDefaults;
       bool                                active;
-      bool                                singleThread;             // changeLog 9
-      bool                                done;                     // changeLog 9
-      bool                                purge_mode;               // changeLog 9
-      int                                 count;                    // changeLog 9
-      std::shared_ptr<ThreadQueue>        m_queue;                  // changeLog 12
+      bool                                singleThread;
+      bool                                done;
+      bool                                purge_mode;
+      int                                 count;
+      std::shared_ptr<ThreadQueue>        m_queue;
 
-      cet::BasicPluginFactory             pluginFactory_;
-      std::unique_ptr<ELdestination>      plugin_;
-  
-      std::unique_ptr<ELdestination>  makePlugin_(const std::string& libspec);
+      cet::BasicPluginFactory             pluginFactory;
+      cet::BasicPluginFactory             pluginStatsFactory;
+
+      vString fetch_ordinary_destinations   ( fhicl::ParameterSet& pset );
+      vString fetch_statistics_destinations ( fhicl::ParameterSet& pset );
+
+      void checkType( const std::string& type,
+                      const config_type config );
+
+      String createId( std::set<std::string>& existing_ids,
+                       const std::string& type,
+                       const std::string& filename,
+                       const fhicl::ParameterSet& pset = fhicl::ParameterSet() );
+
+      bool duplicateDestination( const std::string& output_id,
+                                 const config_type config,
+                                 const bool should_throw );
+
+      std::unique_ptr<ELdestination>  makePlugin_( cet::BasicPluginFactory& pluginFactory,
+                                                   const std::string& libspec,
+                                                   const std::string& psetname,
+                                                   const PSet& pset );
 
     };  // MessageLoggerScribe
 

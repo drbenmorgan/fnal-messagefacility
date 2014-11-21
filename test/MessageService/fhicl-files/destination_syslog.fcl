@@ -1,0 +1,12 @@
+# Configuration file for messageFacility test
+
+process_name: TestFileDest
+
+message : {
+   destinations : { 
+      log : { 
+         type : syslog
+      } 
+   }
+}
+
