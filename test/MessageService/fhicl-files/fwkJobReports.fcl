@@ -1,4 +1,4 @@
-process_name: TestFileDest_Placeholder
+process_name: TestFwkJobReport
 
 message : {
    destinations : { 

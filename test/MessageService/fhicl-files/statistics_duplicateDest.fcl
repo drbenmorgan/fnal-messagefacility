@@ -1,0 +1,22 @@
+process_name: TestStatistics_duplicateDest
+
+message : {
+   destinations : {
+
+      statistics : { 
+         dest1 : { 
+            type     : file
+            filename : "statistics.log"
+            reset    : true
+         }
+
+         dest2 : {
+            type     : file
+            filename : "statistics.log"
+            reset    : true
+         }
+      }
+
+   }
+}
+

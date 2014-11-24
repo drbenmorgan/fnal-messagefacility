@@ -120,12 +120,16 @@ public:
   //
 
   template <typename DEST>
-  ELdestControl attach( std::unique_ptr<DEST>&& dest,
+  ELdestControl attach( const std::string& outputId,
+                        std::unique_ptr<DEST>&& dest,
                         typename std::enable_if<std::is_base_of<ELdestination,DEST>::value>::type* = 0 ) {
-    sinks().push_back( std::move(dest) );
-    return ELdestControl( cet::exempt_ptr<ELdestination>( sinks().back().get() ) );
+    auto emplacePair = attachedDestinations.emplace( outputId, std::move(dest) );
+    auto iterToIDdestPair = emplacePair.first;
+    const bool didEmplace = emplacePair.second;
+    return didEmplace ? ELdestControl( cet::exempt_ptr<ELdestination>( iterToIDdestPair->second.get() ) ) : ELdestControl();
   }
 
+  const std::map<std::string,std::unique_ptr<ELdestination>> & sinks();
   bool getELdestControl ( const ELstring & name, ELdestControl & theControl );
 
   // ---  handle severity information:
@@ -160,7 +164,6 @@ protected:
   ELcontextSupplier           & context() const;
   const ELseverityLevel       & abortThreshold() const;
   const ELseverityLevel       &  exitThreshold() const;
-  std::list<std::unique_ptr<ELdestination>>  & sinks();
   const ELseverityLevel       & highSeverity() const;
   int                           severityCounts( int lev ) const;
 
@@ -204,7 +207,7 @@ private:
   ELstring                   application_;
   long                       pid_;
 
-  std::map < ELstring, std::unique_ptr<ELdestination> > attachedDestinations;
+  std::map <std::string,std::unique_ptr<ELdestination>> attachedDestinations;
 
 };  // ELadministrator
 

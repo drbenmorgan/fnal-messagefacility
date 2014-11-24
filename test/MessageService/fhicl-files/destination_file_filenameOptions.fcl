@@ -7,11 +7,11 @@ process_name: TestFileDest_FilenameOptions
 message : {
    destinations : { 
 
-      // log_filenameOption1 : { 
-      //    type      : file  
-      //    output    : "outputFileName1"  # this destination currently 
-      //    threshold : "!!"               # throws since 'filename' is required         
-      // }
+      log_filenameOption1 : { 
+         type      : file  
+         output    : "outputFileName1"  # this destination currently 
+         threshold : "!!"               # throws since 'filename' is required         
+      }
 
       log_filenameOption2 : { 
          type      : file  

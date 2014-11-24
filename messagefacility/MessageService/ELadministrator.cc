@@ -263,7 +263,7 @@ const ELseverityLevel & ELadministrator::exitThreshold() const  {
   return exitThreshold_;
 }
 
-std::list<std::unique_ptr<ELdestination>> & ELadministrator::sinks()  { return sinks_; }
+  const std::map<std::string,std::unique_ptr<ELdestination>>& ELadministrator::sinks()  { return attachedDestinations; }
 
 
 const ELseverityLevel & ELadministrator::highSeverity() const  {
@@ -331,15 +331,15 @@ void ELadministrator::finishMsg()  {
   if ( sinks().begin() == sinks().end() )  {                   // $$ JV:1
     std::cerr << "\nERROR LOGGED WITHOUT DESTINATION!\n";
     std::cerr << "Attaching destination \"cerr\" to ELadministrator by default\n\n";
-    this->sinks().emplace_back( std::make_unique<ELostreamOutput>(cerr) );
+    attachedDestinations.emplace( "cerr", std::make_unique<ELostreamOutput>(cerr) );
   }
 
-  for ( auto& d : sinks() ) {
+  for ( const auto& d : sinks() ) {
 #ifdef ELadTRACE_FINISH
     std::cerr << "  =:=:=: log(msg) for a destination number "
               << ++destCounter << " called ... \n";
 #endif
-    d->log( msg );
+    d.second->log( msg );
 #ifdef ELadTRACE_FINISH
     std::cerr << "  =:=:=: log(msg) for a destination successful \n";
 #endif
@@ -368,14 +368,14 @@ void ELadministrator::clearMsg()  {
 
 void ELadministrator::setThresholds( const ELseverityLevel & sev )  {
 
-  for( auto & d : sinks() ) d->threshold = sev;
+  for( const auto & d : sinks() ) d.second->threshold = sev;
 
 }  // setThresholds()
 
 
 void ELadministrator::setLimits( const ELstring & id, int limit )  {
 
-  for( auto & d : sinks() ) d->stats.limits.setLimit( id, limit );
+  for( const auto & d : sinks() ) d.second->stats.limits.setLimit( id, limit );
 
 }  // setLimits()
 
@@ -383,47 +383,47 @@ void ELadministrator::setLimits( const ELstring & id, int limit )  {
 void ELadministrator::setIntervals
                         ( const ELseverityLevel & sev, int interval )  {
 
-  for( auto & d : sinks() ) d->stats.limits.setInterval( sev, interval );
+  for( const auto & d : sinks() ) d.second->stats.limits.setInterval( sev, interval );
 
 }  // setIntervals()
 
 void ELadministrator::setIntervals( const ELstring & id, int interval )  {
 
-  for( auto & d : sinks() ) d->stats.limits.setInterval( id, interval );
+  for( const auto & d : sinks() ) d.second->stats.limits.setInterval( id, interval );
 
 }  // setIntervals()
 
 
 void ELadministrator::setLimits( const ELseverityLevel & sev, int limit )  {
 
-  for( auto & d : sinks() ) d->stats.limits.setLimit( sev, limit );
+  for( const auto & d : sinks() ) d.second->stats.limits.setLimit( sev, limit );
 
 }  // setLimits()
 
 
 void ELadministrator::setTimespans( const ELstring & id, int seconds )  {
 
-  for ( auto & d : sinks() ) d->stats.limits.setTimespan( id, seconds );
+  for ( const auto & d : sinks() ) d.second->stats.limits.setTimespan( id, seconds );
 
 }  // setTimespans()
 
 
 void ELadministrator::setTimespans( const ELseverityLevel & sev, int seconds )  {
 
-  for ( auto & d: sinks() ) d->stats.limits.setTimespan( sev, seconds );
+  for ( const auto & d: sinks() ) d.second->stats.limits.setTimespan( sev, seconds );
 
 }  // setTimespans()
 
 
 void ELadministrator::wipe()  {
 
-  for ( auto & d : sinks() ) d->stats.limits.wipe();
+  for ( const auto & d : sinks() ) d.second->stats.limits.wipe();
 
 }  // wipe()
 
 void ELadministrator::finish()  {
 
-  for ( auto & d : sinks() ) d->finish();
+  for ( const auto & d : sinks() ) d.second->finish();
 
 }  // wipe()
 
@@ -618,7 +618,7 @@ ELadministrator::~ELadministrator()  {
 
   finishMsg();
 
-  sinks().clear();
+  attachedDestinations.clear();
 
 }  // ~ELadministrator()
 

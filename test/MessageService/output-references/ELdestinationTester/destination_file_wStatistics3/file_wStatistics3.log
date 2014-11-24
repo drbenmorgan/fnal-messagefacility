@@ -61,6 +61,28 @@ Warning information.
 %MSG-i catInfo:  MFTest {Timestamp} pro-event 
 Info information.
 %MSG
+TimeReport> Report activated
+TimeReport> Report columns headings for events: eventnum runnum timetaken
+TimeReport> Report columns headings for modules: eventnum runnum modulelabel modulename timetaken
+TimeReport> Time report complete in 0.0402123 seconds
+ Time Summary: 
+ Min: 303
+ Max: 5555
+ Avg: 4000
+
+TimeEvent> run: 1   subRun: 2    event: 456 0.0440404
+TimeModule> run: 1   subRun: 2    event: 456 someString module1 0.04404
+TimeReport> Report activated
+TimeReport> Report columns headings for events: eventnum runnum timetaken
+TimeReport> Report columns headings for modules: eventnum runnum modulelabel modulename timetaken
+TimeReport> Time report complete in 0.0402123 seconds
+ Time Summary: 
+ Min: 303
+ Max: 5555
+ Avg: 4000
+
+TimeEvent> run: 1   subRun: 2    event: 456 0.0440404
+TimeModule> run: 1   subRun: 2    event: 456 someString module5 0.04404
 
 =============================================
 
@@ -76,6 +98,12 @@ Process ELdestinationTester
     5 catError             -e MFTest                                 5        5
     6 err1                 -e MFTest                                 1        1
     7 err2                 -e MFTest                                 1        1
+    8 TimeEvent            -s module1                                1        1
+    9 TimeEvent            -s module5                                1        1
+   10 TimeModule           -s module1                                1        1
+   11 TimeModule           -s module5                                1        1
+   12 TimeReport           -s module1                                2        2
+   13 TimeReport           -s module5                                2        2
 
  type    category    Examples: run/evt        run/evt          run/evt
  ---- -------------------- ---------------- ---------------- ----------------
@@ -86,12 +114,19 @@ Process ELdestinationTester
     5 catError             pro-event        pro-event        pro-event
     6 err1                 pre-event                         
     7 err2                 pre-event                         
+    8 TimeEvent            postEventProcess                  
+    9 TimeEvent            postEventProcess                  
+   10 TimeModule           postModule                        
+   11 TimeModule           postModule                        
+   12 TimeReport           postBeginJob     postEndJob       
+   13 TimeReport           postBeginJob     postEndJob       
 
 Severity    # Occurrences   Total Occurrences
 --------    -------------   -----------------
 Info                    5                   5
 Warning                 9                   9
 Error                   7                   7
-%MSG-i info:  MFTest {Timestamp} pro-event 
+System                  8                   8
+%MSG-i info:  module5 {Timestamp} postModule 
  vint contains: 1, 2, 5, 89, 3
 %MSG

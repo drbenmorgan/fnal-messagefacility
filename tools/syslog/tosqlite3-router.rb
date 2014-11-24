@@ -182,15 +182,7 @@ ARGF.each do |l|
       )" )
       
       db.execute( "INSERT INTO UserMessages(HeaderId, Message) VALUES( ?,? )",
-                  [ hid, 
-                    message.sub(%r{^\#012},"") # Beginning of user
-                                               # message begins with a
-                                               # newline ("#012"
-                                               # according to syslog).
-                                               # So let's strip it for
-                                               # now and fix the C++
-                                               # code later.
-                  ] ) 
+                  [ hid, message ] ) 
     end
 
   rescue SQLite3::Exception => e

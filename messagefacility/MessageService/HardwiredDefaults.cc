@@ -65,6 +65,7 @@ hardwireGridJobMode()
   destination.clear();
   { Destination cerr;                     // PSet cerr
     cerr.threshold = "INFO";              // string threshold = "INFO"
+    cerr.output    = "cerr";              // string output = "cerr"
     Category INFO_limits;                 // PSet INFO = { ... }
       INFO_limits.limit = 0;              // int32 limit = 0
       cerr.sev["INFO"] = INFO_limits;

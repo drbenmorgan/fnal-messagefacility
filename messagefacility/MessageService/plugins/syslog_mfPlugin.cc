@@ -30,9 +30,10 @@ namespace mfplugins {
 
     ELsyslog();
 
-    virtual void fillPrefix( std::ostringstream&,const ErrorObj& ) override;
-    virtual void fillSuffix( std::ostringstream&,const ErrorObj& ) override {}
-    virtual void routePayload( const std::ostringstream&, const ErrorObj&) override;
+    virtual void fillPrefix  (       std::ostringstream&, const ErrorObj& ) override;
+    virtual void fillUsrMsg  (       std::ostringstream&, const ErrorObj& ) override;
+    virtual void fillSuffix  (       std::ostringstream&, const ErrorObj& ) override {}
+    virtual void routePayload( const std::ostringstream&, const ErrorObj& ) override;
 
   private:
     int syslogLevel( const ELseverityLevel & elsev );
@@ -72,18 +73,30 @@ namespace mfplugins {
   }
 
   //======================================================================
-  // Message router ( overriddes ELdestination::routePayload )
+  // Message filler ( overriddes ELdestination::fillUsrMsg )
   //======================================================================
+  void ELsyslog::fillUsrMsg( std::ostringstream& oss,const ErrorObj & msg ) {
 
-  void ELsyslog::routePayload( const std::ostringstream& oss, const ErrorObj& msg) {
-    const int severity = syslogLevel( msg.xid().severity );
-    syslog( severity, oss.str().data() );
+    std::ostringstream tmposs;
+    ELdestination::fillUsrMsg( tmposs, msg );
+
+    // remove leading " \n" if present
+    const std::string& usrMsg = !tmposs.str().compare(0,2," \n") ? tmposs.str().erase(0,2) : tmposs.str();
+
+    oss << usrMsg;
   }
 
   //======================================================================
-  // Private function to ELsyslog
+  // Message router ( overriddes ELdestination::routePayload )
   //======================================================================
+  void ELsyslog::routePayload( const std::ostringstream& oss, const ErrorObj& msg) {
 
+    const int severity = syslogLevel( msg.xid().severity );
+    syslog( severity, oss.str().data() );
+
+  }
+
+  //======================================================================
   int ELsyslog::syslogLevel( const ELseverityLevel& severity ) {
 
     //  Following syslog levels not used:

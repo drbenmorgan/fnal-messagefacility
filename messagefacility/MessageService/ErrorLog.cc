@@ -159,7 +159,7 @@ void ErrorLog::setSubroutine( const ELstring & subName )  {
 
 void ErrorLog::switchChannel( const ELstring & channelName ) {
 
-  for ( auto & d : a->sinks() ) d->switchChannel( channelName );
+  for ( const auto & d : a->sinks() ) d.second->switchChannel( channelName );
 
 }
 
@@ -230,11 +230,11 @@ ErrorLog & ErrorLog::operator()( mf::ErrorObj & msg )  {
     std::cerr << "\nERROR LOGGED WITHOUT DESTINATION!\n";
     std::cerr << "Attaching destination \"cerr\" to ELadministrator by default\n"
               << std::endl;
-    a->attach( std::make_unique<ELostreamOutput>(std::cerr) );
+    a->attach( "cerr", std::make_unique<ELostreamOutput>(std::cerr) );
   }
 
-  for ( auto & d : a->sinks() ) {
-    d->log( msg );
+  for ( const auto & d : a->sinks() ) {
+    d.second->log( msg );
   }
 
   possiblyAbOrEx ( msg.xid().severity.getLevel(),

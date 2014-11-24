@@ -4,33 +4,22 @@
 #
 # ======================================================================
 
-set ( TEST_LIST
- destination_cerr
- destination_cerr_wStatistics
- destination_cout
- destination_file
- destination_file_categories
- destination_file_duplicateDest
- destination_file_filenameOptions
- destination_file_lineLength
- destination_file_noLineBreaks
- destination_file_noTimeStamps
- destination_file_placeholder
- destination_file_threshold
- destination_file_useMilliseconds
- destination_file_wStatistics1
- destination_file_wStatistics2
- destination_file_wStatistics3
- destination_syslog
- fwkJobReports
- statistics
- )
+# Get all FHiCL files
+FILE (GLOB testConfigFiles fhicl-files/*.fcl )
+
+# Exclude the following *.fcl files
+# LIST ( REMOVE_ITEM testConfigFiles )
 
 cet_test_env(CLEAR "FHICL_FILE_PATH=${CMAKE_CURRENT_SOURCE_DIR}")
 
-foreach ( test ${TEST_LIST} )
-  cet_test( messagefacility_${test}_t HANDBUILT
+foreach ( filename ${testConfigFiles} )
+
+  # trim directory prefixes and .fcl suffix
+  string( REGEX REPLACE "(.*/fhicl-files/)(.*)(.fcl)" "\\2" testname ${filename} )
+
+  cet_test( messagefacility_${testname}_t HANDBUILT
     TEST_EXEC ELdestinationTester
-    TEST_ARGS fhicl-files/${test}.fcl
+    TEST_ARGS ${filename}
     )
+
 endforeach()

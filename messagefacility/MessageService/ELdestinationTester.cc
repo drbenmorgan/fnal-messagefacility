@@ -25,6 +25,44 @@ void anotherLogger()
   return;
 }
 
+void runModule( const std::string& modulename ) {
+  mf::SetModuleName(modulename);
+
+  // Post begin job
+  mf::SetContext("postBeginJob");
+  mf::LogAbsolute("TimeReport")
+    << "TimeReport> Report activated\n"
+    "TimeReport> Report columns headings for events: "
+    "eventnum runnum timetaken\n"
+    "TimeReport> Report columns headings for modules: "
+    "eventnum runnum modulelabel modulename timetaken";
+
+  // Post end job
+  mf::SetContext("postEndJob");
+  mf::LogAbsolute("TimeReport")                            // Changelog 1
+    << "TimeReport> Time report complete in "
+    << 0.0402123 << " seconds\n"
+    << " Time Summary: \n"
+    << " Min: " << 303  << "\n"
+    << " Max: " << 5555 << "\n"
+    << " Avg: " << 4000 << "\n";
+
+  // Post event processing
+  mf::SetContext("postEventProcessing");
+  mf::LogAbsolute("TimeEvent")
+    << "TimeEvent> "
+    << "run: 1   subRun: 2    event: 456 " << .0440404;
+
+  // Post Module
+  mf::SetContext("postModule");
+  mf::LogAbsolute("TimeModule")
+    << "TimeModule> "
+    << "run: 1   subRun: 2    event: 456 "
+    << "someString "
+    << modulename << " "
+    << 0.04404;
+}
+
 int main(int, char* argv[])
 {
 
@@ -53,10 +91,20 @@ int main(int, char* argv[])
   }
 
   // Start MessageFacility Service
-  mf::StartMessageFacility(
-                           mf::MessageFacilityService::MultiThread,
-                           main_pset.get<fhicl::ParameterSet>("message")
-                           );
+  try {
+    mf::StartMessageFacility(
+                             mf::MessageFacilityService::MultiThread,
+                             main_pset.get<fhicl::ParameterSet>("message")
+                             );
+  }
+  catch ( mf::Exception& e ) {
+    std::cerr << e.what() << std::endl;
+    return 0;
+  }
+  catch ( ... ) {
+    std::cerr << "Caught unknown exception from mf::StartMessageFacility" << std::endl;
+    return 8003;
+  }
 
   // Set module name for the main thread
   mf::SetApplicationName("MessageFacility");
@@ -107,6 +155,9 @@ int main(int, char* argv[])
 
   // Thread join
   //loggerThread.join();
+
+  runModule("module1");
+  runModule("module5");
 
   mf::LogStatistics();
 

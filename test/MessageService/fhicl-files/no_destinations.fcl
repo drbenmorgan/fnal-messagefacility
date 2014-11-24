@@ -1,0 +1,5 @@
+process_name: TestNoDestinations
+
+message : {
+   destinations : {}
+}

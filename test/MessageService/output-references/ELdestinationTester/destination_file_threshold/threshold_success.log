@@ -25,7 +25,7 @@ Warning information.
 %MSG-i catInfo:  MFTest {Timestamp} pro-event 
 Info information.
 %MSG
-%MSG-d debug:  MFTest {Timestamp} pro-event ELdestinationTester.cc:103
+%MSG-d debug:  MFTest {Timestamp} pro-event ELdestinationTester.cc:151
 
 %MSG
 %MSG-e catError:  MFTest {Timestamp} pro-event 
@@ -37,7 +37,7 @@ Warning information.
 %MSG-i catInfo:  MFTest {Timestamp} pro-event 
 Info information.
 %MSG
-%MSG-d debug:  MFTest {Timestamp} pro-event ELdestinationTester.cc:103
+%MSG-d debug:  MFTest {Timestamp} pro-event ELdestinationTester.cc:151
 
 %MSG
 %MSG-e catError:  MFTest {Timestamp} pro-event 
@@ -49,7 +49,7 @@ Warning information.
 %MSG-i catInfo:  MFTest {Timestamp} pro-event 
 Info information.
 %MSG
-%MSG-d debug:  MFTest {Timestamp} pro-event ELdestinationTester.cc:103
+%MSG-d debug:  MFTest {Timestamp} pro-event ELdestinationTester.cc:151
 
 %MSG
 %MSG-e catError:  MFTest {Timestamp} pro-event 
@@ -61,7 +61,7 @@ Warning information.
 %MSG-i catInfo:  MFTest {Timestamp} pro-event 
 Info information.
 %MSG
-%MSG-d debug:  MFTest {Timestamp} pro-event ELdestinationTester.cc:103
+%MSG-d debug:  MFTest {Timestamp} pro-event ELdestinationTester.cc:151
 
 %MSG
 %MSG-e catError:  MFTest {Timestamp} pro-event 
@@ -73,9 +73,31 @@ Warning information.
 %MSG-i catInfo:  MFTest {Timestamp} pro-event 
 Info information.
 %MSG
-%MSG-d debug:  MFTest {Timestamp} pro-event ELdestinationTester.cc:103
+%MSG-d debug:  MFTest {Timestamp} pro-event ELdestinationTester.cc:151
 
 %MSG
-%MSG-i info:  MFTest {Timestamp} pro-event 
+TimeReport> Report activated
+TimeReport> Report columns headings for events: eventnum runnum timetaken
+TimeReport> Report columns headings for modules: eventnum runnum modulelabel modulename timetaken
+TimeReport> Time report complete in 0.0402123 seconds
+ Time Summary: 
+ Min: 303
+ Max: 5555
+ Avg: 4000
+
+TimeEvent> run: 1   subRun: 2    event: 456 0.0440404
+TimeModule> run: 1   subRun: 2    event: 456 someString module1 0.04404
+TimeReport> Report activated
+TimeReport> Report columns headings for events: eventnum runnum timetaken
+TimeReport> Report columns headings for modules: eventnum runnum modulelabel modulename timetaken
+TimeReport> Time report complete in 0.0402123 seconds
+ Time Summary: 
+ Min: 303
+ Max: 5555
+ Avg: 4000
+
+TimeEvent> run: 1   subRun: 2    event: 456 0.0440404
+TimeModule> run: 1   subRun: 2    event: 456 someString module5 0.04404
+%MSG-i info:  module5 {Timestamp} postModule 
  vint contains: 1, 2, 5, 89, 3
 %MSG

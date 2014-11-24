@@ -83,8 +83,6 @@ namespace mf {
       std::shared_ptr<ErrorLog>           errorlog_p;
       MsgContext                          msg_context;
       std::shared_ptr<PSet>               job_pset_p;
-      std::map<String,ELdestControl>      destIdControlMap;
-      std::vector<ELdestControl>          statisticsDestControls;
       std::string                         jobReportOption;
       bool                                clean_slate_configuration;
       MessageLoggerDefaults               messageLoggerDefaults;
@@ -107,7 +105,8 @@ namespace mf {
       String createId( std::set<std::string>& existing_ids,
                        const std::string& type,
                        const std::string& filename,
-                       const fhicl::ParameterSet& pset = fhicl::ParameterSet() );
+                       const fhicl::ParameterSet& pset = fhicl::ParameterSet(),
+                       const bool should_throw = true );
 
       bool duplicateDestination( const std::string& output_id,
                                  const config_type config,

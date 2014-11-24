@@ -21,3 +21,10 @@ Discussions are required to determine a test methodology for this
 package going forward, including unit, integration and regression tests.
 
 2010/11/10 CG.
+
+* All Python-based tests in test/MessageService have been removed in
+  favor of FHiCL-based tests.  The .fcl files are now in
+  test/MessageService/fhicl-files and the reference files these
+  configurations produce are in test/MessageService/output-references.
+
+2014/11/24 KK.

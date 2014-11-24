@@ -324,11 +324,11 @@ void ELtsErrorLog::dispatch ( mf::ErrorObj & msg )  {
     std::cerr << "\nERROR LOGGED WITHOUT DESTINATION!\n";
     std::cerr << "Attaching destination \"cerr\" to ELadministrator by default\n"
               << std::endl;
-    a->attach( std::make_unique<ELostreamOutput>(std::cerr) );
+    a->attach( "cerr", std::make_unique<ELostreamOutput>(std::cerr) );
   }
 
   for ( auto & d : a->sinks() ) {
-    d->log( msg );
+    d.second->log( msg );
   }
 
   if ( msg.xid().severity.getLevel() >= a->abortThreshold().getLevel()
