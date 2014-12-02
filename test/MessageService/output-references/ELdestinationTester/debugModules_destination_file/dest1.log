@@ -25,14 +25,8 @@ Warning information.
 %MSG-i catInfo:  MFTest {Timestamp} pro-event 
 Info information.
 %MSG
-%MSG-e catError:  MFTest {Timestamp} pro-event 
-Error information.
-%MSG
-%MSG-w catWarning:  MFTest {Timestamp} pro-event 
-Warning information.
-%MSG
-%MSG-i catInfo:  MFTest {Timestamp} pro-event 
-Info information.
+%MSG-d debug:  MFTest {Timestamp} pro-event ELdestinationTester.cc:151
+DEBUG information.
 %MSG
 %MSG-e catError:  MFTest {Timestamp} pro-event 
 Error information.
@@ -43,14 +37,8 @@ Warning information.
 %MSG-i catInfo:  MFTest {Timestamp} pro-event 
 Info information.
 %MSG
-%MSG-e catError:  MFTest {Timestamp} pro-event 
-Error information.
-%MSG
-%MSG-w catWarning:  MFTest {Timestamp} pro-event 
-Warning information.
-%MSG
-%MSG-i catInfo:  MFTest {Timestamp} pro-event 
-Info information.
+%MSG-d debug:  MFTest {Timestamp} pro-event ELdestinationTester.cc:151
+DEBUG information.
 %MSG
 %MSG-e catError:  MFTest {Timestamp} pro-event 
 Error information.
@@ -61,6 +49,38 @@ Warning information.
 %MSG-i catInfo:  MFTest {Timestamp} pro-event 
 Info information.
 %MSG
+%MSG-d debug:  MFTest {Timestamp} pro-event ELdestinationTester.cc:151
+DEBUG information.
+%MSG
+%MSG-e catError:  MFTest {Timestamp} pro-event 
+Error information.
+%MSG
+%MSG-w catWarning:  MFTest {Timestamp} pro-event 
+Warning information.
+%MSG
+%MSG-i catInfo:  MFTest {Timestamp} pro-event 
+Info information.
+%MSG
+%MSG-d debug:  MFTest {Timestamp} pro-event ELdestinationTester.cc:151
+DEBUG information.
+%MSG
+%MSG-e catError:  MFTest {Timestamp} pro-event 
+Error information.
+%MSG
+%MSG-w catWarning:  MFTest {Timestamp} pro-event 
+Warning information.
+%MSG
+%MSG-i catInfo:  MFTest {Timestamp} pro-event 
+Info information.
+%MSG
+%MSG-d debug:  MFTest {Timestamp} pro-event ELdestinationTester.cc:151
+DEBUG information.
+%MSG
+%MSG-d debug2:  MFTest {Timestamp} pro-event ELdestinationTester.cc:162
+first line.
+second line.
+%MSG
+clever way to ensure persistence of temporary object
 TimeReport> Report activated
 TimeReport> Report columns headings for events: eventnum runnum timetaken
 TimeReport> Report columns headings for modules: eventnum runnum modulelabel modulename timetaken

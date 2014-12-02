@@ -7,13 +7,6 @@
 #include <iostream>
 #endif
 
-// Change log
-//
-//  1  mf 8/25/08       keeping the error summary information for
-//                      LoggedErrorsSummary()
-//
-
-
 using namespace mf;
 
 bool MessageSender::errorSummaryIsBeingKept = false;            // change log 1
@@ -24,17 +17,7 @@ MessageSender::MessageSender( ELseverityLevel const & sev,
                               ELstring const & id,
                               bool verbatim )
 : errorobj_p( new ErrorObj(sev,id,verbatim) )
-{
-  //std::cout << "MessageSender ctor; new ErrorObj at: " << errorobj_p << '\n';
-}
-
-MessageSender::MessageSender( ELseverityLevel const & sev,
-                              ELstring const & id )
-: errorobj_p( new ErrorObj(sev,id,false) )
-{
-  //std::cout << "MessageSender ctor; new ErrorObj at: " << errorobj_p << '\n';
-}
-
+{}
 
 // This destructor must not be permitted to throw. A
 // boost::thread_resoruce_error is thrown at static destruction time,
@@ -43,8 +26,6 @@ MessageSender::~MessageSender()
 {
   try
     {
-      // std::cout << "MessageSender dtor; ErrorObj at: " << errorobj_p << '\n';
-
       // surrender ownership of our ErrorObj, transferring ownership
       // (via the intermediate MessageLoggerQ) to the MessageLoggerScribe
       // that will (a) route the message text to its destination(s)

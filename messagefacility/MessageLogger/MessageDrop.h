@@ -1,91 +1,46 @@
 #ifndef MessageLogger_MessageDrop_h
 #define MessageLogger_MessageDrop_h
 
-// -*- C++ -*-
-//
-// Package:     MessageLogger
-// Class  :     MessageDrop
-//
-/**\class MessageDrop MessageDrop.h
-
- Description: <one line class summary>
-
- Usage:
-    <usage>
-
-*/
-
-//
-// Original Author:  M. Fischler and Jim Kowalkowski
-//         Created:  Tues Feb 14 16:38:19 CST 2006
-// $Id: MessageDrop.h,v 1.11 2008/06/20 20:55:46 fischler Exp $
-//
-
-// Framework include files
-
-#include "messagefacility/Utilities/exception.h"        // change log 4
-
-
-// system include files
+#include "messagefacility/Utilities/exception.h"
 
 #include <string>
 
-// Change log
-//
-//  1  mf 5/12/06       initialize debugEnabled to true, to avoid unitialized
-//                      data detection in memory checks (and to be safe in
-//                      getting enabled output independant of timings)
-//
-//  4  mf 2/22/07       static ex_p to have a way to convey exceptions to throw
-//                      (this is needed when configuring could lead to an
-//                      exception, for example)
-//
-//  5  mf 2/22/07       jobreport_name to have a way to convey content
-//                      of jobreport option from cmsRun to MessageLogger class
-//
-//  6  mf 6/18/07       jobMode to have a way to convey choice of hardwired
-//                      MessageLogger defaults
-//
-//  7  mf 6/20/08       MessageLoggerScribeIsRunning to let the scribe convey
-//                      that it is active.
-//
-//  8  kjk 9/25/14      Disable copy/move functions
-
-// user include files
-
 namespace mf {
 
-struct MessageDrop {
-private:
-  MessageDrop()
-  : moduleName ("")
-  , runEvent("MF-online")
-  , jobreport_name()                                    // change log 5
-  , jobMode("")                                         // change log 6
-  , debugEnabled(true)                                  // change log 1
-  , infoEnabled(true)                                   // change log 3
-  , warningEnabled(true)                                // change log 3
-  {  }
-public:
-  static MessageDrop * instance ();
-  std::string moduleName;
-  std::string runEvent;
-  std::string jobreport_name;                           // change log 5
-  std::string jobMode;                                  // change log 6
-  bool debugEnabled;
-  bool infoEnabled;
-  bool warningEnabled;
-  static unsigned char messageLoggerScribeIsRunning;    // change log 7
-  static mf::Exception * ex_p;                          // change log 4
+  struct MessageDrop {
+  private:
+    MessageDrop()
+      : moduleName ("")
+      , runEvent("MF-online")
+      , jobreport_name()
+      , jobMode("")
+      , debugEnabled(true)
+      , infoEnabled(true)
+      , warningEnabled(true)
+    {}
 
-  // Disable copy/move
-  MessageDrop ( const MessageDrop&  ) = delete;         
-  MessageDrop (       MessageDrop&& ) = delete;         
-  MessageDrop& operator = ( const MessageDrop&  ) = delete;
-  MessageDrop& operator = (       MessageDrop&& ) = delete;
-};
+  public:
+    static MessageDrop * instance ();
+    std::string moduleName;
+    std::string runEvent;
+    std::string jobreport_name;
+    std::string jobMode;
 
-static const unsigned char  MLSCRIBE_RUNNING_INDICATOR = 29; // change log 7
+    bool debugEnabled;
+    bool infoEnabled;
+    bool warningEnabled;
+
+    static unsigned char messageLoggerScribeIsRunning;
+    static mf::Exception * ex_p;
+
+    // Disable copy/move
+    MessageDrop ( const MessageDrop&  ) = delete;
+    MessageDrop (       MessageDrop&& ) = delete;
+    MessageDrop& operator = ( const MessageDrop&  ) = delete;
+    MessageDrop& operator = (       MessageDrop&& ) = delete;
+  };
+
+  static const unsigned char  MLSCRIBE_RUNNING_INDICATOR = 29;
 
 } // end of namespace mf
 

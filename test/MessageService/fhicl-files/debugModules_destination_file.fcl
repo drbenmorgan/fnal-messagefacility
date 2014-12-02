@@ -9,6 +9,7 @@ message : {
 
          type     : file
          filename : "dest1.log"
+         threshold: "ZERO"
 
       }
       

@@ -149,8 +149,18 @@ int main(int, char* argv[])
     mf::LogWarning("catWarning") << "Warning information.";
     mf::LogInfo("catInfo")       << "Info information.";
     LOG_DEBUG("debug")           << "DEBUG information.";
-
     //sleep(1);
+  }
+
+  // Test move operations
+  {
+    // normal macro
+    auto logPROBLEM = LOG_PROBLEM("problem");
+    logPROBLEM << "clever way to ensure persistence of temporary object";
+
+    // macro w/ternary operator
+    auto log = LOG_DEBUG("debug2") << "first line.\n";
+    log << "second line.";
   }
 
   // Thread join

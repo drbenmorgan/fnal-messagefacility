@@ -61,6 +61,7 @@ Warning information.
 %MSG-i catInfo:  MFTest {Timestamp} pro-event 
 Info information.
 %MSG
+clever way to ensure persistence of temporary object
 TimeReport> Report activated
 TimeReport> Report columns headings for events: eventnum runnum timetaken
 TimeReport> Report columns headings for modules: eventnum runnum modulelabel modulename timetaken
