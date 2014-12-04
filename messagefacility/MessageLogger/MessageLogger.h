@@ -7,23 +7,21 @@
 //
 // ======================================================================
 
+#include <memory>
+#include <ostream>
+#include <string>
+
 #ifndef __GCCXML__
 #include <mutex>
 #endif
-#include "cpp0x/memory"
-#include "cpp0x/string"
-#include "fhiclcpp/ParameterSet.h"
+
 #include "messagefacility/MessageLogger/ELseverityLevel.h"
-#include "messagefacility/MessageLogger/ErrorObj.h"
 #include "messagefacility/MessageLogger/MessageDrop.h"
-#include "messagefacility/MessageLogger/MessageLoggerQ.h"
 #include "messagefacility/MessageLogger/MessageSender.h"
 #include "messagefacility/MessageService/MessageLogger.h"
 #include "messagefacility/MessageService/Presence.h"
-#include "messagefacility/Utilities/exception.h"
-#include <iostream>
-#include <ostream>
-#include <sstream>
+
+#include "fhiclcpp/ParameterSet.h"
 
 namespace mf  {
 
@@ -65,6 +63,8 @@ namespace mf  {
   class MessageFacilityService;
 
   void LogStatistics( );
+
+  class ErrorObj;
   void LogErrorObj(ErrorObj * eo_p);
 
   bool isDebugEnabled( );
@@ -108,8 +108,7 @@ namespace mf {
         *this << " "
               << detail::stripLeadingDirectoryTree(file)
               << ":"
-              << line
-              << "\n";
+              << line;
       }
     }
 

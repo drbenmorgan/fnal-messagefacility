@@ -61,7 +61,7 @@ namespace mf {
 
       ELdestination() : ELdestination( fhicl::ParameterSet() ) {}
 
-      virtual ~ELdestination();
+      virtual ~ELdestination(){}
 
       // -----  Methods invoked by the ELadministrator:
       //
@@ -132,7 +132,6 @@ namespace mf {
       MsgFormatSettings format;
 
       ELseverityLevel threshold;
-      ELseverityLevel traceThreshold;
       ELstring        preamble;
       ELstring        newline;
       ELstring        indent;

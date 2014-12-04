@@ -55,12 +55,6 @@ namespace mf {
     }
 
 
-    ELdestControl & ELdestControl::setTraceThreshold( const ELseverityLevel & sv )  {
-      if (d) d->traceThreshold = sv;
-      return  * this;
-    }
-
-
     ELdestControl & ELdestControl::setLimit( const ELstring & s, int n )  {
       if (d) d->stats.limits.setLimit( s, n );
       return  * this;

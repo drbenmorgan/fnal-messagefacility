@@ -204,16 +204,8 @@ namespace mf {
 
       // DO NOT provide time stamp; it would duplicate server's stamp!
 
-      // Provide traceback information:
-      //
-      if ( msg.xid().severity >= traceThreshold )  {
-        emit( ELstring("\n")
-              + ELadministrator::instance()->getContextSupplier().traceRoutine()
-              , true );
-      }
-      else  {                                        //else statement added JV:1
-        emit( "", true );
-      }
+      emit( "", true );
+
 #ifdef ELcollectedTRACE_LOG
       std::cout << "    =:=:=: Trace routine done: \n";
 #endif

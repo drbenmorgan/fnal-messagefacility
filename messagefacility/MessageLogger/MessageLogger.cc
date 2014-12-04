@@ -4,16 +4,17 @@
 //
 // ======================================================================
 
-#include "messagefacility/MessageLogger/MessageLogger.h"
-
 #include "cetlib/filepath_maker.h"
-#include "cetlib/make_unique.h"
-#include "fhiclcpp/make_ParameterSet.h"
-#include "messagefacility/MessageLogger/MessageDrop.h"
+
+#include "messagefacility/MessageLogger/MessageLogger.h"
+#include "messagefacility/MessageLogger/MessageLoggerQ.h"
 #include "messagefacility/MessageService/ELadministrator.h"
 #include "messagefacility/MessageService/MessageServicePresence.h"
+#include "messagefacility/Utilities/exception.h"
 
-#include <memory>
+#include "fhiclcpp/make_ParameterSet.h"
+
+#include <iostream>
 #include <sstream>
 
 namespace mf {
@@ -101,7 +102,7 @@ namespace mf {
       }
 
     std::string fname;
-    auto policy_ptr = cet::make_unique<cet::filepath_maker>();
+    auto policy_ptr = std::make_unique<cet::filepath_maker>();
 
     if (sub_start==0)  // env embedded in the filename
       {

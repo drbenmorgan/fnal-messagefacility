@@ -14,10 +14,6 @@
 #include <iostream>
 #include <iomanip>
 
-// Possible Traces:
-// #define ELdestination_CONSTRUCTOR_TRACE
-// #define ELdestination_EMIT_TRACE
-
 std::string const
 cet::PluginTypeDeducer<mf::service::ELdestination>::
 value = "ELdestination";
@@ -38,11 +34,11 @@ namespace mf {
 
     }
 
+    //=============================================================================
     ELdestination::ELdestination( const fhicl::ParameterSet& pset )
       : stats         ( pset )
       , format        ( pset.get<fhicl::ParameterSet>( "format", fhicl::ParameterSet() ) )
       , threshold     ( ELzeroSeverity    )
-      , traceThreshold( ELhighestSeverity )
       , preamble      ( "%MSG"            )
       , newline       ( "\n"              )
       , indent        ( "      "          )
@@ -53,32 +49,12 @@ namespace mf {
       , respondToMostModules (false)
       , ignoreThese()
       , userWantsStats( pset.get<bool>("outputStatistics",false) )
-    {
-
-#ifdef ELdestination_CONSTRUCTOR_TRACE
-      std::cerr << "Constructor for ELdestination\n";
-#endif
-
-    }  // ELdestination()
-
-
-    ELdestination::~ELdestination()  {
-
-#ifdef ELdestination_CONSTRUCTOR_TRACE
-      std::cerr << "Destructor for ELdestination\n";
-#endif
-
-    }  // ~ELdestination()
+    {}
 
     //=============================================================================
     void ELdestination::emit( std::ostream& os,
                               const ELstring & s,
                               const bool nl )  {
-
-#ifdef ELdestination_EMIT_TRACE
-      std::cerr << "[][][] in emit:  s.length() " << s.length() << '\n';
-      std::cerr << "[][][] in emit:  lineLength is " << lineLength << '\n';
-#endif
 
       if (s.length() == 0)  {
         if ( nl )  {
@@ -103,9 +79,7 @@ namespace mf {
         //Accounts for newline @ the beginning of the ELstring     JV:2
         if ( first == '\n'
              || (charsOnLine + static_cast<int>(s.length())) > lineLength )  {
-#ifdef ELdestination_EMIT_TRACE
-          std::cerr << "[][][] in emit: about to << to os \n";
-#endif
+
 #ifdef HEADERS_BROKEN_INTO_LINES_AND_INDENTED
           // Change log 3: Removed this code 6/11/07 mf
           os << newline << indent;
@@ -125,9 +99,6 @@ namespace mf {
           }
         }
         else  {
-#ifdef ELdestination_EMIT_TRACE
-          std::cerr << "[][][] in emit: about to << s to os: " << s << " \n";
-#endif
           os << s;
         }
 
@@ -146,10 +117,6 @@ namespace mf {
         os << s;
       }
 
-#ifdef ELdestination_EMIT_TRACE
-      std::cerr << "[][][] in emit: completed \n";
-#endif
-
     }  // emit()
 
     //=============================================================================
@@ -166,9 +133,6 @@ namespace mf {
     //=============================================================================
     bool ELdestination::passLogMsgThreshold( const mf::ErrorObj & msg ) {
 
-#ifdef ELoutputTRACE_LOG
-      std::cerr << "    =:=:=: Log to an ELoutput \n";
-#endif
       auto xid = msg.xid();      // Save the xid.
 
       // See if this message is to be acted upon, and add it to limits table
@@ -178,9 +142,6 @@ namespace mf {
       if ( xid.severity < ELsevere && thisShouldBeIgnored(xid.module) ) return false;
       if ( xid.severity < ELsevere && !stats.limits.add( xid ) ) return false;
 
-#ifdef ELoutputTRACE_LOG
-      std::cerr << "    =:=:=: Limits table work done \n";
-#endif
       return true;
     }
 
@@ -203,9 +164,6 @@ namespace mf {
         emit( oss, ": " );
       }
 
-#ifdef ELoutputTRACE_LOG
-      std::cerr << "    =:=:=: Prologue done \n";
-#endif
       // Output serial number of message:
       //
       if  ( !msg.is_verbatim()  )
@@ -217,19 +175,6 @@ namespace mf {
           }
         }
 
-#ifdef OUTPUT_FORMATTED_ERROR_MESSAGES
-      // Output each item in the message (before the epilogue):
-      //
-      if ( format.want( TEXT ) )  {
-        ELlist_string::const_iterator it;
-        for ( it = msg.items().begin();  it != msg.items().end();  ++it )  {
-#ifdef ELoutputTRACE_LOG
-          std::cerr << "      =:=:=: Item:  " << *it << '\n';
-#endif
-          emit( oss, *it );
-        }
-      }
-#endif
       // Provide further identification:
       //
       bool needAspace = true;
@@ -255,10 +200,6 @@ namespace mf {
           }
         }
 
-#ifdef ELoutputTRACE_LOG
-      std::cerr << "    =:=:=: Module and Subroutine done \n";
-#endif
-
       // Provide time stamp:
       //
       if  ( !msg.is_verbatim() )
@@ -273,62 +214,20 @@ namespace mf {
           }
         }
 
-#ifdef ELoutputTRACE_LOG
-      std::cerr << "    =:=:=: TimeStamp done \n";
-#endif
-
       // Provide the context information:
       //
+
       if  ( !msg.is_verbatim() )
         {
           if ( format.want( SOME_CONTEXT ) ) {
             if (needAspace) { emit( oss,ELstring(" ")); needAspace = false; }
-#ifdef ELoutputTRACE_LOG
-            std::cerr << "    =:=:=:>> context supplier is at 0x"
-                      << std::hex
-                      << &ELadministrator::instance()->getContextSupplier() << '\n';
-            std::cerr << "    =:=:=:>> context is --- "
-                      << ELadministrator::instance()->getContextSupplier().context()
-                      << '\n';
-#endif
             if ( format.want( FULL_CONTEXT ) )  {
               emit( oss, ELadministrator::instance()->getContextSupplier().fullContext());
-#ifdef ELoutputTRACE_LOG
-              std::cerr << "    =:=:=: fullContext done: \n";
-#endif
             } else  {
               emit( oss, ELadministrator::instance()->getContextSupplier().context());
-#ifdef ELoutputTRACE_LOG
-              std::cerr << "    =:=:=: Context done: \n";
-#endif
             }
           }
         }
-
-      // Provide traceback information:
-      //
-
-      format.insertNewlineAfterHeader = (
-                                         (msg.xid().severity != ELsuccess)
-                                         && (msg.xid().severity != ELinfo   )
-                                         && (msg.xid().severity != ELwarning)
-                                         && (msg.xid().severity != ELerror  ) );
-      // ELsuccess is what LogDebug issues
-
-      if  ( !msg.is_verbatim() )
-        {
-          if ( msg.xid().severity >= traceThreshold )  {
-            emit( oss, ELstring("\n")
-                  + ELadministrator::instance()->getContextSupplier().traceRoutine()
-                  , format.insertNewlineAfterHeader );
-          }
-          else  {                                        //else statement added JV:1
-            emit( oss, "", format.insertNewlineAfterHeader);
-          }
-        }
-#ifdef ELoutputTRACE_LOG
-      std::cerr << "    =:=:=: Trace routine done: \n";
-#endif
 
     }
 
@@ -336,47 +235,46 @@ namespace mf {
     void ELdestination::fillUsrMsg ( std::ostringstream& oss,
                                      const mf::ErrorObj& msg){
 
-#ifndef OUTPUT_FORMATTED_ERROR_MESSAGES
-
       format.preambleMode = false;
       if ( format.want( TEXT ) )  {
-        ELlist_string::const_iterator it;
-        int item_count = 0;
-        for ( it = msg.items().begin();  it != msg.items().end();  ++it )  {
-#ifdef ELoutputTRACE_LOG
-          std::cerr << "      =:=:=: Item:" << *it << '\n';
-#endif
-          ++item_count;
-          if  ( !msg.is_verbatim() ) {
-            if (item_count==2) {
-              if (!(*it).compare("--")) {
-                ++it; ++it; ++it; item_count+=3;
-                if (!format.insertNewlineAfterHeader) emit( oss, "", true);
-                continue;
-              }
+
+        const auto usrMsgStart = std::next( msg.items().cbegin(), 4);
+        auto it = msg.items().cbegin();
+
+        // Determine if file and line should be included
+        if  ( !msg.is_verbatim() ) {
+
+          // The first four items are { " ", "<FILENAME>", ":", "<LINE>" }
+          while ( it != usrMsgStart ) {
+            if ( !it->compare(" ") && !std::next(it)->compare("--") ) {
+              // Do not emit if " --:0" is the match
+              std::advance(it,4);
             }
-            if ( !format.insertNewlineAfterHeader && (item_count == 3) ) {
-              // in a LogDebug message, the first 3 items are FILE, :, and LINE
-              emit( oss, *it, true );
-            } else {
-              emit( oss, *it );
+            else {
+              // Emit if <FILENAME> and <LINE> are meaningful
+              emit( oss, *it++ );
             }
-          } else {
-            emit( oss, *it );
           }
+
+          // Check for user-requested line breaks
+          if ( format.want( NO_LINE_BREAKS ) ) emit ( oss, " ==> " );
+          else emit( oss, "", true );
         }
+
+        // For verbatim (and user-supplied) messages, just print the contents
+        for ( ;  it != msg.items().cend(); ++it )  {
+          emit( oss, *it );
+        }
+
       }
-#endif
+
     }
 
     //=============================================================================
     void ELdestination::fillSuffix( std::ostringstream& oss,
                                     const mf::ErrorObj& msg){
 
-      // And after the message, add a %MSG on its own line
-      // Change log 4  6/11/07 mf
-
-      if  ( !msg.is_verbatim() )
+      if  ( !msg.is_verbatim() && !format.want( NO_LINE_BREAKS ) )
         {
           emit (oss, "\n%MSG");
         }

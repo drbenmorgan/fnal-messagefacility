@@ -61,6 +61,9 @@ void runModule( const std::string& modulename ) {
     << "someString "
     << modulename << " "
     << 0.04404;
+
+  mf::LogSystem("system") << "This would be a major problem, I guess.";
+
 }
 
 int main(int, char* argv[])

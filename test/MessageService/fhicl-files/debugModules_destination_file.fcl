@@ -7,9 +7,20 @@ message : {
    destinations : { 
       dest1 : { 
 
-         type     : file
-         filename : "dest1.log"
-         threshold: "ZERO"
+         type         : file
+         filename     : "dest1.log"
+         threshold    : "ZERO"
+
+      }
+
+     dest2 : { 
+
+         type         : file
+         filename     : "dest2.log"
+         threshold    : "ZERO"
+         format : { 
+            noLineBreaks : true
+         }
 
       }
       

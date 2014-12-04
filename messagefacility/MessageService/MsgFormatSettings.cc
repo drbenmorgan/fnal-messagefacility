@@ -1,19 +1,20 @@
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageService/MsgFormatSettings.h"
+#include <iostream>
 
 namespace mf {
   namespace service {
 
     // Default c'tor
     MsgFormatSettings::MsgFormatSettings()
-      : preambleMode( default_preambleMode_    )
-      , insertNewlineAfterHeader( default_insertNewlineAfterHeader_ )
+      : preambleMode( default_preambleMode_ )
       , flags      ( default_flags_.to_string() )
     {}
 
     MsgFormatSettings::MsgFormatSettings( const fhicl::ParameterSet& pset ) : MsgFormatSettings()
     {
       bool value;
+      if (pset.get_if_present<bool>( "noLineBreaks"        , value ) ) flags.set(NO_LINE_BREAKS   , value );
       if (pset.get_if_present<bool>( "wantTimestamp"       , value ) ) flags.set(TIMESTAMP        , value );
       if (pset.get_if_present<bool>( "wantMillisecond"     , value ) ) flags.set(MILLISECOND      , value );
       if (pset.get_if_present<bool>( "wantModule"          , value ) ) flags.set(MODULE           , value );
@@ -28,11 +29,12 @@ namespace mf {
 
     // default formatting flags
 
-    const std::bitset<NFLAGS> MsgFormatSettings::default_flags_ { 0b1111'0000'111101 };
+    const std::bitset<NFLAGS> MsgFormatSettings::default_flags_ { 0b1111'0000'1111010 };
 
     // bits are given in reverse order of enum declaration, so that the
     // above corresponds to:
     //
+    //    noLineBreaks         :  false ( 0 )
     //    wantTimestamp        :  true  ( 1 )
     //    wantMillisecond      :  false ( 0 )
     //    wantModule           :  true  ( 1 )

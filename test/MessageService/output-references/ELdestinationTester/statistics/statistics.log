@@ -20,6 +20,8 @@ Process ELdestinationTester
    12 TimeModule           -s module5                                1        1
    13 TimeReport           -s module1                                2        2
    14 TimeReport           -s module5                                2        2
+   15 system               -s module1                                1        1
+   16 system               -s module5                                1        1
 
  type    category    Examples: run/evt        run/evt          run/evt
  ---- -------------------- ---------------- ---------------- ----------------
@@ -37,10 +39,12 @@ Process ELdestinationTester
    12 TimeModule           postModule                        
    13 TimeReport           postBeginJob     postEndJob       
    14 TimeReport           postBeginJob     postEndJob       
+   15 system               postModule                        
+   16 system               postModule                        
 
 Severity    # Occurrences   Total Occurrences
 --------    -------------   -----------------
 Info                    5                   5
 Warning                 9                   9
 Error                   8                   8
-System                  8                   8
+System                 10                  10

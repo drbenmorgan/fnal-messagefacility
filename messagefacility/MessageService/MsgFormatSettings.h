@@ -8,7 +8,8 @@ namespace fhicl { class ParameterSet; }
 namespace mf {
   namespace service {
 
-    enum flag_enum { TIMESTAMP,
+    enum flag_enum { NO_LINE_BREAKS,
+                     TIMESTAMP,
                      MILLISECOND,
                      MODULE,
                      SUBROUTINE,
@@ -31,14 +32,12 @@ namespace mf {
       void include (flag_enum FLAG) { flags.set(FLAG,true ); }
 
       bool preambleMode;
-      bool insertNewlineAfterHeader;
       std::bitset<NFLAGS> flags;
 
     private:
 
       // defaults
-      static const bool default_insertNewlineAfterHeader_ = false;
-      static const bool default_preambleMode_             = false;
+      static const bool default_preambleMode_ = false;
       static const std::bitset<NFLAGS> default_flags_;
 
     };
