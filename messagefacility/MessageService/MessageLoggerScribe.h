@@ -2,23 +2,20 @@
 #define MessageFacility_MessageService_MessageLoggerScribe_h
 
 #include "cetlib/BasicPluginFactory.h"
-#include "messagefacility/Utilities/exception.h"
+
+#include "fhiclcpp/ParameterSet.h"
 
 #include "messagefacility/MessageService/ELdestControl.h"
+#include "messagefacility/MessageService/ELdestConfigCheck.h"
 #include "messagefacility/MessageService/MsgContext.h"
 #include "messagefacility/MessageService/MessageLoggerDefaults.h"
 #include "messagefacility/MessageLogger/MessageLoggerQ.h"
 #include "messagefacility/MessageLogger/AbstractMLscribe.h"
 
-#include "fhiclcpp/ParameterSet.h"
-
-#include <memory>
-
 #include <iosfwd>
 #include <vector>
 #include <map>
-
-#include <iostream>
+#include <memory>
 
 namespace mf {
   namespace service {
@@ -31,8 +28,6 @@ namespace mf {
     {
     public:
       // ---  birth/death:
-
-      enum config_type { ORDINARY, STATISTICS, FWKJOBREPORT };
 
       /// --- If queue is NULL, this sets singleThread true
       explicit MessageLoggerScribe(std::shared_ptr<ThreadQueue> queue);
@@ -62,7 +57,7 @@ namespace mf {
 
       void  make_destinations( const fhicl::ParameterSet& dests,
                                const std::vector<std::string>& dest_list,
-                               const config_type config,
+                               const ELdestConfig::dest_config config,
                                const bool should_throw );
 
       void  configure_dest( ELdestControl& dest_ctrl,
@@ -99,9 +94,6 @@ namespace mf {
       vString fetch_ordinary_destinations   ( fhicl::ParameterSet& pset );
       vString fetch_statistics_destinations ( fhicl::ParameterSet& pset );
 
-      void checkType( const std::string& type,
-                      const config_type config );
-
       String createId( std::set<std::string>& existing_ids,
                        const std::string& type,
                        const std::string& filename,
@@ -109,7 +101,7 @@ namespace mf {
                        const bool should_throw = true );
 
       bool duplicateDestination( const std::string& output_id,
-                                 const config_type config,
+                                 const ELdestConfig::dest_config config,
                                  const bool should_throw );
 
       std::unique_ptr<ELdestination>  makePlugin_( cet::BasicPluginFactory& pluginFactory,

@@ -28,7 +28,7 @@ namespace mfplugins {
   class ELsyslog : public ELdestination {
   public:
 
-    ELsyslog();
+    ELsyslog( const fhicl::ParameterSet& pset );
 
     virtual void fillPrefix  (       std::ostringstream&, const ErrorObj& ) override;
     virtual void fillUsrMsg  (       std::ostringstream&, const ErrorObj& ) override;
@@ -49,8 +49,8 @@ namespace mfplugins {
   // ELsyslog c'tor
   //======================================================================
 
-  ELsyslog::ELsyslog()
-    : ELdestination()
+  ELsyslog::ELsyslog( const fhicl::ParameterSet& pset )
+    : ELdestination( pset )
   {
     openlog("MF",0,LOG_LOCAL0);
   }
@@ -134,9 +134,9 @@ namespace mfplugins {
 extern "C" {
 
   auto makePlugin( const std::string&,
-                   const fhicl::ParameterSet&) {
+                   const fhicl::ParameterSet& pset) {
 
-    return std::make_unique<mfplugins::ELsyslog>();
+    return std::make_unique<mfplugins::ELsyslog>( pset );
 
   }
 

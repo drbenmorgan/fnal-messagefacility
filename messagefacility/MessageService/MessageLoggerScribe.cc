@@ -4,32 +4,20 @@
 //
 // ----------------------------------------------------------------------
 
-#include "messagefacility/MessageService/MessageLoggerScribe.h"
-
-#include "cetlib/exempt_ptr.h"
-#include "cetlib/shlib_utils.h"
-#include "cetlib/container_algorithms.h"
-
 #include "messagefacility/MessageLogger/ConfigurationHandshake.h"
 #include "messagefacility/MessageLogger/ErrorObj.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
-#include "messagefacility/MessageLogger/MessageLoggerQ.h"
 #include "messagefacility/MessageService/ELadministrator.h"
 #include "messagefacility/MessageService/ELfwkJobReport.h"
 #include "messagefacility/MessageService/ELostreamOutput.h"
 #include "messagefacility/MessageService/ELstatistics.h"
 #include "messagefacility/MessageService/ErrorLog.h"
+#include "messagefacility/MessageService/MessageLoggerScribe.h"
 #include "messagefacility/MessageService/ThreadQueue.h"
 #include "messagefacility/Utilities/exception.h"
 
-#include "boost/scoped_ptr.hpp"
-
-#include <algorithm>
 #include <cassert>
-#include <fstream>
 #include <iostream>
-#include <signal.h>
-#include <string>
 
 namespace {
 
@@ -555,7 +543,7 @@ namespace mf {
           }
 
           const std::string outputId = createId( existing_ids, "file", actual_filename );
-          const bool   duplicateDest = duplicateDestination( outputId, FWKJOBREPORT, throw_on_clean_slate );
+          const bool   duplicateDest = duplicateDestination( outputId, ELdestConfig::FWKJOBREPORT, throw_on_clean_slate );
 
           // use already-specified configuration if destination exists
           if ( duplicateDest ) continue;
@@ -582,7 +570,7 @@ namespace mf {
 
       std::set<std::string> tmpIdSet;
       const std::string outputId = createId( tmpIdSet, "file", actual_filename );
-      const bool   duplicateDest = duplicateDestination( outputId, FWKJOBREPORT, no_throw_on_clean_slate );
+      const bool   duplicateDest = duplicateDestination( outputId, ELdestConfig::FWKJOBREPORT, no_throw_on_clean_slate );
 
       // use already-specified configuration if destination exists
       if ( duplicateDest ) return;
@@ -602,10 +590,10 @@ namespace mf {
       PSet origDests_pset = dests_pset;
 
       const vString ordinaryDestinations   = fetch_ordinary_destinations  ( dests_pset );
-      make_destinations( dests_pset, ordinaryDestinations  , ORDINARY  , no_throw_on_clean_slate );
+      make_destinations( dests_pset, ordinaryDestinations  , ELdestConfig::ORDINARY  , no_throw_on_clean_slate );
 
       const vString statisticsDestinations = fetch_statistics_destinations( origDests_pset );
-      make_destinations( origDests_pset, statisticsDestinations, STATISTICS, no_throw_on_clean_slate );
+      make_destinations( origDests_pset, statisticsDestinations, ELdestConfig::STATISTICS, no_throw_on_clean_slate );
 
     }
 
@@ -614,7 +602,7 @@ namespace mf {
     MessageLoggerScribe::
     make_destinations( const fhicl::ParameterSet& dests,
                        const std::vector<std::string>& dest_list,
-                       const config_type configuration,
+                       const ELdestConfig::dest_config configuration,
                        const bool should_throw ){
 
       std::set<std::string> ids;
@@ -630,9 +618,9 @@ namespace mf {
 
         // grab the destination type and filename
         const String dest_type = dest_pset.get<std::string>("type","file");
-        checkType( dest_type, configuration );
+        ELdestConfig::checkType( dest_type, configuration );
 
-        const bool throw_on_duplicate_id = configuration == STATISTICS ? true : false;
+        const bool throw_on_duplicate_id = configuration == ELdestConfig::STATISTICS ? true : false;
         const std::string outputId = createId( ids, dest_type, psetname, dest_pset, throw_on_duplicate_id );
 
         const bool   duplicateDest = duplicateDestination( outputId,
@@ -645,7 +633,7 @@ namespace mf {
         const std::string libspec = dest_type;
 
         auto& plugin_factory =
-          configuration == STATISTICS ?
+          configuration == ELdestConfig::STATISTICS ?
           pluginStatsFactory :
           pluginFactory;
 
@@ -661,7 +649,7 @@ namespace mf {
 
         // Suppress the desire to do an extra termination summary just because
         // of end-of-job info message for statistics jobs
-        if ( configuration == STATISTICS ) dest_ctrl.noTerminationSummary() ;
+        if ( configuration == ELdestConfig::STATISTICS ) dest_ctrl.noTerminationSummary() ;
 
       }
 
@@ -795,26 +783,6 @@ namespace mf {
     }
 
     //=============================================================================
-    void
-    MessageLoggerScribe::
-    checkType( const std::string& type,
-               const config_type configuration ) {
-
-      if ( configuration != STATISTICS ) return;
-
-      // Check for ostream-supported types for statistics
-      if ( !cet::search_all( std::set<std::string>{"cout","cerr","file"}, type ) ) {
-
-        throw mf::Exception ( mf::errors::Configuration )
-          <<"\n"
-          <<"Unsupported type [ " << type << " ] chosen for statistics printout.\n"
-          <<"Must choose ostream type: \"cout\", \"cerr\", or \"file\""
-          <<"\n";
-      }
-
-    }
-
-    //=============================================================================
     std::string
     MessageLoggerScribe::
     createId( std::set<std::string>& existing_ids,
@@ -854,13 +822,13 @@ namespace mf {
     bool
     MessageLoggerScribe::
     duplicateDestination( const std::string& output_id,
-                          const config_type configuration,
+                          const ELdestConfig::dest_config configuration,
                           const bool should_throw ) {
 
       std::string config_str;
-      if      ( configuration == FWKJOBREPORT ) config_str = "Framework Job Report";
-      else if ( configuration == ORDINARY     ) config_str = "MessageLogger";
-      else if ( configuration == STATISTICS   ) config_str = "MessageLogger Statistics";
+      if      ( configuration == ELdestConfig::FWKJOBREPORT ) config_str = "Framework Job Report";
+      else if ( configuration == ELdestConfig::ORDINARY     ) config_str = "MessageLogger";
+      else if ( configuration == ELdestConfig::STATISTICS   ) config_str = "MessageLogger Statistics";
 
       ELdestControl destControl;
       if ( !admin_p->getELdestControl( output_id, destControl ) ) return false;
@@ -882,7 +850,7 @@ namespace mf {
       // ELdestination.userWantsStats_ flag needs to be set to
       // 'true' so that statistics are output.
 
-      if ( configuration == STATISTICS ) {
+      if ( configuration == ELdestConfig::STATISTICS ) {
         destControl.userWantsStats();
         return true; // don't emit warning for statistics
       }

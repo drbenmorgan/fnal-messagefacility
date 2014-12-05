@@ -7,6 +7,7 @@
 #include "messagefacility/MessageService/ELadministrator.h"
 #include "messagefacility/MessageService/ELcontextSupplier.h"
 #include "messagefacility/MessageService/ELdestination.h"
+#include "messagefacility/MessageService/ELdestConfigCheck.h"
 #include "messagefacility/MessageService/ELdestControl.h"
 #include "messagefacility/Utilities/FormatTime.h"
 
@@ -49,7 +50,11 @@ namespace mf {
       , respondToMostModules (false)
       , ignoreThese()
       , userWantsStats( pset.get<bool>("outputStatistics",false) )
-    {}
+    {
+
+      if ( userWantsStats ) ELdestConfig::checkType( pset.get<std::string>("type","file"), ELdestConfig::STATISTICS );
+
+    }
 
     //=============================================================================
     void ELdestination::emit( std::ostream& os,
