@@ -99,6 +99,7 @@ namespace mf {
 
   public:
 
+    MaybeLogger_ (){}
     MaybeLogger_ ( const std::string& id, const std::string& file = "--", int line = 0 ) :
       msgSender_p ( detail::enabled<SEV>() ?
                     new MessageSender( ELseverityLevel::ELsev_(SEV), id, VERB ):
@@ -162,8 +163,8 @@ namespace mf {
   //  Specific type aliases for users
 
   namespace detail {
-    const bool AlwaysLogger      = false;
-    const bool ConditionalLogger = true;
+    constexpr bool AlwaysLogger      = false;
+    constexpr bool ConditionalLogger = true;
   }
 
   // Statements follow pattern:
@@ -215,12 +216,8 @@ namespace mf {
 #define LOG_DEBUG(id) true ? ::mf::NeverLogger_() : ::mf::NeverLogger_()
 #define LOG_TRACE(id) true ? ::mf::NeverLogger_() : ::mf::NeverLogger_()
 #else
-#define LOG_DEBUG(id)   ! ::mf::MessageDrop::instance()->debugEnabled   \
-  ? ::mf::LogDebug(id, __FILE__, __LINE__)                              \
-  : ::mf::LogDebug(id, __FILE__, __LINE__)
-#define LOG_TRACE(id)   ! ::mf::MessageDrop::instance()->debugEnabled   \
-  ? ::mf::LogTrace(id, __FILE__, __LINE__)                              \
-  : ::mf::LogTrace(id, __FILE__, __LINE__)
+#define LOG_DEBUG(id) !mf::MessageDrop::instance()->debugEnabled ? mf::LogDebug() : mf::LogDebug(id, __FILE__, __LINE__)
+#define LOG_TRACE(id) !mf::MessageDrop::instance()->debugEnabled ? mf::LogTrace() : mf::LogTrace(id, __FILE__, __LINE__)
 #endif
 #undef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
 
