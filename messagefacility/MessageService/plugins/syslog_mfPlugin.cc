@@ -5,7 +5,6 @@
 #include "messagefacility/MessageLogger/ELseverityLevel.h"
 #include "messagefacility/MessageLogger/MessageDrop.h"
 #include "messagefacility/Utilities/exception.h"
-#include "messagefacility/Utilities/FormatTime.h"
 
 // C/C++ includes
 #include <iostream>
@@ -61,15 +60,15 @@ namespace mfplugins {
   void ELsyslog::fillPrefix( std::ostringstream& oss,const ErrorObj & msg ) {
     const auto& xid = msg.xid();
 
-    oss << mf::formatTime( msg.timestamp(), format.want( mf::service::MILLISECOND) )+ELstring("|");  // timestamp
-    oss << xid.hostname+ELstring("|");                                 // host name
-    oss << xid.hostaddr+ELstring("|");                                 // host address
-    oss << xid.severity.getName()+ELstring("|");                       // severity
-    oss << xid.id+ELstring("|");                                       // category
-    oss << xid.application+ELstring("|");                              // application
-    oss << xid.pid<<ELstring("|");                                     // process id
-    oss << mf::MessageDrop::instance()->runEvent+ELstring("|");        // run/event no
-    oss << xid.module+ELstring("|");                                   // module name
+    oss << format.timestamp( msg.timestamp() )+ELstring("|");   // timestamp
+    oss << xid.hostname+ELstring("|");                          // host name
+    oss << xid.hostaddr+ELstring("|");                          // host address
+    oss << xid.severity.getName()+ELstring("|");                // severity
+    oss << xid.id+ELstring("|");                                // category
+    oss << xid.application+ELstring("|");                       // application
+    oss << xid.pid<<ELstring("|");                              // process id
+    oss << mf::MessageDrop::instance()->runEvent+ELstring("|"); // run/event no
+    oss << xid.module+ELstring("|");                            // module name
   }
 
   //======================================================================
@@ -80,8 +79,8 @@ namespace mfplugins {
     std::ostringstream tmposs;
     ELdestination::fillUsrMsg( tmposs, msg );
 
-    // remove leading " \n" if present
-    const std::string& usrMsg = !tmposs.str().compare(0,2," \n") ? tmposs.str().erase(0,2) : tmposs.str();
+    // remove leading "\n" if present
+    const std::string& usrMsg = !tmposs.str().compare(0,1,"\n") ? tmposs.str().erase(0,1) : tmposs.str();
 
     oss << usrMsg;
   }

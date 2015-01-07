@@ -9,7 +9,6 @@
 #include "messagefacility/MessageService/ELdestination.h"
 #include "messagefacility/MessageService/ELdestConfigCheck.h"
 #include "messagefacility/MessageService/ELdestControl.h"
-#include "messagefacility/Utilities/FormatTime.h"
 
 #include <fstream>
 #include <iostream>
@@ -215,7 +214,7 @@ namespace mf {
               needAspace = false;
             }
             if (needAspace) { emit( oss,ELstring(" ")); needAspace = false; }
-            emit( oss, mf::formatTime( msg.timestamp(), format.want( MILLISECOND ) ) + ELstring(" ") );
+            emit( oss, format.timestamp( msg.timestamp() ) + ELstring(" ") );
           }
         }
 

@@ -8,7 +8,7 @@
 #include "messagefacility/MessageService/ELostreamOutput.h"
 
 #include "messagefacility/MessageLogger/ErrorObj.h"
-#include "messagefacility/Utilities/FormatTime.h"
+#include "messagefacility/Utilities/formatTime.h"
 
 #include "messagefacility/Utilities/do_nothing_deleter.h"
 
@@ -120,8 +120,7 @@ namespace mf {
       if (emitAtStart) {
         timeval tv;
         gettimeofday(&tv, 0);
-        //emit( *os, formatTime(time(0)), true );
-        emit( *os, formatTime(tv, false), true );
+        emit( *os, mf::timestamp::legacy(tv), true );
         emit( *os, "\n=======================================================\n",
               true );
       }
@@ -203,8 +202,7 @@ namespace mf {
       gettimeofday(&tv, 0);
       emit( *os, "\n=======================================================", true );
       emit( *os, "\nError Log changed to this stream\n" );
-      //emit( *os, formatTime(time(0)), true );
-      emit( *os, formatTime(tv, false), true );
+      emit( *os, mf::timestamp::legacy(tv), true );
       emit( *os, "\n=======================================================\n", true );
     }
 
@@ -214,8 +212,7 @@ namespace mf {
       gettimeofday(&tv, 0);
       emit( *os, "\n=======================================================", true );
       emit( *os, "\nError Log changed to this file\n" );
-      //emit( *os, formatTime(time(0)), true );
-      emit( *os, formatTime(tv, false), true );
+      emit( *os, mf::timestamp::legacy(tv), true );
       emit( *os, "\n=======================================================\n", true );
     }
 

@@ -1,7 +1,9 @@
 #ifndef MessageFacility_MessageService_MsgFormatSettings_h
 #define MessageFacility_MessageService_MsgFormatSettings_h
 
+#include "messagefacility/Utilities/formatTime.h"
 #include <bitset>
+#include <functional>
 
 namespace fhicl { class ParameterSet; }
 
@@ -28,13 +30,22 @@ namespace mf {
 
       // accessors and modifiers
       bool want    (flag_enum FLAG) const { return flags.test(FLAG); }
+
       void suppress(flag_enum FLAG) { flags.set(FLAG,false); }
-      void include (flag_enum FLAG) { flags.set(FLAG,true ); }
+
+      void include (flag_enum FLAG) {
+        flags.set(FLAG,true );
+        if ( FLAG == MILLISECOND ) timeStamp_ = mf::timestamp::legacy_ms;
+      }
+
+      std::string timestamp(timeval const& t) { return timeStamp_(t); }
 
       bool preambleMode;
       std::bitset<NFLAGS> flags;
 
     private:
+
+      std::function<std::string(timeval const& t)> timeStamp_;
 
       // defaults
       static const bool default_preambleMode_ = false;

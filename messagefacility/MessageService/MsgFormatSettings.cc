@@ -8,23 +8,33 @@ namespace mf {
     // Default c'tor
     MsgFormatSettings::MsgFormatSettings()
       : preambleMode( default_preambleMode_ )
-      , flags      ( default_flags_.to_string() )
+      , flags       ( default_flags_.to_string() )
+      , timeStamp_  ( mf::timestamp::legacy )
     {}
 
     MsgFormatSettings::MsgFormatSettings( const fhicl::ParameterSet& pset ) : MsgFormatSettings()
     {
-      bool value;
-      if (pset.get_if_present<bool>( "noLineBreaks"        , value ) ) flags.set(NO_LINE_BREAKS   , value );
-      if (pset.get_if_present<bool>( "wantTimestamp"       , value ) ) flags.set(TIMESTAMP        , value );
-      if (pset.get_if_present<bool>( "wantMillisecond"     , value ) ) flags.set(MILLISECOND      , value );
-      if (pset.get_if_present<bool>( "wantModule"          , value ) ) flags.set(MODULE           , value );
-      if (pset.get_if_present<bool>( "wantSubroutine"      , value ) ) flags.set(SUBROUTINE       , value );
-      if (pset.get_if_present<bool>( "wantText"            , value ) ) flags.set(TEXT             , value );
-      if (pset.get_if_present<bool>( "wantSomeContext"     , value ) ) flags.set(SOME_CONTEXT     , value );
-      if (pset.get_if_present<bool>( "wantSerial"          , value ) ) flags.set(SERIAL           , value );
-      if (pset.get_if_present<bool>( "wantFullContext"     , value ) ) flags.set(FULL_CONTEXT     , value );
-      if (pset.get_if_present<bool>( "wantTimeSeparate"    , value ) ) flags.set(TIME_SEPARATE    , value );
-      if (pset.get_if_present<bool>( "wantEpilogueSeparate", value ) ) flags.set(EPILOGUE_SEPARATE, value );
+      std::string value;
+      if (pset.get_if_present<std::string>( "timestamp", value ) ) {
+        if      ( value == "none"      ) {
+          timeStamp_ = mf::timestamp::none;
+          flags.set(TIMESTAMP,false);
+        }
+        else if ( value == "default"    ) timeStamp_ = mf::timestamp::legacy   ;
+        else if ( value == "default_ms" ) timeStamp_ = mf::timestamp::legacy_ms;
+        else timeStamp_ = std::bind( mf::timestamp::user, std::placeholders::_1, value );
+      }
+      bool valueb;
+      if (pset.get_if_present<bool>( "noLineBreaks"        , valueb ) ) flags.set(NO_LINE_BREAKS   , valueb );
+      if (pset.get_if_present<bool>( "wantMillisecond"     , valueb ) ) flags.set(MILLISECOND      , valueb );
+      if (pset.get_if_present<bool>( "wantModule"          , valueb ) ) flags.set(MODULE           , valueb );
+      if (pset.get_if_present<bool>( "wantSubroutine"      , valueb ) ) flags.set(SUBROUTINE       , valueb );
+      if (pset.get_if_present<bool>( "wantText"            , valueb ) ) flags.set(TEXT             , valueb );
+      if (pset.get_if_present<bool>( "wantSomeContext"     , valueb ) ) flags.set(SOME_CONTEXT     , valueb );
+      if (pset.get_if_present<bool>( "wantSerial"          , valueb ) ) flags.set(SERIAL           , valueb );
+      if (pset.get_if_present<bool>( "wantFullContext"     , valueb ) ) flags.set(FULL_CONTEXT     , valueb );
+      if (pset.get_if_present<bool>( "wantTimeSeparate"    , valueb ) ) flags.set(TIME_SEPARATE    , valueb );
+      if (pset.get_if_present<bool>( "wantEpilogueSeparate", valueb ) ) flags.set(EPILOGUE_SEPARATE, valueb );
     }
 
     // default formatting flags
