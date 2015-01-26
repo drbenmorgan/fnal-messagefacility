@@ -6,7 +6,7 @@
 #
 
 cet_make( LIBRARY_NAME MF_Utilities
-          LIBRARIES ${CETLIB}
+          LIBRARIES cetlib
           ${Boost_FILESYSTEM_LIBRARY}
           ${Boost_REGEX_LIBRARY}
           ${Boost_SYSTEM_LIBRARY}

@@ -15,7 +15,7 @@ cet_make_library( LIBRARY_NAME MF_MessageLogger
                   SOURCE  ${MLsrcFiles} ${MSsrcFiles}
         	  LIBRARIES 
                   MF_Utilities 
-                  ${FHICLCPP} 
+                  fhiclcpp
                   ${Boost_THREAD_LIBRARY} )
 
 # install files
