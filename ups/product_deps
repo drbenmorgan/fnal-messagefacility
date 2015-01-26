@@ -6,7 +6,7 @@ fcldir -
 # define product/version pairs
 product		version
 fhiclcpp 	v3_02_00
-cetbuildtools	v4_04_00	-	only_for_build
+cetbuildtools	v4_05_00	-	only_for_build
 end_product_list
 
 
