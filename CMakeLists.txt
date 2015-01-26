@@ -41,6 +41,7 @@ cet_report_compiler_flags()
 # find_ups_product defines variables for external libraries and executables
 find_ups_product( cetbuildtools v3_02_00 )
 find_ups_product( fhiclcpp v2_17_00  )
+find_ups_boost(v1_50_0)
 
 # The environment has been established, now generate the Makefiles.
 
