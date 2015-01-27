@@ -120,7 +120,6 @@ namespace mf {
     MaybeLogger_&  operator= ( MaybeLogger_ const & ) = delete;
     MaybeLogger_&  operator= ( MaybeLogger_ && )      = delete;
 
-    // &-qualified ostream operators
     template< class T >
     decltype(auto) operator << ( T const & t )
     {
