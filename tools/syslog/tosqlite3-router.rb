@@ -56,7 +56,7 @@ ARGF.each do |l|
       )" )
       
     db.execute( "INSERT INTO UserMessages(HeaderId, Message) VALUES( ?,? )",
-                [ hid, message ] ) 
+                [ hid, message.gsub(%r{\#012},"\n") ] )
     
   rescue SQLite3::Exception => e
     errOutput = File.open( "/var/log/local0/err.log","a+")
