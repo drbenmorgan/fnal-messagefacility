@@ -46,6 +46,7 @@ find_ups_boost(v1_50_0)
 # The environment has been established, now generate the Makefiles.
 
 add_subdirectory(messagefacility)
+add_subdirectory(perllib)
 add_subdirectory(test)
 add_subdirectory(xcompile)
 add_subdirectory(ups)
