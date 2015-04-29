@@ -1,2 +1,3 @@
 
-install_perllib( SUBDIRS CetSkelPlugins )
+add_subdirectory(CetSkelPlugins)
+
