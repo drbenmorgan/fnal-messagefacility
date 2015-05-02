@@ -8,9 +8,9 @@ package CetSkelPlugins::ELdestination;
 
 use vars qw(@ISA);
 
-eval "use CetSkel::messagefacility::PluginVersionInfo";
+eval "use CetSkelPlugins::messagefacility::PluginVersionInfo";
 unless ($@) {
-  push @ISA, "CetSkel::messagefacility::PluginVersionInfo";
+  push @ISA, "CetSkelPlugins::messagefacility::PluginVersionInfo";
 }
 
 sub new {
