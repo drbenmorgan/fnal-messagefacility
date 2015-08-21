@@ -7,7 +7,7 @@ perllib  product_dir
 # define product/version pairs
 product		version
 fhiclcpp 	v3_09_00
-cetbuildtools	v4_12_05	-	only_for_build
+cetbuildtools	v4_13_00	-	only_for_build
 end_product_list
 
 
