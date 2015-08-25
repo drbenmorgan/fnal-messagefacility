@@ -334,7 +334,7 @@ namespace mf {
       PSet cats_pset = dest_pset.get<fhicl::ParameterSet>("categories", empty_PSet);
 
       // grab list of categories
-      vString  categories  = cats_pset.get_pset_keys();
+      vString  categories  = cats_pset.get_pset_names();
       vString::iterator it = categories.begin();
       while(it!=categories.end()) {
         if(*it == "default") it=categories.erase(it);
@@ -728,7 +728,7 @@ namespace mf {
     MessageLoggerScribe::
     fetch_ordinary_destinations( fhicl::ParameterSet& dests ) {
 
-      const vString keyList = dests.get_pset_keys();
+      const vString keyList = dests.get_pset_names();
 
       vString destinations;
       std::copy_if( keyList.begin(), keyList.end(), std::back_inserter( destinations ),
@@ -760,13 +760,13 @@ namespace mf {
 
       auto ordinaryDests = dests;
       dests              = ordinaryDests.get<fhicl::ParameterSet>("statistics", fhicl::ParameterSet() );
-      vString statsDests = dests.get_pset_keys();
+      vString statsDests = dests.get_pset_names();
 
       // Read the list of statistics destinations from hardwired
       // defaults, but only if there is also no list of ordinary
       // destinations.  (If a FHiCL file specifies destinations, and
       // no statistics, assume that is what the user wants.)
-      if ( statsDests.empty() && ordinaryDests.get_pset_keys().empty() ) {
+      if ( statsDests.empty() && ordinaryDests.get_pset_names().empty() ) {
 
         statsDests = messageLoggerDefaults.statistics;
 
