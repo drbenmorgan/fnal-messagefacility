@@ -10,8 +10,6 @@
 #include "messagefacility/MessageLogger/ErrorObj.h"
 #include "messagefacility/Utilities/formatTime.h"
 
-#include "messagefacility/Utilities/do_nothing_deleter.h"
-
 // Possible Traces:
 // #define ELostreamOutputCONSTRUCTOR_TRACE
 // #define ELostreamOutputTRACE_LOG
@@ -31,25 +29,25 @@ namespace mf {
 
     ELostreamOutput::ELostreamOutput( const fhicl::ParameterSet& pset )
       : ELdestination( pset )
-      , os           ( &std::cerr, do_nothing_deleter() )
-      , xid          ()
+      , osh( std::make_unique<cet::ostream_observer>(std::cerr) )
+      , xid()
     {
 
 #ifdef ELostreamOutputCONSTRUCTOR_TRACE
       std::cerr << "Constructor for ELostreamOutput()\n";
 #endif
 
-      emit( *os, "\n=================================================", true );
-      emit( *os, "\nMessage Log File written by MessageLogger service \n" );
-      emit( *os, "\n=================================================\n", true );
+      emit(osh->stream(), "\n=================================================", true );
+      emit(osh->stream(), "\nMessage Log File written by MessageLogger service \n" );
+      emit(osh->stream(), "\n=================================================\n", true );
 
     }  // ELostreamOutput()
 
     ELostreamOutput::ELostreamOutput( const fhicl::ParameterSet& pset,
                                       std::ostream & os_ , bool emitAtStart )
       : ELdestination( pset )
-      , os           ( &os_, do_nothing_deleter() )
-      , xid          ()
+      , osh( std::make_unique<cet::ostream_observer>(os_) )
+      , xid()
     {
 
 #ifdef ELostreamOutputCONSTRUCTOR_TRACE
@@ -60,9 +58,9 @@ namespace mf {
       if (emitAtStart) {
         bool tprm = format.preambleMode;
         format.preambleMode = true;
-        emit( *os, "\n=================================================", true );
-        emit( *os, "\nMessage Log File written by MessageLogger service \n" );
-        emit( *os, "\n=================================================\n", true );
+        emit(osh->stream(), "\n=================================================", true );
+        emit(osh->stream(), "\nMessage Log File written by MessageLogger service \n" );
+        emit(osh->stream(), "\n=================================================\n", true );
         format.preambleMode = tprm;
       }
 
@@ -72,10 +70,8 @@ namespace mf {
     ELostreamOutput::ELostreamOutput( const fhicl::ParameterSet& pset,
                                       const ELstring & fileName, const bool append, bool emitAtStart )
       : ELdestination( pset )
-      , os           ( new std::ofstream( fileName.c_str() ,
-                                          append ? std::ios::app : std::ios::trunc ),
-                       close_and_delete())
-      , xid          ()
+      , osh( std::make_unique<cet::ostream_owner>(fileName.c_str(), append ? std::ios::app : std::ios::trunc) )
+      , xid()
     {
 
 #ifdef ELostreamOutputCONSTRUCTOR_TRACE
@@ -84,7 +80,7 @@ namespace mf {
 
       bool tprm = format.preambleMode;
       format.preambleMode = true;
-      if ( os && *os )  {
+      if ( osh && osh->stream() )  {
 #ifdef ELostreamOutputCONSTRUCTOR_TRACE
         std::cerr << "          Testing if os is owned\n";
 #endif
@@ -93,35 +89,33 @@ namespace mf {
 #endif
         // Enh 001 2/13/01 mf
         if (emitAtStart) {
-          emit( *os, "\n=======================================================",
-                true );
-          emit( *os, "\nError Log File " );
-          emit( *os, fileName );
-          emit( *os, " \n" );
+          emit( osh->stream(), "\n=======================================================", true );
+          emit( osh->stream(), "\nError Log File " );
+          emit( osh->stream(), fileName );
+          emit( osh->stream(), " \n" );
         }
       }
       else  {
 #ifdef ELostreamOutputCONSTRUCTOR_TRACE
         std::cerr << "          Deleting os\n";
 #endif
-        os.reset(&std::cerr, do_nothing_deleter());
+        osh = std::make_unique<cet::ostream_observer>(std::cerr);
 #ifdef ELostreamOutputCONSTRUCTOR_TRACE
         std::cerr << "          about to emit to cerr\n";
 #endif
         if (emitAtStart) {
-          emit( *os, "\n=======================================================",
-                true );
-          emit( *os, "\n%MSG** Logging to cerr is being substituted" );
-          emit( *os, " for specified log file \"" );
-          emit( *os, fileName  );
-          emit( *os, "\" which could not be opened for write or append.\n" );
+          emit(osh->stream(), "\n=======================================================", true );
+          emit(osh->stream(), "\n%MSG** Logging to cerr is being substituted" );
+          emit(osh->stream(), " for specified log file \"" );
+          emit(osh->stream(), fileName  );
+          emit(osh->stream(), "\" which could not be opened for write or append.\n" );
         }
       }
       if (emitAtStart) {
         timeval tv;
         gettimeofday(&tv, 0);
-        emit( *os, mf::timestamp::legacy(tv), true );
-        emit( *os, "\n=======================================================\n",
+        emit(osh->stream(), mf::timestamp::legacy(tv), true );
+        emit(osh->stream(), "\n=======================================================\n",
               true );
       }
       format.preambleMode = tprm;
@@ -149,7 +143,7 @@ namespace mf {
     void ELostreamOutput::routePayload( const std::ostringstream& oss,
                                         const mf::ErrorObj& ) {
 
-      *os << oss.str();
+      *osh << oss.str();
       flush();
 
 #ifdef ELostreamOutputTRACE_LOG
@@ -173,21 +167,21 @@ namespace mf {
       ELstring title( fullTitle, 0, titleMaxLength );
       int q = (lineLength - title.length() - 2) / 2;
       ELstring line(q, '=');
-      emit( *os, "", true );
-      emit( *os, line );
-      emit( *os, " " );
-      emit( *os, title );
-      emit( *os, " " );
-      emit( *os, line, true );
+      emit(osh->stream(), "", true );
+      emit(osh->stream(), line );
+      emit(osh->stream(), " " );
+      emit(osh->stream(), title );
+      emit(osh->stream(), " " );
+      emit(osh->stream(), line, true );
 
       // body:
       //
-      (*os) << sumLines;
+      *osh << sumLines;
 
       // finish:
       //
-      emit( *os, "", true );
-      emit( *os, ELstring(lineLength, '='), true );
+      emit(osh->stream(), "", true );
+      emit(osh->stream(), ELstring(lineLength, '='), true );
 
     }  // summarization()
 
@@ -197,27 +191,27 @@ namespace mf {
     // ----------------------------------------------------------------------
 
     void ELostreamOutput::changeFile (std::ostream & os_) {
-      os.reset(&os_, do_nothing_deleter());
+      osh = std::make_unique<cet::ostream_observer>(os_);
       timeval tv;
       gettimeofday(&tv, 0);
-      emit( *os, "\n=======================================================", true );
-      emit( *os, "\nError Log changed to this stream\n" );
-      emit( *os, mf::timestamp::legacy(tv), true );
-      emit( *os, "\n=======================================================\n", true );
+      emit( osh->stream(), "\n=======================================================", true );
+      emit( osh->stream(), "\nError Log changed to this stream\n" );
+      emit( osh->stream(), mf::timestamp::legacy(tv), true );
+      emit( osh->stream(), "\n=======================================================\n", true );
     }
 
     void ELostreamOutput::changeFile (const ELstring & filename) {
-      os.reset(new std::ofstream( filename.c_str(), std::ios::app), close_and_delete());
+      osh = std::make_unique<cet::ostream_owner>(filename, std::ios::app);
       timeval tv;
       gettimeofday(&tv, 0);
-      emit( *os, "\n=======================================================", true );
-      emit( *os, "\nError Log changed to this file\n" );
-      emit( *os, mf::timestamp::legacy(tv), true );
-      emit( *os, "\n=======================================================\n", true );
+      emit( osh->stream(), "\n=======================================================", true );
+      emit( osh->stream(), "\nError Log changed to this file\n" );
+      emit( osh->stream(), mf::timestamp::legacy(tv), true );
+      emit( osh->stream(), "\n=======================================================\n", true );
     }
 
     void ELostreamOutput::flush()  {
-      os->flush();
+      osh->stream().flush();
     }
 
 

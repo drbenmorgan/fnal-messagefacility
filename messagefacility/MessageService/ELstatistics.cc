@@ -11,8 +11,6 @@
 
 #include "messagefacility/MessageLogger/ErrorObj.h"
 
-#include "messagefacility/Utilities/do_nothing_deleter.h"
-
 #include "fhiclcpp/ParameterSet.h"
 
 #include <fstream>
@@ -33,7 +31,7 @@ namespace mf {
 
     ELstatistics::ELstatistics( const fhicl::ParameterSet& pset, std::ostream & osp )
       : ELdestination( pset )
-      , termStream   ( &osp, do_nothing_deleter() )
+      , termStream   ( std::make_unique<cet::ostream_observer>(osp) )
     {
 #ifdef ELstatisticsCONSTRUCTOR_TRACE
       std::cerr << "Constructor for ELstatistics(pset,osp)\n";
@@ -54,8 +52,7 @@ namespace mf {
                                 const std::string& fileName,
                                 const bool append )
       : ELdestination     ( pset )
-      , termStream        ( new std::ofstream( fileName.c_str() ,append ? std::ios::app : std::ios::trunc ),
-                            close_and_delete() )
+      , termStream        ( std::make_unique<cet::ostream_owner>(fileName ,append ? std::ios::app : std::ios::trunc ) )
     {
 #ifdef ELstatisticsCONSTRUCTOR_TRACE
       std::cerr << "Constructor for ELstatistics(pset,filename,append)\n";
@@ -83,9 +80,9 @@ namespace mf {
 
     void  ELstatistics::summary( )  {
 
-      *termStream << "\n=============================================\n\n"
-                  << "MessageLogger Summary" << std::endl << stats.formSummary()
-                  << std::flush;
+      termStream->stream() << "\n=============================================\n\n"
+                           << "MessageLogger Summary" << std::endl << stats.formSummary()
+                           << std::flush;
       stats.updatedStats = false;
 
     }  // summary()

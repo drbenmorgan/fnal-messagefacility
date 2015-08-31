@@ -8,6 +8,7 @@
 //
 // ----------------------------------------------------------------------
 
+#include "cetlib/ostream_handle.h"
 #include "messagefacility/MessageLogger/ELstring.h"
 #include "messagefacility/MessageLogger/ELextendedID.h"
 #include "messagefacility/MessageService/ELdestination.h"
@@ -61,8 +62,8 @@ namespace mf {
 
       // --- member data:
       //
-      std::shared_ptr<std::ostream> os;
-      mf::ELextendedID              xid;
+      std::unique_ptr<cet::ostream_handle> osh;
+      mf::ELextendedID                     xid;
 
     };  // ELostreamOutput
 

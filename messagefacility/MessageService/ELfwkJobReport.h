@@ -1,25 +1,23 @@
 #ifndef MessageFacility_MessageService_ELfwkJobReport_h
 #define MessageFacility_MessageService_ELfwkJobReport_h
 
-
 // ----------------------------------------------------------------------
 //
-// ELfwkJobReport  is a subclass of ELdestination formating in a way
+// ELfwkJobReport  is a subclass of ELdestination formatting in a way
 //                 that is good for automated scanning.
 //
 // 1/10/06 mf, de  Created file.
 //
 // ----------------------------------------------------------------------
 
+#include "cetlib/ostream_handle.h"
 #include "messagefacility/MessageService/ELdestination.h"
-
-#include "messagefacility/MessageLogger/ELstring.h"
 #include "messagefacility/MessageLogger/ELextendedID.h"
+#include "messagefacility/MessageLogger/ELstring.h"
 
 #include <memory>
 
 namespace mf {
-
 
   // ----------------------------------------------------------------------
   // prerequisite classes:
@@ -74,7 +72,7 @@ namespace mf {
     protected:
       // --- member data:
       //
-      std::shared_ptr<std::ostream> os;
+      std::unique_ptr<cet::ostream_handle> osh;
       int                           charsOnLine;
       ELextendedID                  xid;
 

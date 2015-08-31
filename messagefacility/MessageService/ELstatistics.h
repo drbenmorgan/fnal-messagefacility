@@ -8,6 +8,7 @@
 //
 // ----------------------------------------------------------------------
 
+#include "cetlib/ostream_handle.h"
 #include "messagefacility/MessageService/ELdestination.h"
 
 #include "messagefacility/MessageLogger/ELextendedID.h"
@@ -87,7 +88,7 @@ namespace mf {
       // -----  Data affected by methods of specific ELdestControl handle:
       //
     protected:
-      std::shared_ptr<std::ostream> termStream;
+      std::unique_ptr<cet::ostream_handle> termStream;
 
       static std::set<std::string> groupedCategories;
 

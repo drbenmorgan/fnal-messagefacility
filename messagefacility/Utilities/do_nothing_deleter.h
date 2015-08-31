@@ -30,8 +30,12 @@
 //
 // ----------------------------------------------------------------------
 
+#define DIAGNOSTIC\
+  "\n\nmessagefacility warning: using 'mf::do_nothing_deleter' is no longer encouraged.\n" \
+  "                         Please consult the art team for guidance.\n\n"
+
 namespace mf {
-  struct do_nothing_deleter {
+  struct [[deprecated(DIAGNOSTIC)]] do_nothing_deleter {
     void operator()(void const*) const {}
   };
 }

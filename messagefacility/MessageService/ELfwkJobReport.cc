@@ -21,7 +21,6 @@
 
 #include "messagefacility/MessageService/ELfwkJobReport.h"
 #include "messagefacility/MessageLogger/ErrorObj.h"
-#include "messagefacility/Utilities/do_nothing_deleter.h"
 
 // Possible Traces:
 // #define ELfwkJobReportCONSTRUCTOR_TRACE
@@ -39,10 +38,10 @@ namespace mf {
     // ----------------------------------------------------------------------
 
     ELfwkJobReport::ELfwkJobReport()
-      : ELdestination       (  )
-      , os                  ( &std::cerr, do_nothing_deleter() )
-      , charsOnLine         ( 0          )
-      , xid                 (            )
+      : ELdestination( )
+      , osh          ( std::make_unique<cet::ostream_observer>(std::cerr) )
+      , charsOnLine  (0)
+      , xid          ( )
     {
 
 #ifdef ELfwkJobReportCONSTRUCTOR_TRACE
@@ -56,10 +55,10 @@ namespace mf {
 
 
     ELfwkJobReport::ELfwkJobReport( std::ostream & os_ , bool /*emitAtStart*/ )
-      : ELdestination       (     )
-      , os                  ( &os_, do_nothing_deleter() )
-      , charsOnLine         ( 0     )
-      , xid                 (       )
+      : ELdestination       ( )
+      , osh                 ( std::make_unique<cet::ostream_observer>(os_) )
+      , charsOnLine         (0)
+      , xid                 ( )
     {
 
 #ifdef ELfwkJobReportCONSTRUCTOR_TRACE
@@ -73,17 +72,17 @@ namespace mf {
 
 
     ELfwkJobReport::ELfwkJobReport( const ELstring & fileName, bool /*emitAtStart*/ )
-      : ELdestination       (  )
-      , os                  ( new std::ofstream( fileName.c_str() , std::ios::app), close_and_delete())
-      , charsOnLine         ( 0     )
-      , xid                 (       )
+      : ELdestination       ( )
+      , osh                 ( std::make_unique<cet::ostream_owner>(fileName, std::ios::app) )
+      , charsOnLine         (0)
+      , xid                 ( )
     {
 
 #ifdef ELfwkJobReportCONSTRUCTOR_TRACE
       std::cerr << "Constructor for ELfwkJobReport( " << fileName << " )\n";
 #endif
 
-      if ( os && *os )  {
+      if ( osh && osh->stream() )  {
 #ifdef ELfwkJobReportCONSTRUCTOR_TRACE
         std::cerr << "          Testing if os is owned\n";
 #endif
@@ -96,7 +95,7 @@ namespace mf {
 #ifdef ELfwkJobReportCONSTRUCTOR_TRACE
         std::cerr << "          Deleting os\n";
 #endif
-        os.reset(&std::cerr, do_nothing_deleter());
+        osh = std::make_unique<cet::ostream_observer>(std::cerr);
 #ifdef ELfwkJobReportCONSTRUCTOR_TRACE
         std::cerr << "          about to emit to cerr\n";
 #endif
@@ -213,7 +212,7 @@ namespace mf {
 
     void ELfwkJobReport::finish()   {
       // closing xml tag
-      (*os) << "</FrameworkJobReport>\n";
+      *osh << "</FrameworkJobReport>\n";
     }
 
     // Remainder are from base class.
@@ -236,10 +235,10 @@ namespace mf {
       }
 
 #ifdef ELfwkJobReport_EMIT_TRACE
-      std::cerr << "[][][] in emit: about to << s to *os: " << s << " \n";
+      std::cerr << "[][][] in emit: about to << s to *osh: " << s << " \n";
 #endif
 
-      (*os) << s;
+      *osh << s;
 
 #ifdef ELfwkJobReport_EMIT_TRACE
       std::cerr << "[][][] in emit: completed \n";
@@ -252,10 +251,8 @@ namespace mf {
     // Summary output:
     // ----------------------------------------------------------------------
 
-    void ELfwkJobReport::summarization(
-                                       const ELstring & fullTitle
-                                       , const ELstring & sumLines
-                                       )  {
+    void ELfwkJobReport::summarization( const ELstring & fullTitle,
+                                        const ELstring & sumLines ) {
       const int titleMaxLength( 40 );
 
       // title:
@@ -272,7 +269,7 @@ namespace mf {
 
       // body:
       //
-      *os << sumLines;
+      *osh << sumLines;
 
       // finish:
       //
@@ -287,21 +284,21 @@ namespace mf {
     // ----------------------------------------------------------------------
 
     void ELfwkJobReport::changeFile (std::ostream & os_) {
-      os.reset(&os_, do_nothing_deleter());
+      osh = std::make_unique<cet::ostream_observer>(os_);
       emit( "\n=======================================================", true );
       emit( "\nError Log changed to this stream\n" );
       emit( "\n=======================================================\n", true );
     }
 
     void ELfwkJobReport::changeFile (const ELstring & filename) {
-      os.reset(new std::ofstream( filename.c_str(), std::ios/*_base*/::app ), close_and_delete());
+      osh = std::make_unique<cet::ostream_owner>(filename, std::ios/*_base*/::app);
       emit( "\n=======================================================", true );
       emit( "\nError Log changed to this file\n" );
       emit( "\n=======================================================\n", true );
     }
 
     void ELfwkJobReport::flush()  {
-      os->flush();
+      osh->stream().flush();
     }
 
 
