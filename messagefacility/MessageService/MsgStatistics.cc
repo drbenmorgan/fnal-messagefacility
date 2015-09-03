@@ -10,11 +10,6 @@
 #include <ios>
 #include <cassert>
 
-// Possible Traces:
-// #define MsgStatisticsCONSTRUCTOR_TRACE
-// #define MsgStatisticsLOG_TRACE
-
-
 namespace mf {
   namespace service {
 
@@ -30,23 +25,13 @@ namespace mf {
       , reset             ( pset.get<bool>( "reset"          , false ) || // for statistics dest.
                             pset.get<bool>( "resetStatistics", false ) )  // for ordinary dest.
       , printAtTermination( true  )
-    {
-
-#ifdef MsgStatisticsCONSTRUCTOR_TRACE
-      std::cerr << "Constructor for MsgStatistics()\n";
-#endif
-
-    }  // MsgStatistics()
+    {}
 
     // ----------------------------------------------------------------------
     // Methods invoked by the ELadministrator
     // ----------------------------------------------------------------------
 
     void MsgStatistics::log( const mf::ErrorObj & msg )  {
-
-#ifdef MsgStatisticsLOG_TRACE
-      std::cerr << "  =:=:=: Log to an MsgStatistics\n";
-#endif
 
       // Account for this message, making a new table entry if needed:
       //
@@ -57,42 +42,20 @@ namespace mf {
           s = statsMap.find( msg.xid() );
         }
       }
-#ifdef MsgStatisticsLOG_TRACE
-      std::cerr << "    =:=:=: Message accounted for in stats \n";
-#endif
+
       if ( s != statsMap.end() )  {
 
-#ifdef MsgStatisticsLOG_TRACE
-        std::cerr << "    =:=:=: Message not last stats \n";
-        std::cerr << "    =:=:=: getContextSupplier \n";
-        const ELcontextSupplier & csup
-          = ELadministrator::instance()->getContextSupplier();
-        std::cerr << "    =:=:=: getContextSupplier \n";
-        ELstring sumcon;
-        std::cerr << "    =:=:=: summaryContext \n";
-        sumcon = csup.summaryContext();
-        std::cerr << "    =:=:=: summaryContext is: " << sumcon << "\n";
-        (*s).second.add( sumcon, msg.reactedTo() );
-        std::cerr << "    =:=:=: add worked. \n";
-#else
         (*s).second.add( ELadministrator::instance()->
                          getContextSupplier().summaryContext(), msg.reactedTo() );
-#endif
 
         updatedStats = true;
-#ifdef MsgStatisticsLOG_TRACE
-        std::cerr << "    =:=:=: Updated stats \n";
-#endif
+
       }
 
 
       // For the purposes of telling whether any log destination has reacted
       // to the message, the statistics destination does not count:
       //
-
-#ifdef MsgStatisticsLOG_TRACE
-      std::cerr << "  =:=:=: log(msg) done (stats) \n";
-#endif
 
     }  // log()
 

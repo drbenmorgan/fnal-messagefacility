@@ -17,11 +17,6 @@
 #include <iomanip>
 #include <ios>
 
-// Possible Traces:
-// #define ELstatisticsCONSTRUCTOR_TRACE
-// #define ELstatsLOG_TRACE
-
-
 namespace mf {
   namespace service {
 
@@ -32,32 +27,18 @@ namespace mf {
     ELstatistics::ELstatistics( const fhicl::ParameterSet& pset, std::ostream & osp )
       : ELdestination( pset )
       , termStream   ( std::make_unique<cet::ostream_observer>(osp) )
-    {
-#ifdef ELstatisticsCONSTRUCTOR_TRACE
-      std::cerr << "Constructor for ELstatistics(pset,osp)\n";
-#endif
-    }  // ELstatistics()
+    {}
 
     ELstatistics::ELstatistics( const fhicl::ParameterSet& pset, int /*spaceLimit*/, std::ostream & osp )
       : ELstatistics( pset, osp )
-    {
-#ifdef ELstatisticsCONSTRUCTOR_TRACE
-      std::cerr << "Constructor for ELstatistics(pset,spaceLimit,osp)\n";
-      std::cerr << "Address of ostream: " << &osp << std::endl;
-#endif
-    }  // ELstatistics()
-
+    {}
 
     ELstatistics::ELstatistics( const fhicl::ParameterSet& pset,
                                 const std::string& fileName,
                                 const bool append )
       : ELdestination     ( pset )
       , termStream        ( std::make_unique<cet::ostream_owner>(fileName ,append ? std::ios::app : std::ios::trunc ) )
-    {
-#ifdef ELstatisticsCONSTRUCTOR_TRACE
-      std::cerr << "Constructor for ELstatistics(pset,filename,append)\n";
-#endif
-    }  // ELstatistics()
+    {}
 
     // ----------------------------------------------------------------------
     // Methods invoked by the ELadministrator
@@ -102,7 +83,6 @@ namespace mf {
       return stats.statisticsMap();
     }
 
-    // 6/19/08 mf
     void  ELstatistics::summaryForJobReport ( std::map<std::string, double> & sm) {
       stats.summaryForJobReport( sm );
     }

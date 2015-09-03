@@ -6,13 +6,8 @@
 
 
 #include "messagefacility/MessageService/ELostreamOutput.h"
-
 #include "messagefacility/MessageLogger/ErrorObj.h"
 #include "messagefacility/Utilities/formatTime.h"
-
-// Possible Traces:
-// #define ELostreamOutputCONSTRUCTOR_TRACE
-// #define ELostreamOutputTRACE_LOG
 
 #include <iostream>
 #include <fstream>
@@ -32,15 +27,9 @@ namespace mf {
       , osh( std::make_unique<cet::ostream_observer>(std::cerr) )
       , xid()
     {
-
-#ifdef ELostreamOutputCONSTRUCTOR_TRACE
-      std::cerr << "Constructor for ELostreamOutput()\n";
-#endif
-
       emit(osh->stream(), "\n=================================================", true );
       emit(osh->stream(), "\nMessage Log File written by MessageLogger service \n" );
       emit(osh->stream(), "\n=================================================\n", true );
-
     }  // ELostreamOutput()
 
     ELostreamOutput::ELostreamOutput( const fhicl::ParameterSet& pset,
@@ -49,12 +38,6 @@ namespace mf {
       , osh( std::make_unique<cet::ostream_observer>(os_) )
       , xid()
     {
-
-#ifdef ELostreamOutputCONSTRUCTOR_TRACE
-      std::cerr << "Constructor for ELostreamOutput( os )\n";
-#endif
-
-      // Enh 001 2/13/01 mf
       if (emitAtStart) {
         bool tprm = format.preambleMode;
         format.preambleMode = true;
@@ -63,7 +46,6 @@ namespace mf {
         emit(osh->stream(), "\n=================================================\n", true );
         format.preambleMode = tprm;
       }
-
     }  // ELostreamOutput()
 
 
@@ -73,21 +55,9 @@ namespace mf {
       , osh( std::make_unique<cet::ostream_owner>(fileName.c_str(), append ? std::ios::app : std::ios::trunc) )
       , xid()
     {
-
-#ifdef ELostreamOutputCONSTRUCTOR_TRACE
-      std::cerr << "Constructor for ELostreamOutput( " << fileName << " )\n";
-#endif
-
       bool tprm = format.preambleMode;
       format.preambleMode = true;
       if ( osh && osh->stream() )  {
-#ifdef ELostreamOutputCONSTRUCTOR_TRACE
-        std::cerr << "          Testing if os is owned\n";
-#endif
-#ifdef ELostreamOutputCONSTRUCTOR_TRACE
-        std::cerr << "          About to do first emit\n";
-#endif
-        // Enh 001 2/13/01 mf
         if (emitAtStart) {
           emit( osh->stream(), "\n=======================================================", true );
           emit( osh->stream(), "\nError Log File " );
@@ -96,13 +66,7 @@ namespace mf {
         }
       }
       else  {
-#ifdef ELostreamOutputCONSTRUCTOR_TRACE
-        std::cerr << "          Deleting os\n";
-#endif
         osh = std::make_unique<cet::ostream_observer>(std::cerr);
-#ifdef ELostreamOutputCONSTRUCTOR_TRACE
-        std::cerr << "          about to emit to cerr\n";
-#endif
         if (emitAtStart) {
           emit(osh->stream(), "\n=======================================================", true );
           emit(osh->stream(), "\n%MSG** Logging to cerr is being substituted" );
@@ -119,22 +83,10 @@ namespace mf {
               true );
       }
       format.preambleMode = tprm;
-
-#ifdef ELostreamOutputCONSTRUCTOR_TRACE
-      std::cerr << "Constructor for ELostreamOutput completed.\n";
-#endif
-
     }  // ELostreamOutput()
 
 
-    ELostreamOutput::~ELostreamOutput()  {
-
-#ifdef ELostreamOutputCONSTRUCTOR_TRACE
-      std::cerr << "Destructor for ELostreamOutput\n";
-#endif
-
-    }  // ~ELostreamOutput()
-
+    ELostreamOutput::~ELostreamOutput(){}
 
     // ----------------------------------------------------------------------
     // Protected ELostreamOutput functions:
@@ -142,14 +94,8 @@ namespace mf {
 
     void ELostreamOutput::routePayload( const std::ostringstream& oss,
                                         const mf::ErrorObj& ) {
-
       *osh << oss.str();
       flush();
-
-#ifdef ELostreamOutputTRACE_LOG
-      std::cerr << "  =:=:=: log(msg) done: \n";
-#endif
-
     }
 
     // ----------------------------------------------------------------------
@@ -160,7 +106,7 @@ namespace mf {
                                          const ELstring & sumLines )
     {
 
-      const int titleMaxLength( 40 );
+      constexpr int titleMaxLength( 40 );
 
       // title:
       //

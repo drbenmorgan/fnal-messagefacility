@@ -7,11 +7,7 @@
 #include "messagefacility/MessageService/ELdestControl.h"
 #include "messagefacility/MessageService/ELdestination.h"
 
-#include <iostream>
-using std::cerr;
-
-// Possible Traces:
-// #define ELdestinationCONSTRUCTOR_TRACE
+#include <ostream>
 
 namespace mf {
   namespace service {
@@ -22,28 +18,13 @@ namespace mf {
 
     ELdestControl::ELdestControl( cet::exempt_ptr<ELdestination> dest )
       : d ( dest )
-    {
-#ifdef ELdestinationCONSTRUCTOR_TRACE
-      std::cerr << "Constructor for ELdestControl\n";
-#endif
-    }  // ELdestControl()
-
+    {}
 
     ELdestControl::ELdestControl( )
       : d ( nullptr )
-    {
-#ifdef ELdestinationCONSTRUCTOR_TRACE
-      std::cerr << "Default Constructor for ELdestControl\n";
-#endif
-    }  // ELdestControl()
+    {}
 
-
-    ELdestControl::~ELdestControl()  {
-#ifdef ELdestinationCONSTRUCTOR_TRACE
-      std::cerr << "Destructor for ELdestControl\n";
-#endif
-    }  // ~ELdestControl()
-
+    ELdestControl::~ELdestControl(){}
 
     // ----------------------------------------------------------------------
     // Behavior control methods invoked by the framework

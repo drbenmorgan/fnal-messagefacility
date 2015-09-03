@@ -8,9 +8,6 @@
 //
 // ThreadSafeErrorLog.icc
 //
-// TODO - this .icc file looks more cuttered than it is because of all
-// the _TRACE sections.  These eventually could go away.
-//
 // ----------------------------------------------------------------------
 
 
@@ -23,15 +20,6 @@
 #endif
 
 #include <cstdlib>
-
-// Possible Traces:
-// #define ErrorLogCONSTRUCTOR_TRACE
-// #define ErrorLogOUTPUT_TRACE
-// #define ErrorLogENDMSG_TRACE
-#ifdef ErrorLogEMIT_TRACE
-  #include <string>
-#endif
-
 
 namespace mf {
 
@@ -98,10 +86,6 @@ ThreadSafeErrorLog<Mutex>::operator<<( void (* f)(ErrorLog &) )  {
         // Note that this uses the SAME SIGNATURE as for ErrorLog.
         // This class won't be invoking f, it will just use it as
         // a trigger to do its own endmsg().
-  #ifdef ErrorLogOUTPUT_TRACE
-    std::cout << "=:=:=: ErrorLog output trace:  f at " << std::hex << f
-              << std::endl;
-  #endif
   if (e.discarding) return *this;
   return completeMsg();
 }
@@ -116,17 +100,10 @@ ThreadSafeErrorLog<Mutex> & operator<<
 template< class Mutex >
 ThreadSafeErrorLog<Mutex> &
 ThreadSafeErrorLog<Mutex>::completeMsg() {
-  #ifdef ErrorLogENDMSG_TRACE
-    std::cout << "=:=:=: completeMsg () -- msgIsActive = " << msgIsActive
-              << std::endl;
-  #endif
 
   if (e.discarding) return *this;
 
   if ( msgIsActive )  {
-    #ifdef ErrorLogENDMSG_TRACE
-      std::cout << "=:=:=: completeMsg () -- dispatch started\n";
-    #endif
 
     { Mutex LOCK;       // Will obtain the mutex.  When we leave this
                         // code block, will the mutex will automatically
@@ -134,10 +111,6 @@ ThreadSafeErrorLog<Mutex>::completeMsg() {
                         // manner.
       dispatch ( msg );
     }
-
-    #ifdef ErrorLogENDMSG_TRACE
-      std::cout << "=:=:=: completeMsg () -- dispatch completed\n";
-    #endif
 
     msg.clear();
     msgIsActive = false;

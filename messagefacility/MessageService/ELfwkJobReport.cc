@@ -22,11 +22,6 @@
 #include "messagefacility/MessageService/ELfwkJobReport.h"
 #include "messagefacility/MessageLogger/ErrorObj.h"
 
-// Possible Traces:
-// #define ELfwkJobReportCONSTRUCTOR_TRACE
-// #define ELfwkJobReportTRACE_LOG
-// #define ELfwkJobReport_EMIT_TRACE
-
 #include <iostream>
 #include <fstream>
 
@@ -44,10 +39,6 @@ namespace mf {
       , xid          ( )
     {
 
-#ifdef ELfwkJobReportCONSTRUCTOR_TRACE
-      std::cerr << "Constructor for ELfwkJobReport()\n";
-#endif
-
       // Opening xml tag
       emit( "<FrameworkJobReport>\n", true );
 
@@ -60,10 +51,6 @@ namespace mf {
       , charsOnLine         (0)
       , xid                 ( )
     {
-
-#ifdef ELfwkJobReportCONSTRUCTOR_TRACE
-      std::cerr << "Constructor for ELfwkJobReport( os )\n";
-#endif
 
       // Opening xml tag
       emit( "<FrameworkJobReport>\n\n", true );
@@ -78,55 +65,25 @@ namespace mf {
       , xid                 ( )
     {
 
-#ifdef ELfwkJobReportCONSTRUCTOR_TRACE
-      std::cerr << "Constructor for ELfwkJobReport( " << fileName << " )\n";
-#endif
-
       if ( osh && osh->stream() )  {
-#ifdef ELfwkJobReportCONSTRUCTOR_TRACE
-        std::cerr << "          Testing if os is owned\n";
-#endif
-#ifdef ELfwkJobReportCONSTRUCTOR_TRACE
-        std::cerr << "          About to do first emit\n";
-#endif
         // Opening xml tag
         emit( "<FrameworkJobReport>\n");
       } else  {
-#ifdef ELfwkJobReportCONSTRUCTOR_TRACE
-        std::cerr << "          Deleting os\n";
-#endif
         osh = std::make_unique<cet::ostream_observer>(std::cerr);
-#ifdef ELfwkJobReportCONSTRUCTOR_TRACE
-        std::cerr << "          about to emit to cerr\n";
-#endif
         // Opening xml tag
         emit( "<FrameworkJobReport>\n\n" );
       }
 
-#ifdef ELfwkJobReportCONSTRUCTOR_TRACE
-      std::cerr << "Constructor for ELfwkJobReport completed.\n";
-#endif
-
     }  // ELfwkJobReport()
 
 
-    ELfwkJobReport::~ELfwkJobReport()  {
-
-#ifdef ELfwkJobReportCONSTRUCTOR_TRACE
-      std::cerr << "Destructor for ELfwkJobReport\n";
-#endif
-    }  // ~ELfwkJobReport()
-
+    ELfwkJobReport::~ELfwkJobReport()  {}
 
     // ----------------------------------------------------------------------
     // Methods invoked by the ELadministrator:
     // ----------------------------------------------------------------------
 
     void ELfwkJobReport::log( mf::ErrorObj & msg )  {
-
-#ifdef ELfwkJobReportTRACE_LOG
-      std::cerr << "    =:=:=: Log to an ELfwkJobReport \n";
-#endif
 
       xid = msg.xid();      // Save the xid.
 
@@ -149,10 +106,6 @@ namespace mf {
       if ( thisShouldBeIgnored(xid.module)  ) return;
       if ( ! stats.limits.add( msg.xid() )  ) return;
 
-#ifdef ELfwkJobReportTRACE_LOG
-      std::cerr << "    =:=:=: Limits table work done \n";
-#endif
-
       // Output the prologue:
       //
       //emit ( "  <Report>\n" );
@@ -166,18 +119,11 @@ namespace mf {
 
       //  emit( msg.idOverflow() ); this is how to get the rest of the category
 
-#ifdef ELfwkJobReportTRACE_LOG
-      std::cerr << "    =:=:=: Prologue done \n";
-#endif
-
       // Output each item in the message:
       //
       if ( format.want( TEXT ) )  {
         ELlist_string::const_iterator it;
         for ( it = msg.items().begin();  it != msg.items().end();  ++it )  {
-#ifdef ELfwkJobReportTRACE_LOG
-          std::cerr << "      =:=:=: Item:  " << *it << '\n';
-#endif
           //  emit( "      <Item> " );
           emit( *it);
           emit( "\n" );
@@ -194,17 +140,9 @@ namespace mf {
       //emit ( xid.module );
       //emit (" </Module>\n");
 
-#ifdef ELfwkJobReportTRACE_LOG
-      std::cerr << "    =:=:=: Module done \n";
-#endif
-
       // close report
       //
       //emit ("  </Report>\n\n");
-
-#ifdef ELfwkJobReportTRACE_LOG
-      std::cerr << "  =:=:=: log(msg) done: \n";
-#endif
 
       msg.setReactedTo( true );
 
@@ -224,25 +162,9 @@ namespace mf {
 
     void ELfwkJobReport::emit( const ELstring & s, bool /*nl*/ )  {
 
-#ifdef ELfwkJobReport_EMIT_TRACE
-      std::cerr << "[][][] in emit:  charsOnLine is " << charsOnLine << '\n';
-      std::cerr << "[][][] in emit:  s.length() " << s.length() << '\n';
-      std::cerr << "[][][] in emit:  lineLength is " << lineLength << '\n';
-#endif
-
-      if (s.length() == 0)  {
-        return;
-      }
-
-#ifdef ELfwkJobReport_EMIT_TRACE
-      std::cerr << "[][][] in emit: about to << s to *osh: " << s << " \n";
-#endif
+      if (s.empty()) return;
 
       *osh << s;
-
-#ifdef ELfwkJobReport_EMIT_TRACE
-      std::cerr << "[][][] in emit: completed \n";
-#endif
 
     }  // emit()
 

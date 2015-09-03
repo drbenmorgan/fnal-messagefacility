@@ -10,9 +10,6 @@
 // ----------------------------------------------------------------------
 
 
-// Possible Traces:
-// #define ErrorLog_EMIT_TRACE
-
 #include <cstdlib>
 
 
@@ -24,10 +21,6 @@ namespace service {
 // Global method for physicists logging errors:
 // ----------------------------------------------------------------------
 
-#ifdef ErrorLog_EMIT_TRACE
-#include <string>
-#endif
-
 template< class T >
 ErrorLog & operator<<( ErrorLog & e, const T & t )  {
 
@@ -35,13 +28,6 @@ ErrorLog & operator<<( ErrorLog & e, const T & t )  {
 
   std::ostringstream  ost;
   ost << t << ' ';
-
-  #ifdef ErrorLog_EMIT_TRACE
-    std::cerr << "=:=:=: ErrorLog_EMIT_TRACE: " << t << "\n"
-              << "                            " << ost.str() << std::endl;
-    std::cerr << "                            " << "sizeof(t) = "
-                                                <<  sizeof(t) << std::endl;
-  #endif
 
   return  e.emit( ost.str() );
 
@@ -64,7 +50,6 @@ ErrorLog & ErrorLog::operator() ( int debugLevel )
   return operator() ( debugSeverityLevel, debugMessageId );
 
 }  // operator()( debugLevel )
-
 
 
 }        // end of namespace service

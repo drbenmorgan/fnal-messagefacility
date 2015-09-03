@@ -19,13 +19,6 @@
 
 #include "messagefacility/MessageLogger/ELmap.h"
 
-
-// Possible traces
-//#include <iostream>
-//#define ELcountTRACE
-// #define ELmapDumpTRACE
-
-
 namespace mf
 {
 
@@ -60,15 +53,6 @@ bool  CountAndLimit::add()  {
 
   time_t  now = time(0);
 
-#ifdef ELcountTRACE
-  std::cerr << "&&&--- CountAndLimit::add \n";
-  std::cerr << "&&&    Time now  is " << now << "\n";
-  std::cerr << "&&&    Last time is " << lastTime << "\n";
-  std::cerr << "&&&    timespan  is " << timespan << "\n";
-  std::cerr << "&&&    difftime  is " << difftime( now, lastTime ) << "\n"
-                                << std::flush;
-#endif
-
   // Has it been so long that we should restart counting toward the limit?
   if ( (timespan >= 0)
             &&
@@ -86,12 +70,6 @@ bool  CountAndLimit::add()  {
   ++n;
   ++aggregateN;
   ++skipped;
-
-#ifdef ELcountTRACE
-  std::cerr << "&&&       n is " << n << "-- limit is    " << limit    << "\n";
-  std::cerr << "&&& skipped is " << skipped
-                                      << "-- interval is " << interval << "\n";
-#endif
 
   if (skipped < interval) return false;
 
@@ -154,34 +132,5 @@ void  StatsCount::add( const ELstring & context, bool reactedTo )  {
 
 
 // ----------------------------------------------------------------------
-
-#ifdef ELmapDumpTRACE
-// ----------------------------------------------------------------------
-// Global Dump methods (useful for debugging)
-// ----------------------------------------------------------------------
-
-#include <sstream>
-#include <string.h>
-
-boost::shared_array<char> ELmapDump ( ELmap_limits m )  {
-
-  std::ostringstream s;
-  s << "**** ELmap_limits Dump **** \n";
-
-  ELmap_limits::const_iterator i;
-  for ( i = m.begin();  i != m.end();  ++i )  {
-    LimitAndTimespan lt = (*i).second;
-    s << "     " << (*i).first << ":  " << lt.limit << ", " <<
-                lt.timespan << "\n";
-  }
-  s << "--------------------------------------------\n";
-
-  boost::shared_array<char> dump(new char[s.str().size()+1]);
-  strcpy( dump.get(), s.str().c_str() );
-
-  return dump;
-
-}
-#endif
 
 } // end of namespace mf  */

@@ -24,15 +24,6 @@
 #include <iomanip>
 #include <sstream>
 
-
-// Possible Traces:
-// #define ErrorLogCONSTRUCTOR_TRACE
-// #define ErrorLogOUTPUT_TRACE
-// #define ErrorLogENDMSG_TRACE
-#ifdef ErrorLogEMIT_TRACE
-  #include <string>
-#endif
-
 namespace mf {
 namespace service {
 
@@ -47,11 +38,7 @@ ELtsErrorLog::ELtsErrorLog()
 , process("")
 , msgIsActive (false)
 , msg(ELunspecified, "...")
-{
-  #ifdef ErrorLogCONSTRUCTOR_TRACE
-    std::cout << "Constructor for ThreadSafeErrorLog\n";
-  #endif
-}
+{}
 
 ELtsErrorLog::ELtsErrorLog( const ELstring & pkgName )
 : a( ELadministrator::instance() )
@@ -59,12 +46,7 @@ ELtsErrorLog::ELtsErrorLog( const ELstring & pkgName )
 , process("")
 , msgIsActive (false)
 , msg(ELunspecified, "...")
-{
-  #ifdef ErrorLogCONSTRUCTOR_TRACE
-    std::cout << "Constructor for ThreadSafeErrorLog (with pkgName = "
-                                                        << pkgName << ")\n";
-  #endif
-}
+{}
 
 ELtsErrorLog::ELtsErrorLog( const ErrorLog & ee )
 : a( ELadministrator::instance() )
@@ -72,11 +54,7 @@ ELtsErrorLog::ELtsErrorLog( const ErrorLog & ee )
 , process("")
 , msgIsActive (false)
 , msg(ELunspecified, "...")
-{
-  #ifdef ErrorLogCONSTRUCTOR_TRACE
-    std::cout << "Constructor for ThreadSafeErrorLog from ErrorLog\n";
-  #endif
-}
+{}
 
 ELtsErrorLog::ELtsErrorLog( const ELtsErrorLog & ee)
 : a( ELadministrator::instance() )
@@ -84,18 +62,9 @@ ELtsErrorLog::ELtsErrorLog( const ELtsErrorLog & ee)
 , process(ee.process)
 , msgIsActive (ee.msgIsActive)
 , msg(ee.msg)
-{
-  #ifdef ErrorLogCONSTRUCTOR_TRACE
-    std::cout << "Copy constructor for ThreadSafeErrorLog \n";
-  #endif
-}
+{}
 
-ELtsErrorLog::~ELtsErrorLog()
-{
-  #ifdef ErrorLogCONSTRUCTOR_TRACE
-    std::cout << "Destructor for ThreadSafeErrorLog\n";
-  #endif
-}
+  ELtsErrorLog::~ELtsErrorLog(){}
 
 // ----------------------------------------------------------------------
 // Setup for preamble parts
@@ -154,10 +123,6 @@ void ELtsErrorLog::initiateMsg(const ELseverityLevel& sev, const ELstring& id)
     return;
   }
   e.discarding = false;
-  #ifdef ErrorLogENDMSG_TRACE
-    std::cout << "=:=:=: precautionary endmsg ( "
-              << sev.getName() << ", " << id << ")\n";
-  #endif
 
   // Unlike the case for ErrorLog, it is not necessary to check
   // msgIsActive because the calling code was forced to do that

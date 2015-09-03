@@ -3,41 +3,21 @@
 
 // ----------------------------------------------------------------------
 //
-// do_nothing_deleter.h
-//
-// Purpose: do_nothing_deleter provides a way to use std::shared_ptr
-// or boost::shared_array for those cases where the object or array
-// may be either in dynamic (heap) storage, or in static storage,
-// as long as which of these applies is known when the shared_ptr or shared_array
-// is constructed.
-//
-// For objects:
-//
-// If the object is allocated in dynamic storage, use
-// std::shared_ptr<T> (new T(...));
-
-// If the object "t" is in static storage, use
-// std::shared_ptr<T> (&t, do_nothing_deleter());
-//
-// For arrays:
-//
-// If the array is allocated in dynamic storage, use
-// boost::shared_array<T> (new T(...)[]);
-
-// If the array "t" is in static storage, use
-// boost::shared_array<T> (t, do_nothing_deleter());
-//
+// See notes in "cetlib/no_delete.h"
 //
 // ----------------------------------------------------------------------
 
+#include "cetlib/no_delete.h"
+
 #define DIAGNOSTIC\
   "\n\nmessagefacility warning: using 'mf::do_nothing_deleter' is no longer encouraged.\n" \
-  "                         Please consult the art team for guidance.\n\n"
+  "                         It has been replaced by 'cet::no_delete'.  Before using such\n" \
+  "                         functionality, however, please consult the art team.\n\n"
 
 namespace mf {
-  struct [[deprecated(DIAGNOSTIC)]] do_nothing_deleter {
-    void operator()(void const*) const {}
-  };
+
+  using do_nothing_deleter [[deprecated(DIAGNOSTIC)]] = cet::no_delete;
+
 }
 
 #endif

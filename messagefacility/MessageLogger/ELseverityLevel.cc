@@ -44,10 +44,6 @@
 #include "messagefacility/MessageLogger/ELmap.h"
 
 
-// Possible Traces
-// #define ELsevConTRACE
-
-
 namespace mf
 {
 
@@ -164,13 +160,6 @@ ELmap const &  loadMap()  {
 // ----------------------------------------------------------------------
 
 ELseverityLevel::ELseverityLevel( enum ELsev_ lev ) : myLevel( lev )  {
-
-  #ifdef ELsevConTRACE
-    std::cerr << "--- ELseverityLevel " << lev
-              << " (" << getName() << ")\n"
-              << std::flush;
-  #endif
-
 }
 
 

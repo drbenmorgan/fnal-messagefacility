@@ -47,16 +47,6 @@
 #include <iostream>
 #include <iomanip>
 
-// Possible Traces:
-// #define ErrorLogCONSTRUCTOR_TRACE
-// #define ErrorLogOUTPUT_TRACE
-// #define ErrorLogENDMSG_TRACE
-// #define ErrorLogEMIT_TRACE
-
-#ifdef ErrorLog_EMIT_TRACE
-  #include <string>
-#endif
-
 namespace mf {
 namespace service {
 
@@ -77,13 +67,7 @@ ErrorLog::ErrorLog()
 , debugVerbosityLevel(0)
 , debugSeverityLevel(ELinfo)
 , debugMessageId ("DEBUG")
-{
-
-  #ifdef ErrorLogCONSTRUCTOR_TRACE
-    std::cout << "Constructor for ErrorLog\n";
-  #endif
-
-}  // ErrorLog()
+{}
 
 ErrorLog::ErrorLog( const ELstring & pkgName )
 : a( ELadministrator::instance() )
@@ -96,22 +80,9 @@ ErrorLog::ErrorLog( const ELstring & pkgName )
 , debugVerbosityLevel(0)
 , debugSeverityLevel(ELinfo)
 , debugMessageId ("DEBUG")
-{
+{}
 
-  #ifdef ErrorLogCONSTRUCTOR_TRACE
-    std::cout << "Constructor for ErrorLog (with pkgName = " << pkgName << ")\n";
-  #endif
-
-}  // ErrorLog()
-
-
-ErrorLog::~ErrorLog()  {
-
-  #ifdef ErrorLogCONSTRUCTOR_TRACE
-    std::cout << "Destructor for ErrorLog\n";
-  #endif
-
-}  // ~ErrorLog()
+  ErrorLog::~ErrorLog(){}
 
 ErrorLog & ErrorLog::operator() (
   const ELseverityLevel & sev
@@ -124,11 +95,6 @@ ErrorLog & ErrorLog::operator() (
   }
 
   discarding = false;
-
-  #ifdef ErrorLogENDMSG_TRACE
-    std::cout << "=:=:=: precautionary endmsg ( "
-              << sev.getName() << ", " << id << ")\n";
-  #endif
 
   endmsg();  // precautionary
 
@@ -189,10 +155,6 @@ static inline void possiblyAbOrEx (int s, int a, int e) {
 }
 
 ErrorLog & ErrorLog::operator()( mf::ErrorObj & msg )  {
-
-  #ifdef ErrorLogENDMSG_TRACE
-    std::cout << "=:=:=: precautionary endmsg called from operator() (msg) \n";
-  #endif
 
   endmsg();  // precautionary
 
@@ -278,10 +240,6 @@ ErrorLog & ErrorLog::operator() (int nbytes, char * data)  {
 }  // operator() (nbytes, data)
 
 ErrorLog & ErrorLog::operator<<( void (* f)(ErrorLog &) )  {
-  #ifdef ErrorLogOUTPUT_TRACE
-    std::cout << "=:=:=: ErrorLog output trace:  f at " << std::hex << f
-              << std::endl;
-  #endif
   if (discarding) return *this;
   f( *this );
   return  *this;
@@ -291,18 +249,10 @@ ErrorLog & ErrorLog::operator<<( void (* f)(ErrorLog &) )  {
 
 ErrorLog & ErrorLog::emit( const ELstring & s )  {
 
-  #ifdef ErrorLogEMIT_TRACE
-    std::cout << " =:=:=: ErrorLog emit trace:  string is: " << s << "\n";
-  #endif
-
   if ( ! a->msgIsActive )
     (*this) ( ELunspecified, "..." );
 
   a->msg.eo_emit( s );
-
-  #ifdef ErrorLogEMIT_TRACE
-    std::cout << " =:=:=: ErrorLog emit trace:  return from a->msg.emit()\n";
-  #endif
 
   return  *this;
 
@@ -311,22 +261,11 @@ ErrorLog & ErrorLog::emit( const ELstring & s )  {
 
 ErrorLog & ErrorLog::endmsg()  {
 
-  #ifdef ErrorLogENDMSG_TRACE
-    std::cout << "=:=:=: endmsg () -- msgIsActive = " << a->msgIsActive
-              << std::endl;
-  #endif
-
   if ( a->msgIsActive )  {
-    #ifdef ErrorLogENDMSG_TRACE
-      std::cout << "=:=:=: endmsg () -- finishMsg started\n";
-    #endif
     a->finishMsg();
-    #ifdef ErrorLogENDMSG_TRACE
-      std::cout << "=:=:=: endmsg () -- finishMsg completed\n";
-    #endif
-      a->clearMsg();
-    }
-    return  *this;
+    a->clearMsg();
+  }
+  return  *this;
 
 }  // endmsg()
 

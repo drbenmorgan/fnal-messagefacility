@@ -21,11 +21,6 @@
 
 #include <sstream>
 
-// Possible Traces:
-//#define ELcollectedCONSTRUCTOR_TRACE
-//#define ELcollectedTRACE_LOG
-//#define ELcollected_EMIT_TRACE
-
 namespace mf {
   namespace service {
 
@@ -35,26 +30,11 @@ namespace mf {
     // ----------------------------------------------------------------------
 
     ELcollected::ELcollected( const ELsender & snd )
-  : ELostreamOutput()
-  , sender  ( snd.clone() )
-    {
+      : ELostreamOutput()
+      , sender  ( snd.clone() )
+    {}
 
-#ifdef ELcollectedCONSTRUCTOR_TRACE
-      std::cout << "Constructor for ELcollected(ELsender)\n";
-#endif
-
-      // Unlike ELostreamOutput, we do not emit Error Log established message.
-
-    }  // ELcollected()
-
-
-    ELcollected::~ELcollected()  {
-
-#ifdef ELcollectedCONSTRUCTOR_TRACE
-      std::cout << "Destructor for ELcollected)\n";
-#endif
-    }  // ~ELcollected()
-
+    ELcollected::~ELcollected(){}
 
     // Remainder are from base class.
 
@@ -95,10 +75,6 @@ namespace mf {
 
     void ELcollected::emit( const ELstring & s, bool nl )  {
 
-#ifdef ELcollected_EMIT_TRACE
-      std::cout << "[][][] in emit:  s.length() " << s.length() << "\n";
-#endif
-
       // A forced newline is something that needs to be transmitted.
       // We shall insert it as its own item.
 
@@ -112,9 +88,6 @@ namespace mf {
       // Setting up for indentation if you start with a nweline, or if the length
       // exceeds column 80, is not done here, it is done on the server.
 
-#ifdef ELcollected_EMIT_TRACE
-      std::cout << "[][][] in emit: about to << s to buf: " << s << " \n";
-#endif
 
       // Place the item into the buffer
 
@@ -129,23 +102,14 @@ namespace mf {
         intoBuf (newline);
       }
 
-#ifdef ELcollected_EMIT_TRACE
-      std::cout << "[][][] in emit: completed \n";
-#endif
-
     }  // emit()
 
 
-
     // ====
     // log
     // ====
 
     void ELcollected::log( mf::ErrorObj & msg )  {
-
-#ifdef ELcollectedTRACE_LOG
-      std::cout << "    =:=:=: Log to an ELcollected \n";
-#endif
 
       xid = msg.xid();      // Save the xid.
 
@@ -156,19 +120,11 @@ namespace mf {
       if ( thisShouldBeIgnored(xid.module)  )  return;
       if ( ! stats.limits.add( msg.xid() )  )  return;
 
-#ifdef ELcollectedTRACE_LOG
-      std::cout << "    =:=:=: Limits table work done \n";
-#endif
-
       // start the buffer with the xid
 
       emitXid (xid);
 
       //
-
-#ifdef ELcollectedTRACE_LOG
-      std::cout << "    =:=:=: xid emitted \n";
-#endif
 
       // Provide the context information.  The server side will use this to prime
       // its special context supplier.  We will send over all three types of
@@ -177,10 +133,6 @@ namespace mf {
       emit( ELadministrator::instance()->getContextSupplier().summaryContext());
       emit( ELadministrator::instance()->getContextSupplier().context());
       emit( ELadministrator::instance()->getContextSupplier().fullContext());
-
-#ifdef ELcollectedTRACE_LOG
-      std::cout << "    =:=:=: Context done: \n";
-#endif
 
       // No prologue separate from what the server will issue.
 
@@ -191,9 +143,6 @@ namespace mf {
       if ( format.want(TEXT) )  {
         ELlist_string::const_iterator it;
         for ( it = msg.items().begin();  it != msg.items().end();  ++it )  {
-#ifdef ELcollectedTRACE_LOG
-          std::cout << "      =:=:=: Item:  " << *it <<"\n";
-#endif
           emit( *it );
         }
       }
@@ -206,10 +155,6 @@ namespace mf {
 
       emit( "", true );
 
-#ifdef ELcollectedTRACE_LOG
-      std::cout << "    =:=:=: Trace routine done: \n";
-#endif
-
       // Message has been fully processed through emit; now put in an extra
       // zero, and send out the buffer.
       //
@@ -218,10 +163,6 @@ namespace mf {
       int nbuf = buf.length();
 
       sender->send ( nbuf, buf.data() );
-
-#ifdef ELcollectedTRACE_LOG
-      std::cout << "  =:=:=: log(msg) done: \n";
-#endif
 
       msg.setReactedTo( true );
 

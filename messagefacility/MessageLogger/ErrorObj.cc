@@ -44,21 +44,6 @@
 
 #include "messagefacility/MessageLogger/ErrorObj.h"
 
-#ifndef IOSTREAM_INCLUDED
-#endif
-
-
-// ----------------------------------------------------------------------
-
-
-// Possible Traces
-// #define ErrorObjCONSTRUCTOR_TRACE
-// #define ErrorObj_EMIT_TRACE
-// #define ErrorObj_SUB_TRACE
-
-
-// ----------------------------------------------------------------------
-
 
 namespace mf
 {
@@ -80,10 +65,6 @@ ErrorObj::ErrorObj( const ELseverityLevel & sev,
                     const ELstring & id,
                     bool verbat )  : verbatim(verbat) {
 
-  #ifdef ErrorObjCONSTRUCTOR_TRACE
-    std::cerr << "Constructor for ErrorObj\n";
-  #endif
-
   clear();
   set( sev, id );
 
@@ -100,23 +81,9 @@ ErrorObj::ErrorObj( const ErrorObj & orig )  :
         , myOs            ( )
         , emptyString     ( )
         , verbatim        ( orig.verbatim )
-{
+{}
 
-  #ifdef ErrorObjCONSTRUCTOR_TRACE
-    std::cerr << "Copy Constructor for ErrorObj\n";
-  #endif
-
-}  // ErrorObj(ErrorObj)
-
-
-ErrorObj::~ErrorObj()  {
-
-  #ifdef ErrorObjCONSTRUCTOR_TRACE
-    std::cerr << "Destructor for ErrorObj\n";
-  #endif
-
-}  // ~ErrorObj()
-
+  ErrorObj::~ErrorObj(){}
 
 // ----------------------------------------------------------------------
 // Accessors:
@@ -171,9 +138,7 @@ void ErrorObj::setContext( const ELstring & c )  { myContext = c; }
 
 
 void ErrorObj::setSubroutine( const ELstring & subroutine )  {
-  #ifdef ErrorObj_SUB_TRACE
-    std::cerr << "=:=:=: ErrorObj::setSubroutine(" << subroutine << ")\n";
-  #endif
+
   myXid.subroutine = (subroutine[0] == ' ')
                    ? subroutine.substr(1)
                    : subroutine;
@@ -182,9 +147,6 @@ void ErrorObj::setSubroutine( const ELstring & subroutine )  {
 
 void ErrorObj::setProcess( const ELstring & proc )  {
   myXid.process = proc;
-  #if 0
-    std::cerr << "ErrorObj process set to \"" << proc << "\"\n";
-  #endif
 }
 
 void ErrorObj::setReactedTo( bool r )  {
@@ -207,29 +169,9 @@ void ErrorObj::setPID( long pid ) {
   myXid.pid = pid;
 }
 
-#ifdef ErrorObj_SUB_TRACE
-  static int subN = 0;
-#endif
-
-
 ErrorObj & ErrorObj::eo_emit( const ELstring & s )  {
 
-  #ifdef ErrorObj_EMIT_TRACE
-    std::cerr << "=:=:=: ErrorObj::emit ( " << s << " )\n";
-  #endif
-
-  #ifdef ErrorObj_SUB_TRACE
-    if ( subN > 0 )  {
-      std::cerr << "=:=:=: subN ErrorObj::emit ( " << s << " )\n";
-      subN--;
-    }
-  #endif
-
   if ( eq_nocase(s.substr(0,5), "@SUB=" ) )  {
-    #ifdef ErrorObj_SUB_TRACE
-      std::cerr << "=:=:=: ErrorObj::@SUB s.substr(5) is: " << s.substr(5)
-                << '\n';
-    #endif
     setSubroutine(s.substr(5));
   }
   else  {
@@ -279,17 +221,7 @@ ErrorObj::opltlt ( const char s[] ) {
   // be instantiated once for each length of string ever used.
   myOs.str(emptyString);
   myOs << s;
-#ifdef OLD_STYLE_AUTOMATIC_SPACES
-  if ( ! myOs.str().empty() ) {
-    if ( !verbatim ) {
-      eo_emit( myOs.str() + ' ' );
-    } else {
-       eo_emit( myOs.str() );
-    }
-  }
-#else
   if ( ! myOs.str().empty() ) eo_emit( myOs.str() );
-#endif
   return *this;
 }
 

@@ -19,14 +19,6 @@
 
 #include "messagefacility/MessageService/ELlimitsTable.h"
 
-//#include <iostream>
-//using std::cerr;
-
-// Posible traces
-// #define ELlimitsTableCONSTRUCTOR_TRACE
-// #define ELlimitsTableATRACE
-
-
 namespace mf {
 namespace service {
 
@@ -44,10 +36,6 @@ ELlimitsTable::ELlimitsTable()
 , counts          (    )
 {
 
-#ifdef ELlimitsTableCONSTRUCTOR_TRACE
-  std::cerr << "Constructor for ELlimitsTable\n";
-#endif
-
   for ( int k = 0;  k < ELseverityLevel::nLevels;  ++k )  {
     severityLimits[k]    = -1;                // JvR 99-06-10
     severityIntervals[k]    = -1;
@@ -57,13 +45,7 @@ ELlimitsTable::ELlimitsTable()
 }  // ELlimitsTable()
 
 
-ELlimitsTable::~ELlimitsTable()  {
-
-#ifdef ELlimitsTableCONSTRUCTOR_TRACE
-  std::cerr << "Destructor for ELlimitsTable\n";
-#endif
-
-}  // ~ELlimitsTable()
+  ELlimitsTable::~ELlimitsTable(){}
 
 
 // ----------------------------------------------------------------------
@@ -75,17 +57,10 @@ void ELlimitsTable::setTableLimit( int n )  { tableLimit = n; }
 
 bool ELlimitsTable::add( const ELextendedID & xid )  {
 
-#ifdef ELlimitsTableATRACE
-  std::cerr << "&&&--- adding to limits table: " << xid.id << '\n';
-#endif
-
   ELmap_counts::iterator c = counts.find( xid );
 
   if ( c == counts.end() )  {  // no such entry yet
 
-    #ifdef ELlimitsTableATRACE
-    std::cerr << "&&&    no such entry yet in counts \n";
-    #endif
     int lim;
     int ivl;
     int ts;
@@ -114,40 +89,19 @@ bool ELlimitsTable::add( const ELextendedID & xid )  {
         }
         limits[xid.id] = LimitAndTimespan( lim, ts );
       }
-      #ifdef ELlimitsTableATRACE
-      std::cerr << "&&&    Entry found in limits: limit = " << lim
-           << " interval = " << ivl
-           << " timespan = " << ts << '\n';
-      #endif
       limits[xid.id] = LimitAndTimespan( lim, ts, ivl );
    } else  {   // establish and use limits new to this id
       lim = severityLimits   [xid.severity.getLevel()];
       ivl = severityIntervals[xid.severity.getLevel()];
       ts  = severityTimespans[xid.severity.getLevel()];
-      #ifdef ELlimitsTableATRACE
-      std::cerr << "&&&    Limit taken from severityLimits: " << lim << '\n'
-           << "&&&    Interval taken from severityLimits: " << ivl << '\n';
-      #endif
       if ( lim < 0 )  {
         lim = wildcardLimit;
-        #ifdef ELlimitsTableATRACE
-        std::cerr << "&&&    Limit reset to wildcard limit: " << lim << '\n';
-        #endif
       }
       if ( ivl < 0 )  {
         ivl = wildcardInterval;
-        #ifdef ELlimitsTableATRACE
-        std::cerr << "&&&    Interval reset to wildcard interval: " << ivl << '\n';
-        #endif
       }
-      #ifdef ELlimitsTableATRACE
-      std::cerr << "&&&    Timespan taken from severityTimespans: " << ts << '\n';
-      #endif
       if ( ts < 0 )  {
         ts = wildcardTimespan;
-        #ifdef ELlimitsTableATRACE
-        std::cerr << "&&&    timespan reset to wildcard timespan: " << ts << '\n';
-        #endif
       }
 
       // save, if possible, id's future limits:
