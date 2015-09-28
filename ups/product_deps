@@ -1,4 +1,4 @@
-parent messagefacility v1_16_03
+parent messagefacility v1_16_04
 defaultqual e7
 #
 fcldir -
@@ -6,7 +6,7 @@ perllib  product_dir
 #
 # define product/version pairs
 product		version
-fhiclcpp 	v3_12_02
+fhiclcpp 	v3_12_03
 cetbuildtools	v4_14_00	-	only_for_build
 end_product_list
 
@@ -19,6 +19,9 @@ e6:prof		e6:prof		gcc
 e7:debug	e7:debug	gcc
 e7:opt		e7:opt		gcc
 e7:prof		e7:prof		gcc
+e9:debug	e9:debug	gcc
+e9:opt		e9:opt		gcc
+e9:prof		e9:prof		gcc
 end_qualifier_list
 
 ##table_fragment_begin
