@@ -8,12 +8,9 @@
 // ======================================================================
 
 #include <memory>
+#include <mutex>
 #include <ostream>
 #include <string>
-
-#ifndef __GCCXML__
-#include <mutex>
-#endif
 
 #include "messagefacility/MessageLogger/ELseverityLevel.h"
 #include "messagefacility/MessageLogger/MessageDrop.h"
@@ -113,7 +110,7 @@ namespace mf {
       }
     }
 
-    MaybeLogger_             ( MaybeLogger_ && )      = default;
+    MaybeLogger_ ( MaybeLogger_ && ) noexcept = default;
 
     // Disable copy c'tor and copy/move assignment
     MaybeLogger_             ( MaybeLogger_ const & ) = delete;
