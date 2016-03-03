@@ -13,9 +13,6 @@ end_product_list
 
 # Matrix of qualifiers versus dependent products
 qualifier	fhiclcpp	compiler	notes
-e6:debug	e6:debug	gcc
-e6:opt		e6:opt		gcc
-e6:prof		e6:prof		gcc
 e7:debug	e7:debug	gcc
 e7:opt		e7:opt		gcc
 e7:prof		e7:prof		gcc
