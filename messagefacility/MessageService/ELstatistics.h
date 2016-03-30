@@ -60,7 +60,7 @@ namespace mf {
       //
     public:
 
-      virtual void log( mf::ErrorObj & msg ) override;
+      void log( mf::ErrorObj & msg ) override;
 
       // ----- Methods invoked by the MessageLoggerScribe, bypassing destControl
       //
@@ -71,19 +71,19 @@ namespace mf {
       // -----  Methods invoked through the ELdestControl handle:
       //
     protected:
-      virtual void clearSummary();
+      void clearSummary() override;
 
-      virtual void wipe();
-      virtual void zero();
+      void wipe() override;
+      void zero() override;
 
-      virtual void summary( std::ostream  & os  , const std::string & title="" );
-      virtual void summary( std::string   & s   , const std::string & title="" );
-      virtual void summary( );
-      void noTerminationSummary();
+      void summary( std::ostream  & os  , const std::string & title="" ) override;
+      void summary( std::string   & s   , const std::string & title="" ) override;
+      void summary( ) override;
+      void noTerminationSummary() override;
 
-      virtual std::map<ELextendedID,StatsCount> statisticsMap() const;
+      std::map<ELextendedID,StatsCount> statisticsMap() const override;
 
-      virtual void summaryForJobReport (std::map<std::string, double> & sm);
+      void summaryForJobReport (std::map<std::string, double> & sm) override;
 
       // -----  Data affected by methods of specific ELdestControl handle:
       //

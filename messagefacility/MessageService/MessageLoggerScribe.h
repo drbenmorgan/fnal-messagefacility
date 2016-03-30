@@ -28,14 +28,14 @@ namespace mf {
     {
     public:
       // ---  birth/death:
+      ~MessageLoggerScribe();
 
       /// --- If queue is NULL, this sets singleThread true
       explicit MessageLoggerScribe(std::shared_ptr<ThreadQueue> queue);
-      virtual ~MessageLoggerScribe();
 
       // --- receive and act on messages:
-      virtual void run();
-      virtual void runCommand(MessageLoggerQ::OpCode  opcode, void * operand);
+      void run();
+      void runCommand(MessageLoggerQ::OpCode  opcode, void * operand) override;
 
     private:
       // --- convenience typedefs

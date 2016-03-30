@@ -77,8 +77,8 @@ public:
 
 private:
   // ---  traditional birth/death, but disallowed to users:
-  MessageLoggerQ();
-  ~MessageLoggerQ();
+  MessageLoggerQ() = default;
+  ~MessageLoggerQ() = default;
 
   // ---  place an item onto the queue, or execute the command directly
   static  void  simpleCommand( OpCode opcode, void * operand );

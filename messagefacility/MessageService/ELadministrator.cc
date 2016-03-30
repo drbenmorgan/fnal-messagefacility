@@ -412,14 +412,12 @@ public:
 
   virtual
   ELemptyContextSupplier *
-  clone() const  {
+  clone() const override {
     return new ELemptyContextSupplier( *this );
   }
-  virtual ELstring context()        const  {  return ""; }
-  virtual ELstring summaryContext() const  {  return ""; }
-  virtual ELstring fullContext()    const  {  return ""; }
-
-  virtual ~ELemptyContextSupplier()  {}
+  ELstring context()        const   override {  return ""; }
+  ELstring summaryContext() const   override {  return ""; }
+  ELstring fullContext()    const   override {  return ""; }
 
 };  // ELemptyContextSupplier
 

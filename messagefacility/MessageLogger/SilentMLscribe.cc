@@ -28,22 +28,6 @@ namespace mf {
 //
 
 //
-// constructors and destructor
-//
-      SilentMLscribe::SilentMLscribe()
-      {
-      }
-
-// SilentMLscribe::SilentMLscribe(const SilentMLscribe& rhs)
-// {
-//    // do actual copying here;
-// }
-
-      SilentMLscribe::~SilentMLscribe()
-      {
-      }
-
-//
 // assignment operators
 //
 // const SilentMLscribe& SilentMLscribe::operator=(const SilentMLscribe& rhs)

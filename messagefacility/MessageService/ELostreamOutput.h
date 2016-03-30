@@ -45,20 +45,18 @@ namespace mf {
 
       ELostreamOutput( const fhicl::ParameterSet& psetFormat, const ELstring & fileName, const bool append, bool emitAtStart = false );
 
-      virtual ~ELostreamOutput();
-
       // Disable copy c'tor/assignment
       ELostreamOutput( const ELostreamOutput & orig ) = delete;
       ELostreamOutput & operator=( const ELostreamOutput & ) = delete;
 
     protected:
 
-      virtual void routePayload  ( const std::ostringstream& oss,const mf::ErrorObj& msg );
-      virtual void summarization ( const ELstring & fullTitle, const ELstring & sumLines );
+      void routePayload  ( const std::ostringstream& oss,const mf::ErrorObj& msg ) override;
+      void summarization ( const ELstring & fullTitle, const ELstring & sumLines ) override;
 
-      virtual void changeFile (std::ostream & os);
-      virtual void changeFile (const ELstring & filename);
-      virtual void flush();
+      void changeFile (std::ostream & os) override;
+      void changeFile (const ELstring & filename) override;
+      void flush() override;
 
       // --- member data:
       //

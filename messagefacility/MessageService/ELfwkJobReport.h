@@ -60,13 +60,13 @@ namespace mf {
     protected:
       void emit( const ELstring & s, bool nl=false );
 
-      virtual void summarization ( const ELstring & fullTitle,
-                                   const ELstring & sumLines );
+      void summarization ( const ELstring & fullTitle,
+                           const ELstring & sumLines ) override;
 
-      virtual void changeFile (std::ostream & os);
-      virtual void changeFile (const ELstring & filename);
-      virtual void flush();
-      virtual void finish();
+      void changeFile (std::ostream & os) override;
+      void changeFile (const ELstring & filename) override;
+      void flush() override;
+      void finish() override;
 
 
     protected:

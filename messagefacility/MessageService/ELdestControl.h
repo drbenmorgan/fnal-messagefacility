@@ -59,7 +59,7 @@ namespace mf {
     public:
       ELdestControl( cet::exempt_ptr<ELdestination> dest );
       ELdestControl();
-      virtual ~ELdestControl();
+      virtual ~ELdestControl() noexcept = default;
 
       explicit operator bool() const { return d != nullptr; }
 
@@ -108,6 +108,7 @@ namespace mf {
       //
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wwrite-strings"
+#pragma GCC diagnostic ignored "-Wpedantic"
       virtual void summary( std::ostream  & os  , char * title="" );
       virtual void summary( ELstring      & s   , char * title="" );
 #pragma GCC diagnostic pop

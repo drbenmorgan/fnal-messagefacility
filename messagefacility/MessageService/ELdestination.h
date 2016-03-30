@@ -61,7 +61,7 @@ namespace mf {
 
       ELdestination() : ELdestination( fhicl::ParameterSet() ) {}
 
-      virtual ~ELdestination(){}
+      virtual ~ELdestination() noexcept = default;
 
       // -----  Methods invoked by the ELadministrator:
       //

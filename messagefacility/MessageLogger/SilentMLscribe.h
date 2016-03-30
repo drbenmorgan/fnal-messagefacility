@@ -26,27 +26,18 @@
 
 // forward declarations
 namespace mf {
-   namespace service {
-      class SilentMLscribe : public AbstractMLscribe {
+  namespace service {
+    class SilentMLscribe : public AbstractMLscribe {
 
-      public:
-         SilentMLscribe();
-         virtual ~SilentMLscribe();
+    public:
+      SilentMLscribe() = default;
+      void  runCommand(MessageLoggerQ::OpCode  opcode, void * operand) override;
 
+      SilentMLscribe(const SilentMLscribe&) = delete;
 
-         // ---------- member functions ---------------------------
-         virtual
-         void  runCommand(MessageLoggerQ::OpCode  opcode, void * operand);
-
-      private:
-         SilentMLscribe(const SilentMLscribe&); // stop default
-
-         const SilentMLscribe& operator=(const SilentMLscribe&); // stop default
-
-         // ---------- member data --------------------------------
-
-      };
-   }
+      SilentMLscribe & operator= (const SilentMLscribe&) = delete;
+    };
+  }
 }
 
 #endif

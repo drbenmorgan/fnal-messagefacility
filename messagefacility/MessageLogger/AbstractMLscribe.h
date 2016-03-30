@@ -10,18 +10,16 @@ class AbstractMLscribe
 {
 public:
   // ---  birth/death:
-  AbstractMLscribe();
-  virtual ~AbstractMLscribe();
+  AbstractMLscribe() = default;
+  virtual ~AbstractMLscribe() noexcept = default;
+
+  // --- no copying:
+  AbstractMLscribe(AbstractMLscribe const &) = delete;
+  AbstractMLscribe & operator = (AbstractMLscribe const &) = delete;
 
   // ---  methods needed for logging
   virtual
   void  runCommand(MessageLoggerQ::OpCode  opcode, void * operand);
-
-private:
-  // --- no copying:
-  AbstractMLscribe(AbstractMLscribe const &);
-  void  operator = (AbstractMLscribe const &);
-
 };  // AbstractMLscribe
 
 }   // end of namespace service

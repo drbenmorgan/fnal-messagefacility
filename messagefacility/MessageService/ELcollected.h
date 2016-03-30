@@ -99,7 +99,6 @@ namespace mf {
       //
       ELcollected( const ELsender & sender );
       ELcollected( ELostreamOutput * d);
-      virtual ~ELcollected();
 
       // disable copy/c'tor and assignement
       ELcollected( const ELcollected & orig ) = delete;
@@ -110,7 +109,7 @@ namespace mf {
       //
     public:
 
-      virtual void log( mf::ErrorObj & msg );
+      void log( mf::ErrorObj & msg ) override;
 
       // -----  Internal Methods -- Users should not invoke these:
       //

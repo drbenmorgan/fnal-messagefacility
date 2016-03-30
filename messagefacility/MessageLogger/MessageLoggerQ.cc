@@ -59,18 +59,11 @@ namespace {
    class StandAloneScribe : public mf::service::AbstractMLscribe {
 
    public:
-      StandAloneScribe() {}
+     StandAloneScribe() = default;
+     StandAloneScribe(StandAloneScribe const &) = delete;
+     StandAloneScribe & operator = (StandAloneScribe const &) = delete;
 
-      // ---------- member functions ---------------------------
-      virtual
-      void  runCommand(mf::MessageLoggerQ::OpCode  opcode, void * operand);
-
-   private:
-      StandAloneScribe(const StandAloneScribe&); // stop default
-
-      const StandAloneScribe& operator=(const StandAloneScribe&); // stop default
-
-      // ---------- member data --------------------------------
+      void  runCommand(mf::MessageLoggerQ::OpCode  opcode, void * operand) override;
 
    };
 
@@ -121,14 +114,6 @@ namespace {
 std::shared_ptr<mf::service::AbstractMLscribe>
   MessageLoggerQ::mlscribe_ptr = obtainStandAloneScribePtr();
                                 // changeLog 8, 11, 14
-
-MessageLoggerQ::MessageLoggerQ()
-{ }
-
-
-MessageLoggerQ::~MessageLoggerQ()
-{ }
-
 
 MessageLoggerQ *
   MessageLoggerQ::instance()

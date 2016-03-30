@@ -34,8 +34,6 @@ namespace mf {
       , sender  ( snd.clone() )
     {}
 
-    ELcollected::~ELcollected(){}
-
     // Remainder are from base class.
 
     // =======

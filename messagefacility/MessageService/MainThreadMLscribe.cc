@@ -19,8 +19,6 @@ MainThreadMLscribe::MainThreadMLscribe(std::shared_ptr<ThreadQueue> tqp)
 {
 }
 
-MainThreadMLscribe::~MainThreadMLscribe() {}
-
 void
 MainThreadMLscribe::
 runCommand(MessageLoggerQ::OpCode  opcode, void * operand)

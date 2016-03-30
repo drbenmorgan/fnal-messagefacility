@@ -24,8 +24,6 @@ namespace mf {
       : d ( nullptr )
     {}
 
-    ELdestControl::~ELdestControl(){}
-
     // ----------------------------------------------------------------------
     // Behavior control methods invoked by the framework
     // ----------------------------------------------------------------------

@@ -11,10 +11,10 @@ namespace service {
   class MsgContext : public ELcontextSupplier
   {
   public:
-    MsgContext* clone() const { return new MsgContext(*this); }
-    ELstring context() const { return context_; }
-    ELstring summaryContext() const { return summary_context_; }
-    ELstring fullContext() const { return context(); }
+    MsgContext* clone() const override { return new MsgContext(*this); }
+    ELstring context() const override { return context_; }
+    ELstring summaryContext() const override { return summary_context_; }
+    ELstring fullContext() const override { return context(); }
 
     void setContext(const std::string& c)
     {

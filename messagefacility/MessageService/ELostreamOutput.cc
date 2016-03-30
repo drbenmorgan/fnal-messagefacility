@@ -86,8 +86,6 @@ namespace mf {
     }  // ELostreamOutput()
 
 
-    ELostreamOutput::~ELostreamOutput(){}
-
     // ----------------------------------------------------------------------
     // Protected ELostreamOutput functions:
     // ----------------------------------------------------------------------

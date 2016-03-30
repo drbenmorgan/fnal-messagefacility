@@ -46,7 +46,7 @@ public:
   virtual void editErrorObj( mf::ErrorObj & ) const  { }
   virtual mf::ELstring traceRoutine( ) const  { return mf::ELstring(""); }
 
-  virtual ~ELcontextSupplier()  { ; }
+  virtual ~ELcontextSupplier() noexcept = default;
 
 };  // ELcontextSupplier
 

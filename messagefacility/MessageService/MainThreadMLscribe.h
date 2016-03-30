@@ -47,11 +47,9 @@ namespace mf {
     public:
       // ---  birth/death:
       MainThreadMLscribe(std::shared_ptr<ThreadQueue> tqp);
-      virtual ~MainThreadMLscribe();
 
       // --- receive and act on messages:
-      virtual
-        void  runCommand(MessageLoggerQ::OpCode  opcode, void * operand);
+      void  runCommand(MessageLoggerQ::OpCode  opcode, void * operand) override;
 
 
       // --- obtain a pointer to the errorlog
