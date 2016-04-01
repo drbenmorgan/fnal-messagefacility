@@ -13,7 +13,7 @@ foreach ( filename ${testConfigFiles} )
   string( REGEX REPLACE "(.*/fhicl-files/)(.*)(.fcl)" "\\2" testname ${filename} )
 
   cet_test( messagefacility_${testname}_t HANDBUILT
-    TEST_EXEC ELdestinationTester
+    TEST_EXEC $<TARGET_FILE:ELdestinationTester>
     TEST_ARGS -c ${filename}
     DATAFILES
     ${filename}

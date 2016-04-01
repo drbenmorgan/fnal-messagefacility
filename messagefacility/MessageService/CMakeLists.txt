@@ -5,15 +5,23 @@
 
 # !! MessageService/ Files built in ../MessageLogger/CMakeLists.txt !!
 
-cet_make_exec( ELdestinationTester
-  SOURCE ELdestinationTester.cc
-  LIBRARIES
+add_executable(ELdestinationTester ELdestinationTester.h ELdestinationTester.cc)
+target_link_libraries(ELdestinationTester
   MF_MessageLogger
-  ${Boost_FILESYSTEM_LIBRARY}
-  ${Boost_PROGRAM_OPTIONS_LIBRARY}
+  Boost::filesystem
+  Boost::program_options
   )
 
-add_subdirectory(plugins)
 
-install_headers()
-install_source()
+#cet_make_exec( ELdestinationTester
+#  SOURCE ELdestinationTester.cc
+#  LIBRARIES
+#  MF_MessageLogger
+#  ${Boost_FILESYSTEM_LIBRARY}
+#  ${Boost_PROGRAM_OPTIONS_LIBRARY}
+#  )
+
+#add_subdirectory(plugins)
+
+#install_headers()
+#install_source()
