@@ -25,16 +25,35 @@ set(messagefacility_utilities_SOURCES
   )
 
 
+# - Shared
 add_library(MF_Utilities SHARED
   ${messagefacility_utilities_SOURCES}
   )
-target_compile_features(MF_Utilities PUBLIC ${messagefacility_COMPILE_FEATURES})
+target_compile_features(MF_Utilities
+  PUBLIC
+    ${messagefacility_COMPILE_FEATURES}
+    )
 target_include_directories(MF_Utilities
   PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
 target_link_libraries(MF_Utilities cetlib::cetlib)
+
+# - Static
+add_library(MF_Utilities-static STATIC
+  ${messagefacility_utilities_SOURCES}
+  )
+set_target_properties(MF_Utilities-static
+  PROPERTIES OUTPUT_NAME MF_Utilities
+  )
+target_compile_features(MF_Utilities-static PUBLIC ${messagefacility_COMPILE_FEATURES})
+target_include_directories(MF_Utilities-static
+  PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+  )
+target_link_libraries(MF_Utilities-static cetlib::cetlib)
 
 
 
