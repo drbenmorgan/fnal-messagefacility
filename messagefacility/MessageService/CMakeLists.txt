@@ -11,6 +11,10 @@ target_link_libraries(ELdestinationTester
   Boost::filesystem
   Boost::program_options
   )
+install(TARGETS ELdestinationTester
+  EXPORT ${PROJECT_NAME}Targets
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  )
 
 
 #cet_make_exec( ELdestinationTester

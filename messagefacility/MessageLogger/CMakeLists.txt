@@ -144,6 +144,13 @@ target_link_libraries(MF_MessageLogger-static
   Boost::thread
   )
 
+# - Install
+install(TARGETS MF_MessageLogger MF_MessageLogger-static
+  EXPORT ${PROJECT_NAME}Targets
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  )
 
 
 

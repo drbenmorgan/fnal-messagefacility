@@ -55,10 +55,13 @@ target_include_directories(MF_Utilities-static
   )
 target_link_libraries(MF_Utilities-static cetlib::cetlib)
 
-
-
-
-
+# - Install
+install(TARGETS MF_Utilities MF_Utilities-static
+  EXPORT ${PROJECT_NAME}Targets
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  )
 
 #cet_make( LIBRARY_NAME MF_Utilities
 #          LIBRARIES cetlib
