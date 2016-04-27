@@ -105,6 +105,7 @@ set(MF_MessageLogger_Service_SOURCES
   ../MessageService/ThreadSafeErrorLog.h
   )
 
+# - Shared
 add_library(MF_MessageLogger SHARED
   ${MF_MessageLogger_Logger_SOURCES}
   ${MF_MessageLogger_Service_SOURCES}
@@ -122,7 +123,34 @@ target_link_libraries(MF_MessageLogger
   Boost::thread
   )
 
+# - Static
+add_library(MF_MessageLogger-static STATIC
+  ${MF_MessageLogger_Logger_SOURCES}
+  ${MF_MessageLogger_Service_SOURCES}
+  )
+set_target_properties(MF_MessageLogger-static
+  PROPERTIES OUTPUT_NAME MF_MessageLogger
+  )
+target_compile_features(MF_MessageLogger-static PUBLIC ${messagefacility_COMPILE_FEATURES})
+target_include_directories(MF_MessageLogger-static
+  PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+  )
+target_link_libraries(MF_MessageLogger-static
+  MF_Utilities-static
+  fhiclcpp::fhiclcpp
+  cetlib::cetlib
+  Boost::thread
+  )
 
+# - Install
+install(TARGETS MF_MessageLogger MF_MessageLogger-static
+  EXPORT ${PROJECT_NAME}Targets
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  )
 
 
 
