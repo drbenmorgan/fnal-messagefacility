@@ -44,10 +44,6 @@ find_package(Boost 1.50.0 REQUIRED thread program_options filesystem)
 
 add_subdirectory(messagefacility)
 #add_subdirectory(perllib)
-
-if(BUILD_TESTING)
-  add_subdirectory(test)
-endif()
 #add_subdirectory(xcompile)
 #add_subdirectory(ups)
 
