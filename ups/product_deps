@@ -1,5 +1,5 @@
 parent messagefacility v1_16_25
-defaultqual e9
+defaultqual e10
 #
 fcldir -
 perllib  product_dir
@@ -7,15 +7,15 @@ perllib  product_dir
 # define product/version pairs
 product		version
 fhiclcpp        v3_18_04
-cetbuildtools	v5_00_01	-	only_for_build
+cetbuildtools	v5_02_01	-	only_for_build
 end_product_list
 
 
 # Matrix of qualifiers versus dependent products
 qualifier	fhiclcpp	compiler	notes
-e7:debug	e7:debug	gcc
-e7:opt		e7:opt		gcc
-e7:prof		e7:prof		gcc
+e10:debug	e10:debug	gcc
+e10:opt		e10:opt		gcc
+e10:prof	e10:prof	gcc
 e9:debug	e9:debug	gcc
 e9:opt		e9:opt		gcc
 e9:prof		e9:prof		gcc
