@@ -38,7 +38,7 @@ target_include_directories(MF_Utilities
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
-target_link_libraries(MF_Utilities cetlib::cetlib pthread)
+target_link_libraries(MF_Utilities cetlib::cetlib -lpthread)
 
 # - Static
 add_library(MF_Utilities-static STATIC
@@ -53,7 +53,7 @@ target_include_directories(MF_Utilities-static
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
-target_link_libraries(MF_Utilities-static cetlib::cetlib pthread) 
+target_link_libraries(MF_Utilities-static cetlib::cetlib -lpthread) 
 
 # - Install
 install(TARGETS MF_Utilities MF_Utilities-static
