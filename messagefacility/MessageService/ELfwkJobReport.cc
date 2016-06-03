@@ -58,7 +58,7 @@ namespace mf {
     }  // ELfwkJobReport()
 
 
-    ELfwkJobReport::ELfwkJobReport( const ELstring & fileName, bool /*emitAtStart*/ )
+    ELfwkJobReport::ELfwkJobReport( const std::string & fileName, bool /*emitAtStart*/ )
       : ELdestination       ( )
       , osh                 ( std::make_unique<cet::ostream_owner>(fileName, std::ios::app) )
       , charsOnLine         (0)
@@ -160,7 +160,7 @@ namespace mf {
     // Output methods:
     // ----------------------------------------------------------------------
 
-    void ELfwkJobReport::emit( const ELstring & s, bool /*nl*/ )  {
+    void ELfwkJobReport::emit( const std::string & s, bool /*nl*/ )  {
 
       if (s.empty()) return;
 
@@ -173,15 +173,15 @@ namespace mf {
     // Summary output:
     // ----------------------------------------------------------------------
 
-    void ELfwkJobReport::summarization( const ELstring & fullTitle,
-                                        const ELstring & sumLines ) {
+    void ELfwkJobReport::summarization( const std::string & fullTitle,
+                                        const std::string & sumLines ) {
       const int titleMaxLength( 40 );
 
       // title:
       //
-      ELstring title( fullTitle, 0, titleMaxLength );
+      std::string title( fullTitle, 0, titleMaxLength );
       int q = (lineLength - title.length() - 2) / 2;
-      ELstring line(q, '=');
+      std::string line(q, '=');
       emit( "", true );
       emit( line );
       emit( " " );
@@ -196,7 +196,7 @@ namespace mf {
       // finish:
       //
       emit( "", true );
-      emit( ELstring(lineLength, '='), true );
+      emit( std::string(lineLength, '='), true );
 
     }  // summarization()
 
@@ -212,7 +212,7 @@ namespace mf {
       emit( "\n=======================================================\n", true );
     }
 
-    void ELfwkJobReport::changeFile (const ELstring & filename) {
+    void ELfwkJobReport::changeFile (const std::string & filename) {
       osh = std::make_unique<cet::ostream_owner>(filename, std::ios/*_base*/::app);
       emit( "\n=======================================================", true );
       emit( "\nError Log changed to this file\n" );

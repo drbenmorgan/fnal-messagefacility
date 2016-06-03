@@ -3,7 +3,6 @@
 
 #include "messagefacility/MessageLogger/ELextendedID.h"
 #include "messagefacility/MessageLogger/ELmap.h"
-#include "messagefacility/MessageLogger/ELstring.h"
 
 #include "messagefacility/MessageService/ELlimitsTable.h"
 
@@ -49,7 +48,7 @@ namespace mf {
 
     void log( const mf::ErrorObj & msg );
 
-    ELstring formSummary();
+    std::string formSummary();
 
     // ----- Methods invoked by the MessageLoggerScribe, bypassing destControl
     //

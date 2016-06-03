@@ -91,7 +91,7 @@ namespace mf {
     }  // zero()
 
 
-    ELstring  MsgStatistics::formSummary()  {
+    std::string  MsgStatistics::formSummary()  {
 
       using std::ios;
       using std::setw;
@@ -103,7 +103,7 @@ namespace mf {
 
       // -----  Summary part I:
       //
-      ELstring  lastProcess( "" );
+      std::string  lastProcess( "" );
       bool      ftnote( false );
 
       struct part3  {

@@ -25,17 +25,17 @@ namespace service {
 class ELservConSup : public ELcontextSupplier  {
 
 public:
-  ELstring context()                      const override { return con_; }
-  ELstring summaryContext()               const override { return sumcon_; }
-  ELstring fullContext()                  const override { return fullcon_; }
-  void setContext        ( const ELstring & s )  { con_     = s; }
-  void setSummaryContext ( const ELstring & s )  { sumcon_  = s; }
-  void setFullContext    ( const ELstring & s )  { fullcon_ = s; }
+  std::string context()                      const override { return con_; }
+  std::string summaryContext()               const override { return sumcon_; }
+  std::string fullContext()                  const override { return fullcon_; }
+  void setContext        ( const std::string & s )  { con_     = s; }
+  void setSummaryContext ( const std::string & s )  { sumcon_  = s; }
+  void setFullContext    ( const std::string & s )  { fullcon_ = s; }
   ELservConSup * clone() const override {  return new ELservConSup ( *this );   }
 private:
-  ELstring  con_;
-  ELstring  sumcon_;
-  ELstring  fullcon_;
+  std::string  con_;
+  std::string  sumcon_;
+  std::string  fullcon_;
 
 };
 
@@ -44,7 +44,7 @@ void  ELrecv ( int nbytes, const char * data )  {
 }
 
 
-void  ELrecv ( int nbytes, const char * data, ELstring localModule )  {
+void  ELrecv ( int nbytes, const char * data, std::string localModule )  {
 
   static const int  MAXITEMCOUNT = 100;
 
@@ -55,11 +55,11 @@ void  ELrecv ( int nbytes, const char * data, ELstring localModule )  {
   // Pull out the extended id.  Carefully look at ELcollected::emitXid to
   // make certain we take things out in the proper order.
 
-  ELstring process;
-  ELstring module;
-  ELstring subroutine;
-  ELstring id;
-  ELstring sevString;
+  std::string process;
+  std::string module;
+  std::string subroutine;
+  std::string id;
+  std::string sevString;
   int      sevLevel;
 
   const char *  nextItem = data;
@@ -99,7 +99,7 @@ void  ELrecv ( int nbytes, const char * data, ELstring localModule )  {
 
   // Pull out the context strings and set up the special supplier.
 
-  ELstring  context;
+  std::string  context;
 
   context = nextItem;
   nextItem += strlen(nextItem) + 1;
@@ -119,7 +119,7 @@ void  ELrecv ( int nbytes, const char * data, ELstring localModule )  {
 
   // Set the module, subroutine, and process according to this xid.
 
-  ELstring  oldProcess = logger->swapProcess(process);
+  std::string  oldProcess = logger->swapProcess(process);
   errlog.setModule (module);
   errlog.setSubroutine(subroutine);
 
@@ -132,7 +132,7 @@ void  ELrecv ( int nbytes, const char * data, ELstring localModule )  {
   //    the number of items output to 100 by doing a for instead of a while
   //    loop.
 
-  ELstring  item;
+  std::string  item;
   int       itemCount;
   for ( itemCount = 0; itemCount < MAXITEMCOUNT; itemCount++ )  {
     if (*nextItem == 0) break;

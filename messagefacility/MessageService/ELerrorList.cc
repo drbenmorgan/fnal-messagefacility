@@ -17,7 +17,6 @@
 #include "messagefacility/MessageService/ELadministrator.h"
 #include "messagefacility/MessageService/ELcontextSupplier.h"
 
-#include "messagefacility/MessageLogger/ELstring.h"
 
 namespace mf {
   namespace service {

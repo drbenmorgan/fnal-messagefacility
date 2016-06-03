@@ -37,16 +37,16 @@
 // Directory of methods:
 //----------------------
 
-// ELadministrator::setProcess( const ELstring & process )
-// ELadministrator::swapProcess( const ELstring & process )
+// ELadministrator::setProcess( const std::string & process )
+// ELadministrator::swapProcess( const std::string & process )
 // ELadministrator::setContextSupplier( const ELcontextSupplier & supplier )
 // ELadministrator::getContextSupplier() const
 // ELadministrator::swapContextSupplier( ELcontextSupplier & supplier )
 // ELadministrator::setAbortThreshold( const ELseverityLevel & sev )
 // ELadministrator::setExitThreshold( const ELseverityLevel & sev )
 // ELadministrator::attach( const ELdestination & sink )
-// ELadministrator::attach( const ELdestination & sink, const ELstring & name )
-// ELadministrator::getELdestControl ( const ELstring & name,
+// ELadministrator::attach( const ELdestination & sink, const std::string & name )
+// ELadministrator::getELdestControl ( const std::string & name,
 //                                      ELdestControl & theDestControl )
 // ELadministrator::checkSeverity()
 // ELadministrator::severityCount( const ELseverityLevel & sev ) const
@@ -57,11 +57,11 @@
 //                                      const ELseverityLevel & to    )
 // ELadministrator::resetSeverityCount()
 // ELadministrator::setThresholds( const ELseverityLevel & sev )
-// ELadministrator::setLimits( const ELstring & id, int limit )
+// ELadministrator::setLimits( const std::string & id, int limit )
 // ELadministrator::setLimits( const ELseverityLevel & sev, int limit )
-// ELadministrator::setIntervals( const ELstring & id, int interval )
+// ELadministrator::setIntervals( const std::string & id, int interval )
 // ELadministrator::setIntervals( const ELseverityLevel & sev, int interval )
-// ELadministrator::setTimespans( const ELstring & id, int seconds )
+// ELadministrator::setTimespans( const std::string & id, int seconds )
 // ELadministrator::setTimespans( const ELseverityLevel & sev, int seconds )
 // ELadministrator::wipe()
 // ELadministrator::finish()
@@ -108,21 +108,21 @@ namespace service {
 // ELadministrator functionality:
 // ----------------------------------------------------------------------
 
-void ELadministrator::setProcess( const ELstring & process )  {
+void ELadministrator::setProcess( const std::string & process )  {
 
   process_ = process;
 
 }  // setProcess()
 
-void ELadministrator::setApplication( const ELstring & application) {
+void ELadministrator::setApplication( const std::string & application) {
 
   application_ = application;
 
 }
 
-ELstring ELadministrator::swapProcess( const ELstring & process )  {
+std::string ELadministrator::swapProcess( const std::string & process )  {
 
-  ELstring temp = process_;
+  std::string temp = process_;
   process_ = process;
   return temp;
 
@@ -162,7 +162,7 @@ void ELadministrator::setExitThreshold( const ELseverityLevel & sev )  {
 
 }  // setExitThreshold()
 
-bool ELadministrator::getELdestControl ( const ELstring & name,
+bool ELadministrator::getELdestControl ( const std::string & name,
                                          ELdestControl & theDestControl ) {
 
   if ( attachedDestinations.find(name) != attachedDestinations.end() ) {
@@ -233,15 +233,15 @@ void ELadministrator::resetSeverityCount()  {
 // Accessors:
 // ----------------------------------------------------------------------
 
-const ELstring & ELadministrator::hostname() const { return hostname_; }
+const std::string & ELadministrator::hostname() const { return hostname_; }
 
-const ELstring & ELadministrator::hostaddr() const { return hostaddr_; }
+const std::string & ELadministrator::hostaddr() const { return hostaddr_; }
 
-const ELstring & ELadministrator::application() const { return application_; }
+const std::string & ELadministrator::application() const { return application_; }
 
 long ELadministrator::pid() const { return pid_;}
 
-const ELstring & ELadministrator::process() const  { return process_; }
+const std::string & ELadministrator::process() const  { return process_; }
 
 
 ELcontextSupplier & ELadministrator::context() const  { return *context_; }
@@ -347,7 +347,7 @@ void ELadministrator::setThresholds( const ELseverityLevel & sev )  {
 }  // setThresholds()
 
 
-void ELadministrator::setLimits( const ELstring & id, int limit )  {
+void ELadministrator::setLimits( const std::string & id, int limit )  {
 
   for( const auto & d : sinks() ) d.second->stats.limits.setLimit( id, limit );
 
@@ -361,7 +361,7 @@ void ELadministrator::setIntervals
 
 }  // setIntervals()
 
-void ELadministrator::setIntervals( const ELstring & id, int interval )  {
+void ELadministrator::setIntervals( const std::string & id, int interval )  {
 
   for( const auto & d : sinks() ) d.second->stats.limits.setInterval( id, interval );
 
@@ -375,7 +375,7 @@ void ELadministrator::setLimits( const ELseverityLevel & sev, int limit )  {
 }  // setLimits()
 
 
-void ELadministrator::setTimespans( const ELstring & id, int seconds )  {
+void ELadministrator::setTimespans( const std::string & id, int seconds )  {
 
   for ( const auto & d : sinks() ) d.second->stats.limits.setTimespan( id, seconds );
 
@@ -415,9 +415,9 @@ public:
   clone() const override {
     return new ELemptyContextSupplier( *this );
   }
-  ELstring context()        const   override {  return ""; }
-  ELstring summaryContext() const   override {  return ""; }
-  ELstring fullContext()    const   override {  return ""; }
+  std::string context()        const   override {  return ""; }
+  std::string summaryContext() const   override {  return ""; }
+  std::string fullContext()    const   override {  return ""; }
 
 };  // ELemptyContextSupplier
 

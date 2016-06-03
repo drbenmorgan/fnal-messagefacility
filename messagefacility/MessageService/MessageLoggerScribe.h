@@ -5,8 +5,10 @@
 
 #include "fhiclcpp/ParameterSet.h"
 
+#include "messagefacility/MessageService/ELadministrator.h"
 #include "messagefacility/MessageService/ELdestControl.h"
 #include "messagefacility/MessageService/ELdestConfigCheck.h"
+#include "messagefacility/MessageService/ErrorLog.h"
 #include "messagefacility/MessageService/MsgContext.h"
 #include "messagefacility/MessageService/MessageLoggerDefaults.h"
 #include "messagefacility/MessageLogger/MessageLoggerQ.h"
@@ -21,13 +23,11 @@ namespace mf {
   namespace service {
 
     class ThreadQueue;
-    class ELadministrator;
     class ErrorLog;
 
-    class MessageLoggerScribe : public AbstractMLscribe
-    {
+    class MessageLoggerScribe : public AbstractMLscribe {
     public:
-      // ---  birth/death:
+
       ~MessageLoggerScribe();
 
       /// --- If queue is NULL, this sets singleThread true
@@ -38,10 +38,6 @@ namespace mf {
       void runCommand(MessageLoggerQ::OpCode  opcode, void * operand) override;
 
     private:
-      // --- convenience typedefs
-      typedef std::string          String;
-      typedef std::vector<String>  vString;
-      typedef fhicl::ParameterSet  PSet;
 
       // --- log one consumed message
       void log(ErrorObj * errorobj_p);
@@ -61,8 +57,8 @@ namespace mf {
                                const bool should_throw );
 
       void  configure_dest( ELdestControl& dest_ctrl,
-                            const String& dest_pset_name,
-                            const PSet& dest_pset );
+                            const std::string& dest_pset_name,
+                            const fhicl::ParameterSet& dest_pset );
 
       void  configure_default_fwkJobReport( ELdestControl & dest_ctrl);
 
@@ -73,32 +69,32 @@ namespace mf {
       void parseCategories (std::string const & s, std::vector<std::string> & cats);
 
       // --- data:
-      ELadministrator                   * admin_p;
-      ELdestControl                       early_dest;
-      std::shared_ptr<ErrorLog>           errorlog_p;
-      MsgContext                          msg_context;
-      std::shared_ptr<PSet>               job_pset_p;
-      std::string                         jobReportOption;
-      bool                                clean_slate_configuration;
-      MessageLoggerDefaults               messageLoggerDefaults;
-      bool                                active;
-      bool                                singleThread;
-      bool                                done;
-      bool                                purge_mode;
-      int                                 count;
-      std::shared_ptr<ThreadQueue>        m_queue;
+      ELadministrator* admin_p {ELadministrator::instance()};
+      ELdestControl early_dest;
+      std::shared_ptr<ErrorLog> errorlog_p { new ErrorLog };
+      MsgContext msg_context;
+      std::shared_ptr<fhicl::ParameterSet> job_pset_p {nullptr};
+      std::string jobReportOption {};
+      bool clean_slate_configuration {true};
+      MessageLoggerDefaults messageLoggerDefaults {MessageLoggerDefaults::mode("grid")};
+      bool active {true};
+      bool singleThread;
+      bool done {false};
+      bool purge_mode {false};
+      int  count {};
+      std::shared_ptr<ThreadQueue> m_queue;
 
-      cet::BasicPluginFactory             pluginFactory;
-      cet::BasicPluginFactory             pluginStatsFactory;
+      cet::BasicPluginFactory pluginFactory {"mfPlugin"};
+      cet::BasicPluginFactory pluginStatsFactory {"mfStatsPlugin"};
 
-      vString fetch_ordinary_destinations   ( fhicl::ParameterSet& pset );
-      vString fetch_statistics_destinations ( fhicl::ParameterSet& pset );
+      std::vector<std::string> fetch_ordinary_destinations   ( fhicl::ParameterSet& pset );
+      std::vector<std::string> fetch_statistics_destinations ( fhicl::ParameterSet& pset );
 
-      String createId( std::set<std::string>& existing_ids,
-                       const std::string& type,
-                       const std::string& filename,
-                       const fhicl::ParameterSet& pset = fhicl::ParameterSet(),
-                       const bool should_throw = true );
+      std::string createId( std::set<std::string>& existing_ids,
+                            const std::string& type,
+                            const std::string& filename,
+                            const fhicl::ParameterSet& pset = fhicl::ParameterSet(),
+                            const bool should_throw = true);
 
       bool duplicateDestination( const std::string& output_id,
                                  const ELdestConfig::dest_config config,
@@ -107,7 +103,7 @@ namespace mf {
       std::unique_ptr<ELdestination>  makePlugin_( cet::BasicPluginFactory& pluginFactory,
                                                    const std::string& libspec,
                                                    const std::string& psetname,
-                                                   const PSet& pset );
+                                                   const fhicl::ParameterSet& pset );
 
     };  // MessageLoggerScribe
 

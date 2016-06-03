@@ -161,7 +161,7 @@ void ELlimitsTable::zero()  {
 }
 
 
-void ELlimitsTable::setLimit( const ELstring & id, int n )  {
+void ELlimitsTable::setLimit( const std::string & id, int n )  {
   if ( id[0] == '*' )  wildcardLimit    = n;
   else                 limits[id].limit = n;
 }
@@ -171,7 +171,7 @@ void ELlimitsTable::setLimit( const ELseverityLevel & sev, int n )  {
   severityLimits[sev.getLevel()] = n;
 }
 
-void ELlimitsTable::setInterval( const ELstring & id, int interval )  {
+void ELlimitsTable::setInterval( const std::string & id, int interval )  {
   if ( id[0] == '*' )  wildcardInterval    = interval;
   else                 limits[id].interval = interval;
 }
@@ -182,7 +182,7 @@ void ELlimitsTable::setInterval( const ELseverityLevel & sev, int interval )  {
 }
 
 
-void ELlimitsTable::setTimespan( const ELstring & id, int n )  {
+void ELlimitsTable::setTimespan( const std::string & id, int n )  {
   if ( id[0] == '*' )  wildcardTimespan    = n;
   else                 limits[id].timespan = n;
 }

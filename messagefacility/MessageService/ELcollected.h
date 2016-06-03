@@ -67,7 +67,6 @@
 #include "messagefacility/MessageService/ELostreamOutput.h"
 #include "messagefacility/MessageService/ELsender.h"
 
-#include "messagefacility/MessageLogger/ELstring.h"
 #include "messagefacility/MessageLogger/ELextendedID.h"
 #include "messagefacility/MessageLogger/ErrorObj.h"
 
@@ -114,14 +113,14 @@ namespace mf {
       // -----  Internal Methods -- Users should not invoke these:
       //
     protected:
-      void emit( const ELstring & s, bool nl=false );
+      void emit( const std::string & s, bool nl=false );
 
       std::shared_ptr<ELsender> sender;
 
-      void intoBuf ( const ELstring & s );
+      void intoBuf ( const std::string & s );
       void emitXid ( const ELextendedID & xid  );
 
-      ELstring buf;
+      std::string buf;
 
 
     };  // ELcollected

@@ -36,7 +36,6 @@
 // ----------------------------------------------------------------------
 
 
-#include "messagefacility/MessageLogger/ELstring.h"
 #include "messagefacility/MessageLogger/ELseverityLevel.h"
 #include "messagefacility/MessageLogger/ELextendedID.h"
 #include "messagefacility/MessageLogger/ELmap.h"
@@ -82,11 +81,11 @@ public:
   void wipe();  // Clears everything -- counts and limits established.
   void zero();  // Clears only counts.
 
-  void setLimit   ( const ELstring        & id,  int n        );
+  void setLimit   ( const std::string        & id,  int n        );
   void setLimit   ( const ELseverityLevel & sev, int n        );
-  void setInterval( const ELstring        & id,  int interval );
+  void setInterval( const std::string        & id,  int interval );
   void setInterval( const ELseverityLevel & sev, int interval );
-  void setTimespan( const ELstring        & id,  int n        );
+  void setTimespan( const std::string        & id,  int n        );
   void setTimespan( const ELseverityLevel & sev, int n        );
 
   ELlimitsTable & operator= (const ELlimitsTable & t);

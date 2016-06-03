@@ -54,7 +54,7 @@ public:
   // -----  start a new logging operation:
   //
   inline ThreadSafeErrorLog & operator()
-                ( const ELseverityLevel & sev, const ELstring & id );
+                ( const ELseverityLevel & sev, const std::string & id );
 
   inline ErrorLog & operator()( int debugLevel );
 
@@ -65,7 +65,7 @@ public:
   // -----  logging operations:
   //
 
-  inline ThreadSafeErrorLog & emit (const ELstring & s);
+  inline ThreadSafeErrorLog & emit (const std::string & s);
                                         // accumulate one part of a message
 
   inline ThreadSafeErrorLog & operator()( ErrorObj & msg );
@@ -80,7 +80,7 @@ public:
   // -----  birth/death:
   //
   inline ThreadSafeErrorLog();
-  inline ThreadSafeErrorLog( const ELstring & pkgName );
+  inline ThreadSafeErrorLog( const std::string & pkgName );
   inline ThreadSafeErrorLog( const ErrorLog & ee );
   inline ThreadSafeErrorLog( const ThreadSafeErrorLog<Mutex> & ee );
   inline virtual ~ThreadSafeErrorLog();

@@ -50,7 +50,7 @@ namespace mf {
 
 
     ELostreamOutput::ELostreamOutput( const fhicl::ParameterSet& pset,
-                                      const ELstring & fileName, const bool append, bool emitAtStart )
+                                      const std::string & fileName, const bool append, bool emitAtStart )
       : ELdestination( pset )
       , osh( std::make_unique<cet::ostream_owner>(fileName.c_str(), append ? std::ios::app : std::ios::trunc) )
       , xid()
@@ -100,17 +100,17 @@ namespace mf {
     // Summary output:
     // ----------------------------------------------------------------------
 
-    void ELostreamOutput::summarization( const ELstring & fullTitle,
-                                         const ELstring & sumLines )
+    void ELostreamOutput::summarization( const std::string & fullTitle,
+                                         const std::string & sumLines )
     {
 
       constexpr int titleMaxLength( 40 );
 
       // title:
       //
-      ELstring title( fullTitle, 0, titleMaxLength );
+      std::string title( fullTitle, 0, titleMaxLength );
       int q = (lineLength - title.length() - 2) / 2;
-      ELstring line(q, '=');
+      std::string line(q, '=');
       emit(osh->stream(), "", true );
       emit(osh->stream(), line );
       emit(osh->stream(), " " );
@@ -125,7 +125,7 @@ namespace mf {
       // finish:
       //
       emit(osh->stream(), "", true );
-      emit(osh->stream(), ELstring(lineLength, '='), true );
+      emit(osh->stream(), std::string(lineLength, '='), true );
 
     }  // summarization()
 
@@ -144,7 +144,7 @@ namespace mf {
       emit( osh->stream(), "\n=======================================================\n", true );
     }
 
-    void ELostreamOutput::changeFile (const ELstring & filename) {
+    void ELostreamOutput::changeFile (const std::string & filename) {
       osh = std::make_unique<cet::ostream_owner>(filename, std::ios::app);
       timeval tv;
       gettimeofday(&tv, 0);

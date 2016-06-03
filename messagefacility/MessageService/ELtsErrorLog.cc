@@ -40,7 +40,7 @@ ELtsErrorLog::ELtsErrorLog()
 , msg(ELunspecified, "...")
 {}
 
-ELtsErrorLog::ELtsErrorLog( const ELstring & pkgName )
+ELtsErrorLog::ELtsErrorLog( const std::string & pkgName )
 : a( ELadministrator::instance() )
 , e(pkgName)
 , process("")
@@ -70,19 +70,19 @@ ELtsErrorLog::ELtsErrorLog( const ELtsErrorLog & ee)
 // Setup for preamble parts
 // ----------------------------------------------------------------------
 
-void ELtsErrorLog::setSubroutine( const ELstring & subName )  {
+void ELtsErrorLog::setSubroutine( const std::string & subName )  {
   e.setSubroutine (subName);
 }  // setSubroutine()
 
-void ELtsErrorLog::setModule( const ELstring & modName )  {
+void ELtsErrorLog::setModule( const std::string & modName )  {
   e.setModule (modName);
 }  // setModule()
 
-void ELtsErrorLog::setPackage( const ELstring & pkgName )  {
+void ELtsErrorLog::setPackage( const std::string & pkgName )  {
   e.setModule (pkgName);
 }  // setPackage()
 
-void ELtsErrorLog::setProcess( const ELstring & procName )  {
+void ELtsErrorLog::setProcess( const std::string & procName )  {
   process = procName;
 }  // setProcess()
 
@@ -98,7 +98,7 @@ void ELtsErrorLog::setDebugVerbosity (int debugVerbosity) {
   e.setDebugVerbosity (debugVerbosity);
 }
 
-void ELtsErrorLog::setDebugMessages (ELseverityLevel sev, ELstring id) {
+void ELtsErrorLog::setDebugMessages (ELseverityLevel sev, std::string id) {
   e.setDebugMessages (sev, id);
 }
 
@@ -106,7 +106,7 @@ void ELtsErrorLog::setDebugMessages (ELseverityLevel sev, ELstring id) {
 // Recovery of an ELdestControl handle
 // ----------------------------------------------------------------------
 
-bool ELtsErrorLog::getELdestControl (const ELstring & name,
+bool ELtsErrorLog::getELdestControl (const std::string & name,
                                      ELdestControl & theDestControl) const {
     return a->getELdestControl ( name, theDestControl );
 }
@@ -116,7 +116,7 @@ bool ELtsErrorLog::getELdestControl (const ELstring & name,
 // Message Initiation
 // ----------------------------------------------------------------------
 
-void ELtsErrorLog::initiateMsg(const ELseverityLevel& sev, const ELstring& id)
+void ELtsErrorLog::initiateMsg(const ELseverityLevel& sev, const std::string& id)
 {
   if ( sev < e.discardThreshold ) {
     e.discarding = true;
@@ -148,7 +148,7 @@ void ELtsErrorLog::initiateMsg(const ELseverityLevel& sev, const ELstring& id)
 // ----------------------------------------------------------------------
 
 
-void ELtsErrorLog::item ( const ELstring & s ) {
+void ELtsErrorLog::item ( const std::string & s ) {
   if ( ! msgIsActive )
     initiateMsg ( ELunspecified, "..." );
   msg.eo_emit( s );

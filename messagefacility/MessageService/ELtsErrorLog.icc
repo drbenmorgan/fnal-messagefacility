@@ -19,7 +19,7 @@ namespace service {
 // ----------------------------------------------------------------------
 
 void ELtsItem ( ELtsErrorLog & e, const char s[] ) {
-  e.item( ELstring(s) );
+  e.item( std::string(s) );
 }
 
 // ----------------------------------------------------------------------

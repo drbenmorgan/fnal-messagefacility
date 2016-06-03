@@ -25,7 +25,6 @@
 // ----------------------------------------------------------------------
 
 
-#include "messagefacility/MessageLogger/ELstring.h"
 #include "messagefacility/MessageLogger/ErrorObj.h"
 
 namespace mf {
@@ -39,12 +38,12 @@ class ELcontextSupplier  {
 
 public:
   virtual ELcontextSupplier * clone()          const = 0;
-  virtual ELstring            context()        const = 0;
-  virtual ELstring            summaryContext() const = 0;
-  virtual ELstring            fullContext()    const = 0;
+  virtual std::string            context()        const = 0;
+  virtual std::string            summaryContext() const = 0;
+  virtual std::string            fullContext()    const = 0;
 
   virtual void editErrorObj( mf::ErrorObj & ) const  { }
-  virtual mf::ELstring traceRoutine( ) const  { return mf::ELstring(""); }
+  virtual std::string traceRoutine( ) const  { return std::string(""); }
 
   virtual ~ELcontextSupplier() noexcept = default;
 

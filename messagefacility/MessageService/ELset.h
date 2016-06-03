@@ -15,28 +15,25 @@
 //
 // ----------------------------------------------------------------------
 
-#include "messagefacility/MessageLogger/ELstring.h"
 
 #include <set>
-
+#include <string>
 
 namespace mf {
-namespace service {
+  namespace service {
 
+    struct ELsetS {
+      std::string s;
+      ELsetS (std::string const& ss) : s{ss} {}
+      bool operator< (ELsetS const& t) const { return (s<t.s); }
+    };
 
-struct ELsetS {
-  std::string s;
-  ELsetS (const std::string & ss) : s(ss) {}
-  bool operator< (const ELsetS & t) const { return (s<t.s); }
-};
-
-typedef std::set<ELsetS> ELset_string;
-
-// ----------------------------------------------------------------------
-
-
-}        // end of namespace service
-}        // end of namespace mf
-
+    using ELset_string = std::set<ELsetS>;
+  }
+}
 
 #endif // MessageFacility_MessageService_ELset_h
+
+// Local variables:
+// mode: c++
+// End:

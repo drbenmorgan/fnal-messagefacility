@@ -43,16 +43,17 @@
 //
 // ----------------------------------------------------------------------
 
-#include "messagefacility/MessageLogger/ELstring.h"
+#include <string>
 
 namespace mf {
-namespace service {
-
-void ELrecv ( int nbytes, const char * data );
-void ELrecv ( int nbytes, const char * data, ELstring localModule );
-
-}        // end of namespace service
-}        // end of namespace mf
-
+  namespace service {
+    void ELrecv ( int nbytes, const char * data );
+    void ELrecv ( int nbytes, const char * data, std::string localModule );
+  }
+}
 
 #endif // MessageFacility_MessageService_ELrecv_h
+
+// Local variables:
+// mode: c++
+// End:

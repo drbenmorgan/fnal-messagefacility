@@ -33,81 +33,70 @@
 // ----------------------------------------------------------------------
 
 
-#include <map>
 
-#include "messagefacility/MessageLogger/ELstring.h"
 #include "messagefacility/MessageLogger/ELextendedID.h"
 
+#include <map>
+#include <string>
 
 namespace mf {
 
+  class LimitAndTimespan  {
+  public:
 
-// ----------------------------------------------------------------------
+    int limit;
+    int timespan;
+    int interval;
 
+    LimitAndTimespan(int lim = -1, int ts = -1, int ivl = -1);
 
-class LimitAndTimespan  {
-
-public:
-
-  int limit;
-  int timespan;
-  int interval;
-
-  LimitAndTimespan( int lim = -1, int ts = -1, int ivl = -1 );
-
-};  // LimitAndTimespan
+  };  // LimitAndTimespan
 
 
-class CountAndLimit  {
+  class CountAndLimit  {
+  public:
 
-public:
+    int    n {};
+    int    aggregateN {};
+    time_t lastTime;
+    int    limit;
+    int    timespan;
+    int    interval;
+    int    skipped;
 
-  int    n;
-  int    aggregateN;
-  time_t lastTime;
-  int    limit;
-  int    timespan;
-  int    interval;
-  int    skipped;
+    CountAndLimit( int lim = -1, int ts = -1, int ivl = -1 );
+    bool add();
 
-  CountAndLimit( int lim = -1, int ts = -1, int ivl = -1 );
-  bool add();
-
-};  // CountAndLimit
-
-
-class StatsCount  {
-
-public:
-
-  int      n;
-  int      aggregateN;
-  bool     ignoredFlag;
-  ELstring context1;
-  ELstring context2;
-  ELstring contextLast;
-
-  StatsCount();
-  void add( const ELstring & context, bool reactedTo );
-
-};  // StatsCount
+  };  // CountAndLimit
 
 
-// ----------------------------------------------------------------------
+  class StatsCount  {
+  public:
+
+    int n {};
+    int aggregateN {};
+    bool ignoredFlag {false};
+    std::string context1 {};
+    std::string context2 {};
+    std::string contextLast {};
+
+    void add(std::string const& context, bool reactedTo);
+
+  };  // StatsCount
 
 
-typedef std::map< ELstring     , LimitAndTimespan > ELmap_limits;
+  // ----------------------------------------------------------------------
 
-typedef std::map< ELextendedID , CountAndLimit    > ELmap_counts;
+  using ELmap_limits = std::map<std::string, LimitAndTimespan>;
+  using ELmap_counts = std::map<ELextendedID, CountAndLimit>;
+  using ELmap_stats  = std::map<ELextendedID, StatsCount>;
 
-typedef std::map< ELextendedID , StatsCount       > ELmap_stats;
+  // See ELseverityLevel.cc for another map:  ELmap_sevTran
 
-// See ELseverityLevel.cc for another map:  ELmap_sevTran
-
-// ----------------------------------------------------------------------
-
-
-}        // end of namespace mf
-
+}
 
 #endif // MessageLogger_ELmap_h
+
+// Local variables:
+// mode: c++
+// End:

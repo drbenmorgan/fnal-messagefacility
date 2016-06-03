@@ -9,7 +9,6 @@
 // ----------------------------------------------------------------------
 
 #include "cetlib/ostream_handle.h"
-#include "messagefacility/MessageLogger/ELstring.h"
 #include "messagefacility/MessageLogger/ELextendedID.h"
 #include "messagefacility/MessageService/ELdestination.h"
 
@@ -43,7 +42,7 @@ namespace mf {
       ELostreamOutput() : ELostreamOutput( fhicl::ParameterSet() ) {}
       ELostreamOutput( std::ostream& os, bool emitAtStart = false ) : ELostreamOutput( fhicl::ParameterSet(), os, emitAtStart ){}
 
-      ELostreamOutput( const fhicl::ParameterSet& psetFormat, const ELstring & fileName, const bool append, bool emitAtStart = false );
+      ELostreamOutput( const fhicl::ParameterSet& psetFormat, const std::string & fileName, const bool append, bool emitAtStart = false );
 
       // Disable copy c'tor/assignment
       ELostreamOutput( const ELostreamOutput & orig ) = delete;
@@ -52,10 +51,10 @@ namespace mf {
     protected:
 
       void routePayload  ( const std::ostringstream& oss,const mf::ErrorObj& msg ) override;
-      void summarization ( const ELstring & fullTitle, const ELstring & sumLines ) override;
+      void summarization ( const std::string & fullTitle, const std::string & sumLines ) override;
 
       void changeFile (std::ostream & os) override;
-      void changeFile (const ELstring & filename) override;
+      void changeFile (const std::string & filename) override;
       void flush() override;
 
       // --- member data:

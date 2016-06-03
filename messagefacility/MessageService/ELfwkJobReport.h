@@ -13,7 +13,6 @@
 #include "cetlib/ostream_handle.h"
 #include "messagefacility/MessageService/ELdestination.h"
 #include "messagefacility/MessageLogger/ELextendedID.h"
-#include "messagefacility/MessageLogger/ELstring.h"
 
 #include <memory>
 
@@ -43,7 +42,7 @@ namespace mf {
       //
       ELfwkJobReport();
       ELfwkJobReport( std::ostream & os, bool emitAtStart = true );
-      ELfwkJobReport( const ELstring & fileName, bool emitAtStart = true );
+      ELfwkJobReport( const std::string & fileName, bool emitAtStart = true );
 
       virtual ~ELfwkJobReport();
 
@@ -58,13 +57,13 @@ namespace mf {
       // ---  Internal Methods -- Users should not invoke these:
       //
     protected:
-      void emit( const ELstring & s, bool nl=false );
+      void emit( const std::string & s, bool nl=false );
 
-      void summarization ( const ELstring & fullTitle,
-                           const ELstring & sumLines ) override;
+      void summarization ( const std::string & fullTitle,
+                           const std::string & sumLines ) override;
 
       void changeFile (std::ostream & os) override;
-      void changeFile (const ELstring & filename) override;
+      void changeFile (const std::string & filename) override;
       void flush() override;
       void finish() override;
 
