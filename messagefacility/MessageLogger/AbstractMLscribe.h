@@ -4,26 +4,27 @@
 #include "messagefacility/MessageLogger/MessageLoggerQ.h"
 
 namespace mf  {
-namespace service {
+  namespace service {
 
-class AbstractMLscribe
-{
-public:
-  // ---  birth/death:
-  AbstractMLscribe() = default;
-  virtual ~AbstractMLscribe() noexcept = default;
+    class AbstractMLscribe {
+    public:
 
-  // --- no copying:
-  AbstractMLscribe(AbstractMLscribe const &) = delete;
-  AbstractMLscribe & operator = (AbstractMLscribe const &) = delete;
+      AbstractMLscribe() = default;
+      virtual ~AbstractMLscribe() noexcept = default;
 
-  // ---  methods needed for logging
-  virtual
-  void  runCommand(MessageLoggerQ::OpCode  opcode, void * operand);
-};  // AbstractMLscribe
+      // --- no copying:
+      AbstractMLscribe(AbstractMLscribe const &) = delete;
+      AbstractMLscribe & operator = (AbstractMLscribe const &) = delete;
 
-}   // end of namespace service
+      // ---  methods needed for logging
+      virtual void  runCommand(MessageLoggerQ::OpCode  opcode, void * operand) = 0;
+    };  // AbstractMLscribe
+
+  }   // end of namespace service
 }  // namespace mf
 
-
 #endif // MessageFacility_MessageLogger_AbstractMLscribe_h
+
+// Local variables:
+// mode: c++
+// End:
