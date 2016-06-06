@@ -24,13 +24,9 @@ namespace mf {
 template <class T>
 ErrorObj &
 ErrorObj::opltlt ( const T & t )  {
-  myOs.str(emptyString);
+  myOs.str({});
   myOs << t;
-#ifdef OLD_STYLE_AUTOMATIC_SPACES
-  if ( ! myOs.str().empty() ) eo_emit( myOs.str() + ' ' );
-#else
   if ( ! myOs.str().empty() ) eo_emit( myOs.str() );
-#endif
   return *this;
 }  // operator<< <T>()
 
@@ -46,15 +42,15 @@ ErrorObj & operator<<( ErrorObj & e, const T & t )  {
 
 inline
 ErrorObj &
-ErrorObj::operator<< (  std::ostream&(*f)(std::ostream&) ) {
+ErrorObj::operator<< (std::ostream&(*f)(std::ostream&)) {
   f(myOs);
-  myOs.str(emptyString);
+  myOs.str({});
   return *this;
 }
 
 inline
 ErrorObj &
-ErrorObj::operator<< ( std::ios_base&(*f)(std::ios_base&) ) {
+ErrorObj::operator<< (std::ios_base&(*f)(std::ios_base&)) {
   f(myOs);
   return *this;
 }

@@ -1,5 +1,4 @@
-#ifndef __GCCXML__
-#ifndef THREADSAFEERRORLOG_H
+#ifndef MessageFacility_MessageService_ThreadSafeErrorLog_h
 #define MessageFacility_MessageService_ThreadSafeErrorLog_h
 
 // ----------------------------------------------------------------------
@@ -17,131 +16,125 @@
 //
 // ----------------------------------------------------------------------
 
-
-
 #include "messagefacility/MessageService/ELtsErrorLog.h"
 
 namespace mf {
-namespace service {
+  namespace service {
 
 
-// ----------------------------------------------------------------------
-// Prerequisite classes:
-// ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // Prerequisite classes:
+    // ----------------------------------------------------------------------
 
-class ELadministrator;
-class ELdestControl;
-
-
-// ----------------------------------------------------------------------
-// ThreadSafeErrorLog:
-// ----------------------------------------------------------------------
-
-template <class Mutex>
-class ThreadSafeErrorLog  : public ELtsErrorLog {
-
-  // Mutex represents the user-defined locking mechanism, which must
-  // work as follows:  Any instance of a Mutex will when constructed
-  // obtain the right-to-log-an-error semaphore, and will relinquish
-  // that right when it is destructed.
-
-public:
-
-// ----------------------------------------------------------------------
-// -----  Methods for physicists logging errors:
-// ----------------------------------------------------------------------
-
-  // -----  start a new logging operation:
-  //
-  inline ThreadSafeErrorLog & operator()
-                ( const ELseverityLevel & sev, const std::string & id );
-
-  inline ErrorLog & operator()( int debugLevel );
-
-  // -----  mutator:
-  //
-  using ELtsErrorLog::setSubroutine;
-
-  // -----  logging operations:
-  //
-
-  inline ThreadSafeErrorLog & emit (const std::string & s);
-                                        // accumulate one part of a message
-
-  inline ThreadSafeErrorLog & operator()( ErrorObj & msg );
-                                        // an entire message
-
-  inline ThreadSafeErrorLog & completeMsg();  // no more parts forthcoming
-
-// ----------------------------------------------------------------------
-// -----  Methods meant for the Module base class in the framework:
-// ----------------------------------------------------------------------
-
-  // -----  birth/death:
-  //
-  inline ThreadSafeErrorLog();
-  inline ThreadSafeErrorLog( const std::string & pkgName );
-  inline ThreadSafeErrorLog( const ErrorLog & ee );
-  inline ThreadSafeErrorLog( const ThreadSafeErrorLog<Mutex> & ee );
-  inline virtual ~ThreadSafeErrorLog();
-
-  // -----  mutators:
-  //
-  using ELtsErrorLog::setModule;                // These two are
-  using ELtsErrorLog::setPackage;               //   IDENTICAL
-
-  using ELtsErrorLog::setProcess;
-        // Unlike ErrorLog, ThreadSafeErrorLog can have a process name
-        // distinct from that found in the ELadministrator
-
-  // -----  logging collected message:
-  //
-  inline ThreadSafeErrorLog & operator()( int nbytes, char * data );
-
-  // -----  advanced control options:
-
-  using ELtsErrorLog::setHexTrigger;
-  using ELtsErrorLog::setDiscardThreshold;
-  using ELtsErrorLog::getELdestControl;
-  using ELtsErrorLog::setDebugVerbosity;
-  using ELtsErrorLog::setDebugMessages;
-
-  // -----  No member data; it is all held by ELtsErrorLog
-
-};  // ThreadSafeErrorLog
-
-// ----------------------------------------------------------------------
-// Global functions:
-// ----------------------------------------------------------------------
-
-template <class Mutex>
-inline ThreadSafeErrorLog<Mutex> & operator<<
-        ( ThreadSafeErrorLog<Mutex> & e, void (* f)(ErrorLog &) );
-                                // allow log << endmsg
-                                // SAME arg. signature as for ErrorLog
-
-template <class Mutex, class T>
-inline ThreadSafeErrorLog<Mutex> &
-        operator<<( ThreadSafeErrorLog<Mutex> & e, const T & t );
-
-// ----------------------------------------------------------------------
+    class ELadministrator;
+    class ELdestControl;
 
 
-}        // end of namespace service
+    // ----------------------------------------------------------------------
+    // ThreadSafeErrorLog:
+    // ----------------------------------------------------------------------
+
+    template <class Mutex>
+    class ThreadSafeErrorLog  : public ELtsErrorLog {
+
+      // Mutex represents the user-defined locking mechanism, which must
+      // work as follows:  Any instance of a Mutex will when constructed
+      // obtain the right-to-log-an-error semaphore, and will relinquish
+      // that right when it is destructed.
+
+    public:
+
+      // -----  start a new logging operation:
+      //
+      inline ThreadSafeErrorLog & operator()
+        ( const ELseverityLevel & sev, const std::string & id );
+
+      inline ErrorLog & operator()( int debugLevel );
+
+      // -----  mutator:
+      //
+      using ELtsErrorLog::setSubroutine;
+
+      // -----  logging operations:
+      //
+
+      inline ThreadSafeErrorLog & emit (const std::string & s);
+      // accumulate one part of a message
+
+      inline ThreadSafeErrorLog & operator()( ErrorObj & msg );
+      // an entire message
+
+      inline ThreadSafeErrorLog & completeMsg();  // no more parts forthcoming
+
+      // ----------------------------------------------------------------------
+      // -----  Methods meant for the Module base class in the framework:
+      // ----------------------------------------------------------------------
+
+      // -----  birth/death:
+      //
+      inline ThreadSafeErrorLog();
+      inline ThreadSafeErrorLog( const std::string & pkgName );
+      inline ThreadSafeErrorLog( const ErrorLog & ee );
+      inline ThreadSafeErrorLog( const ThreadSafeErrorLog<Mutex> & ee );
+      inline virtual ~ThreadSafeErrorLog();
+
+      // -----  mutators:
+      //
+      using ELtsErrorLog::setModule;                // These two are
+      using ELtsErrorLog::setPackage;               //   IDENTICAL
+
+      using ELtsErrorLog::setProcess;
+      // Unlike ErrorLog, ThreadSafeErrorLog can have a process name
+      // distinct from that found in the ELadministrator
+
+      // -----  logging collected message:
+      //
+      inline ThreadSafeErrorLog & operator()( int nbytes, char * data );
+
+      // -----  advanced control options:
+
+      using ELtsErrorLog::setHexTrigger;
+      using ELtsErrorLog::setDiscardThreshold;
+      using ELtsErrorLog::getELdestControl;
+      using ELtsErrorLog::setDebugVerbosity;
+      using ELtsErrorLog::setDebugMessages;
+
+      // -----  No member data; it is all held by ELtsErrorLog
+
+    };  // ThreadSafeErrorLog
+
+    // ----------------------------------------------------------------------
+    // Global functions:
+    // ----------------------------------------------------------------------
+
+    template <class Mutex>
+    inline ThreadSafeErrorLog<Mutex> & operator<<
+    ( ThreadSafeErrorLog<Mutex> & e, void (* f)(ErrorLog &) );
+    // allow log << endmsg
+    // SAME arg. signature as for ErrorLog
+
+    template <class Mutex, class T>
+    inline ThreadSafeErrorLog<Mutex> &
+    operator<<( ThreadSafeErrorLog<Mutex> & e, const T & t );
+
+    // ----------------------------------------------------------------------
+
+
+  }        // end of namespace service
 }       // end of namespace mf
 
 
 // ----------------------------------------------------------------------
-// .icc
-// ----------------------------------------------------------------------
 
 #define THREADSAFEERRORLOG_ICC
-  #include "messagefacility/MessageLogger/ThreadSafeErrorLog.icc"
+#include "messagefacility/MessageLogger/ThreadSafeErrorLog.icc"
 #undef  THREADSAFEERRORLOG_ICC
 
 
 // ----------------------------------------------------------------------
 
-
 #endif  // THREADSAFEERRORLOG_H
-#endif
+
+// Local variables:
+// mode: c++
+// End:

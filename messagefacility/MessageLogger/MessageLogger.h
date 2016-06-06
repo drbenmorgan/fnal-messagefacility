@@ -254,12 +254,10 @@ public:
 
   bool   MFServiceEnabled;
 
-#ifndef __GCCXML__
   std::shared_ptr<Presence> MFPresence;
   std::shared_ptr<service::MessageLogger> theML;
 
   std::mutex m;
-#endif
 private:
   static std::string commonPSet( );
 };

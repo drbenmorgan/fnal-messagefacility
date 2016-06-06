@@ -1,6 +1,6 @@
 #ifndef MessageFacility_MessageService_MessageServicePresence_h
 #define MessageFacility_MessageService_MessageServicePresence_h
-#ifndef __GCCXML__
+
 #include "messagefacility/MessageService/Presence.h"
 #include "messagefacility/MessageService/MainThreadMLscribe.h"
 
@@ -8,31 +8,32 @@
 #include <thread>
 
 namespace mf  {
-namespace service {
+  namespace service {
 
-class ThreadQueue;
+    class ThreadQueue;
 
-class MessageServicePresence : public Presence
-{
-public:
-  // ---  birth/death:
-  MessageServicePresence();
-  ~MessageServicePresence();
+    class MessageServicePresence : public Presence {
+    public:
 
-private:
-  // --- no copying:
-  MessageServicePresence(MessageServicePresence const &);
-  void  operator = (MessageServicePresence const &);
+      MessageServicePresence();
+      ~MessageServicePresence();
 
-  // --- data:
-  std::shared_ptr<ThreadQueue> m_queue;
-  std::thread  m_scribeThread;
+      MessageServicePresence(MessageServicePresence const&) = delete;
+      void operator= (MessageServicePresence const&) = delete;
+   private:
 
-};  // MessageServicePresence
+      // --- data:
+      std::shared_ptr<ThreadQueue> m_queue;
+      std::thread  m_scribeThread;
+
+    };  // MessageServicePresence
 
 
-}   // end of namespace service
+  }   // end of namespace service
 }  // namespace mf
 
-#endif
 #endif  // MessageFacility_MessageService_MessageServicePresence_h
+
+// Local variables:
+// mode: c++
+// End:

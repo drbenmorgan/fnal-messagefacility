@@ -59,7 +59,6 @@ namespace mf
 
     static ELmap  m;
 
-
     m[ ELzeroSeverity.getSymbol()   ] = ELseverityLevel::ELsev_zeroSeverity
       , m[ ELzeroSeverity.getName()     ] = ELseverityLevel::ELsev_zeroSeverity
       , m[ ELzeroSeverity.getInputStr() ] = ELseverityLevel::ELsev_zeroSeverity
@@ -159,31 +158,22 @@ namespace mf
   // Birth/death:
   // ----------------------------------------------------------------------
 
-  ELseverityLevel::ELseverityLevel( enum ELsev_ lev ) : myLevel( lev )  {
+  ELseverityLevel::ELseverityLevel(std::string const& s)
+  {
+    static ELmap const& m = loadMap();
+
+    ELmap::const_iterator i = m.find(s);
+    myLevel = (i == m.end()) ? ELsev_unspecified : i->second;
   }
-
-
-  ELseverityLevel::ELseverityLevel( std::string const & s )  {
-
-    static ELmap const & m = loadMap();
-
-    ELmap::const_iterator  i = m.find( s );
-    myLevel = ( i == m.end() ) ? ELsev_unspecified : i->second;
-
-  }
-
-
-  ELseverityLevel::~ELseverityLevel()  { ; }
-
 
   // ----------------------------------------------------------------------
   // Comparator:
   // ----------------------------------------------------------------------
 
-  int  ELseverityLevel::cmp( ELseverityLevel const & e ) const  {
+  int ELseverityLevel::cmp(ELseverityLevel const e) const
+  {
     return myLevel - e.myLevel;
   }
-
 
   // ----------------------------------------------------------------------
   // Accessors:
@@ -194,7 +184,6 @@ namespace mf
   {
     return myLevel;
   }
-
 
   std::string
   ELseverityLevel::getSymbol() const
@@ -306,112 +295,13 @@ namespace mf
     return result;
   }
 
-
   // ----------------------------------------------------------------------
   // Emitter:
   // ----------------------------------------------------------------------
 
-  std::ostream & operator<<( std::ostream & os, const ELseverityLevel & sev )  {
+  std::ostream& operator<<(std::ostream& os, ELseverityLevel const sev)
+  {
     return os << " -" << sev.getName() << "- ";
   }
-
-
-  // ----------------------------------------------------------------------
-  // Declare the globally available severity objects,
-  // one generator function and one proxy per non-default ELsev_:
-  // ----------------------------------------------------------------------
-
-  ELseverityLevel ELzeroSeverityGen()  {
-    static ELseverityLevel const e( ELseverityLevel::ELsev_zeroSeverity );
-    return e;
-  }
-  ELslProxy< ELzeroSeverityGen    > const  ELzeroSeverity;
-
-  ELseverityLevel ELincidentalGen()  {
-    static ELseverityLevel const  e( ELseverityLevel::ELsev_incidental );
-    return e;
-  }
-  ELslProxy< ELincidentalGen      > const  ELincidental;
-
-  ELseverityLevel ELsuccessGen()  {
-    static ELseverityLevel const  e( ELseverityLevel::ELsev_success );
-    return e;
-  }
-  ELslProxy< ELsuccessGen         > const  ELsuccess;
-
-  ELseverityLevel ELinfoGen()  {
-    static ELseverityLevel const  e( ELseverityLevel::ELsev_info );
-    return e;
-  }
-  ELslProxy< ELinfoGen            > const  ELinfo;
-
-  ELseverityLevel ELwarningGen()  {
-    static ELseverityLevel const  e( ELseverityLevel::ELsev_warning );
-    return e;
-  }
-  ELslProxy< ELwarningGen         > const  ELwarning;
-
-  ELseverityLevel ELwarning2Gen()  {
-    static ELseverityLevel const  e( ELseverityLevel::ELsev_warning2 );
-    return e;
-  }
-  ELslProxy< ELwarning2Gen        > const  ELwarning2;
-
-  ELseverityLevel ELerrorGen()  {
-    static ELseverityLevel const  e( ELseverityLevel::ELsev_error );
-    return e;
-  }
-  ELslProxy< ELerrorGen           > const  ELerror;
-
-  ELseverityLevel ELerror2Gen()  {
-    static ELseverityLevel const  e( ELseverityLevel::ELsev_error2 );
-    return e;
-  }
-  ELslProxy< ELerror2Gen          > const  ELerror2;
-
-  ELseverityLevel ELnextEventGen()  {
-    static ELseverityLevel const  e( ELseverityLevel::ELsev_next );
-    return e;
-  }
-  ELslProxy< ELnextEventGen       > const  ELnextEvent;
-
-  ELseverityLevel ELunspecifiedGen()  {
-    static ELseverityLevel const  e( ELseverityLevel::ELsev_unspecified );
-    return e;
-  }
-  ELslProxy< ELunspecifiedGen     > const  ELunspecified;
-
-  ELseverityLevel ELsevereGen()  {
-    static ELseverityLevel const  e( ELseverityLevel::ELsev_severe );
-    return e;
-  }
-  ELslProxy< ELsevereGen          > const  ELsevere;
-
-  ELseverityLevel ELsevere2Gen()  {
-    static ELseverityLevel const  e( ELseverityLevel::ELsev_severe2 );
-    return e;
-  }
-  ELslProxy< ELsevere2Gen         > const  ELsevere2;
-
-  ELseverityLevel ELabortGen()  {
-    static ELseverityLevel const  e( ELseverityLevel::ELsev_abort );
-    return e;
-  }
-  ELslProxy< ELabortGen           > const  ELabort;
-
-  ELseverityLevel ELfatalGen()  {
-    static ELseverityLevel const  e( ELseverityLevel::ELsev_fatal );
-    return e;
-  }
-  ELslProxy< ELfatalGen           > const  ELfatal;
-
-  ELseverityLevel ELhighestSeverityGen()  {
-    static ELseverityLevel const  e( ELseverityLevel::ELsev_highestSeverity );
-    return e;
-  }
-  ELslProxy< ELhighestSeverityGen > const  ELhighestSeverity;
-
-  // ----------------------------------------------------------------------
-
 
 } // end of namespace mf  */

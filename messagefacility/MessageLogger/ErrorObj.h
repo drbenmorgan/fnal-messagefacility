@@ -34,42 +34,28 @@
 
 namespace mf {
 
-
-  // ----------------------------------------------------------------------
-  // Prerequisite classes:
-  // ----------------------------------------------------------------------
-
   class ErrorLog;
 
-  // ----------------------------------------------------------------------
-  // ErrorObj:
-  // ----------------------------------------------------------------------
-
   class ErrorObj  {
-
   public:
-    // --- birth/death:
-    //
-    ErrorObj( const ELseverityLevel & sev,
-              const std::string & id,
-              bool verbatim = false );
-    ErrorObj( const ErrorObj & orig );  // Same serial number and everything!
-    virtual ~ErrorObj();
 
-    // --- accessors:
-    //
-    int                    serial() const;
-    const ELextendedID &   xid() const;
-    const std::string &       idOverflow() const;
-    timeval                timestamp() const;
-    const ELlist_string &  items() const;
-    bool                   reactedTo() const;
-    std::string               fullText() const;
-    std::string               context() const;
-    bool                   is_verbatim() const;
+    ErrorObj(ELseverityLevel const& sev,
+             std::string const& id,
+             bool verbatim = false);
 
-    // mutators:
-    //
+    ErrorObj(ErrorObj const&); // this should go away as soon as we can use moveable streams!
+    virtual ~ErrorObj() = default;
+
+    int                  serial() const;
+    ELextendedID const&  xid() const;
+    std::string const&   idOverflow() const;
+    timeval              timestamp() const;
+    ELlist_string const& items() const;
+    bool                 reactedTo() const;
+    std::string          fullText() const;
+    std::string const&   context() const;
+    bool                 is_verbatim() const;
+
     virtual void  setSeverity  ( const ELseverityLevel & sev );
     virtual void  setID        ( const std::string & ID );
     virtual void  setModule    ( const std::string & module );
@@ -86,37 +72,39 @@ namespace mf {
 
     // -----  Methods for ErrorLog or for physicists logging errors:
     //
-    template< class T >
-      inline ErrorObj &  opltlt ( const T & t );
-    ErrorObj &  opltlt ( const char s[] );
-    inline ErrorObj &  operator<< ( std::ostream&(*f)(std::ostream&) );
-    inline ErrorObj &  operator<< ( std::ios_base&(*f)(std::ios_base&) );
+    template<class T>
+    inline ErrorObj& opltlt (T const& t);
+    ErrorObj& opltlt (char const s[]);
+    inline ErrorObj&  operator<< (std::ostream&(*f)(std::ostream&));
+    inline ErrorObj&  operator<< (std::ios_base&(*f)(std::ios_base&));
 
-    virtual ErrorObj &  eo_emit( const std::string & txt );
+    virtual ErrorObj&  eo_emit( const std::string & txt );
 
     // ---  mutators for use by ELadministrator and ELtsErrorLog
     //
-    virtual void  set( const ELseverityLevel & sev, const std::string & id );
-    virtual void  clear();
-    virtual void  setReactedTo ( bool r );
+    virtual void clear();
+    virtual void set(ELseverityLevel const& sev, std::string const& id);
+    virtual void setReactedTo (bool r);
 
   private:
+
+    ErrorObj() = default;
+
     // ---  class-wide serial number stamper:
     //
-    static int     ourSerial;
+    static int ourSerial;
 
     // ---  data members:
     //
-    int            mySerial;
-    ELextendedID   myXid;
-    std::string       myIdOverflow;
-    timeval        myTimestamp;
-    ELlist_string  myItems;
-    bool           myReactedTo;
-    std::string       myContext;
-    std::ostringstream myOs;
-    std::string    emptyString;
-    bool           verbatim;
+    int            mySerial {};
+    ELextendedID   myXid {};
+    std::string    myIdOverflow {};
+    timeval        myTimestamp {0,0};
+    ELlist_string  myItems {};
+    bool           myReactedTo {false};
+    std::string    myContext {};
+    std::ostringstream myOs {};
+    bool           verbatim {false};
 
   };  // ErrorObj
 

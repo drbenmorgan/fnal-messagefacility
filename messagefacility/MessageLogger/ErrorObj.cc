@@ -29,16 +29,6 @@
 //
 // 6/6/06  mf           verbatim
 //
-// ErrorObj( const ELseverityLevel & sev, const std::string & id )
-// ~ErrorObj()
-// set( const ELseverityLevel & sev, const std::string & id )
-// clear()
-// setProcess   ( const std::string & proc )
-// setModule    ( const std::string & module )
-// setSubroutine( const std::string & subroutine )
-// emit( const std::string & txt )
-// operator<<( void (* f)(ErrorLog &) )
-//
 // ----------------------------------------------------------------------
 
 
@@ -49,184 +39,170 @@ namespace mf
 {
 
 
-// ----------------------------------------------------------------------
-// Class static and class-wide parameter:
-// ----------------------------------------------------------------------
+  // ----------------------------------------------------------------------
+  // Class static and class-wide parameter:
+  // ----------------------------------------------------------------------
 
-int  ErrorObj::ourSerial(  0 );
-const unsigned int  maxIDlength( 200 );         // changed 4/28/06 from 20
-
-
-// ----------------------------------------------------------------------
-// Birth/death:
-// ----------------------------------------------------------------------
-
-ErrorObj::ErrorObj( const ELseverityLevel & sev,
-                    const std::string & id,
-                    bool verbat )  : verbatim(verbat) {
-
-  clear();
-  set( sev, id );
-
-}  // ErrorObj()
+  int  ErrorObj::ourSerial {};
+  unsigned int const maxIDlength {200};
 
 
-ErrorObj::ErrorObj( const ErrorObj & orig )  :
-          mySerial        ( orig.mySerial )
-        , myXid           ( orig.myXid )
-        , myIdOverflow    ( orig.myIdOverflow )
-        , myTimestamp     ( orig.myTimestamp )
-        , myItems         ( orig.myItems )
-        , myReactedTo     ( orig.myReactedTo )
-        , myOs            ( )
-        , emptyString     ( )
-        , verbatim        ( orig.verbatim )
-{}
-
-  ErrorObj::~ErrorObj(){}
-
-// ----------------------------------------------------------------------
-// Accessors:
-// ----------------------------------------------------------------------
-
-int                   ErrorObj::serial()     const  { return mySerial; }
-const ELextendedID &  ErrorObj::xid()        const  { return myXid; }
-const std::string &      ErrorObj::idOverflow() const  { return myIdOverflow; }
-timeval               ErrorObj::timestamp()  const  { return myTimestamp; }
-const ELlist_string & ErrorObj::items()      const  { return myItems; }
-bool                  ErrorObj::reactedTo()  const  { return myReactedTo; }
-bool                  ErrorObj::is_verbatim()const  { return verbatim; }
-
-std::string ErrorObj::context() const {
-  return myContext;
-}
-
-std::string ErrorObj::fullText() const  {
-
-  std::string result;
-  for ( ELlist_string::const_iterator it = myItems.begin();
-        it != myItems.end();
-        ++it )
-    result +=  *it;
-  return result;
-
-}  // fullText()
-
-
-// ----------------------------------------------------------------------
-// Mutators:
-// ----------------------------------------------------------------------
-
-void ErrorObj::setSeverity( const ELseverityLevel & sev )  {
-  myXid.severity = (sev <= ELzeroSeverity   ) ? (ELseverityLevel)ELincidental
-                 : (sev >= ELhighestSeverity) ? (ELseverityLevel)ELfatal
-                 :                              sev
-                 ;
-}
-
-
-void ErrorObj::setID( const std::string & id )  {
-  myXid.id = std::string( id, 0, maxIDlength );
-  if ( id.length() > maxIDlength )
-    myIdOverflow = std::string( id, maxIDlength, id.length()-maxIDlength );
-}
-
-
-void ErrorObj::setModule( const std::string & module )  { myXid.module = module; }
-
-void ErrorObj::setContext( const std::string & c )  { myContext = c; }
-
-
-void ErrorObj::setSubroutine( const std::string & subroutine )  {
-
-  myXid.subroutine = (subroutine[0] == ' ')
-                   ? subroutine.substr(1)
-                   : subroutine;
-}
-
-
-void ErrorObj::setProcess( const std::string & proc )  {
-  myXid.process = proc;
-}
-
-void ErrorObj::setReactedTo( bool r )  {
-  myReactedTo = r;
-}
-
-void ErrorObj::setHostName( const std::string & hostname ) {
-  myXid.hostname = hostname;
-}
-
-void ErrorObj::setHostAddr( const std::string & hostaddr ) {
-  myXid.hostaddr = hostaddr;
-}
-
-void ErrorObj::setApplication( const std::string & application ) {
-  myXid.application = application;
-}
-
-void ErrorObj::setPID( long pid ) {
-  myXid.pid = pid;
-}
-
-ErrorObj & ErrorObj::eo_emit( const std::string & s )  {
-
-  if (detail::eq_nocase(s.substr(0,5), "@SUB=" ))  {
-    setSubroutine(s.substr(5));
-  }
-  else  {
-    myItems.push_back( s );
+  ErrorObj::ErrorObj(ELseverityLevel const& sev,
+                     std::string const& id,
+                     bool const verbat)
+    : verbatim{verbat}
+  {
+    set(sev, id);
   }
 
-  return * this;
+  ErrorObj::ErrorObj(ErrorObj const& orig)
+    : mySerial    {orig.mySerial}
+    , myXid       (orig.myXid)
+    , myIdOverflow{orig.myIdOverflow}
+    , myTimestamp (orig.myTimestamp)
+    , myItems     {orig.myItems}
+    , myReactedTo {orig.myReactedTo}
+    , verbatim    {orig.verbatim}
+  {}
 
-}  // emit()
+  // ----------------------------------------------------------------------
+  // Accessors:
+  // ----------------------------------------------------------------------
+
+  int                  ErrorObj::serial()      const { return mySerial; }
+  ELextendedID const&  ErrorObj::xid()         const { return myXid; }
+  std::string const&   ErrorObj::idOverflow()  const { return myIdOverflow; }
+  timeval              ErrorObj::timestamp()   const { return myTimestamp; }
+  ELlist_string const& ErrorObj::items()       const { return myItems; }
+  bool                 ErrorObj::reactedTo()   const { return myReactedTo; }
+  bool                 ErrorObj::is_verbatim() const { return verbatim; }
+
+  std::string const& ErrorObj::context() const
+  {
+    return myContext;
+  }
+
+  std::string ErrorObj::fullText() const
+  {
+    std::string result;
+    for (auto const& text : myItems)
+      result += text;
+    return result;
+  }
 
 
-void ErrorObj::set( const ELseverityLevel & sev, const std::string & id )  {
+  // ----------------------------------------------------------------------
+  // Mutators:
+  // ----------------------------------------------------------------------
 
-  clear();
-
-  //myTimestamp = time( 0 );
-  gettimeofday( &myTimestamp, 0 );
-  mySerial = ++ ourSerial;
-
-  setID( id );
-  setSeverity( sev );
-
-}  // set()
-
-void ErrorObj::setTimestamp( const timeval & t ) {
-        myTimestamp = t;
-}
+  void ErrorObj::setSeverity( const ELseverityLevel & sev )  {
+    myXid.severity = (sev <= ELzeroSeverity   ) ? (ELseverityLevel)ELincidental
+      : (sev >= ELhighestSeverity) ? (ELseverityLevel)ELfatal
+      :                              sev
+      ;
+  }
 
 
+  void ErrorObj::setID( const std::string & id )  {
+    myXid.id = std::string( id, 0, maxIDlength );
+    if ( id.length() > maxIDlength )
+      myIdOverflow = std::string( id, maxIDlength, id.length()-maxIDlength );
+  }
 
-void ErrorObj::clear()  {
 
-  mySerial     = 0;
-  myXid.clear();
-  myIdOverflow = "";
-  myTimestamp.tv_sec  = 0;
-  myTimestamp.tv_usec = 0;
-  myItems.erase( myItems.begin(), myItems.end() );  // myItems.clear();
-  myReactedTo  = false;
+  void ErrorObj::setModule( const std::string & module )  { myXid.module = module; }
 
-}  // clear()
+  void ErrorObj::setContext( const std::string & c )  { myContext = c; }
 
-ErrorObj &
-ErrorObj::opltlt ( const char s[] ) {
-  // Exactly equivalent to the general template.
-  // If this is not provided explicitly, then the template will
-  // be instantiated once for each length of string ever used.
-  myOs.str(emptyString);
-  myOs << s;
-  if ( ! myOs.str().empty() ) eo_emit( myOs.str() );
-  return *this;
-}
 
-ErrorObj & operator<<( ErrorObj & e, const char s[] ) {
-  return e.opltlt(s);
-}
+  void ErrorObj::setSubroutine( const std::string & subroutine )  {
+
+    myXid.subroutine = (subroutine[0] == ' ')
+      ? subroutine.substr(1)
+      : subroutine;
+  }
+
+
+  void ErrorObj::setProcess( const std::string & proc )  {
+    myXid.process = proc;
+  }
+
+  void ErrorObj::setReactedTo( bool r )  {
+    myReactedTo = r;
+  }
+
+  void ErrorObj::setHostName( const std::string & hostname ) {
+    myXid.hostname = hostname;
+  }
+
+  void ErrorObj::setHostAddr( const std::string & hostaddr ) {
+    myXid.hostaddr = hostaddr;
+  }
+
+  void ErrorObj::setApplication( const std::string & application ) {
+    myXid.application = application;
+  }
+
+  void ErrorObj::setPID( long pid ) {
+    myXid.pid = pid;
+  }
+
+  ErrorObj& ErrorObj::eo_emit( const std::string & s )
+  {
+    if (detail::eq_nocase(s.substr(0,5), "@SUB=" ))  {
+      setSubroutine(s.substr(5));
+    }
+    else {
+      myItems.push_back(s);
+    }
+
+    return *this;
+  }
+
+  void ErrorObj::clear()
+  {
+    mySerial = 0;
+    myXid = {};
+    myIdOverflow.clear();
+    myTimestamp = {0,0};
+    myItems.clear();
+    myReactedTo = false;
+    myContext.clear();
+    myOs.str({});
+    verbatim = false;
+    //    decltype(*this) tmp {};
+    //    std::swap(tmp, *this);
+  }
+
+  void ErrorObj::set(ELseverityLevel const& sev,
+                     std::string const& id)
+  {
+    gettimeofday( &myTimestamp, 0 );
+    mySerial = ++ourSerial;
+
+    setID(id);
+    setSeverity(sev);
+  }
+
+  void ErrorObj::setTimestamp(timeval const& t)
+  {
+    myTimestamp = t;
+  }
+
+  ErrorObj&
+  ErrorObj::opltlt (char const s[])
+  {
+    // Exactly equivalent to the general template.
+    // If this is not provided explicitly, then the template will
+    // be instantiated once for each length of string ever used.
+    myOs.str({});
+    myOs << s;
+    if (!myOs.str().empty() ) eo_emit( myOs.str() );
+    return *this;
+  }
+
+  ErrorObj & operator<<( ErrorObj & e, const char s[] ) {
+    return e.opltlt(s);
+  }
 
 } // end of namespace mf  */

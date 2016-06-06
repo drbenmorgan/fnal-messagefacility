@@ -113,15 +113,14 @@ namespace mf {
         , nLevels                    // how many levels?
         };  // ELsev_
 
-    ELseverityLevel( ELsev_ lev = ELsev_unspecified );
-    ELseverityLevel ( std::string const & str );
+    constexpr ELseverityLevel(ELsev_ lev = ELsev_unspecified);
+    ELseverityLevel (std::string const& str);
     // str may match getSymbol, getName, getInputStr,
     // or getVarName -- see accessors
-    ~ELseverityLevel();
 
     // -----  Comparator:
     //
-    int  cmp( ELseverityLevel const & e ) const;
+    int cmp(ELseverityLevel e) const;
 
     // -----  Accessors:
     //
@@ -131,71 +130,57 @@ namespace mf {
     std::string  getInputStr() const;  // example: "ERROR"
     std::string  getVarName()  const;  // example: "ELerror"
 
-    // -----  Emitter:
-    //
-    friend std::ostream &  operator<< (
-                                       std::ostream          &  os
-                                       , const ELseverityLevel &  sev
-                                       );
+    friend std::ostream& operator<< (std::ostream& os,
+                                     ELseverityLevel const sev);
 
   private:
 
-    // Data per ELseverityLevel object:
-    //
-    int    myLevel;
+    int myLevel;
 
   };  // ELseverityLevel
 
+  inline
+  constexpr
+  ELseverityLevel::ELseverityLevel(ELsev_ const level)
+  : myLevel{level}
+  {}
 
   // ----------------------------------------------------------------------
   // Declare the globally available severity objects,
   // one generator function and one proxy per non-default ELsev_:
   // ----------------------------------------------------------------------
 
-  extern ELslGen  ELzeroSeverityGen;
-  extern ELslProxy< ELzeroSeverityGen    > const  ELzeroSeverity;
+  inline ELseverityLevel constexpr ELzeroSeverityGen() {return ELseverityLevel::ELsev_zeroSeverity;}
+  inline ELseverityLevel constexpr ELincidentalGen() {return ELseverityLevel::ELsev_incidental;}
+  inline ELseverityLevel constexpr ELsuccessGen() {return ELseverityLevel::ELsev_success;}
+  inline ELseverityLevel constexpr ELinfoGen() {return ELseverityLevel::ELsev_info;}
+  inline ELseverityLevel constexpr ELwarningGen() {return ELseverityLevel::ELsev_warning;}
+  inline ELseverityLevel constexpr ELwarning2Gen() {return ELseverityLevel::ELsev_warning2;}
+  inline ELseverityLevel constexpr ELerrorGen() {return ELseverityLevel::ELsev_error;}
+  inline ELseverityLevel constexpr ELerror2Gen() {return ELseverityLevel::ELsev_error2;}
+  inline ELseverityLevel constexpr ELnextEventGen() {return ELseverityLevel::ELsev_next;}
+  inline ELseverityLevel constexpr ELunspecifiedGen() {return ELseverityLevel::ELsev_unspecified;}
+  inline ELseverityLevel constexpr ELsevereGen() {return ELseverityLevel::ELsev_severe;}
+  inline ELseverityLevel constexpr ELsevere2Gen() {return ELseverityLevel::ELsev_severe2;}
+  inline ELseverityLevel constexpr ELabortGen() {return ELseverityLevel::ELsev_abort;}
+  inline ELseverityLevel constexpr ELfatalGen() {return ELseverityLevel::ELsev_fatal;}
+  inline ELseverityLevel constexpr ELhighestSeverityGen() {return ELseverityLevel::ELsev_highestSeverity;}
 
-  extern ELslGen  ELincidentalGen;
-  extern ELslProxy< ELincidentalGen      > const  ELincidental;
-
-  extern ELslGen  ELsuccessGen;
-  extern ELslProxy< ELsuccessGen         > const  ELsuccess;
-
-  extern ELslGen  ELinfoGen;
-  extern ELslProxy< ELinfoGen            > const  ELinfo;
-
-  extern ELslGen  ELwarningGen;
-  extern ELslProxy< ELwarningGen         > const  ELwarning;
-
-  extern ELslGen  ELwarning2Gen;
-  extern ELslProxy< ELwarning2Gen        > const  ELwarning2;
-
-  extern ELslGen  ELerrorGen;
-  extern ELslProxy< ELerrorGen           > const  ELerror;
-
-  extern ELslGen  ELerror2Gen;
-  extern ELslProxy< ELerror2Gen          > const  ELerror2;
-
-  extern ELslGen  ELnextEventGen;
-  extern ELslProxy< ELnextEventGen       > const  ELnextEvent;
-
-  extern ELslGen  ELunspecifiedGen;
-  extern ELslProxy< ELunspecifiedGen     > const  ELunspecified;
-
-  extern ELslGen  ELsevereGen;
-  extern ELslProxy< ELsevereGen          > const  ELsevere;
-
-  extern ELslGen  ELsevere2Gen;
-  extern ELslProxy< ELsevere2Gen         > const  ELsevere2;
-
-  extern ELslGen  ELabortGen;
-  extern ELslProxy< ELabortGen           > const  ELabort;
-
-  extern ELslGen  ELfatalGen;
-  extern ELslProxy< ELfatalGen           > const  ELfatal;
-
-  extern ELslGen  ELhighestSeverityGen;
-  extern ELslProxy< ELhighestSeverityGen > const  ELhighestSeverity;
+  ELslProxy< ELzeroSeverityGen    > constexpr  ELzeroSeverity;
+  ELslProxy< ELincidentalGen      > constexpr  ELincidental;
+  ELslProxy< ELsuccessGen         > constexpr  ELsuccess;
+  ELslProxy< ELinfoGen            > constexpr  ELinfo;
+  ELslProxy< ELwarningGen         > constexpr  ELwarning;
+  ELslProxy< ELwarning2Gen        > constexpr  ELwarning2;
+  ELslProxy< ELerrorGen           > constexpr  ELerror;
+  ELslProxy< ELerror2Gen          > constexpr  ELerror2;
+  ELslProxy< ELnextEventGen       > constexpr  ELnextEvent;
+  ELslProxy< ELunspecifiedGen     > constexpr  ELunspecified;
+  ELslProxy< ELsevereGen          > constexpr  ELsevere;
+  ELslProxy< ELsevere2Gen         > constexpr  ELsevere2;
+  ELslProxy< ELabortGen           > constexpr  ELabort;
+  ELslProxy< ELfatalGen           > constexpr  ELfatal;
+  ELslProxy< ELhighestSeverityGen > constexpr  ELhighestSeverity;
 
 
   // ----------------------------------------------------------------------
