@@ -29,21 +29,21 @@
 //
 // 6/6/06  mf           verbatim
 //
-// ErrorObj( const ELseverityLevel & sev, const ELstring & id )
+// ErrorObj( const ELseverityLevel & sev, const std::string & id )
 // ~ErrorObj()
-// set( const ELseverityLevel & sev, const ELstring & id )
+// set( const ELseverityLevel & sev, const std::string & id )
 // clear()
-// setProcess   ( const ELstring & proc )
-// setModule    ( const ELstring & module )
-// setSubroutine( const ELstring & subroutine )
-// emit( const ELstring & txt )
+// setProcess   ( const std::string & proc )
+// setModule    ( const std::string & module )
+// setSubroutine( const std::string & subroutine )
+// emit( const std::string & txt )
 // operator<<( void (* f)(ErrorLog &) )
 //
 // ----------------------------------------------------------------------
 
 
 #include "messagefacility/MessageLogger/ErrorObj.h"
-
+#include "messagefacility/MessageLogger/detail/eq_nocase.h"
 
 namespace mf
 {
@@ -62,7 +62,7 @@ const unsigned int  maxIDlength( 200 );         // changed 4/28/06 from 20
 // ----------------------------------------------------------------------
 
 ErrorObj::ErrorObj( const ELseverityLevel & sev,
-                    const ELstring & id,
+                    const std::string & id,
                     bool verbat )  : verbatim(verbat) {
 
   clear();
@@ -91,19 +91,19 @@ ErrorObj::ErrorObj( const ErrorObj & orig )  :
 
 int                   ErrorObj::serial()     const  { return mySerial; }
 const ELextendedID &  ErrorObj::xid()        const  { return myXid; }
-const ELstring &      ErrorObj::idOverflow() const  { return myIdOverflow; }
+const std::string &      ErrorObj::idOverflow() const  { return myIdOverflow; }
 timeval               ErrorObj::timestamp()  const  { return myTimestamp; }
 const ELlist_string & ErrorObj::items()      const  { return myItems; }
 bool                  ErrorObj::reactedTo()  const  { return myReactedTo; }
 bool                  ErrorObj::is_verbatim()const  { return verbatim; }
 
-ELstring ErrorObj::context() const {
+std::string ErrorObj::context() const {
   return myContext;
 }
 
-ELstring ErrorObj::fullText() const  {
+std::string ErrorObj::fullText() const  {
 
-  ELstring result;
+  std::string result;
   for ( ELlist_string::const_iterator it = myItems.begin();
         it != myItems.end();
         ++it )
@@ -125,19 +125,19 @@ void ErrorObj::setSeverity( const ELseverityLevel & sev )  {
 }
 
 
-void ErrorObj::setID( const ELstring & id )  {
-  myXid.id = ELstring( id, 0, maxIDlength );
+void ErrorObj::setID( const std::string & id )  {
+  myXid.id = std::string( id, 0, maxIDlength );
   if ( id.length() > maxIDlength )
-    myIdOverflow = ELstring( id, maxIDlength, id.length()-maxIDlength );
+    myIdOverflow = std::string( id, maxIDlength, id.length()-maxIDlength );
 }
 
 
-void ErrorObj::setModule( const ELstring & module )  { myXid.module = module; }
+void ErrorObj::setModule( const std::string & module )  { myXid.module = module; }
 
-void ErrorObj::setContext( const ELstring & c )  { myContext = c; }
+void ErrorObj::setContext( const std::string & c )  { myContext = c; }
 
 
-void ErrorObj::setSubroutine( const ELstring & subroutine )  {
+void ErrorObj::setSubroutine( const std::string & subroutine )  {
 
   myXid.subroutine = (subroutine[0] == ' ')
                    ? subroutine.substr(1)
@@ -145,7 +145,7 @@ void ErrorObj::setSubroutine( const ELstring & subroutine )  {
 }
 
 
-void ErrorObj::setProcess( const ELstring & proc )  {
+void ErrorObj::setProcess( const std::string & proc )  {
   myXid.process = proc;
 }
 
@@ -153,15 +153,15 @@ void ErrorObj::setReactedTo( bool r )  {
   myReactedTo = r;
 }
 
-void ErrorObj::setHostName( const ELstring & hostname ) {
+void ErrorObj::setHostName( const std::string & hostname ) {
   myXid.hostname = hostname;
 }
 
-void ErrorObj::setHostAddr( const ELstring & hostaddr ) {
+void ErrorObj::setHostAddr( const std::string & hostaddr ) {
   myXid.hostaddr = hostaddr;
 }
 
-void ErrorObj::setApplication( const ELstring & application ) {
+void ErrorObj::setApplication( const std::string & application ) {
   myXid.application = application;
 }
 
@@ -169,9 +169,9 @@ void ErrorObj::setPID( long pid ) {
   myXid.pid = pid;
 }
 
-ErrorObj & ErrorObj::eo_emit( const ELstring & s )  {
+ErrorObj & ErrorObj::eo_emit( const std::string & s )  {
 
-  if ( eq_nocase(s.substr(0,5), "@SUB=" ) )  {
+  if (detail::eq_nocase(s.substr(0,5), "@SUB=" ))  {
     setSubroutine(s.substr(5));
   }
   else  {
@@ -183,7 +183,7 @@ ErrorObj & ErrorObj::eo_emit( const ELstring & s )  {
 }  // emit()
 
 
-void ErrorObj::set( const ELseverityLevel & sev, const ELstring & id )  {
+void ErrorObj::set( const ELseverityLevel & sev, const std::string & id )  {
 
   clear();
 

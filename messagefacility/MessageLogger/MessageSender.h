@@ -1,7 +1,6 @@
 #ifndef MessageFacility_MessageLogger_MessageSender_h
 #define MessageFacility_MessageLogger_MessageSender_h
 
-#include "messagefacility/MessageLogger/ELstring.h"
 #include "messagefacility/MessageLogger/ELseverityLevel.h"
 #include "messagefacility/MessageLogger/ErrorObj.h"
 #include "messagefacility/MessageLogger/ErrorSummaryEntry.h"
@@ -19,7 +18,7 @@ namespace mf
   public:
     // ---  birth/death:
     MessageSender( ELseverityLevel const & sev,
-                   ELstring const & id,
+                   std::string const & id,
                    bool verbatim = false);
     ~MessageSender();
 

@@ -124,7 +124,7 @@ namespace mf {
 
         // -----  Emit new process and part I header, if needed:
         //
-        if ( n == 0  || ! eq(lastProcess, (*i).first.process) ) {
+        if (n == 0  || lastProcess != i->first.process) {
           s << "\n";
           lastProcess = (*i).first.process;
           if ( lastProcess.size() > 0) {

@@ -14,7 +14,6 @@
 // ----------------------------------------------------------------------
 
 
-#include "messagefacility/MessageLogger/ELstring.h"
 #include "messagefacility/MessageLogger/ELseverityLevel.h"
 
 
@@ -31,15 +30,15 @@ public:
 
   // -----  Publicly accessible data members:
   //
-  ELstring        process;
-  ELstring        id;
+  std::string        process;
+  std::string        id;
   ELseverityLevel severity;
-  ELstring        module;
-  ELstring        subroutine;
+  std::string        module;
+  std::string        subroutine;
 
-  ELstring        hostname;
-  ELstring        hostaddr;
-  ELstring        application;
+  std::string        hostname;
+  std::string        hostaddr;
+  std::string        application;
   long            pid;
 
   // -----  Comparator:

@@ -23,7 +23,6 @@
 // ----------------------------------------------------------------------
 
 
-#include "messagefacility/MessageLogger/ELstring.h"
 #include "messagefacility/MessageLogger/ELlist.h"
 #include "messagefacility/MessageLogger/ELextendedID.h"
 #include "messagefacility/MessageLogger/ELseverityLevel.h"
@@ -52,7 +51,7 @@ namespace mf {
     // --- birth/death:
     //
     ErrorObj( const ELseverityLevel & sev,
-              const ELstring & id,
+              const std::string & id,
               bool verbatim = false );
     ErrorObj( const ErrorObj & orig );  // Same serial number and everything!
     virtual ~ErrorObj();
@@ -61,25 +60,25 @@ namespace mf {
     //
     int                    serial() const;
     const ELextendedID &   xid() const;
-    const ELstring &       idOverflow() const;
+    const std::string &       idOverflow() const;
     timeval                timestamp() const;
     const ELlist_string &  items() const;
     bool                   reactedTo() const;
-    ELstring               fullText() const;
-    ELstring               context() const;
+    std::string               fullText() const;
+    std::string               context() const;
     bool                   is_verbatim() const;
 
     // mutators:
     //
     virtual void  setSeverity  ( const ELseverityLevel & sev );
-    virtual void  setID        ( const ELstring & ID );
-    virtual void  setModule    ( const ELstring & module );
-    virtual void  setSubroutine( const ELstring & subroutine );
-    virtual void  setContext   ( const ELstring & context );
-    virtual void  setProcess   ( const ELstring & proc );
-    virtual void  setHostName  ( const ELstring & hostname );
-    virtual void  setHostAddr  ( const ELstring & hostaddr );
-    virtual void  setApplication(const ELstring & application );
+    virtual void  setID        ( const std::string & ID );
+    virtual void  setModule    ( const std::string & module );
+    virtual void  setSubroutine( const std::string & subroutine );
+    virtual void  setContext   ( const std::string & context );
+    virtual void  setProcess   ( const std::string & proc );
+    virtual void  setHostName  ( const std::string & hostname );
+    virtual void  setHostAddr  ( const std::string & hostaddr );
+    virtual void  setApplication(const std::string & application );
     virtual void  setPID       ( long             pid );
     virtual void  setTimestamp ( const timeval & t );
     //-| process is always determined through ErrorLog or
@@ -93,11 +92,11 @@ namespace mf {
     inline ErrorObj &  operator<< ( std::ostream&(*f)(std::ostream&) );
     inline ErrorObj &  operator<< ( std::ios_base&(*f)(std::ios_base&) );
 
-    virtual ErrorObj &  eo_emit( const ELstring & txt );
+    virtual ErrorObj &  eo_emit( const std::string & txt );
 
     // ---  mutators for use by ELadministrator and ELtsErrorLog
     //
-    virtual void  set( const ELseverityLevel & sev, const ELstring & id );
+    virtual void  set( const ELseverityLevel & sev, const std::string & id );
     virtual void  clear();
     virtual void  setReactedTo ( bool r );
 
@@ -110,11 +109,11 @@ namespace mf {
     //
     int            mySerial;
     ELextendedID   myXid;
-    ELstring       myIdOverflow;
+    std::string       myIdOverflow;
     timeval        myTimestamp;
     ELlist_string  myItems;
     bool           myReactedTo;
-    ELstring       myContext;
+    std::string       myContext;
     std::ostringstream myOs;
     std::string    emptyString;
     bool           verbatim;

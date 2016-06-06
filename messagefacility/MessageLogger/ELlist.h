@@ -1,7 +1,6 @@
 #ifndef MessageLogger_ELlist_h
 #define MessageLogger_ELlist_h
 
-
 // ----------------------------------------------------------------------
 //
 // ELlist.h     Provides a list class with the semantics of std::list.
@@ -21,30 +20,13 @@
 //
 // ----------------------------------------------------------------------
 
-
-#ifndef ELSTRING_H
-  #include "messagefacility/MessageLogger/ELstring.h"
-#endif
-
-
 #include <list>
-
+#include <string>
 
 namespace mf {
-
-
-// ----------------------------------------------------------------------
-
-
-class ELdestination;
-typedef std::list<ELdestination *> ELlist_dest;
-
-typedef std::list<ELstring       > ELlist_string;
-
-// ----------------------------------------------------------------------
-
-
-}        // end of namespace mf
-
+  class ELdestination;
+  using ELlist_det = std::list<ELdestination*>;
+  using ELlist_string = std::list<std::string>;
+}
 
 #endif // MessageLogger_ELlist_h

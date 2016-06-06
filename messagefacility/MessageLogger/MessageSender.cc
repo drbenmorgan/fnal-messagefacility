@@ -14,7 +14,7 @@ bool MessageSender::freshError              = false;
 std::map<ErrorSummaryMapKey, unsigned int> MessageSender::errorSummaryMap;
 
 MessageSender::MessageSender( ELseverityLevel const & sev,
-                              ELstring const & id,
+                              std::string const & id,
                               bool verbatim )
 : errorobj_p( new ErrorObj(sev,id,verbatim) )
 {}

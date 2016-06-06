@@ -6,15 +6,15 @@
 #
 
 
-FILE (GLOB MLsrcFiles *.cc)
+FILE (GLOB MLsrcFiles *.cc detail/*.cc)
 FILE (GLOB MSsrcFiles ../MessageService/*.cc)
 
 LIST ( REMOVE_ITEM MSsrcFiles ${CMAKE_CURRENT_SOURCE_DIR}/../MessageService/ELdestinationTester.cc )
 
 cet_make_library( LIBRARY_NAME MF_MessageLogger
                   SOURCE  ${MLsrcFiles} ${MSsrcFiles}
-        	  LIBRARIES 
-                  MF_Utilities 
+                  LIBRARIES
+                  MF_Utilities
                   fhiclcpp
                   ${Boost_THREAD_LIBRARY} )
 
