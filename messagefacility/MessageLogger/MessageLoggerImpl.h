@@ -30,11 +30,11 @@
 
 // user include files
 
-#include "messagefacility/MessageLogger/ErrorObj.h"
+#include "messagefacility/Auxiliaries/ErrorObj.h"
 
 //#include "ServiceRegistry/interface/ActivityRegistry.h"
 //#include "DataFormats/Provenance/interface/EventID.h"
-#include "messagefacility/MessageLogger/ELseverityLevel.h"
+#include "messagefacility/Auxiliaries/ELseverityLevel.h"
 
 // forward declarations
 

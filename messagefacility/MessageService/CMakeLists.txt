@@ -1,16 +1,31 @@
-#
-#  MessageService/CMakeLists.txt
-#  -------------------------------------------------------------------
-#
-
-# !! MessageService/ Files built in ../MessageLogger/CMakeLists.txt !!
-
-cet_make_exec( ELdestinationTester
-  SOURCE ELdestinationTester.cc
+cet_make_library(
+  LIBRARY_NAME MF_MessageService
+  SOURCE
+  ELadministrator.cc
+  ELcollected.cc
+  ELdestControl.cc
+  ELdestination.cc
+  ELerrorList.cc
+  ELfwkJobReport.cc
+  ELostreamOutput.cc
+  ELrecv.cc
+  ELstatistics.cc
+  ELtsErrorLog.cc
+  ErrorLog.cc
+  HardwiredDefaults.cc
+  MainThreadMLscribe.cc
+  MessageDrop.cc
+  MessageLoggerDefaults.cc
+  MessageLoggerQ.cc
+  MsgContext.cc
+  MsgFormatSettings.cc
+  MsgStatistics.cc
+  ThreadQueue.cc
   LIBRARIES
-  MF_MessageLogger
-  ${Boost_FILESYSTEM_LIBRARY}
-  ${Boost_PROGRAM_OPTIONS_LIBRARY}
+  MF_Auxiliaries
+  MF_Utilities
+  fhiclcpp
+  ${Boost_THREAD_LIBRARY}
   )
 
 add_subdirectory(plugins)

@@ -13,7 +13,7 @@
 
 #include "messagefacility/MessageService/ErrorLog.h"
 
-#include "messagefacility/MessageLogger/ErrorObj.h"
+#include "messagefacility/Auxiliaries/ErrorObj.h"
 
 namespace mf {
 namespace service {

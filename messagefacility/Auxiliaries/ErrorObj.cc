@@ -32,8 +32,8 @@
 // ----------------------------------------------------------------------
 
 
-#include "messagefacility/MessageLogger/ErrorObj.h"
-#include "messagefacility/MessageLogger/detail/eq_nocase.h"
+#include "messagefacility/Auxiliaries/ErrorObj.h"
+#include "messagefacility/Utilities/eq_nocase.h"
 
 namespace mf
 {

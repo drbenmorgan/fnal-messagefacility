@@ -6,7 +6,7 @@
 
 
 #include "messagefacility/MessageService/ELostreamOutput.h"
-#include "messagefacility/MessageLogger/ErrorObj.h"
+#include "messagefacility/Auxiliaries/ErrorObj.h"
 #include "messagefacility/Utilities/formatTime.h"
 
 #include <iostream>

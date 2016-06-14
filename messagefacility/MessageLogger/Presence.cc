@@ -2,9 +2,9 @@
 $Id: Presence.cc,v 1.1 2006/02/16 02:41:54 wmtan Exp $
 ----------------------------------------------------------------------*/
 
-#include "messagefacility/MessageService/Presence.h"
-#include "messagefacility/MessageService/SingleThreadMSPresence.h"
-#include "messagefacility/MessageService/MessageServicePresence.h"
+#include "messagefacility/MessageLogger/Presence.h"
+#include "messagefacility/MessageLogger/SingleThreadMSPresence.h"
+#include "messagefacility/MessageLogger/MessageServicePresence.h"
 
 #include <iostream>
 

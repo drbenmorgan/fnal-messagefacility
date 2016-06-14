@@ -1,8 +1,8 @@
-#include "messagefacility/MessageService/MessageServicePresence.h"
-#include "messagefacility/MessageService/MessageLoggerScribe.h"
+#include "messagefacility/MessageLogger/MessageServicePresence.h"
+#include "messagefacility/MessageLogger/MessageLoggerScribe.h"
 #include "messagefacility/MessageService/ThreadQueue.h"
 
-#include "messagefacility/MessageLogger/MessageLoggerQ.h"
+#include "messagefacility/MessageService/MessageLoggerQ.h"
 #include "messagefacility/Utilities/UnixSignalHandlers.h"
 
 #include <algorithm>

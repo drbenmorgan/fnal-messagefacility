@@ -12,12 +12,11 @@
 //
 // ----------------------------------------------------------------------
 
-#include "messagefacility/MessageService/ELset.h"
+#include "messagefacility/Auxiliaries/ELextendedID.h"
+#include "messagefacility/Auxiliaries/ELset.h"
+#include "messagefacility/Auxiliaries/ErrorObj.h"
 #include "messagefacility/MessageService/MsgFormatSettings.h"
 #include "messagefacility/MessageService/MsgStatistics.h"
-
-#include "messagefacility/MessageLogger/ErrorObj.h"
-#include "messagefacility/MessageLogger/ELextendedID.h"
 
 #include "cetlib/PluginTypeDeducer.h"
 #include "fhiclcpp/ParameterSet.h"

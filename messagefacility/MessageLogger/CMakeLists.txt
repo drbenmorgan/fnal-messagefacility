@@ -1,23 +1,30 @@
-#
-#  MessageLogger/CMakeLists.txt
-#  -------------------------------------------------------------------
-#
-#  CMake build file for library MessageLogger and MessageLoggerS
-#
+cet_make_library(
+  LIBRARY_NAME MF_MessageLogger
+  SOURCE
+  ExceptionMessages.cc
+  JobReport.cc
+  LoggedErrorsSummary.cc
+  MessageLogger.cc
+  MessageLoggerImpl.cc
+  MessageLoggerScribe.cc
+  MessageSender.cc
+  MessageServicePresence.cc
+  Presence.cc
+  SilentMLscribe.cc
+  SingleThreadMSPresence.cc
+  LIBRARIES
+  MF_MessageService
+  fhiclcpp
+  ${Boost_THREAD_LIBRARY}
+  )
 
+cet_make_exec( ELdestinationTester
+  SOURCE ELdestinationTester.cc
+  LIBRARIES
+  MF_MessageLogger
+  ${Boost_FILESYSTEM_LIBRARY}
+  ${Boost_PROGRAM_OPTIONS_LIBRARY}
+  )
 
-FILE (GLOB MLsrcFiles *.cc detail/*.cc)
-FILE (GLOB MSsrcFiles ../MessageService/*.cc)
-
-LIST ( REMOVE_ITEM MSsrcFiles ${CMAKE_CURRENT_SOURCE_DIR}/../MessageService/ELdestinationTester.cc )
-
-cet_make_library( LIBRARY_NAME MF_MessageLogger
-                  SOURCE  ${MLsrcFiles} ${MSsrcFiles}
-                  LIBRARIES
-                  MF_Utilities
-                  fhiclcpp
-                  ${Boost_THREAD_LIBRARY} )
-
-# install files
 install_headers()
 install_source()

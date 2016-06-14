@@ -12,7 +12,7 @@
 #include "fhiclcpp/make_ParameterSet.h"
 #include "fhiclcpp/parse.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
-#include "messagefacility/MessageService/ELdestinationTester.h"
+#include "messagefacility/MessageLogger/ELdestinationTester.h"
 
 namespace {
 

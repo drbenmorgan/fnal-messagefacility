@@ -52,9 +52,9 @@
 
 #include "messagefacility/MessageService/ELdestControl.h"
 
-#include "messagefacility/MessageLogger/ELlist.h"
-#include "messagefacility/MessageLogger/ELseverityLevel.h"
-#include "messagefacility/MessageLogger/ErrorObj.h"
+#include "messagefacility/Auxiliaries/ELlist.h"
+#include "messagefacility/Auxiliaries/ELseverityLevel.h"
+#include "messagefacility/Auxiliaries/ErrorObj.h"
 
 #include "cetlib/exempt_ptr.h"
 

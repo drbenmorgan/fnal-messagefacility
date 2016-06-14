@@ -6,11 +6,11 @@
 //
 //
 
-#include "messagefacility/MessageService/SingleThreadMSPresence.h"
-#include "messagefacility/MessageService/MessageLoggerScribe.h"
+#include "messagefacility/MessageLogger/SingleThreadMSPresence.h"
+#include "messagefacility/MessageLogger/MessageLoggerScribe.h"
 
-#include "messagefacility/MessageLogger/MessageLoggerQ.h"
-#include "messagefacility/MessageLogger/MessageDrop.h"
+#include "messagefacility/MessageService/MessageLoggerQ.h"
+#include "messagefacility/MessageService/MessageDrop.h"
 
 #include <memory>
 

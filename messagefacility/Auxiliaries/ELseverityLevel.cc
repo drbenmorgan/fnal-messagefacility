@@ -40,8 +40,8 @@
 
 #include <ostream>
 
-#include "messagefacility/MessageLogger/ELseverityLevel.h"
-#include "messagefacility/MessageLogger/ELmap.h"
+#include "messagefacility/Auxiliaries/ELseverityLevel.h"
+#include "messagefacility/Auxiliaries/ELmap.h"
 
 
 namespace mf

@@ -67,8 +67,8 @@
 #include "messagefacility/MessageService/ELostreamOutput.h"
 #include "messagefacility/MessageService/ELsender.h"
 
-#include "messagefacility/MessageLogger/ELextendedID.h"
-#include "messagefacility/MessageLogger/ErrorObj.h"
+#include "messagefacility/Auxiliaries/ELextendedID.h"
+#include "messagefacility/Auxiliaries/ErrorObj.h"
 
 #include <memory>
 

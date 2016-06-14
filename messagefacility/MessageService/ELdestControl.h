@@ -30,9 +30,9 @@
 // ----------------------------------------------------------------------
 
 
-#include "messagefacility/MessageLogger/ELmap.h"
-#include "messagefacility/MessageLogger/ELseverityLevel.h"
-#include "messagefacility/MessageLogger/ErrorObj.h"
+#include "messagefacility/Auxiliaries/ELmap.h"
+#include "messagefacility/Auxiliaries/ELseverityLevel.h"
+#include "messagefacility/Auxiliaries/ErrorObj.h"
 #include "messagefacility/MessageService/MsgFormatSettings.h"
 
 #include "cetlib/exempt_ptr.h"

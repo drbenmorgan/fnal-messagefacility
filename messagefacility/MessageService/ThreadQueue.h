@@ -19,7 +19,7 @@
 // $Id: ThreadQueue.h,v 1.1 2009/08/12 22:22:01 fischler Exp $
 //
 
-#include "messagefacility/MessageLogger/MessageLoggerQ.h"
+#include "messagefacility/MessageService/MessageLoggerQ.h"
 #include "messagefacility/Utilities/SingleConsumerQ.h"
 
 

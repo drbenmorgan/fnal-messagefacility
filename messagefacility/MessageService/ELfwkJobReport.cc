@@ -20,7 +20,7 @@
 
 
 #include "messagefacility/MessageService/ELfwkJobReport.h"
-#include "messagefacility/MessageLogger/ErrorObj.h"
+#include "messagefacility/Auxiliaries/ErrorObj.h"
 
 #include <iostream>
 #include <fstream>

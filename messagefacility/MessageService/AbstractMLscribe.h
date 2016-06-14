@@ -1,7 +1,7 @@
 #ifndef MessageFacility_MessageLogger_AbstractMLscribe_h
 #define MessageFacility_MessageLogger_AbstractMLscribe_h
 
-#include "messagefacility/MessageLogger/MessageLoggerQ.h"
+#include "messagefacility/MessageService/MessageLoggerQ.h"
 
 namespace mf  {
   namespace service {

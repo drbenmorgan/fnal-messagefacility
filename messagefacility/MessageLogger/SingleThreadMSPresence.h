@@ -1,9 +1,9 @@
 #ifndef MessageFacility_MessageService_SingleThreadMSPresence_h
 #define MessageFacility_MessageService_SingleThreadMSPresence_h
 
-#include "messagefacility/MessageService/Presence.h"
-#include "messagefacility/MessageService/MessageLoggerScribe.h"
-#include "messagefacility/MessageLogger/AbstractMLscribe.h"
+#include "messagefacility/MessageLogger/Presence.h"
+#include "messagefacility/MessageLogger/MessageLoggerScribe.h"
+#include "messagefacility/MessageService/AbstractMLscribe.h"
 
 namespace mf  {
 namespace service {
@@ -31,3 +31,7 @@ private:
 
 
 #endif  // MessageFacility_MessageService_SingleThreadMSPresence_h
+
+// Local variables:
+// mode: c++
+// End:

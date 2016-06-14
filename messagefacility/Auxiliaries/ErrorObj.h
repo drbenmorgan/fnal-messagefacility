@@ -23,9 +23,9 @@
 // ----------------------------------------------------------------------
 
 
-#include "messagefacility/MessageLogger/ELlist.h"
-#include "messagefacility/MessageLogger/ELextendedID.h"
-#include "messagefacility/MessageLogger/ELseverityLevel.h"
+#include "messagefacility/Auxiliaries/ELlist.h"
+#include "messagefacility/Auxiliaries/ELextendedID.h"
+#include "messagefacility/Auxiliaries/ELseverityLevel.h"
 
 #include <sstream>
 #include <string>
@@ -139,7 +139,7 @@ namespace mf {
 // The icc file contains the template for operator<< (ErrorObj&, T)
 
 #define ERROROBJ_ICC
-#include "messagefacility/MessageLogger/ErrorObj.icc"
+#include "messagefacility/Auxiliaries/ErrorObj.icc"
 #undef  ERROROBJ_ICC
 
 

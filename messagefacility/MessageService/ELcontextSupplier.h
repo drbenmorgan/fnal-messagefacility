@@ -25,7 +25,7 @@
 // ----------------------------------------------------------------------
 
 
-#include "messagefacility/MessageLogger/ErrorObj.h"
+#include "messagefacility/Auxiliaries/ErrorObj.h"
 
 namespace mf {
 namespace service {

@@ -1,7 +1,7 @@
 #ifndef MessageLogger_ErrorSummaryEntry_h
 #define MessageLogger_ErrorSummaryEntry_h
 
-#include "messagefacility/MessageLogger/ELseverityLevel.h"
+#include "messagefacility/Auxiliaries/ELseverityLevel.h"
 
 #include <string>
 

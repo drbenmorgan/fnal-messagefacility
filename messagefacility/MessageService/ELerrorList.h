@@ -17,7 +17,7 @@
 
 #include "messagefacility/MessageService/ELdestination.h"
 
-#include "messagefacility/MessageLogger/ErrorObj.h"
+#include "messagefacility/Auxiliaries/ErrorObj.h"
 
 #include <list>
 

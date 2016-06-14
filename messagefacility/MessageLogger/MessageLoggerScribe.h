@@ -11,8 +11,8 @@
 #include "messagefacility/MessageService/ErrorLog.h"
 #include "messagefacility/MessageService/MsgContext.h"
 #include "messagefacility/MessageService/MessageLoggerDefaults.h"
-#include "messagefacility/MessageLogger/MessageLoggerQ.h"
-#include "messagefacility/MessageLogger/AbstractMLscribe.h"
+#include "messagefacility/MessageService/MessageLoggerQ.h"
+#include "messagefacility/MessageService/AbstractMLscribe.h"
 
 #include <iosfwd>
 #include <vector>

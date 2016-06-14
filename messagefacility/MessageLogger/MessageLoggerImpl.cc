@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // Package:     Services
-// Class  :     MessageLogger
+// Class  :     MessageLoggerImpl
 //
 // Implementation:
 //     <Notes on implementation>
@@ -60,11 +60,11 @@
 
 #include "fhiclcpp/ParameterSet.h"
 
-#include "messagefacility/MessageService/MessageLogger.h"
+#include "messagefacility/MessageLogger/MessageLoggerImpl.h"
 //#include "MessageService/interface/MessageServicePSetValidation.h"
 
-#include "messagefacility/MessageLogger/MessageLoggerQ.h"
-#include "messagefacility/MessageLogger/MessageDrop.h"
+#include "messagefacility/MessageService/MessageLoggerQ.h"
+#include "messagefacility/MessageService/MessageDrop.h"
 
 //#include "DataFormats/Provenance/interface/ModuleDescription.h"
 

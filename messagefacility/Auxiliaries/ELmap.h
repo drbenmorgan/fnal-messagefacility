@@ -34,7 +34,7 @@
 
 
 
-#include "messagefacility/MessageLogger/ELextendedID.h"
+#include "messagefacility/Auxiliaries/ELextendedID.h"
 
 #include <map>
 #include <string>

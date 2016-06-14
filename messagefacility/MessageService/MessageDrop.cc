@@ -16,7 +16,7 @@
 #include "boost/thread/tss.hpp"
 
 // user include files
-#include "messagefacility/MessageLogger/MessageDrop.h"
+#include "messagefacility/MessageService/MessageDrop.h"
 #include "messagefacility/MessageService/ELadministrator.h"
 
 

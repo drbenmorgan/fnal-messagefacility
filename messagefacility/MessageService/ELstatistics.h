@@ -11,8 +11,8 @@
 #include "cetlib/ostream_handle.h"
 #include "messagefacility/MessageService/ELdestination.h"
 
-#include "messagefacility/MessageLogger/ELextendedID.h"
-#include "messagefacility/MessageLogger/ELmap.h"
+#include "messagefacility/Auxiliaries/ELextendedID.h"
+#include "messagefacility/Auxiliaries/ELmap.h"
 
 #include <iostream>
 #include <memory>

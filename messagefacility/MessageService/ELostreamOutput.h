@@ -9,7 +9,7 @@
 // ----------------------------------------------------------------------
 
 #include "cetlib/ostream_handle.h"
-#include "messagefacility/MessageLogger/ELextendedID.h"
+#include "messagefacility/Auxiliaries/ELextendedID.h"
 #include "messagefacility/MessageService/ELdestination.h"
 
 #include <memory>

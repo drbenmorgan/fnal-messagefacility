@@ -5,8 +5,8 @@
  *      Author: qlu
  */
 
-#include "messagefacility/MessageLogger/MessageFacilityMsg.h"
-#include "messagefacility/MessageLogger/ErrorObj.h"
+#include "messagefacility/Auxiliaries/MessageFacilityMsg.h"
+#include "messagefacility/Auxiliaries/ErrorObj.h"
 
 #include "messagefacility/Utilities/formatTime.h"
 

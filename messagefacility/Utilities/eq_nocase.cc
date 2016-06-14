@@ -1,4 +1,4 @@
-#include "messagefacility/MessageLogger/detail/eq_nocase.h"
+#include "messagefacility/Utilities/eq_nocase.h"
 
 #include <cctype>
 #include <cstring>

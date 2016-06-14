@@ -1,8 +1,8 @@
 #ifndef MessageFacility_MessageService_MainThreadMLscribe_h
 #define MessageFacility_MessageService_MainThreadMLscribe_h
 
-#include "messagefacility/MessageLogger/AbstractMLscribe.h"
-#include "messagefacility/MessageLogger/MessageLoggerQ.h"
+#include "messagefacility/MessageService/AbstractMLscribe.h"
+#include "messagefacility/MessageService/MessageLoggerQ.h"
 #include "messagefacility/Utilities/SingleConsumerQ.h"
 
 // I believe the below are not needed:

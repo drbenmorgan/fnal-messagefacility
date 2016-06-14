@@ -1,8 +1,8 @@
-#include "messagefacility/MessageLogger/MessageLoggerQ.h"
-#include "messagefacility/MessageLogger/AbstractMLscribe.h"
-#include "messagefacility/MessageLogger/ConfigurationHandshake.h"
+#include "messagefacility/MessageService/MessageLoggerQ.h"
+#include "messagefacility/MessageService/AbstractMLscribe.h"
+#include "messagefacility/MessageService/ConfigurationHandshake.h"
 #include "messagefacility/Utilities/exception.h"
-#include "messagefacility/MessageLogger/ErrorObj.h"
+#include "messagefacility/Auxiliaries/ErrorObj.h"
 
 #include <cstring>
 #include <iostream>

@@ -32,3 +32,7 @@ namespace mf {
 
 }
 #endif // MessageFacility_Utilities_Presence_h
+
+// Local variables:
+// mode: c++
+// End:

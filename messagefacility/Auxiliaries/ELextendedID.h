@@ -1,7 +1,7 @@
 #ifndef MessageLogger_ELextendedID_h
 #define MessageLogger_ELextendedID_h
 
-#include "messagefacility/MessageLogger/ELseverityLevel.h"
+#include "messagefacility/Auxiliaries/ELseverityLevel.h"
 
 namespace mf {
 

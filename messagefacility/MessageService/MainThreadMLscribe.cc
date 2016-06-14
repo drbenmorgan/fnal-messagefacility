@@ -8,8 +8,8 @@
 
 #include "messagefacility/MessageService/MainThreadMLscribe.h"
 #include "messagefacility/MessageService/ThreadQueue.h"
-#include "messagefacility/MessageLogger/MessageLoggerQ.h"
-#include "messagefacility/MessageLogger/ConfigurationHandshake.h"
+#include "messagefacility/MessageService/MessageLoggerQ.h"
+#include "messagefacility/MessageService/ConfigurationHandshake.h"
 
 namespace mf {
 namespace service {

@@ -4,13 +4,13 @@
 //
 // ----------------------------------------------------------------------
 
-#include "messagefacility/MessageLogger/ConfigurationHandshake.h"
-#include "messagefacility/MessageLogger/ErrorObj.h"
+#include "messagefacility/MessageService/ConfigurationHandshake.h"
+#include "messagefacility/Auxiliaries/ErrorObj.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "messagefacility/MessageService/ELfwkJobReport.h"
 #include "messagefacility/MessageService/ELostreamOutput.h"
 #include "messagefacility/MessageService/ELstatistics.h"
-#include "messagefacility/MessageService/MessageLoggerScribe.h"
+#include "messagefacility/MessageLogger/MessageLoggerScribe.h"
 #include "messagefacility/MessageService/ThreadQueue.h"
 #include "messagefacility/Utilities/exception.h"
 

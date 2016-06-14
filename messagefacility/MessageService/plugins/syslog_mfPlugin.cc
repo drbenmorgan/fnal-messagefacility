@@ -2,8 +2,8 @@
 #include "fhiclcpp/ParameterSet.h"
 
 #include "messagefacility/MessageService/ELdestination.h"
-#include "messagefacility/MessageLogger/ELseverityLevel.h"
-#include "messagefacility/MessageLogger/MessageDrop.h"
+#include "messagefacility/Auxiliaries/ELseverityLevel.h"
+#include "messagefacility/MessageService/MessageDrop.h"
 #include "messagefacility/Utilities/exception.h"
 
 // C/C++ includes

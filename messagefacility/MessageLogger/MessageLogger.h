@@ -12,11 +12,11 @@
 #include <ostream>
 #include <string>
 
-#include "messagefacility/MessageLogger/ELseverityLevel.h"
-#include "messagefacility/MessageLogger/MessageDrop.h"
+#include "messagefacility/Auxiliaries/ELseverityLevel.h"
+#include "messagefacility/MessageService/MessageDrop.h"
 #include "messagefacility/MessageLogger/MessageSender.h"
-#include "messagefacility/MessageService/MessageLogger.h"
-#include "messagefacility/MessageService/Presence.h"
+#include "messagefacility/MessageLogger/MessageLoggerImpl.h"
+#include "messagefacility/MessageLogger/Presence.h"
 
 #include "fhiclcpp/ParameterSet.h"
 

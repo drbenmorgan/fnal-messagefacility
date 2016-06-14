@@ -9,9 +9,7 @@
 #define MESSAGEFACILITYMSG_H_
 
 #include <memory>
-
 #include <string>
-
 #include <sys/time.h>
 
 namespace mf {

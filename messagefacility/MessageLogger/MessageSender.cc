@@ -1,6 +1,6 @@
 #include "messagefacility/MessageLogger/MessageSender.h"
-#include "messagefacility/MessageLogger/MessageLoggerQ.h"
-#include "messagefacility/MessageLogger/MessageDrop.h"
+#include "messagefacility/MessageService/MessageLoggerQ.h"
+#include "messagefacility/MessageService/MessageDrop.h"
 
 #define TRACE_DROP
 #ifdef TRACE_DROP

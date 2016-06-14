@@ -1,10 +1,9 @@
 #ifndef MessageFacility_MessageService_MsgStatistics_h
 #define MessageFacility_MessageService_MsgStatistics_h
 
-#include "messagefacility/MessageLogger/ELextendedID.h"
-#include "messagefacility/MessageLogger/ELmap.h"
-
-#include "messagefacility/MessageService/ELlimitsTable.h"
+#include "messagefacility/Auxiliaries/ELextendedID.h"
+#include "messagefacility/Auxiliaries/ELlimitsTable.h"
+#include "messagefacility/Auxiliaries/ELmap.h"
 
 #include "fhiclcpp/ParameterSet.h"
 

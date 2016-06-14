@@ -22,7 +22,7 @@
 // system include files
 
 // user include files
-#include "messagefacility/MessageLogger/AbstractMLscribe.h"
+#include "messagefacility/MessageService/AbstractMLscribe.h"
 
 // forward declarations
 namespace mf {
