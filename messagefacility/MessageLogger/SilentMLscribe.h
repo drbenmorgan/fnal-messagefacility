@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageLogger_SilentMLscribe_h
-#define MessageFacility_MessageLogger_SilentMLscribe_h
+#ifndef messagefacility_MessageLogger_SilentMLscribe_h
+#define messagefacility_MessageLogger_SilentMLscribe_h
 // -*- C++ -*-
 //
 // Package:     MessageLogger
@@ -40,4 +40,8 @@ namespace mf {
   }
 }
 
-#endif
+#endif /* messagefacility_MessageLogger_SilentMLscribe_h */
+
+// Local Variables:
+// mode: c++
+// End:

@@ -1,5 +1,5 @@
-#ifndef MessageService_ELadministrator_h
-#define MessageService_ELadministrator_h
+#ifndef messagefacility_MessageService_ELadministrator_h
+#define messagefacility_MessageService_ELadministrator_h
 
 
 // ----------------------------------------------------------------------
@@ -242,7 +242,7 @@ private:
 }        // end of namespace mf
 
 
-#endif  // MessageService_ELadministrator_h
+#endif /* messagefacility_MessageService_ELadministrator_h */
 
 // Local Variables:
 // mode: c++

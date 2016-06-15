@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_ELdestination_h
-#define MessageFacility_MessageService_ELdestination_h
+#ifndef messagefacility_MessageService_ELdestination_h
+#define messagefacility_MessageService_ELdestination_h
 
 
 // ----------------------------------------------------------------------
@@ -158,7 +158,7 @@ namespace mf {
 }   // end of namespace mf
 
 
-#endif  // FWCore_MessageService_ELdestination_h
+#endif /* messagefacility_MessageService_ELdestination_h */
 
 // Local variables:
 // mode: c++

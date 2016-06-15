@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageLogger_ConfigurationHandshake_h
-#define MessageFacility_MessageLogger_ConfigurationHandshake_h
+#ifndef messagefacility_MessageService_ConfigurationHandshake_h
+#define messagefacility_MessageService_ConfigurationHandshake_h
 
 #include "messagefacility/Utilities/exception.h"
 
@@ -29,7 +29,7 @@ namespace mf {
 }  // namespace mf
 
 
-#endif  // MessageFacility_MessageLogger_ConfigurationHandshake_h
+#endif /* messagefacility_MessageService_ConfigurationHandshake_h */
 
 // Local variables:
 // mode: c++

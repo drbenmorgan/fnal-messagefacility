@@ -1,5 +1,5 @@
-#ifndef MESSAGEFACILITY_UTILITIES_EXCEPTION_H
-#define MESSAGEFACILITY_UTILITIES_EXCEPTION_H
+#ifndef messagefacility_Utilities_exception_h
+#define messagefacility_Utilities_exception_h
 
 #include "cetlib/coded_exception.h"
 #include <string>
@@ -19,7 +19,7 @@ namespace mf {
   Exception;
 } // mf
 
-#endif // MESSAGEFACILITY_UTILITIES_EXCEPTION_H
+#endif /* messagefacility_Utilities_exception_h */
 
 /// Local Variables:
 /// mode: C++

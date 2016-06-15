@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_MessageLoggerScribe_h
-#define MessageFacility_MessageService_MessageLoggerScribe_h
+#ifndef messagefacility_MessageLogger_MessageLoggerScribe_h
+#define messagefacility_MessageLogger_MessageLoggerScribe_h
 
 #include "cetlib/BasicPluginFactory.h"
 
@@ -112,7 +112,7 @@ namespace mf {
 }  // namespace mf
 
 
-#endif  // MessageFacility_MessageService_MessageLoggerScribe_h
+#endif /* messagefacility_MessageLogger_MessageLoggerScribe_h */
 
 // Local Variables:
 // mode: c++

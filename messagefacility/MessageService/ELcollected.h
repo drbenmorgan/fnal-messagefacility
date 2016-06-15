@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_ELcollected_h
-#define MessageFacility_MessageService_ELcollected_h
+#ifndef messagefacility_MessageService_ELcollected_h
+#define messagefacility_MessageService_ELcollected_h
 
 
 // ----------------------------------------------------------------------
@@ -133,7 +133,7 @@ namespace mf {
 }        // end of namespace mf
 
 
-#endif // MessageService_ELcollected_h
+#endif /* messagefacility_MessageService_ELcollected_h */
 
 // Local variables:
 // mode: c++

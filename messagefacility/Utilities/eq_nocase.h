@@ -1,5 +1,5 @@
-#ifndef messagefacility_MessageLogger_detail_eq_nocase_h
-#define messagefacility_MessageLogger_detail_eq_nocase_h
+#ifndef messagefacility_Utilities_eq_nocase_h
+#define messagefacility_Utilities_eq_nocase_h
 
 #include <string>
 
@@ -9,7 +9,7 @@ namespace mf {
   }
 }
 
-#endif
+#endif /* messagefacility_Utilities_eq_nocase_h */
 
 // Local variables:
 // mode: c++

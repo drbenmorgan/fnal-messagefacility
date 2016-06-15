@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_ELostreamOutput_h
-#define MessageFacility_MessageService_ELostreamOutput_h
+#ifndef messagefacility_MessageService_ELostreamOutput_h
+#define messagefacility_MessageService_ELostreamOutput_h
 
 // ----------------------------------------------------------------------
 //
@@ -68,7 +68,7 @@ namespace mf {
 }        // end of namespace mf
 
 
-#endif // MessageFacility_MessageService_ELostreamOutput_h
+#endif /* messagefacility_MessageService_ELostreamOutput_h */
 
 // Local variables:
 // mode: c++

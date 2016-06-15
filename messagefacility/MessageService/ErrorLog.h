@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_ErrorLog_h
-#define MessageFacility_MessageService_ErrorLog_h
+#ifndef messagefacility_MessageService_ErrorLog_h
+#define messagefacility_MessageService_ErrorLog_h
 
 
 // ----------------------------------------------------------------------
@@ -191,7 +191,7 @@ namespace mf {
 // ----------------------------------------------------------------------
 
 
-#endif  // MessageFacility_MessageService_ErrorLog_h
+#endif /* messagefacility_MessageService_ErrorLog_h */
 
 // Local variables:
 // mode: c++

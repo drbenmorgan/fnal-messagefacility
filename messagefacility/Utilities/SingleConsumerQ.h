@@ -1,5 +1,5 @@
-#ifndef MessageFacility_Utilities_SingleConsumerQ_h
-#define MessageFacility_Utilities_SingleConsumerQ_h
+#ifndef messagefacility_Utilities_SingleConsumerQ_h
+#define messagefacility_Utilities_SingleConsumerQ_h
 /*
   A bounded queue for use in a multi-threaded producer/consumer application.
   This is a simple design.  It is only meant to be used where there is
@@ -130,7 +130,7 @@ namespace mf {
 
 
 }
-#endif
+#endif /* messagefacility_Utilities_SingleConsumerQ_h */
 
 // Local variables:
 // mode: c++

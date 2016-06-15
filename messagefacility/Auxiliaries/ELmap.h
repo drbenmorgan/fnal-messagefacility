@@ -1,5 +1,5 @@
-#ifndef MessageLogger_ELmap_h
-#define MessageLogger_ELmap_h
+#ifndef messagefacility_Auxiliaries_ELmap_h
+#define messagefacility_Auxiliaries_ELmap_h
 
 
 // ----------------------------------------------------------------------
@@ -95,7 +95,7 @@ namespace mf {
 
 }
 
-#endif // MessageLogger_ELmap_h
+#endif /* messagefacility_Auxiliaries_ELmap_h */
 
 // Local variables:
 // mode: c++

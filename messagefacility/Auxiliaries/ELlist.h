@@ -1,5 +1,5 @@
-#ifndef MessageLogger_ELlist_h
-#define MessageLogger_ELlist_h
+#ifndef messagefacility_Auxiliaries_ELlist_h
+#define messagefacility_Auxiliaries_ELlist_h
 
 // ----------------------------------------------------------------------
 //
@@ -29,4 +29,8 @@ namespace mf {
   using ELlist_string = std::list<std::string>;
 }
 
-#endif // MessageLogger_ELlist_h
+#endif /* messagefacility_Auxiliaries_ELlist_h */
+
+// Local Variables:
+// mode: c++
+// End:

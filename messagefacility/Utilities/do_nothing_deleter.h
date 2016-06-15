@@ -1,5 +1,5 @@
-#ifndef MessageFacility_Utilities_do_nothing_deleter_h
-#define MessageFacility_Utilities_do_nothing_deleter_h
+#ifndef messagefacility_Utilities_do_nothing_deleter_h
+#define messagefacility_Utilities_do_nothing_deleter_h
 
 // ----------------------------------------------------------------------
 //
@@ -20,4 +20,8 @@ namespace mf {
 
 }
 
-#endif
+#endif /* messagefacility_Utilities_do_nothing_deleter_h */
+
+// Local Variables:
+// mode: c++
+// End:

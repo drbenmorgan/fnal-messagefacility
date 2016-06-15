@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageLogger_MessageSender_h
-#define MessageFacility_MessageLogger_MessageSender_h
+#ifndef messagefacility_MessageLogger_MessageSender_h
+#define messagefacility_MessageLogger_MessageSender_h
 
 #include "messagefacility/Auxiliaries/ELseverityLevel.h"
 #include "messagefacility/Auxiliaries/ErrorObj.h"
@@ -49,7 +49,7 @@ namespace mf
 
 }  // namespace mf
 
-#endif  // MessageFacility_MessageLogger_MessageSender_h
+#endif /* messagefacility_MessageLogger_MessageSender_h */
 
 // Local variables:
 // mode : c++

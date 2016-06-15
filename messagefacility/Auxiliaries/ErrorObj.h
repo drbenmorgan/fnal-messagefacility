@@ -1,5 +1,5 @@
-#ifndef MessageLogger_ErrorObj_h
-#define MessageLogger_ErrorObj_h
+#ifndef messagefacility_Auxiliaries_ErrorObj_h
+#define messagefacility_Auxiliaries_ErrorObj_h
 
 
 // ----------------------------------------------------------------------
@@ -146,7 +146,7 @@ namespace mf {
 // ----------------------------------------------------------------------
 
 
-#endif // MessageLogger_ErrorObj_h
+#endif /* messagefacility_Auxiliaries_ErrorObj_h */
 
 // Local variables:
 // mode: c++

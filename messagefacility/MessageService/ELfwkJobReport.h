@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_ELfwkJobReport_h
-#define MessageFacility_MessageService_ELfwkJobReport_h
+#ifndef messagefacility_MessageService_ELfwkJobReport_h
+#define messagefacility_MessageService_ELfwkJobReport_h
 
 // ----------------------------------------------------------------------
 //
@@ -85,7 +85,7 @@ namespace mf {
 }        // end of namespace mf
 
 
-#endif // FWCore_MessageService_ELfwkJobReport_h
+#endif /* messagefacility_MessageService_ELfwkJobReport_h */
 
 // Local variables:
 // mode: c++

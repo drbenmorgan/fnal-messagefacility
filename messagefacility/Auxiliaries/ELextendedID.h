@@ -1,5 +1,5 @@
-#ifndef MessageLogger_ELextendedID_h
-#define MessageLogger_ELextendedID_h
+#ifndef messagefacility_Auxiliaries_ELextendedID_h
+#define messagefacility_Auxiliaries_ELextendedID_h
 
 #include "messagefacility/Auxiliaries/ELseverityLevel.h"
 
@@ -24,7 +24,7 @@ namespace mf {
 }        // end of namespace mf
 
 
-#endif  // MessageLogger_ELextendedID_h
+#endif /* messagefacility_Auxiliaries_ELextendedID_h */
 
 // Local variables:
 // mode: c++

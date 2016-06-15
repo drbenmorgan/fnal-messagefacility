@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_ELcontextSupplier_h
-#define MessageFacility_MessageService_ELcontextSupplier_h
+#ifndef messagefacility_MessageService_ELcontextSupplier_h
+#define messagefacility_MessageService_ELcontextSupplier_h
 
 
 // ----------------------------------------------------------------------
@@ -57,4 +57,8 @@ public:
 }        // end of namespace mf
 
 
-#endif  // FWCore_MessageService_ELcontextSupplier_h
+#endif /* messagefacility_MessageService_ELcontextSupplier_h */
+
+// Local Variables:
+// mode: c++
+// End:

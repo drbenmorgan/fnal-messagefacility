@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_ELtsErrorLog_h
-#define MessageFacility_MessageService_ELtsErrorLog_h
+#ifndef messagefacility_MessageService_ELtsErrorLog_h
+#define messagefacility_MessageService_ELtsErrorLog_h
 
 
 // ----------------------------------------------------------------------
@@ -128,4 +128,8 @@ inline void ELtsItem ( ELtsErrorLog & e, unsigned short n );
 #define ELTSERRORLOG_ICC
 #include "messagefacility/MessageService/ELtsErrorLog.icc"
 
-#endif  // ELTSERRORLOG_H
+#endif /* messagefacility_MessageService_ELtsErrorLog_h */
+
+// Local Variables:
+// mode: c++
+// End:

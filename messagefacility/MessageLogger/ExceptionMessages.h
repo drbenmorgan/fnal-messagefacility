@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageLogger_ExceptionMessages
-#define MessageFacility_MessageLogger_ExceptionMessages
+#ifndef messagefacility_MessageLogger_ExceptionMessages_h
+#define messagefacility_MessageLogger_ExceptionMessages_h
 
 #include "messagefacility/Utilities/exception.h"
 
@@ -14,4 +14,8 @@ namespace mf {
 
   void printUnknownException(char const *prog = 0, JobReport * jobRep = 0, int rc = -1);
 }
-#endif
+#endif /* messagefacility_MessageLogger_ExceptionMessages_h */
+
+// Local Variables:
+// mode: c++
+// End:

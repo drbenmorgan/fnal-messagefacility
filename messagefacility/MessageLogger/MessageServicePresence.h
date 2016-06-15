@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_MessageServicePresence_h
-#define MessageFacility_MessageService_MessageServicePresence_h
+#ifndef messagefacility_MessageLogger_MessageServicePresence_h
+#define messagefacility_MessageLogger_MessageServicePresence_h
 
 #include "messagefacility/MessageLogger/Presence.h"
 #include "messagefacility/MessageService/MainThreadMLscribe.h"
@@ -32,7 +32,7 @@ namespace mf  {
   }   // end of namespace service
 }  // namespace mf
 
-#endif  // MessageFacility_MessageService_MessageServicePresence_h
+#endif /* messagefacility_MessageLogger_MessageServicePresence_h */
 
 // Local variables:
 // mode: c++

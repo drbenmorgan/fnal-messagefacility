@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_MsgContext_h
-#define MessageFacility_MessageService_MsgContext_h
+#ifndef messagefacility_MessageService_MsgContext_h
+#define messagefacility_MessageService_MsgContext_h
 
 #include "messagefacility/MessageService/ELcontextSupplier.h"
 
@@ -32,4 +32,8 @@ namespace service {
 }        // end of namespace service
 }       // end of namespace mf
 
-#endif // MessageFacility_MessageService_MsgContext_h
+#endif /* messagefacility_MessageService_MsgContext_h */
+
+// Local Variables:
+// mode: c++
+// End:

@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_ELdestControl_h
-#define MessageFacility_MessageService_ELdestControl_h
+#ifndef messagefacility_MessageService_ELdestControl_h
+#define messagefacility_MessageService_ELdestControl_h
 
 
 // ----------------------------------------------------------------------
@@ -146,7 +146,7 @@ namespace mf {
 }        // end of namespace mf
 
 
-#endif // FWCore_MessageService_ELdestControl_h
+#endif /* messagefacility_MessageService_ELdestControl_h */
 
 // Local Variables:
 // mode: c++

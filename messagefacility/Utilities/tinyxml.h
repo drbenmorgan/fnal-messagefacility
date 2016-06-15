@@ -24,8 +24,8 @@ distribution.
 
 #define TIXML_USE_STL
 
-#ifndef TINYXML_INCLUDED
-#define TINYXML_INCLUDED
+#ifndef messagefacility_Utilities_tinyxml_h
+#define messagefacility_Utilities_tinyxml_h
 
 #ifdef _MSC_VER
 #pragma warning( push )
@@ -1799,5 +1799,9 @@ private:
 #pragma warning( pop )
 #endif
 
-#endif
+#endif /* messagefacility_Utilities_tinyxml_h */
 
+
+// Local Variables:
+// mode: c++
+// End:

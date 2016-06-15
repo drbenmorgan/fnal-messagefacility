@@ -1,5 +1,5 @@
-#ifndef UTILITIES_FORMATTIME_H
-#define UTILITIES_FORMATTIME_H
+#ifndef messagefacility_Utilities_formatTime_h
+#define messagefacility_Utilities_formatTime_h
 
 #include <string>
 #include <sys/time.h>
@@ -15,7 +15,7 @@ namespace mf {
   }
 }
 
-#endif
+#endif /* messagefacility_Utilities_formatTime_h */
 
 // Local variables:
 // mode: c++

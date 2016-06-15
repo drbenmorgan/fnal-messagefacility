@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_ELset_h
-#define MessageFacility_MessageService_ELset_h
+#ifndef messagefacility_Auxiliaries_ELset_h
+#define messagefacility_Auxiliaries_ELset_h
 
 
 // ----------------------------------------------------------------------
@@ -32,7 +32,7 @@ namespace mf {
   }
 }
 
-#endif // MessageFacility_MessageService_ELset_h
+#endif /* messagefacility_Auxiliaries_ELset_h */
 
 // Local variables:
 // mode: c++

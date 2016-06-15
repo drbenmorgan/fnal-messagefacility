@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_MessageLogger_h
-#define MessageFacility_MessageService_MessageLogger_h
+#ifndef messagefacility_MessageLogger_MessageLoggerImpl_h
+#define messagefacility_MessageLogger_MessageLoggerImpl_h
 
 // -*- C++ -*-
 //
@@ -126,7 +126,7 @@ namespace mf  {
 
 
 
-#endif  // MessageFacility_MessageService_MessageLogger_h
+#endif /* messagefacility_MessageLogger_MessageLoggerImpl_h */
 
 // Local variables:
 // mode: c++

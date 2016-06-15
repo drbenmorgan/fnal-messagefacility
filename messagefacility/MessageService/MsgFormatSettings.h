@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_MsgFormatSettings_h
-#define MessageFacility_MessageService_MsgFormatSettings_h
+#ifndef messagefacility_MessageService_MsgFormatSettings_h
+#define messagefacility_MessageService_MsgFormatSettings_h
 
 #include "messagefacility/Utilities/formatTime.h"
 #include <bitset>
@@ -56,7 +56,7 @@ namespace mf {
   } // end namespace service
 } // end namespace mf
 
-#endif /* MessageFacility_MessageService_MsgFormatSettings_h */
+#endif /* messagefacility_MessageService_MsgFormatSettings_h */
 
   // Local variables:
   // mode: c++

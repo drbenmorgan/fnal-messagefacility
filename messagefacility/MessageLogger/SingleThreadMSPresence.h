@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_SingleThreadMSPresence_h
-#define MessageFacility_MessageService_SingleThreadMSPresence_h
+#ifndef messagefacility_MessageLogger_SingleThreadMSPresence_h
+#define messagefacility_MessageLogger_SingleThreadMSPresence_h
 
 #include "messagefacility/MessageLogger/Presence.h"
 #include "messagefacility/MessageLogger/MessageLoggerScribe.h"
@@ -30,7 +30,7 @@ private:
 }  // namespace mf
 
 
-#endif  // MessageFacility_MessageService_SingleThreadMSPresence_h
+#endif /* messagefacility_MessageLogger_SingleThreadMSPresence_h */
 
 // Local variables:
 // mode: c++

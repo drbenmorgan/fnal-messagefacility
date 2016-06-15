@@ -1,5 +1,5 @@
-#ifndef MessageFacility_Utilities_Presence_h
-#define MessageFacility_Utilities_Presence_h
+#ifndef messagefacility_MessageLogger_Presence_h
+#define messagefacility_MessageLogger_Presence_h
 
 #include <string>
 
@@ -31,7 +31,7 @@ namespace mf {
   };
 
 }
-#endif // MessageFacility_Utilities_Presence_h
+#endif /* messagefacility_MessageLogger_Presence_h */
 
 // Local variables:
 // mode: c++

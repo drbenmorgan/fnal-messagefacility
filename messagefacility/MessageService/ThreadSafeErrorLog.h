@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_ThreadSafeErrorLog_h
-#define MessageFacility_MessageService_ThreadSafeErrorLog_h
+#ifndef messagefacility_MessageService_ThreadSafeErrorLog_h
+#define messagefacility_MessageService_ThreadSafeErrorLog_h
 
 // ----------------------------------------------------------------------
 //
@@ -133,7 +133,7 @@ namespace mf {
 
 // ----------------------------------------------------------------------
 
-#endif  // THREADSAFEERRORLOG_H
+#endif /* messagefacility_MessageService_ThreadSafeErrorLog_h */
 
 // Local variables:
 // mode: c++

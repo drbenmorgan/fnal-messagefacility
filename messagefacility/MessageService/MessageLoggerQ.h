@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageLogger_MessageLoggerQ_h
-#define MessageFacility_MessageLogger_MessageLoggerQ_h
+#ifndef messagefacility_MessageService_MessageLoggerQ_h
+#define messagefacility_MessageService_MessageLoggerQ_h
 
 #include "messagefacility/Auxiliaries/ELseverityLevel.h"
 
@@ -101,4 +101,8 @@ private:
 }  // namespace mf
 
 
-#endif  // MessageFacility_MessageLogger_MessageLoggerQ_h
+#endif /* messagefacility_MessageService_MessageLoggerQ_h */
+
+// Local Variables:
+// mode: c++
+// End:

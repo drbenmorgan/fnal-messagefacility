@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_MainThreadMLscribe_h
-#define MessageFacility_MessageService_MainThreadMLscribe_h
+#ifndef messagefacility_MessageService_MainThreadMLscribe_h
+#define messagefacility_MessageService_MainThreadMLscribe_h
 
 #include "messagefacility/MessageService/AbstractMLscribe.h"
 #include "messagefacility/MessageService/MessageLoggerQ.h"
@@ -66,7 +66,7 @@ namespace mf {
 }  // namespace mf
 
 
-#endif  // MessageFacility_MessageService_MainThreadMLscribe_h
+#endif /* messagefacility_MessageService_MainThreadMLscribe_h */
 
 // Local variables:
 // mode: c++

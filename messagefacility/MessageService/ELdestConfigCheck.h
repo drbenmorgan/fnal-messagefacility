@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_ELdestinationConfigCheck_h
-#define MessageFacility_MessageService_ELdestinationConfigCheck_h
+#ifndef messagefacility_MessageService_ELdestConfigCheck_h
+#define messagefacility_MessageService_ELdestConfigCheck_h
 
 #include "cetlib/container_algorithms.h"
 #include "fhiclcpp/ParameterSet.h"
@@ -35,7 +35,7 @@ namespace mf {
 }  // namespace mf
 
 
-#endif  // MessageFacility_MessageService_ELdestinationConfigCheck_h
+#endif /* messagefacility_MessageService_ELdestConfigCheck_h */
 
 // Local Variables:
 // mode: c++

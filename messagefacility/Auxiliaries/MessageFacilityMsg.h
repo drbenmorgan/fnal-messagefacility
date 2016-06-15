@@ -5,8 +5,8 @@
  *      Author: qlu
  */
 
-#ifndef MESSAGEFACILITYMSG_H_
-#define MESSAGEFACILITYMSG_H_
+#ifndef messagefacility_Auxiliaries_MessageFacilityMsg_h
+#define messagefacility_Auxiliaries_MessageFacilityMsg_h
 
 #include <memory>
 #include <string>
@@ -64,4 +64,8 @@ private:
 
 }
 
-#endif /* MESSAGEFACILITYMSG_H_ */
+#endif /* messagefacility_Auxiliaries_MessageFacilityMsg_h */
+
+// Local Variables:
+// mode: c++
+// End:
