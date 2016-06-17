@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_ELdestControl_h
-#define MessageFacility_MessageService_ELdestControl_h
+#ifndef messagefacility_MessageService_ELdestControl_h
+#define messagefacility_MessageService_ELdestControl_h
 
 
 // ----------------------------------------------------------------------
@@ -30,10 +30,9 @@
 // ----------------------------------------------------------------------
 
 
-#include "messagefacility/MessageLogger/ELstring.h"
-#include "messagefacility/MessageLogger/ELmap.h"
-#include "messagefacility/MessageLogger/ELseverityLevel.h"
-#include "messagefacility/MessageLogger/ErrorObj.h"
+#include "messagefacility/Auxiliaries/ELmap.h"
+#include "messagefacility/Auxiliaries/ELseverityLevel.h"
+#include "messagefacility/Auxiliaries/ErrorObj.h"
 #include "messagefacility/MessageService/MsgFormatSettings.h"
 
 #include "cetlib/exempt_ptr.h"
@@ -66,11 +65,11 @@ namespace mf {
       // -----  Behavior control methods invoked by the framework:
       //
       virtual ELdestControl & setThreshold( const ELseverityLevel & sv );
-      virtual ELdestControl & setLimit( const ELstring & s, int n );
+      virtual ELdestControl & setLimit( const std::string & s, int n );
       virtual ELdestControl & setLimit( const ELseverityLevel & sv, int n );
-      virtual ELdestControl & setInterval( const ELstring & s, int interval );
+      virtual ELdestControl & setInterval( const std::string & s, int interval );
       virtual ELdestControl & setInterval( const ELseverityLevel& sv, int interval);
-      virtual ELdestControl & setTimespan( const ELstring& s, int n );
+      virtual ELdestControl & setTimespan( const std::string& s, int n );
       virtual ELdestControl & setTimespan( const ELseverityLevel & sv, int n );
 
       virtual ELdestControl & setTableLimit( int n );
@@ -92,17 +91,17 @@ namespace mf {
       virtual int  setLineLength(int len);
       virtual int  getLineLength() const;
 
-      virtual void filterModule    ( ELstring const & moduleName );
-      virtual void excludeModule   ( ELstring const & moduleName );
-      virtual void respondToModule ( ELstring const & moduleName );
-      virtual void ignoreModule    ( ELstring const & moduleName );
+      virtual void filterModule    ( std::string const & moduleName );
+      virtual void excludeModule   ( std::string const & moduleName );
+      virtual void respondToModule ( std::string const & moduleName );
+      virtual void ignoreModule    ( std::string const & moduleName );
 
       virtual ELdestControl & clearSummary();
       virtual ELdestControl & wipe();
       virtual ELdestControl & zero();
 
-      virtual ELdestControl & setPreamble( const ELstring & preamble );
-      virtual ELdestControl & setNewline( const ELstring & newline );
+      virtual ELdestControl & setPreamble( const std::string & preamble );
+      virtual ELdestControl & setNewline( const std::string & newline );
 
       // -----  Active methods invoked by the framework:
       //
@@ -110,7 +109,7 @@ namespace mf {
 #pragma GCC diagnostic ignored "-Wwrite-strings"
 #pragma GCC diagnostic ignored "-Wpedantic"
       virtual void summary( std::ostream  & os  , char * title="" );
-      virtual void summary( ELstring      & s   , char * title="" );
+      virtual void summary( std::string      & s   , char * title="" );
 #pragma GCC diagnostic pop
       virtual void summary( );
       virtual void summaryForJobReport( std::map<std::string, double> & sm);
@@ -121,16 +120,16 @@ namespace mf {
                                                // to only this destination.
 
       virtual void changeFile (std::ostream & os);
-      virtual void changeFile (const ELstring & filename);
+      virtual void changeFile (const std::string & filename);
       virtual void flush();
 
       // -----  Helper methods invoked by other ErrorLogger classes
 
-      virtual void summarization( const ELstring & title
-                                  , const ELstring & sumLines
+      virtual void summarization( const std::string & title
+                                  , const std::string & sumLines
                                   );
 
-      ELstring getNewline() const;
+      std::string getNewline() const;
 
       // -----  Data implementing the trivial handle pattern:
       //
@@ -147,7 +146,7 @@ namespace mf {
 }        // end of namespace mf
 
 
-#endif // FWCore_MessageService_ELdestControl_h
+#endif /* messagefacility_MessageService_ELdestControl_h */
 
 // Local Variables:
 // mode: c++

@@ -1,5 +1,5 @@
-#ifndef Utilities_DebugMacros_h
-#define Utilities_DebugMacros_h
+#ifndef messagefacility_Utilities_DebugMacros_h
+#define messagefacility_Utilities_DebugMacros_h
 
 namespace mf {
   struct debugvalue {
@@ -17,4 +17,8 @@ extern debugvalue debugit;
 
 #define FDEBUG(lev) if(lev <= debugit()) std::cerr
 
-#endif
+#endif /* messagefacility_Utilities_DebugMacros_h */
+
+// Local Variables:
+// mode: c++
+// End:

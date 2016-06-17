@@ -7,9 +7,9 @@
 #include "cetlib/filepath_maker.h"
 
 #include "messagefacility/MessageLogger/MessageLogger.h"
-#include "messagefacility/MessageLogger/MessageLoggerQ.h"
+#include "messagefacility/MessageService/MessageLoggerQ.h"
 #include "messagefacility/MessageService/ELadministrator.h"
-#include "messagefacility/MessageService/MessageServicePresence.h"
+#include "messagefacility/MessageLogger/MessageServicePresence.h"
 #include "messagefacility/Utilities/exception.h"
 
 #include "fhiclcpp/make_ParameterSet.h"

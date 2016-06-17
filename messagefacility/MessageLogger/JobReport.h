@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageLogger_JobReport_h
-#define MessageFacility_MessageLogger_JobReport_h
+#ifndef messagefacility_MessageLogger_JobReport_h
+#define messagefacility_MessageLogger_JobReport_h
 // -*- C++ -*-
 //
 // Package:     MessageLogger
@@ -485,4 +485,8 @@ namespace mf {
   }
 }
 
-#endif
+#endif /* messagefacility_MessageLogger_JobReport_h */
+
+// Local Variables:
+// mode: c++
+// End:

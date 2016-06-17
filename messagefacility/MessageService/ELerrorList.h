@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_ELerrorList_h
-#define MessageFacility_MessageService_ELerrorList_h
+#ifndef messagefacility_MessageService_ELerrorList_h
+#define messagefacility_MessageService_ELerrorList_h
 
 
 // ----------------------------------------------------------------------
@@ -17,7 +17,7 @@
 
 #include "messagefacility/MessageService/ELdestination.h"
 
-#include "messagefacility/MessageLogger/ErrorObj.h"
+#include "messagefacility/Auxiliaries/ErrorObj.h"
 
 #include <list>
 
@@ -78,7 +78,7 @@ namespace mf {
 }        // end of namespace mf
 
 
-#endif // FWCore_MessageService_ELerrorList_h
+#endif /* messagefacility_MessageService_ELerrorList_h */
 
 // Local variables:
 // mode: c++

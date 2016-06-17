@@ -1,5 +1,5 @@
-#ifndef MessageLogger_LoggedErrorsSummary_h
-#define MessageLogger_LoggedErrorsSummary_h
+#ifndef messagefacility_MessageLogger_LoggedErrorsSummary_h
+#define messagefacility_MessageLogger_LoggedErrorsSummary_h
 
 // ----------------------------------------------------------------------
 //
@@ -57,5 +57,9 @@ std::vector<ErrorSummaryEntry> LoggedErrorsOnlySummary(); // Errors only
 }        // end of namespace mf
 
 
-#endif  // MessageLogger_LoggedErrorsSummary_h
+#endif /* messagefacility_MessageLogger_LoggedErrorsSummary_h */
 
+
+// Local Variables:
+// mode: c++
+// End:

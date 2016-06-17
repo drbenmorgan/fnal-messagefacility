@@ -13,6 +13,8 @@ set(messagefacility_utilities_SOURCES
   UnixSignalHandlers.cc
   UnixSignalHandlers.h
   do_nothing_deleter.h
+  eq_nocase.cc
+  eq_nocase.h
   exception.cc
   exception.h
   formatTime.cc

@@ -40,7 +40,7 @@ namespace mf {
     // intoBuf
     // =======
 
-    void ELcollected::intoBuf( const ELstring & s )  {
+    void ELcollected::intoBuf( const std::string & s )  {
 
       buf += s;
       buf += '\0';
@@ -71,7 +71,7 @@ namespace mf {
     // emit
     // =====
 
-    void ELcollected::emit( const ELstring & s, bool nl )  {
+    void ELcollected::emit( const std::string & s, bool nl )  {
 
       // A forced newline is something that needs to be transmitted.
       // We shall insert it as its own item.

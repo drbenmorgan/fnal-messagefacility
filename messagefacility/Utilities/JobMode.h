@@ -1,5 +1,5 @@
-#ifndef MessageFacility_Utilities_JobMode_h
-#define MessageFacility_Utilities_JobMode_h
+#ifndef messagefacility_Utilities_JobMode_h
+#define messagefacility_Utilities_JobMode_h
 
 // -*- C++ -*-
 
@@ -20,4 +20,8 @@ namespace mf {
   };
 
 }
-#endif // MessageFacility_Utilities_JobMode_h
+#endif /* messagefacility_Utilities_JobMode_h */
+
+// Local Variables:
+// mode: c++
+// End:

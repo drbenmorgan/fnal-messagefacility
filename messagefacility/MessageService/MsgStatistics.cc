@@ -2,7 +2,7 @@
 #include "messagefacility/MessageService/ELadministrator.h"
 #include "messagefacility/MessageService/ELcontextSupplier.h"
 
-#include "messagefacility/MessageLogger/ErrorObj.h"
+#include "messagefacility/Auxiliaries/ErrorObj.h"
 
 #include <iostream>
 #include <iomanip>
@@ -91,7 +91,7 @@ namespace mf {
     }  // zero()
 
 
-    ELstring  MsgStatistics::formSummary()  {
+    std::string  MsgStatistics::formSummary()  {
 
       using std::ios;
       using std::setw;
@@ -103,7 +103,7 @@ namespace mf {
 
       // -----  Summary part I:
       //
-      ELstring  lastProcess( "" );
+      std::string  lastProcess( "" );
       bool      ftnote( false );
 
       struct part3  {
@@ -124,7 +124,7 @@ namespace mf {
 
         // -----  Emit new process and part I header, if needed:
         //
-        if ( n == 0  || ! eq(lastProcess, (*i).first.process) ) {
+        if (n == 0  || lastProcess != i->first.process) {
           s << "\n";
           lastProcess = (*i).first.process;
           if ( lastProcess.size() > 0) {

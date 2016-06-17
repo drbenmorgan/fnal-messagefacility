@@ -1,9 +1,8 @@
-#ifndef MessageFacility_MessageLogger_MessageSender_h
-#define MessageFacility_MessageLogger_MessageSender_h
+#ifndef messagefacility_MessageLogger_MessageSender_h
+#define messagefacility_MessageLogger_MessageSender_h
 
-#include "messagefacility/MessageLogger/ELstring.h"
-#include "messagefacility/MessageLogger/ELseverityLevel.h"
-#include "messagefacility/MessageLogger/ErrorObj.h"
+#include "messagefacility/Auxiliaries/ELseverityLevel.h"
+#include "messagefacility/Auxiliaries/ErrorObj.h"
 #include "messagefacility/MessageLogger/ErrorSummaryEntry.h"
 
 #include <map>
@@ -19,7 +18,7 @@ namespace mf
   public:
     // ---  birth/death:
     MessageSender( ELseverityLevel const & sev,
-                   ELstring const & id,
+                   std::string const & id,
                    bool verbatim = false);
     ~MessageSender();
 
@@ -50,7 +49,7 @@ namespace mf
 
 }  // namespace mf
 
-#endif  // MessageFacility_MessageLogger_MessageSender_h
+#endif /* messagefacility_MessageLogger_MessageSender_h */
 
 // Local variables:
 // mode : c++

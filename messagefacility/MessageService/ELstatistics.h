@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_ELstatistics_h
-#define MessageFacility_MessageService_ELstatistics_h
+#ifndef messagefacility_MessageService_ELstatistics_h
+#define messagefacility_MessageService_ELstatistics_h
 
 // ----------------------------------------------------------------------
 //
@@ -11,8 +11,8 @@
 #include "cetlib/ostream_handle.h"
 #include "messagefacility/MessageService/ELdestination.h"
 
-#include "messagefacility/MessageLogger/ELextendedID.h"
-#include "messagefacility/MessageLogger/ELmap.h"
+#include "messagefacility/Auxiliaries/ELextendedID.h"
+#include "messagefacility/Auxiliaries/ELmap.h"
 
 #include <iostream>
 #include <memory>
@@ -102,7 +102,7 @@ namespace mf {
 }        // end of namespace mf
 
 
-#endif // MessageFacility_MessageService_ELstatistics_h
+#endif /* messagefacility_MessageService_ELstatistics_h */
 
 // Local variables:
 // mode: c++

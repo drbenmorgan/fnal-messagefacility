@@ -2,8 +2,8 @@
 #include "fhiclcpp/ParameterSet.h"
 
 #include "messagefacility/MessageService/ELdestination.h"
-#include "messagefacility/MessageLogger/ELseverityLevel.h"
-#include "messagefacility/MessageLogger/MessageDrop.h"
+#include "messagefacility/Auxiliaries/ELseverityLevel.h"
+#include "messagefacility/MessageService/MessageDrop.h"
 #include "messagefacility/Utilities/exception.h"
 
 // C/C++ includes
@@ -15,7 +15,7 @@ namespace mfplugins {
 
   using mf::service::ELdestination;
   using mf::ELseverityLevel;
-  using mf::ELstring;
+  using std::string;
   using mf::ErrorObj;
 
   //======================================================================
@@ -60,15 +60,15 @@ namespace mfplugins {
   void ELsyslog::fillPrefix( std::ostringstream& oss,const ErrorObj & msg ) {
     const auto& xid = msg.xid();
 
-    oss << format.timestamp( msg.timestamp() )+ELstring("|");   // timestamp
-    oss << xid.hostname+ELstring("|");                          // host name
-    oss << xid.hostaddr+ELstring("|");                          // host address
-    oss << xid.severity.getName()+ELstring("|");                // severity
-    oss << xid.id+ELstring("|");                                // category
-    oss << xid.application+ELstring("|");                       // application
-    oss << xid.pid<<ELstring("|");                              // process id
-    oss << mf::MessageDrop::instance()->runEvent+ELstring("|"); // run/event no
-    oss << xid.module+ELstring("|");                            // module name
+    oss << format.timestamp( msg.timestamp() )+std::string("|");   // timestamp
+    oss << xid.hostname+std::string("|");                          // host name
+    oss << xid.hostaddr+std::string("|");                          // host address
+    oss << xid.severity.getName()+std::string("|");                // severity
+    oss << xid.id+std::string("|");                                // category
+    oss << xid.application+std::string("|");                       // application
+    oss << xid.pid<<std::string("|");                              // process id
+    oss << mf::MessageDrop::instance()->runEvent+std::string("|"); // run/event no
+    oss << xid.module+std::string("|");                            // module name
   }
 
   //======================================================================

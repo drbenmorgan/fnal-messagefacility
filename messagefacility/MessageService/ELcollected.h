@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_ELcollected_h
-#define MessageFacility_MessageService_ELcollected_h
+#ifndef messagefacility_MessageService_ELcollected_h
+#define messagefacility_MessageService_ELcollected_h
 
 
 // ----------------------------------------------------------------------
@@ -67,9 +67,8 @@
 #include "messagefacility/MessageService/ELostreamOutput.h"
 #include "messagefacility/MessageService/ELsender.h"
 
-#include "messagefacility/MessageLogger/ELstring.h"
-#include "messagefacility/MessageLogger/ELextendedID.h"
-#include "messagefacility/MessageLogger/ErrorObj.h"
+#include "messagefacility/Auxiliaries/ELextendedID.h"
+#include "messagefacility/Auxiliaries/ErrorObj.h"
 
 #include <memory>
 
@@ -114,14 +113,14 @@ namespace mf {
       // -----  Internal Methods -- Users should not invoke these:
       //
     protected:
-      void emit( const ELstring & s, bool nl=false );
+      void emit( const std::string & s, bool nl=false );
 
       std::shared_ptr<ELsender> sender;
 
-      void intoBuf ( const ELstring & s );
+      void intoBuf ( const std::string & s );
       void emitXid ( const ELextendedID & xid  );
 
-      ELstring buf;
+      std::string buf;
 
 
     };  // ELcollected
@@ -134,7 +133,7 @@ namespace mf {
 }        // end of namespace mf
 
 
-#endif // MessageService_ELcollected_h
+#endif /* messagefacility_MessageService_ELcollected_h */
 
 // Local variables:
 // mode: c++

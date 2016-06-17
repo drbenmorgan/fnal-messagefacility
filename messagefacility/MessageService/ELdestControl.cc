@@ -34,7 +34,7 @@ namespace mf {
     }
 
 
-    ELdestControl & ELdestControl::setLimit( const ELstring & s, int n )  {
+    ELdestControl & ELdestControl::setLimit( const std::string & s, int n )  {
       if (d) d->stats.limits.setLimit( s, n );
       return  * this;
     }
@@ -46,7 +46,7 @@ namespace mf {
       return  * this;
     }
 
-    ELdestControl & ELdestControl::setInterval( const ELstring & s, int interval )  {
+    ELdestControl & ELdestControl::setInterval( const std::string & s, int interval )  {
       if (d) d->stats.limits.setInterval( s, interval );
       return  * this;
     }
@@ -58,7 +58,7 @@ namespace mf {
     }
 
 
-    ELdestControl & ELdestControl::setTimespan( const ELstring & s, int n )  {
+    ELdestControl & ELdestControl::setTimespan( const std::string & s, int n )  {
       if (d) d->stats.limits.setTimespan( s, n );
       return  * this;
     }
@@ -94,7 +94,7 @@ namespace mf {
 
     void ELdestControl::noTerminationSummary()  {if (d) d->noTerminationSummary(); }
 
-    ELdestControl & ELdestControl::setPreamble( const ELstring & preamble )  {
+    ELdestControl & ELdestControl::setPreamble( const std::string & preamble )  {
       if (d) d->preamble = preamble;
       return  * this;
     }
@@ -115,24 +115,24 @@ namespace mf {
       }
     }
 
-    void ELdestControl::filterModule( ELstring const & moduleName )  {
+    void ELdestControl::filterModule( std::string const & moduleName )  {
       if (d) d->filterModule( moduleName );
     }
 
-    void ELdestControl::excludeModule( ELstring const & moduleName )  {
+    void ELdestControl::excludeModule( std::string const & moduleName )  {
       if (d) d->excludeModule( moduleName );
     }
 
-    void ELdestControl::ignoreModule( ELstring const & moduleName )  {
+    void ELdestControl::ignoreModule( std::string const & moduleName )  {
       if (d) d->ignoreModule( moduleName );
     }
 
-    void ELdestControl::respondToModule( ELstring const & moduleName )  {
+    void ELdestControl::respondToModule( std::string const & moduleName )  {
       if (d) d->respondToModule( moduleName );
     }
 
 
-    ELdestControl & ELdestControl::setNewline( const ELstring & newline )  {
+    ELdestControl & ELdestControl::setNewline( const std::string & newline )  {
       if (d) d->newline = newline;
       return  * this;
     }
@@ -149,7 +149,7 @@ namespace mf {
     }
 
 
-    void ELdestControl::summary( ELstring & s, char * title )  {
+    void ELdestControl::summary( std::string & s, char * title )  {
       if (d) d->summary( s, title );
     }
 
@@ -184,17 +184,17 @@ namespace mf {
       if (d) d->log( msg );
     }
 
-    void ELdestControl::summarization( const ELstring & title
-                                       , const ELstring & sumLines
+    void ELdestControl::summarization( const std::string & title
+                                       , const std::string & sumLines
                                        )  {
       if (d) d->summarization ( title, sumLines );
     }
 
-    ELstring ELdestControl::getNewline() const  {
+    std::string ELdestControl::getNewline() const  {
       if (d) {
         return d->getNewline();
       } else {
-        return ELstring();
+        return std::string();
       }
     }
 
@@ -210,7 +210,7 @@ namespace mf {
       if (d) d->changeFile(os);
     }
 
-    void ELdestControl::changeFile (const ELstring & filename) {
+    void ELdestControl::changeFile (const std::string & filename) {
       if (d) d->changeFile(filename);
     }
 

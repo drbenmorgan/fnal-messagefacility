@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_ELtsErrorLog_h
-#define MessageFacility_MessageService_ELtsErrorLog_h
+#ifndef messagefacility_MessageService_ELtsErrorLog_h
+#define messagefacility_MessageService_ELtsErrorLog_h
 
 
 // ----------------------------------------------------------------------
@@ -13,7 +13,7 @@
 
 #include "messagefacility/MessageService/ErrorLog.h"
 
-#include "messagefacility/MessageLogger/ErrorObj.h"
+#include "messagefacility/Auxiliaries/ErrorObj.h"
 
 namespace mf {
 namespace service {
@@ -33,7 +33,7 @@ public:
 // ----------------------------------------------------------------------
 
   ELtsErrorLog();
-  ELtsErrorLog( const ELstring & pkgName );
+  ELtsErrorLog( const std::string & pkgName );
   ELtsErrorLog( const ErrorLog & ee );
   ELtsErrorLog( const ELtsErrorLog & ee);
 protected:
@@ -43,10 +43,10 @@ protected:
 // Setup for preamble parts
 // ----------------------------------------------------------------------
 
-  void setSubroutine( const ELstring & subName );
-  void setModule( const ELstring & modName );
-  void setPackage( const ELstring & pkgName );
-  void setProcess( const ELstring & procName );
+  void setSubroutine( const std::string & subName );
+  void setModule( const std::string & modName );
+  void setPackage( const std::string & pkgName );
+  void setProcess( const std::string & procName );
 
 // ----------------------------------------------------------------------
 // Setup for advanced control
@@ -55,20 +55,20 @@ protected:
   int setHexTrigger (int trigger);
   ELseverityLevel setDiscardThreshold (ELseverityLevel sev);
   void            setDebugVerbosity   (int debugVerbosity);
-  void            setDebugMessages    (ELseverityLevel sev, ELstring id);
+  void            setDebugMessages    (ELseverityLevel sev, std::string id);
 
 // ----------------------------------------------------------------------
 // recovery of an ELdestControl handle
 // ----------------------------------------------------------------------
 
-  bool getELdestControl (const ELstring & name,
+  bool getELdestControl (const std::string & name,
                                ELdestControl & theDestControl) const;
 
 // ----------------------------------------------------------------------
 // Message Initiation
 // ----------------------------------------------------------------------
 
-void initiateMsg (const ELseverityLevel& sev, const ELstring& id);
+void initiateMsg (const ELseverityLevel& sev, const std::string& id);
 void initiateMsg (int debugLevel);
 
 // ----------------------------------------------------------------------
@@ -82,7 +82,7 @@ public:
   void item ( unsigned long n );
   void item ( short n );
   void item ( unsigned short n );
-  void item ( const ELstring & s );
+  void item ( const std::string & s );
 
 // ----------------------------------------------------------------------
 // Message Completion:
@@ -97,7 +97,7 @@ protected:
 protected:
   ELadministrator  *    a;
   ErrorLog              e;
-  ELstring              process;
+  std::string              process;
   bool                  msgIsActive;
   mf::ErrorObj          msg;
 
@@ -128,4 +128,8 @@ inline void ELtsItem ( ELtsErrorLog & e, unsigned short n );
 #define ELTSERRORLOG_ICC
 #include "messagefacility/MessageService/ELtsErrorLog.icc"
 
-#endif  // ELTSERRORLOG_H
+#endif /* messagefacility_MessageService_ELtsErrorLog_h */
+
+// Local Variables:
+// mode: c++
+// End:

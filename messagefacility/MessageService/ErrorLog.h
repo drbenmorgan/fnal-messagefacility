@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_ErrorLog_h
-#define MessageFacility_MessageService_ErrorLog_h
+#ifndef messagefacility_MessageService_ErrorLog_h
+#define messagefacility_MessageService_ErrorLog_h
 
 
 // ----------------------------------------------------------------------
@@ -26,150 +26,139 @@
 //
 // ----------------------------------------------------------------------
 
-#include "messagefacility/MessageLogger/ELstring.h"
-#include "messagefacility/MessageLogger/ELseverityLevel.h"
-#include "messagefacility/MessageLogger/ErrorObj.h"
+#include "messagefacility/Auxiliaries/ELseverityLevel.h"
+#include "messagefacility/Auxiliaries/ErrorObj.h"
 
 #include <sstream>
 
 namespace mf {
-namespace service {
+  namespace service {
 
 
-// ----------------------------------------------------------------------
-// Prerequisite classes:
-// ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // Prerequisite classes:
+    // ----------------------------------------------------------------------
 
-class ELadministrator;
-class ELtsErrorLog;
-class ELdestControl;
+    class ELadministrator;
+    class ELtsErrorLog;
+    class ELdestControl;
 
-// ----------------------------------------------------------------------
-// ErrorLog:
-// ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // ErrorLog:
+    // ----------------------------------------------------------------------
 
-class ErrorLog  {
+    class ErrorLog  {
 
-  friend class ELtsErrorLog;
+      friend class ELtsErrorLog;
 
-public:
+    public:
 
-// ----------------------------------------------------------------------
-// -----  Methods for physicists logging errors:
-// ----------------------------------------------------------------------
+      // -----  start a new logging operation:
+      //
+      ErrorLog & operator()( const ELseverityLevel & sev, const std::string & id );
+      //-| If overriding this, please see Note 1
+      //-| at the bottom of this file!
 
-  // -----  start a new logging operation:
-  //
-  ErrorLog & operator()( const ELseverityLevel & sev, const ELstring & id );
-        //-| If overriding this, please see Note 1
-        //-| at the bottom of this file!
+      inline ErrorLog & operator()( int debugLevel );
 
-  inline ErrorLog & operator()( int debugLevel );
+      void setSubroutine( const std::string & subName );
+      void switchChannel( const std::string & channelName );
+      // switchChannel is only meant for remote msg logging
 
-  // -----  mutator:
-  //
-  void setSubroutine( const ELstring & subName );
-  void switchChannel( const ELstring & channelName );
-        // switchChannel is only meant for remote msg logging
+      ErrorLog& operator()( mf::ErrorObj & msg );    // an entire message
 
-  // -----  logging operations:
-  //
-  ErrorLog & operator()( mf::ErrorObj & msg );    // an entire message
+      ErrorLog& emit( const std::string & msg );        // just one part of a message
+      ErrorLog& endmsg();                            // no more parts forthcoming
+      ErrorLog& operator<<( void (* f)(ErrorLog &) );// allow log << zmel::endmsg
 
-  ErrorLog & emit( const ELstring & msg );        // just one part of a message
-  ErrorLog & endmsg();                            // no more parts forthcoming
-  ErrorLog & operator<<( void (* f)(ErrorLog &) );// allow log << zmel::endmsg
+      // ----------------------------------------------------------------------
+      // -----  Methods meant for the Module base class in the framework:
+      // ----------------------------------------------------------------------
 
-// ----------------------------------------------------------------------
-// -----  Methods meant for the Module base class in the framework:
-// ----------------------------------------------------------------------
+      ErrorLog();
+      ErrorLog( const std::string & pkgName );
+      virtual ~ErrorLog() = default;
 
-  // -----  birth/death:
-  //
-  ErrorLog();
-  ErrorLog( const ELstring & pkgName );
-  virtual ~ErrorLog();
+      // -----  mutators:
+      //
+      void setModule ( const std::string & modName );  // These two are IDENTICAL
+      void setPackage( const std::string & pkgName );  // These two are IDENTICAL
 
-  // -----  mutators:
-  //
-  void setModule ( const ELstring & modName );  // These two are IDENTICAL
-  void setPackage( const ELstring & pkgName );  // These two are IDENTICAL
+      // -----  logging collected message:
+      //
+      ErrorLog & operator()( int nbytes, char * data );
 
-  // -----  logging collected message:
-  //
-  ErrorLog & operator()( int nbytes, char * data );
+      // -----  advanced control options:
 
-  // -----  advanced control options:
+      int             setHexTrigger       (int trigger);
+      bool            setSpaceAfterInt    (bool space=true);
+      ELseverityLevel setDiscardThreshold (ELseverityLevel sev);
+      void            setDebugVerbosity   (int debugVerbosity);
+      void            setDebugMessages    (ELseverityLevel sev, std::string id);
 
-  int             setHexTrigger       (int trigger);
-  bool            setSpaceAfterInt    (bool space=true);
-  ELseverityLevel setDiscardThreshold (ELseverityLevel sev);
-  void            setDebugVerbosity   (int debugVerbosity);
-  void            setDebugMessages    (ELseverityLevel sev, ELstring id);
+      // -----  recovery of an ELdestControl handle
 
-  // -----  recovery of an ELdestControl handle
+      bool getELdestControl (const std::string & name,
+                             ELdestControl & theDestControl) const;
 
-  bool getELdestControl (const ELstring & name,
-                         ELdestControl & theDestControl) const;
+      // -----  information about this ErrorLog instance
 
-  // -----  information about this ErrorLog instance
+      std::string moduleName() const;
+      std::string subroutineName() const;
 
-  ELstring moduleName() const;
-  ELstring subroutineName() const;
+      // -----  member data:
+      //
+    protected:
+      ELadministrator* a;
 
-  // -----  member data:
-  //
-protected:
-  ELadministrator  * a;
+    private:
+      std::string subroutine {};
+      std::string module {};
+    public:
+      int hexTrigger {-1};
+      bool spaceAfterInt {false};
+      ELseverityLevel  discardThreshold {ELzeroSeverity};
+      bool             discarding {false};
+      int              debugVerbosityLevel {0};
+      ELseverityLevel  debugSeverityLevel {ELinfo};
+      std::string         debugMessageId {"DEBUG"};
 
-private:
-  ELstring              subroutine;
-  ELstring              module;
-public:
-  int                   hexTrigger;
-  bool                  spaceAfterInt;
-  ELseverityLevel       discardThreshold;
-  bool                  discarding;
-  int                   debugVerbosityLevel;
-  ELseverityLevel       debugSeverityLevel;
-  ELstring              debugMessageId;
-
-};  // ErrorLog
+    };  // ErrorLog
 
 
 
-// ----------------------------------------------------------------------
-// Global functions:
-// ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // Global functions:
+    // ----------------------------------------------------------------------
 
-void endmsg( ErrorLog & log );
+    void endmsg( ErrorLog & log );
 
-template <class T>
-inline ErrorLog & operator<<( ErrorLog & e, const T & t );
+    template <class T>
+    inline ErrorLog & operator<<( ErrorLog & e, const T & t );
 
-ErrorLog & operator<<( ErrorLog & e, int n );
-ErrorLog & operator<<( ErrorLog & e, long n );
-ErrorLog & operator<<( ErrorLog & e, short n );
-ErrorLog & operator<<( ErrorLog & e, unsigned int n );
-ErrorLog & operator<<( ErrorLog & e, unsigned long n );
-ErrorLog & operator<<( ErrorLog & e, unsigned short n );
-ErrorLog & operator<<( ErrorLog & e, const char s[] );
+    ErrorLog & operator<<( ErrorLog & e, int n );
+    ErrorLog & operator<<( ErrorLog & e, long n );
+    ErrorLog & operator<<( ErrorLog & e, short n );
+    ErrorLog & operator<<( ErrorLog & e, unsigned int n );
+    ErrorLog & operator<<( ErrorLog & e, unsigned long n );
+    ErrorLog & operator<<( ErrorLog & e, unsigned short n );
+    ErrorLog & operator<<( ErrorLog & e, const char s[] );
 
-// ----------------------------------------------------------------------
-// Macros:
-// ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // Macros:
+    // ----------------------------------------------------------------------
 
-#define ERRLOG(sev,id) \
-  errlog( sev, id ) << __FILE__ <<":" << __LINE__ << " "
+#define ERRLOG(sev,id)                                          \
+    errlog( sev, id ) << __FILE__ <<":" << __LINE__ << " "
 
-#define ERRLOGTO(logname,sev,id) \
-  logname( sev, id ) << __FILE__ <<":" << __LINE__ << " "
-
-
-// ----------------------------------------------------------------------
+#define ERRLOGTO(logname,sev,id)                                \
+    logname( sev, id ) << __FILE__ <<":" << __LINE__ << " "
 
 
-}        // end of namespace service
+    // ----------------------------------------------------------------------
+
+
+  }        // end of namespace service
 }        // end of namespace mf
 
 
@@ -178,7 +167,7 @@ ErrorLog & operator<<( ErrorLog & e, const char s[] );
 // ----------------------------------------------------------------------
 
 #define ERRORLOG_ICC
-  #include "messagefacility/MessageService/ErrorLog.icc"
+#include "messagefacility/MessageService/ErrorLog.icc"
 #undef  ERRORLOG_ICC
 
 
@@ -202,8 +191,8 @@ ErrorLog & operator<<( ErrorLog & e, const char s[] );
 // ----------------------------------------------------------------------
 
 
-#endif  // MessageFacility_MessageService_ErrorLog_h
+#endif /* messagefacility_MessageService_ErrorLog_h */
 
 // Local variables:
 // mode: c++
-// End;
+// End:

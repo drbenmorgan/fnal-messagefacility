@@ -1,5 +1,5 @@
-#ifndef UTILITIES_FORMATFILENAME_H
-#define UTILITIES_FORMATFILENAME_H
+#ifndef messagefacility_MessageService_plugins_formatFilename_h
+#define messagefacility_MessageService_plugins_formatFilename_h
 
 #include <string>
 
@@ -12,7 +12,7 @@ namespace mfplugins {
 
 }
 
-#endif
+#endif /* messagefacility_MessageService_plugins_formatFilename_h */
 
 // Local variables:
 // mode: c++

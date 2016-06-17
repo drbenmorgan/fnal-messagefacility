@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_ELsender_h
-#define MessageFacility_MessageService_ELsender_h
+#ifndef messagefacility_MessageService_ELsender_h
+#define messagefacility_MessageService_ELsender_h
 
 // ----------------------------------------------------------------------
 //
@@ -71,4 +71,8 @@ public:
 }        // end of namespace mf
 
 
-#endif // MessageFacility_MessageService_ELsender_h
+#endif /* messagefacility_MessageService_ELsender_h */
+
+// Local Variables:
+// mode: c++
+// End:

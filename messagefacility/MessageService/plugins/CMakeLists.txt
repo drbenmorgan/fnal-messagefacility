@@ -1,26 +1,16 @@
-# ======================================================================
-#
-# MessageService/plugins/CMakeLists.txt
-#
-# ======================================================================
+# From cetbuildtools2
+include(BasicPlugin)
 
-include( BasicPlugin )
-
-cet_make_library(
-  LIBRARY_NAME MF_FileFormat
-  SOURCE formatFilename.cc
-  LIBRARIES MF_MessageLogger ${FHICLCPP}
-  )
-
+add_library(MF_FileFormat SHARED formatFilename.h formatFilename.cc)
+target_link_libraries(MF_FileFormat PUBLIC MF_MessageService fhiclcpp::fhiclcpp)
 
 # ordinary destination plugins
-basic_plugin( cout   mfPlugin MF_MessageLogger )
-basic_plugin( cerr   mfPlugin MF_MessageLogger )
-basic_plugin( file   mfPlugin MF_FileFormat    )
-basic_plugin( syslog mfPlugin MF_MessageLogger )
+basic_plugin(cout   mfPlugin MF_MessageService)
+basic_plugin(cerr   mfPlugin MF_MessageService)
+basic_plugin(file   mfPlugin MF_FileFormat)
+basic_plugin(syslog mfPlugin MF_MessageService)
 
 # statistics destination plugins
-basic_plugin( cout mfStatsPlugin MF_MessageLogger )
-basic_plugin( cerr mfStatsPlugin MF_MessageLogger )
-basic_plugin( file mfStatsPlugin MF_FileFormat )
-
+basic_plugin(cout mfStatsPlugin MF_MessageService)
+basic_plugin(cerr mfStatsPlugin MF_MessageService)
+basic_plugin(file mfStatsPlugin MF_FileFormat)

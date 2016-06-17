@@ -1,11 +1,9 @@
-#ifndef MessageFacility_MessageService_MsgStatistics_h
-#define MessageFacility_MessageService_MsgStatistics_h
+#ifndef messagefacility_MessageService_MsgStatistics_h
+#define messagefacility_MessageService_MsgStatistics_h
 
-#include "messagefacility/MessageLogger/ELextendedID.h"
-#include "messagefacility/MessageLogger/ELmap.h"
-#include "messagefacility/MessageLogger/ELstring.h"
-
-#include "messagefacility/MessageService/ELlimitsTable.h"
+#include "messagefacility/Auxiliaries/ELextendedID.h"
+#include "messagefacility/Auxiliaries/ELlimitsTable.h"
+#include "messagefacility/Auxiliaries/ELmap.h"
 
 #include "fhiclcpp/ParameterSet.h"
 
@@ -49,7 +47,7 @@ namespace mf {
 
     void log( const mf::ErrorObj & msg );
 
-    ELstring formSummary();
+    std::string formSummary();
 
     // ----- Methods invoked by the MessageLoggerScribe, bypassing destControl
     //
@@ -87,7 +85,7 @@ namespace mf {
 }        // end of namespace mf
 
 
-#endif // MessageFacility_MessageService_MsgStatistics_h
+#endif /* messagefacility_MessageService_MsgStatistics_h */
 
 // Local variables:
 // mode: c++

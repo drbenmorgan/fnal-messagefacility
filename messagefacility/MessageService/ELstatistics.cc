@@ -9,7 +9,7 @@
 #include "messagefacility/MessageService/ELadministrator.h"
 #include "messagefacility/MessageService/ELcontextSupplier.h"
 
-#include "messagefacility/MessageLogger/ErrorObj.h"
+#include "messagefacility/Auxiliaries/ErrorObj.h"
 
 #include "fhiclcpp/ParameterSet.h"
 

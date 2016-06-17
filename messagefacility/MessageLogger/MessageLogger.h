@@ -1,5 +1,5 @@
-#ifndef MessageLogger_MessageLogger_h
-#define MessageLogger_MessageLogger_h
+#ifndef messagefacility_MessageLogger_MessageLogger_h
+#define messagefacility_MessageLogger_MessageLogger_h
 
 // ======================================================================
 //
@@ -12,11 +12,11 @@
 #include <ostream>
 #include <string>
 
-#include "messagefacility/MessageLogger/ELseverityLevel.h"
-#include "messagefacility/MessageLogger/MessageDrop.h"
+#include "messagefacility/Auxiliaries/ELseverityLevel.h"
+#include "messagefacility/MessageService/MessageDrop.h"
 #include "messagefacility/MessageLogger/MessageSender.h"
-#include "messagefacility/MessageService/MessageLogger.h"
-#include "messagefacility/MessageService/Presence.h"
+#include "messagefacility/MessageLogger/MessageLoggerImpl.h"
+#include "messagefacility/MessageLogger/Presence.h"
 
 #include "fhiclcpp/ParameterSet.h"
 
@@ -254,12 +254,10 @@ public:
 
   bool   MFServiceEnabled;
 
-#ifndef __GCCXML__
   std::shared_ptr<Presence> MFPresence;
   std::shared_ptr<service::MessageLogger> theML;
 
   std::mutex m;
-#endif
 private:
   static std::string commonPSet( );
 };
@@ -284,7 +282,7 @@ namespace mf {
 
 // ======================================================================
 
-#endif  // MessageLogger_MessageLogger_h
+#endif /* messagefacility_MessageLogger_MessageLogger_h */
 
 // Local Variables:
 // mode: c++

@@ -1,5 +1,5 @@
-#ifndef MessageService_ELadministrator_h
-#define MessageService_ELadministrator_h
+#ifndef messagefacility_MessageService_ELadministrator_h
+#define messagefacility_MessageService_ELadministrator_h
 
 
 // ----------------------------------------------------------------------
@@ -52,10 +52,9 @@
 
 #include "messagefacility/MessageService/ELdestControl.h"
 
-#include "messagefacility/MessageLogger/ELstring.h"
-#include "messagefacility/MessageLogger/ELlist.h"
-#include "messagefacility/MessageLogger/ELseverityLevel.h"
-#include "messagefacility/MessageLogger/ErrorObj.h"
+#include "messagefacility/Auxiliaries/ELlist.h"
+#include "messagefacility/Auxiliaries/ELseverityLevel.h"
+#include "messagefacility/Auxiliaries/ErrorObj.h"
 
 #include "cetlib/exempt_ptr.h"
 
@@ -107,9 +106,9 @@ public:
 
   // ---  get/set fundamental properties:
   //
-  void setProcess( const ELstring & process );
-  void setApplication( const ELstring & application );
-  ELstring swapProcess( const ELstring & process );
+  void setProcess( const std::string & process );
+  void setApplication( const std::string & application );
+  std::string swapProcess( const std::string & process );
   void setContextSupplier( const ELcontextSupplier & supplier );
   const ELcontextSupplier & getContextSupplier() const;
   ELcontextSupplier & swapContextSupplier( ELcontextSupplier & cs );
@@ -130,7 +129,7 @@ public:
   }
 
   const std::map<std::string,std::unique_ptr<ELdestination>> & sinks();
-  bool getELdestControl ( const ELstring & name, ELdestControl & theControl );
+  bool getELdestControl ( const std::string & name, ELdestControl & theControl );
 
   // ---  handle severity information:
   //
@@ -146,29 +145,29 @@ public:
   // ---  apply the following actions to all attached destinations:
   //
   void setThresholds( const ELseverityLevel & sev );
-  void setLimits    ( const ELstring        & id,  int limit    );
+  void setLimits    ( const std::string        & id,  int limit    );
   void setLimits    ( const ELseverityLevel & sev, int limit    );
-  void setIntervals ( const ELstring        & id,  int interval );
+  void setIntervals ( const std::string        & id,  int interval );
   void setIntervals ( const ELseverityLevel & sev, int interval );
-  void setTimespans ( const ELstring        & id,  int seconds  );
+  void setTimespans ( const std::string        & id,  int seconds  );
   void setTimespans ( const ELseverityLevel & sev, int seconds  );
   void wipe();
   void finish();
 
-  const ELstring              & application() const;
+  const std::string              & application() const;
 
 protected:
   // ---  member data accessors:
   //
-  const ELstring              & process() const;
+  const std::string              & process() const;
   ELcontextSupplier           & context() const;
   const ELseverityLevel       & abortThreshold() const;
   const ELseverityLevel       &  exitThreshold() const;
   const ELseverityLevel       & highSeverity() const;
   int                           severityCounts( int lev ) const;
 
-  const ELstring              & hostname() const;
-  const ELstring              & hostaddr() const;
+  const std::string              & hostname() const;
+  const std::string              & hostaddr() const;
   long                          pid() const;
 
   // ---  actions on messages:
@@ -192,7 +191,7 @@ private:
 
   // ---  traditional member data:
   //
-  ELstring                   process_;
+  std::string                   process_;
   std::shared_ptr<ELcontextSupplier> context_;
   ELseverityLevel            abortThreshold_;
   ELseverityLevel            exitThreshold_;
@@ -202,9 +201,9 @@ private:
   mf::ErrorObj               msg;
   bool                       msgIsActive;
 
-  ELstring                   hostname_;
-  ELstring                   hostaddr_;
-  ELstring                   application_;
+  std::string                   hostname_;
+  std::string                   hostaddr_;
+  std::string                   application_;
   long                       pid_;
 
   std::map <std::string,std::unique_ptr<ELdestination>> attachedDestinations;
@@ -243,7 +242,7 @@ private:
 }        // end of namespace mf
 
 
-#endif  // MessageService_ELadministrator_h
+#endif /* messagefacility_MessageService_ELadministrator_h */
 
 // Local Variables:
 // mode: c++

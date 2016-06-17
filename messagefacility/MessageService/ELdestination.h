@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_ELdestination_h
-#define MessageFacility_MessageService_ELdestination_h
+#ifndef messagefacility_MessageService_ELdestination_h
+#define messagefacility_MessageService_ELdestination_h
 
 
 // ----------------------------------------------------------------------
@@ -12,13 +12,11 @@
 //
 // ----------------------------------------------------------------------
 
-#include "messagefacility/MessageService/ELset.h"
+#include "messagefacility/Auxiliaries/ELextendedID.h"
+#include "messagefacility/Auxiliaries/ELset.h"
+#include "messagefacility/Auxiliaries/ErrorObj.h"
 #include "messagefacility/MessageService/MsgFormatSettings.h"
 #include "messagefacility/MessageService/MsgStatistics.h"
-
-#include "messagefacility/MessageLogger/ELstring.h"
-#include "messagefacility/MessageLogger/ErrorObj.h"
-#include "messagefacility/MessageLogger/ELextendedID.h"
 
 #include "cetlib/PluginTypeDeducer.h"
 #include "fhiclcpp/ParameterSet.h"
@@ -69,13 +67,13 @@ namespace mf {
       virtual void log( mf::ErrorObj & msg );
 
       virtual void summarization(
-                                 const mf::ELstring & title,
-                                 const mf::ELstring & sumLines );
+                                 const std::string & title,
+                                 const std::string & sumLines );
 
 
-      virtual ELstring getNewline() const;
+      virtual std::string getNewline() const;
 
-      virtual bool switchChannel( const mf::ELstring & channelName );
+      virtual bool switchChannel( const std::string & channelName );
 
       virtual void finish();
 
@@ -83,7 +81,7 @@ namespace mf {
       //
     protected:
 
-      void emit( std::ostream& os, const ELstring & s, const bool nl = false );
+      void emit( std::ostream& os, const std::string & s, const bool nl = false );
 
       bool passLogMsgThreshold  (const mf::ErrorObj& msg);
       bool passLogStatsThreshold(const mf::ErrorObj& msg) const;
@@ -97,14 +95,14 @@ namespace mf {
       virtual void clearSummary();
       virtual void wipe();
       virtual void zero();
-      virtual void filterModule( ELstring const & moduleName );
-      virtual void excludeModule( ELstring const & moduleName );
-      virtual void ignoreModule( ELstring const & moduleName );
-      virtual void respondToModule( ELstring const & moduleName );
-      virtual bool thisShouldBeIgnored(const ELstring & s) const;
+      virtual void filterModule( std::string const & moduleName );
+      virtual void excludeModule( std::string const & moduleName );
+      virtual void ignoreModule( std::string const & moduleName );
+      virtual void respondToModule( std::string const & moduleName );
+      virtual bool thisShouldBeIgnored(const std::string & s) const;
 
-      virtual void summary( std::ostream  & os  , const ELstring & title="" );
-      virtual void summary( ELstring      & s   , const ELstring & title="" );
+      virtual void summary( std::ostream  & os  , const std::string & title="" );
+      virtual void summary( std::string      & s   , const std::string & title="" );
       virtual void summary( );
       virtual void summaryForJobReport(std::map<std::string, double> & sm);
 
@@ -113,7 +111,7 @@ namespace mf {
       virtual std::map<ELextendedID,StatsCount> statisticsMap() const;
 
       virtual void changeFile (std::ostream & os);
-      virtual void changeFile (const ELstring & filename);
+      virtual void changeFile (const std::string & filename);
       virtual void flush();
 
       // -----  Select output format options:
@@ -132,9 +130,9 @@ namespace mf {
       MsgFormatSettings format;
 
       ELseverityLevel threshold;
-      ELstring        preamble;
-      ELstring        newline;
-      ELstring        indent;
+      std::string        preamble;
+      std::string        newline;
+      std::string        indent;
       std::size_t     lineLength;
       std::size_t     charsOnLine;
       bool            ignoreMostModules;
@@ -160,7 +158,7 @@ namespace mf {
 }   // end of namespace mf
 
 
-#endif  // FWCore_MessageService_ELdestination_h
+#endif /* messagefacility_MessageService_ELdestination_h */
 
 // Local variables:
 // mode: c++

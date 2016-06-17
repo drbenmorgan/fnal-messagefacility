@@ -1,7 +1,7 @@
-#ifndef MessageLogger_ErrorSummaryEntry_h
-#define MessageLogger_ErrorSummaryEntry_h
+#ifndef messagefacility_MessageLogger_ErrorSummaryEntry_h
+#define messagefacility_MessageLogger_ErrorSummaryEntry_h
 
-#include "messagefacility/MessageLogger/ELseverityLevel.h"
+#include "messagefacility/Auxiliaries/ELseverityLevel.h"
 
 #include <string>
 
@@ -66,5 +66,9 @@ struct ErrorSummaryEntry
 }        // end of namespace mf
 
 
-#endif  // MessageLogger_ErrorSummaryEntry_h
+#endif /* messagefacility_MessageLogger_ErrorSummaryEntry_h */
 
+
+// Local Variables:
+// mode: c++
+// End:

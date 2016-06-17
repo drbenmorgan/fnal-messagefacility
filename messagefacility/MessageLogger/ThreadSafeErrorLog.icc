@@ -32,7 +32,7 @@ template<class Mutex>
 ThreadSafeErrorLog<Mutex>::ThreadSafeErrorLog() : ELtsErrorLog() {}
 
 template<class Mutex>
-ThreadSafeErrorLog<Mutex>::ThreadSafeErrorLog( const ELstring & pkgName )
+ThreadSafeErrorLog<Mutex>::ThreadSafeErrorLog( const std::string & pkgName )
                                          : ELtsErrorLog(pkgname) {}
 
 template<class Mutex>
@@ -54,7 +54,7 @@ template<class Mutex> ThreadSafeErrorLog<Mutex>::~ThreadSafeErrorLog() {}
 template<class Mutex>
 ThreadSafeErrorLog<Mutex> &
 ThreadSafeErrorLog<Mutex>::operator()
-  ( const ELseverityLevel & sev, const ELstring & id )
+  ( const ELseverityLevel & sev, const std::string & id )
 {
   if (msgIsActive) {
     Mutex LOCK;

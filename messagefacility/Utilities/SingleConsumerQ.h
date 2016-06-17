@@ -1,36 +1,33 @@
-#ifndef MessageFacility_Utilities_SingleConsumerQ_h
-#define MessageFacility_Utilities_SingleConsumerQ_h
-#ifndef __GCCXML__
-// -*- C++ -*-
-
+#ifndef messagefacility_Utilities_SingleConsumerQ_h
+#define messagefacility_Utilities_SingleConsumerQ_h
 /*
- A bounded queue for use in a multi-threaded producer/consumer application.
- This is a simple design.  It is only meant to be used where there is
- one consumer and one or more producers using the a queue instance.
+  A bounded queue for use in a multi-threaded producer/consumer application.
+  This is a simple design.  It is only meant to be used where there is
+  one consumer and one or more producers using the a queue instance.
 
- The problem with multiple consumers is the separate front/pop
- member functions.  If they are pulled together into one function,
- multiple consumers may be possible, but exception safety would then
- be a problem - popping an item off the queue to be held as a local
- variable, followed by its removal from the queue.  Having fixed size
- buffers within a fixed size pool and using a circular buffer as the
- queue alleviates most of this problem because exceptions will not
- occur during manipulation.  The only problem left to be checked is
- how (or if) the boost mutex manipulation can throw and when.
+  The problem with multiple consumers is the separate front/pop
+  member functions.  If they are pulled together into one function,
+  multiple consumers may be possible, but exception safety would then
+  be a problem - popping an item off the queue to be held as a local
+  variable, followed by its removal from the queue.  Having fixed size
+  buffers within a fixed size pool and using a circular buffer as the
+  queue alleviates most of this problem because exceptions will not
+  occur during manipulation.  The only problem left to be checked is
+  how (or if) the boost mutex manipulation can throw and when.
 
- Note: the current implementation has no protection again unsigned int
- overflows
+  Note: the current implementation has no protection again unsigned int
+  overflows
 
- Missing:
+  Missing:
   - the ring buffer is really not used to its fullest extent
   - the buffer sizes are fixed and cannot grow
   - a simple Buffer object is returned that has the pointer and len
-    separate.  The length should be stored as the first word of the
-    buffer itself
+  separate.  The length should be stored as the first word of the
+  buffer itself
   - timeouts for consumer
   - good way to signal to consumer to end
   - keeping the instance of this thing around until all using threads are
-    done with it
+  done with it
 
 */
 
@@ -40,25 +37,22 @@
 
 namespace mf {
 
-  class SingleConsumerQ
-  {
+  class SingleConsumerQ {
   public:
-    struct Buffer
-    {
-      Buffer():ptr_(),len_() { }
-      Buffer(void* p,int len):ptr_(p),len_(len) { }
 
-      void* ptr_;
-      int len_;
-    };
+   struct Buffer {
+     Buffer() = default;
+     Buffer(void* p,int len) : ptr_{p},len_{len} { }
+
+     void* ptr_ {nullptr};
+     int len_ {};
+   };
 
     SingleConsumerQ(int max_event_size, int max_queue_depth);
-    ~SingleConsumerQ();
 
     struct ConsumerType
     {
-      static SingleConsumerQ::Buffer get(SingleConsumerQ& b)
-      { return b.getConsumerBuffer(); }
+      static SingleConsumerQ::Buffer get(SingleConsumerQ& b)   { return b.getConsumerBuffer(); }
       static void release(SingleConsumerQ& b, void* v)
       { b.releaseConsumerBuffer(v); }
       static void commit(SingleConsumerQ& b, void* v,int size)
@@ -122,19 +116,22 @@ namespace mf {
     int max_queue_depth_;
     int pos_; // use pool as stack of avaiable buffers
     ByteArray mem_;
-    Pool buffer_pool_;
+    Pool buffer_pool_ {};
     Queue queue_;
-    unsigned int fpos_, bpos_; // positions for queue - front and back
+    unsigned int fpos_ {}, bpos_ {}; // positions for queue - front and back
 
-    std::mutex pool_mutex_;
-    std::mutex queue_mutex_;
-    std::condition_variable pool_cond_;
-    std::condition_variable pop_cond_;
-    std::condition_variable push_cond_;
+    std::mutex pool_mutex_ {};
+    std::mutex queue_mutex_ {};
+    std::condition_variable pool_cond_ {};
+    std::condition_variable pop_cond_ {};
+    std::condition_variable push_cond_ {};
 
   };
 
 
 }
-#endif
-#endif
+#endif /* messagefacility_Utilities_SingleConsumerQ_h */
+
+// Local variables:
+// mode: c++
+// End:

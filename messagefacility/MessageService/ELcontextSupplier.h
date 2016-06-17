@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_ELcontextSupplier_h
-#define MessageFacility_MessageService_ELcontextSupplier_h
+#ifndef messagefacility_MessageService_ELcontextSupplier_h
+#define messagefacility_MessageService_ELcontextSupplier_h
 
 
 // ----------------------------------------------------------------------
@@ -25,8 +25,7 @@
 // ----------------------------------------------------------------------
 
 
-#include "messagefacility/MessageLogger/ELstring.h"
-#include "messagefacility/MessageLogger/ErrorObj.h"
+#include "messagefacility/Auxiliaries/ErrorObj.h"
 
 namespace mf {
 namespace service {
@@ -39,12 +38,12 @@ class ELcontextSupplier  {
 
 public:
   virtual ELcontextSupplier * clone()          const = 0;
-  virtual ELstring            context()        const = 0;
-  virtual ELstring            summaryContext() const = 0;
-  virtual ELstring            fullContext()    const = 0;
+  virtual std::string            context()        const = 0;
+  virtual std::string            summaryContext() const = 0;
+  virtual std::string            fullContext()    const = 0;
 
   virtual void editErrorObj( mf::ErrorObj & ) const  { }
-  virtual mf::ELstring traceRoutine( ) const  { return mf::ELstring(""); }
+  virtual std::string traceRoutine( ) const  { return std::string(""); }
 
   virtual ~ELcontextSupplier() noexcept = default;
 
@@ -58,4 +57,8 @@ public:
 }        // end of namespace mf
 
 
-#endif  // FWCore_MessageService_ELcontextSupplier_h
+#endif /* messagefacility_MessageService_ELcontextSupplier_h */
+
+// Local Variables:
+// mode: c++
+// End:

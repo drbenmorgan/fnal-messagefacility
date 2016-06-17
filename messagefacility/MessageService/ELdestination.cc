@@ -23,12 +23,12 @@ namespace mf {
 
     namespace {
 
-      const ELstring   noSummarizationMsg = "No summarization()";
-      const ELstring   noSummaryMsg       = "No summary()";
-      const ELstring   noClearSummaryMsg  = "No clearSummary()";
-      const ELstring   hereMsg            = "available via this destination";
-      const ELstring   noosMsg            = "No ostream";
-      const ELstring   notELoutputMsg     = "This destination is not an ELoutput";
+      const std::string   noSummarizationMsg = "No summarization()";
+      const std::string   noSummaryMsg       = "No summary()";
+      const std::string   noClearSummaryMsg  = "No clearSummary()";
+      const std::string   hereMsg            = "available via this destination";
+      const std::string   noosMsg            = "No ostream";
+      const std::string   notELoutputMsg     = "This destination is not an ELoutput";
 
       const std::size_t defaultLineLength = 80;
 
@@ -57,7 +57,7 @@ namespace mf {
 
     //=============================================================================
     void ELdestination::emit( std::ostream& os,
-                              const ELstring & s,
+                              const std::string & s,
                               const bool nl )  {
 
       if (s.length() == 0)  {
@@ -80,7 +80,7 @@ namespace mf {
 
       if (format.preambleMode) {
 
-        //Accounts for newline @ the beginning of the ELstring     JV:2
+        //Accounts for newline @ the beginning of the std::string     JV:2
         if ( first == '\n'
              || (charsOnLine + static_cast<int>(s.length())) > lineLength )  {
 
@@ -107,7 +107,7 @@ namespace mf {
         }
 
         if (last == '\n' || last2 == '\n')  {  //accounts for newline @ end    $$ JV:2
-          os << indent;                    //of the ELstring
+          os << indent;                    //of the std::string
           if (last != ' ')
             os << ' ';
           charsOnLine = indent.length() + 1;
@@ -175,7 +175,7 @@ namespace mf {
           if ( format.want( SERIAL ) )  {
             std::ostringstream s;
             s << msg.serial();
-            emit( oss, "[serial #" + s.str() + ELstring("] ") );
+            emit( oss, "[serial #" + s.str() + std::string("] ") );
           }
         }
 
@@ -195,12 +195,12 @@ namespace mf {
             }
           }
           if ( format.want( MODULE ) && (xid.module.length() > 0) )  {
-            if (needAspace) { emit( oss,ELstring(" ")); needAspace = false; }
-            emit( oss, xid.module + ELstring(" ") );
+            if (needAspace) { emit( oss,std::string(" ")); needAspace = false; }
+            emit( oss, xid.module + std::string(" ") );
           }
           if ( format.want( SUBROUTINE ) && (xid.subroutine.length() > 0) )  {
-            if (needAspace) { emit( oss,ELstring(" ")); needAspace = false; }
-            emit( oss, xid.subroutine + "()" + ELstring(" ") );
+            if (needAspace) { emit( oss,std::string(" ")); needAspace = false; }
+            emit( oss, xid.subroutine + "()" + std::string(" ") );
           }
         }
 
@@ -210,11 +210,11 @@ namespace mf {
         {
           if ( format.want( TIMESTAMP ) )  {
             if ( format.want( TIME_SEPARATE ) )  {
-              emit( oss, ELstring("\n") );
+              emit( oss, std::string("\n") );
               needAspace = false;
             }
-            if (needAspace) { emit( oss,ELstring(" ")); needAspace = false; }
-            emit( oss, format.timestamp( msg.timestamp() ) + ELstring(" ") );
+            if (needAspace) { emit( oss,std::string(" ")); needAspace = false; }
+            emit( oss, format.timestamp( msg.timestamp() ) + std::string(" ") );
           }
         }
 
@@ -224,7 +224,7 @@ namespace mf {
       if  ( !msg.is_verbatim() )
         {
           if ( format.want( SOME_CONTEXT ) ) {
-            if (needAspace) { emit( oss,ELstring(" ")); needAspace = false; }
+            if (needAspace) { emit( oss,std::string(" ")); needAspace = false; }
             if ( format.want( FULL_CONTEXT ) )  {
               emit( oss, ELadministrator::instance()->getContextSupplier().fullContext());
             } else  {
@@ -314,7 +314,7 @@ namespace mf {
     }
 
     //=============================================================================
-    bool ELdestination::switchChannel( const mf::ELstring & /*channelName*/ )
+    bool ELdestination::switchChannel( const std::string & /*channelName*/ )
     { return false; }
 
 
@@ -340,7 +340,7 @@ namespace mf {
 
     void ELdestination::zero()  { stats.limits.zero(); }
 
-    void ELdestination::respondToModule( ELstring const & moduleName )  {
+    void ELdestination::respondToModule( std::string const & moduleName )  {
       if (moduleName=="*") {
         ignoreMostModules = false;
         respondToMostModules = true;
@@ -352,7 +352,7 @@ namespace mf {
       }
     }
 
-    void ELdestination::ignoreModule( ELstring const & moduleName )  {
+    void ELdestination::ignoreModule( std::string const & moduleName )  {
       if (moduleName=="*") {
         respondToMostModules = false;
         ignoreMostModules = true;
@@ -364,12 +364,12 @@ namespace mf {
       }
     }
 
-    void ELdestination::filterModule( ELstring const & moduleName )  {
+    void ELdestination::filterModule( std::string const & moduleName )  {
       ignoreModule("*");
       respondToModule(moduleName);
     }
 
-    void ELdestination::excludeModule( ELstring const & moduleName )  {
+    void ELdestination::excludeModule( std::string const & moduleName )  {
       respondToModule("*");
       ignoreModule(moduleName);
     }
@@ -388,7 +388,7 @@ namespace mf {
 
     }
 
-    void ELdestination::summary( std::ostream & os, const ELstring & title )  {
+    void ELdestination::summary( std::ostream & os, const std::string & title )  {
 
       os << "%MSG" << ELwarning2.getSymbol() << " "
          << noSummaryMsg << " " << hereMsg << std::endl
@@ -397,9 +397,9 @@ namespace mf {
     }  // summary()
 
 
-    void ELdestination::summary( ELstring & s, const ELstring & title )  {
+    void ELdestination::summary( std::string & s, const std::string & title )  {
 
-      s = ELstring("%MSG") + ELwarning2.getSymbol() + " "
+      s = std::string("%MSG") + ELwarning2.getSymbol() + " "
         + noSummaryMsg + " " + hereMsg + "\n"
         + title + "\n";
 
@@ -412,8 +412,8 @@ namespace mf {
     void ELdestination::setTableLimit( int n )  { stats.limits.setTableLimit( n ); }
 
 
-    void ELdestination::summarization( const ELstring & title
-                                       , const ELstring & /*sumLines*/ )  {
+    void ELdestination::summarization( const std::string & title
+                                       , const std::string & /*sumLines*/ )  {
 
       mf::ErrorObj  msg( ELwarning2, noSummarizationMsg );
       msg << hereMsg << newline << title;
@@ -431,7 +431,7 @@ namespace mf {
       log( msg );
     }
 
-    void ELdestination::changeFile( ELstring const & filename ) {
+    void ELdestination::changeFile( std::string const & filename ) {
       mf::ErrorObj  msg( ELwarning2, noosMsg );
       msg << notELoutputMsg << newline << "file requested is" << filename;
       log( msg );
@@ -447,7 +447,7 @@ namespace mf {
     // Output format options:
     // ----------------------------------------------------------------------
 
-    ELstring ELdestination::getNewline() const  { return newline; }
+    std::string ELdestination::getNewline() const  { return newline; }
 
     int ELdestination::setLineLength (int len) {
       int temp=lineLength;
@@ -462,7 +462,7 @@ namespace mf {
     // Protected helper methods:
     // ----------------------------------------------------------------------
 
-    bool ELdestination::thisShouldBeIgnored(const ELstring & s) const {
+    bool ELdestination::thisShouldBeIgnored(const std::string & s) const {
       if (respondToMostModules) {
         return ( ignoreThese.find(s) != ignoreThese.end() );
       } else if (ignoreMostModules) {

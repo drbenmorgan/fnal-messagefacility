@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_ThreadQueue_h
-#define MessageFacility_MessageService_ThreadQueue_h
+#ifndef messagefacility_MessageService_ThreadQueue_h
+#define messagefacility_MessageService_ThreadQueue_h
 // -*- C++ -*-
 //
 // Package:     MessageService
@@ -19,7 +19,7 @@
 // $Id: ThreadQueue.h,v 1.1 2009/08/12 22:22:01 fischler Exp $
 //
 
-#include "messagefacility/MessageLogger/MessageLoggerQ.h"
+#include "messagefacility/MessageService/MessageLoggerQ.h"
 #include "messagefacility/Utilities/SingleConsumerQ.h"
 
 
@@ -66,4 +66,8 @@ class ThreadQueue
 } // end namespace service
 } // end namespace mf
 
-#endif
+#endif /* messagefacility_MessageService_ThreadQueue_h */
+
+// Local Variables:
+// mode: c++
+// End:

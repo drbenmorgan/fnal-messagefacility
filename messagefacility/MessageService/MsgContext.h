@@ -1,5 +1,5 @@
-#ifndef MessageFacility_MessageService_MsgContext_h
-#define MessageFacility_MessageService_MsgContext_h
+#ifndef messagefacility_MessageService_MsgContext_h
+#define messagefacility_MessageService_MsgContext_h
 
 #include "messagefacility/MessageService/ELcontextSupplier.h"
 
@@ -12,9 +12,9 @@ namespace service {
   {
   public:
     MsgContext* clone() const override { return new MsgContext(*this); }
-    ELstring context() const override { return context_; }
-    ELstring summaryContext() const override { return summary_context_; }
-    ELstring fullContext() const override { return context(); }
+    std::string context() const override { return context_; }
+    std::string summaryContext() const override { return summary_context_; }
+    std::string fullContext() const override { return context(); }
 
     void setContext(const std::string& c)
     {
@@ -32,4 +32,8 @@ namespace service {
 }        // end of namespace service
 }       // end of namespace mf
 
-#endif // MessageFacility_MessageService_MsgContext_h
+#endif /* messagefacility_MessageService_MsgContext_h */
+
+// Local Variables:
+// mode: c++
+// End:
