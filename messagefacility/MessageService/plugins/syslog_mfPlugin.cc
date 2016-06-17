@@ -11,12 +11,18 @@
 #include <syslog.h>
 #include <memory>
 
+namespace mf {
+  namespace service {
+    class ELcontextSupplier;
+  }
+}
+
 namespace mfplugins {
 
-  using mf::service::ELdestination;
   using mf::ELseverityLevel;
-  using std::string;
   using mf::ErrorObj;
+  using mf::service::ELdestination;
+  using std::string;
 
   //======================================================================
   //
@@ -27,15 +33,17 @@ namespace mfplugins {
   class ELsyslog : public ELdestination {
   public:
 
-    ELsyslog( const fhicl::ParameterSet& pset );
+    ELsyslog(fhicl::ParameterSet const& pset);
 
-    virtual void fillPrefix  (       std::ostringstream&, const ErrorObj& ) override;
-    virtual void fillUsrMsg  (       std::ostringstream&, const ErrorObj& ) override;
-    virtual void fillSuffix  (       std::ostringstream&, const ErrorObj& ) override {}
-    virtual void routePayload( const std::ostringstream&, const ErrorObj& ) override;
+    virtual void fillPrefix(std::ostringstream&, ErrorObj const&, mf::service::ELcontextSupplier const&) override;
+    virtual void fillUsrMsg(std::ostringstream&, ErrorObj const&) override;
+    virtual void fillSuffix(std::ostringstream&, ErrorObj const&) override {}
+    virtual void routePayload(std::ostringstream const&,
+                              ErrorObj const&,
+                              mf::service::ELcontextSupplier const&) override;
 
   private:
-    int syslogLevel( const ELseverityLevel & elsev );
+    int syslogLevel(ELseverityLevel);
 
   };
 
@@ -48,8 +56,8 @@ namespace mfplugins {
   // ELsyslog c'tor
   //======================================================================
 
-  ELsyslog::ELsyslog( const fhicl::ParameterSet& pset )
-    : ELdestination( pset )
+  ELsyslog::ELsyslog(fhicl::ParameterSet const& pset)
+    : ELdestination{pset}
   {
     openlog("MF",0,LOG_LOCAL0);
   }
@@ -57,30 +65,32 @@ namespace mfplugins {
   //======================================================================
   // Message prefix filler ( overriddes ELdestination::fillPrefix )
   //======================================================================
-  void ELsyslog::fillPrefix( std::ostringstream& oss,const ErrorObj & msg ) {
-    const auto& xid = msg.xid();
-
-    oss << format.timestamp( msg.timestamp() )+std::string("|");   // timestamp
-    oss << xid.hostname+std::string("|");                          // host name
-    oss << xid.hostaddr+std::string("|");                          // host address
-    oss << xid.severity.getName()+std::string("|");                // severity
-    oss << xid.id+std::string("|");                                // category
-    oss << xid.application+std::string("|");                       // application
-    oss << xid.pid<<std::string("|");                              // process id
-    oss << mf::MessageDrop::instance()->runEvent+std::string("|"); // run/event no
-    oss << xid.module+std::string("|");                            // module name
+  void ELsyslog::fillPrefix(std::ostringstream& oss,
+                            ErrorObj const& msg,
+                            mf::service::ELcontextSupplier const&)
+  {
+    auto const& xid = msg.xid();
+    oss << format.timestamp(msg.timestamp())+std::string("|")     // timestamp
+        << xid.hostname+std::string("|")                          // host name
+        << xid.hostaddr+std::string("|")                          // host address
+        << xid.severity.getName()+std::string("|")                // severity
+        << xid.id+std::string("|")                                // category
+        << xid.application+std::string("|")                       // application
+        << xid.pid<<std::string("|")                              // process id
+        << mf::MessageDrop::instance()->runEvent+std::string("|") // run/event no
+        << xid.module+std::string("|");                           // module name
   }
 
   //======================================================================
   // Message filler ( overriddes ELdestination::fillUsrMsg )
   //======================================================================
-  void ELsyslog::fillUsrMsg( std::ostringstream& oss,const ErrorObj & msg ) {
-
+  void ELsyslog::fillUsrMsg(std::ostringstream& oss, ErrorObj const& msg)
+  {
     std::ostringstream tmposs;
     ELdestination::fillUsrMsg( tmposs, msg );
 
     // remove leading "\n" if present
-    const std::string& usrMsg = !tmposs.str().compare(0,1,"\n") ? tmposs.str().erase(0,1) : tmposs.str();
+    std::string const& usrMsg = !tmposs.str().compare(0,1,"\n") ? tmposs.str().erase(0,1) : tmposs.str();
 
     oss << usrMsg;
   }
@@ -88,16 +98,17 @@ namespace mfplugins {
   //======================================================================
   // Message router ( overriddes ELdestination::routePayload )
   //======================================================================
-  void ELsyslog::routePayload( const std::ostringstream& oss, const ErrorObj& msg) {
-
-    const int severity = syslogLevel( msg.xid().severity );
-    syslog( severity, oss.str().data() );
-
+  void ELsyslog::routePayload(std::ostringstream const& oss,
+                              ErrorObj const& msg,
+                              mf::service::ELcontextSupplier const&)
+  {
+    int const severity = syslogLevel(msg.xid().severity);
+    syslog(severity, oss.str().data());
   }
 
   //======================================================================
-  int ELsyslog::syslogLevel( const ELseverityLevel& severity ) {
-
+  int ELsyslog::syslogLevel(ELseverityLevel const severity)
+  {
     //  Following syslog levels not used:
     //     LOG_EMERG  ; //0
     //     LOG_ALERT  ; //1

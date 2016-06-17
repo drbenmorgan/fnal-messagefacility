@@ -33,6 +33,7 @@
 #include "messagefacility/Auxiliaries/ELmap.h"
 #include "messagefacility/Auxiliaries/ELseverityLevel.h"
 #include "messagefacility/Auxiliaries/ErrorObj.h"
+#include "messagefacility/MessageService/ELdestination.h"
 #include "messagefacility/MessageService/MsgFormatSettings.h"
 
 #include "cetlib/exempt_ptr.h"
@@ -42,12 +43,6 @@
 
 namespace mf {
   namespace service {
-
-    // ----------------------------------------------------------------------
-    // prerequisite classes:
-    // ----------------------------------------------------------------------
-
-    class ELdestination;
 
     // ----------------------------------------------------------------------
     // ELdestControl:
@@ -96,7 +91,7 @@ namespace mf {
       virtual void respondToModule ( std::string const & moduleName );
       virtual void ignoreModule    ( std::string const & moduleName );
 
-      virtual ELdestControl & clearSummary();
+      virtual ELdestControl & clearSummary(ELcontextSupplier const&);
       virtual ELdestControl & wipe();
       virtual ELdestControl & zero();
 
@@ -111,23 +106,23 @@ namespace mf {
       virtual void summary( std::ostream  & os  , char * title="" );
       virtual void summary( std::string      & s   , char * title="" );
 #pragma GCC diagnostic pop
-      virtual void summary( );
+      virtual void summary(ELcontextSupplier const&);
       virtual void summaryForJobReport( std::map<std::string, double> & sm);
 
       virtual std::map<ELextendedID , StatsCount> statisticsMap() const;
 
-      virtual void log( mf::ErrorObj & msg );  // Backdoor to log a formed message
+      virtual void log(mf::ErrorObj& msg, ELcontextSupplier const&);  // Backdoor to log a formed message
                                                // to only this destination.
 
-      virtual void changeFile (std::ostream & os);
-      virtual void changeFile (const std::string & filename);
-      virtual void flush();
+      virtual void changeFile (std::ostream & os, ELcontextSupplier const&);
+      virtual void changeFile (const std::string & filename, ELcontextSupplier const&);
+      virtual void flush(ELcontextSupplier const&);
 
       // -----  Helper methods invoked by other ErrorLogger classes
 
-      virtual void summarization( const std::string & title
-                                  , const std::string & sumLines
-                                  );
+      virtual void summarization(const std::string & title,
+                                 const std::string & sumLines,
+                                 ELcontextSupplier const&);
 
       std::string getNewline() const;
 

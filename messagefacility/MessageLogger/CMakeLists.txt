@@ -1,17 +1,15 @@
 cet_make_library(
   LIBRARY_NAME MF_MessageLogger
   SOURCE
-  ExceptionMessages.cc
   JobReport.cc
-  LoggedErrorsSummary.cc
   MessageLogger.cc
   MessageLoggerImpl.cc
   MessageLoggerScribe.cc
   MessageSender.cc
   MessageServicePresence.cc
   Presence.cc
-  SilentMLscribe.cc
   SingleThreadMSPresence.cc
+  createPresence.cc
   LIBRARIES
   MF_MessageService
   fhiclcpp

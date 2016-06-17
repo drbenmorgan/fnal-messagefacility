@@ -171,7 +171,8 @@ namespace mf {
         a->attach("cerr", std::make_unique<ELostreamOutput>(std::cerr));
       }
 
-      cet::for_all(a->sinks(), [&msg](auto const& d) { d.second->log(msg); });
+      auto const& context = a->getContextSupplier();
+      cet::for_all(a->sinks(), [&msg,&context](auto const& d) { d.second->log(msg, context); });
 
       possiblyAbOrEx ( msg.xid().severity.getLevel(),
                        a->abortThreshold().getLevel(),

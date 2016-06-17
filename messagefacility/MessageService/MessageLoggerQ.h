@@ -2,100 +2,77 @@
 #define messagefacility_MessageService_MessageLoggerQ_h
 
 #include "messagefacility/Auxiliaries/ELseverityLevel.h"
-
-#include <memory>
+#include "messagefacility/MessageService/OpCode.h"
 
 #include <string>
 #include <map>
+#include <memory>
 #include <set>
 
-namespace fhicl
-{
+namespace fhicl {
   class ParameterSet;
 }
 
-namespace mf
-{
+namespace mf {
 
-// --- forward declarations:
-class ErrorObj;
-class ELdestination;
-namespace service {
-class NamedDestination;
-class AbstractMLscribe;
-}
+  class ErrorObj;
+  class ELdestination;
+  namespace service {
+    class NamedDestination;
+    class AbstractMLscribe;
+  }
 
+  class MessageLoggerQ {
+  public:
 
-class MessageLoggerQ
-{
-public:
-  // --- enumerate types of messages that can be enqueued:
-  enum OpCode      // abbrev's used hereinafter
-  { END_THREAD     // END
-  , LOG_A_MESSAGE  // LOG
-  , CONFIGURE      // CFG -- handshaked
-  , EXTERN_DEST    // EXT
-  , SUMMARIZE      // SUM
-  , JOBREPORT      // JOB
-  , JOBMODE        // MOD
-  , SHUT_UP        // SHT
-  , FLUSH_LOG_Q    // FLS -- handshaked
-  , GROUP_STATS    // GRP
-  , FJR_SUMMARY    // JRS -- handshaked
-  , SWITCH_CHANNEL // SWG
-  };  // OpCode
+    // ---  birth via a surrogate:
+    static MessageLoggerQ* instance();
 
-  // ---  birth via a surrogate:
-  static  MessageLoggerQ *  instance();
+    // ---  post a message to the queue:
+    static void MLqEND();
+    static void MLqLOG(ErrorObj* p);
+    static void MLqCFG(fhicl::ParameterSet* p);
+    static void MLqEXT(service::NamedDestination* p);
+    static void MLqSUM();
+    static void MLqJOB(std::string* j);
+    static void MLqMOD(std::string* jm);
+    static void MLqSHT();
+    static void MLqFLS();
+    static void MLqGRP(std::string* cat_p);
+    static void MLqJRS(std::map<std::string, double>* sum_p);
+    static void MLqSWC(std::string* chanl_p);
 
-  // ---  post a message to the queue:
-  static  void  MLqEND();
-  static  void  MLqLOG( ErrorObj * p );
-  static  void  MLqCFG( fhicl::ParameterSet * p );
-  static  void  MLqEXT( service::NamedDestination* p );
-  static  void  MLqSUM();
-  static  void  MLqJOB( std::string * j );
-  static  void  MLqMOD( std::string * jm );
-  static  void  MLqSHT();
-  static  void  MLqFLS();
-  static  void  MLqGRP(std::string * cat_p);
-  static  void  MLqJRS(std::map<std::string, double> * sum_p);
-  static  void  MLqSWC(std::string * chanl_p);
+    // ---  bookkeeping for single-thread mode
+    static void setMLscribe_ptr(std::shared_ptr<mf::service::AbstractMLscribe> const& m);
 
-  // ---  bookkeeping for single-thread mode
-  static  void  setMLscribe_ptr
-     (std::shared_ptr<mf::service::AbstractMLscribe> const & m);
+    // --- special control of standAlone logging behavior
+    static void standAloneThreshold(std::string const & severity);
+    static void squelch(std::string const& category);
+    static bool ignore(mf::ELseverityLevel const& severity,
+                       std::string const& category);
 
-  // ---  helper for scribes
-  static bool handshaked ( const OpCode & op );
+    // --- no copying:
+    MessageLoggerQ(MessageLoggerQ const&) = delete;
+    MessageLoggerQ& operator=(MessageLoggerQ const&) = delete;
 
-  // --- special control of standAlone logging behavior
-  static  void standAloneThreshold(std::string const & severity);
-  static  void squelch(std::string const & category);
-  static  bool ignore ( mf::ELseverityLevel const & severity,
-                        std::string const & category );
+  private:
 
-private:
-  // ---  traditional birth/death, but disallowed to users:
-  MessageLoggerQ() = default;
-  ~MessageLoggerQ() = default;
+    // ---  traditional birth/death, but disallowed to users:
+    MessageLoggerQ() = default;
+    ~MessageLoggerQ() = default;
 
-  // ---  place an item onto the queue, or execute the command directly
-  static  void  simpleCommand( OpCode opcode, void * operand );
-  static  void  handshakedCommand( OpCode opcode,
-                                   void * operand,
-                                   std::string const & commandMnemonic);
+    // ---  place an item onto the queue, or execute the command directly
+    static void simpleCommand(service::OpCode opcode, void* operand);
+    static void handshakedCommand(service::OpCode opcode,
+                                  void* operand,
+                                  std::string const& commandMnemonic);
 
-  // --- no copying:
-  MessageLoggerQ( MessageLoggerQ const & );
-  void  operator = ( MessageLoggerQ const & );
+    // --- data:
+    static std::shared_ptr<mf::service::AbstractMLscribe> mlscribe_ptr;
+    static mf::ELseverityLevel threshold;
+    static std::set<std::string> squelchSet;
 
-  // --- data:
-  static  std::shared_ptr<mf::service::AbstractMLscribe> mlscribe_ptr;
-  static  mf::ELseverityLevel threshold;
-  static  std::set<std::string> squelchSet;
-
-};  // MessageLoggerQ
+  };  // MessageLoggerQ
 
 
 }  // namespace mf

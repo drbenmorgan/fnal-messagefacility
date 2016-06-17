@@ -28,7 +28,6 @@ namespace mf {
 
   class ErrorObj;
   namespace service {
-    class ELadministrator;
     class ELdestControl;
 
 
@@ -60,7 +59,7 @@ namespace mf {
       //
     public:
 
-      void log( mf::ErrorObj & msg ) override;
+      void log(mf::ErrorObj& msg, ELcontextSupplier const&) override;
 
       // ----- Methods invoked by the MessageLoggerScribe, bypassing destControl
       //
@@ -71,14 +70,14 @@ namespace mf {
       // -----  Methods invoked through the ELdestControl handle:
       //
     protected:
-      void clearSummary() override;
+      void clearSummary(ELcontextSupplier const&) override;
 
       void wipe() override;
       void zero() override;
 
-      void summary( std::ostream  & os  , const std::string & title="" ) override;
-      void summary( std::string   & s   , const std::string & title="" ) override;
-      void summary( ) override;
+      void summary(std::ostream& os, const std::string & title="" ) override;
+      void summary(std::string& s, const std::string & title="" ) override;
+      void summary(ELcontextSupplier const&) override;
       void noTerminationSummary() override;
 
       std::map<ELextendedID,StatsCount> statisticsMap() const override;

@@ -14,72 +14,56 @@ namespace mf {
   class ErrorObj;
 
   namespace service {
+    class ELcontextSupplier;
 
-  // ----------------------------------------------------------------------
-  // MsgStatistics:
-  // ----------------------------------------------------------------------
+    class MsgStatistics {
+    public:
 
-  class MsgStatistics {
+      MsgStatistics();
+      MsgStatistics(fhicl::ParameterSet const& pset);
+      MsgStatistics(int spaceLimit);
+      MsgStatistics(fhicl::ParameterSet const& pset, int spaceLimit);
 
-  public:
-
-    // -----  constructor
-    MsgStatistics( const fhicl::ParameterSet& pset, int spaceLimit );
-
-    // -----  delegating constructors
-    MsgStatistics() :
-      MsgStatistics( fhicl::ParameterSet(), -1 ){}
-
-    MsgStatistics( const fhicl::ParameterSet& pset ) :
-      MsgStatistics( pset, -1 ){}
-
-    MsgStatistics( int spaceLimit ) :
-      MsgStatistics( fhicl::ParameterSet(), spaceLimit ){}
-
-    // copy c'tor/assignment disabled
-    MsgStatistics( const MsgStatistics& ) = delete;
-    MsgStatistics& operator=(const MsgStatistics&) = delete;
+      // copy c'tor/assignment disabled
+      MsgStatistics( const MsgStatistics& ) = delete;
+      MsgStatistics& operator=(const MsgStatistics&) = delete;
 
 
-    // -----  Methods invoked by the ELadministrator:
-    //
-  public:
+      // -----  Methods invoked by the ELadministrator:
+      //
+      void log(mf::ErrorObj const& msg, ELcontextSupplier const&);
+      std::string formSummary();
 
-    void log( const mf::ErrorObj & msg );
+      // ----- Methods invoked by the MessageLoggerScribe, bypassing destControl
+      //
+      static void noteGroupedCategory(std::string const & cat);  // 8/16/07 mf
 
-    std::string formSummary();
+      void clearSummary();
+      void wipe();
+      void zero();
+      void noTerminationSummary();
 
-    // ----- Methods invoked by the MessageLoggerScribe, bypassing destControl
-    //
-  public:
-    static void noteGroupedCategory(std::string const & cat);  // 8/16/07 mf
+      ELmap_stats const& statisticsMap() const;
+      void summaryForJobReport (std::map<std::string, double> & sm);
 
-    void clearSummary();
-    void wipe();
-    void zero();
-    void noTerminationSummary();
+      int tableLimit;
+      ELlimitsTable limits {};
+      ELmap_stats statsMap {};
+      bool updatedStats {false};
+      bool reset;
+      bool printAtTermination {true};
 
-    std::map<ELextendedID,StatsCount> statisticsMap() const;
-    void summaryForJobReport (std::map<std::string, double> & sm);
+    protected:
 
-    int            tableLimit;
-    ELlimitsTable  limits;
-    ELmap_stats    statsMap;
-    bool           updatedStats;
-    bool           reset;
-    bool           printAtTermination;
+      static std::set<std::string> groupedCategories;               // 8/16/07 mf
 
-  protected:
+    private:
 
-    static std::set<std::string> groupedCategories;               // 8/16/07 mf
+      std::string dualLogName(std::string const& s);
 
-  private:
+    };  // MsgStatistics
 
-      std::string dualLogName(std::string const & s);
-
-  };  // MsgStatistics
-
-  // ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
 
   }      // end of namespace service
 }        // end of namespace mf

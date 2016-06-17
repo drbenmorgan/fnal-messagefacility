@@ -3,8 +3,6 @@
 
 #include <string>
 
-// -*- C++ -*-
-
 /*
   An interface class defining a presence.  A presence is an object that an
   executable can instantiate at an early time in order to initialize
@@ -19,17 +17,11 @@
 */
 
 namespace mf {
-
   class Presence {
   public:
     Presence() {}
     virtual ~Presence() = 0;
   };
-
-  struct PresenceFactory {
-      static Presence * createInstance(std::string const& s);
-  };
-
 }
 #endif /* messagefacility_MessageLogger_Presence_h */
 

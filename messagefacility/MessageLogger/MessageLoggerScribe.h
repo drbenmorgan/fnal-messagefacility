@@ -35,7 +35,7 @@ namespace mf {
 
       // --- receive and act on messages:
       void run();
-      void runCommand(MessageLoggerQ::OpCode  opcode, void * operand) override;
+      void runCommand(OpCode  opcode, void * operand) override;
 
     private:
 

@@ -1,7 +1,7 @@
 #ifndef messagefacility_MessageService_AbstractMLscribe_h
 #define messagefacility_MessageService_AbstractMLscribe_h
 
-#include "messagefacility/MessageService/MessageLoggerQ.h"
+#include "messagefacility/MessageService/OpCode.h"
 
 namespace mf  {
   namespace service {
@@ -17,7 +17,7 @@ namespace mf  {
       AbstractMLscribe & operator = (AbstractMLscribe const &) = delete;
 
       // ---  methods needed for logging
-      virtual void  runCommand(MessageLoggerQ::OpCode  opcode, void * operand) = 0;
+      virtual void  runCommand(OpCode opcode, void * operand) = 0;
     };  // AbstractMLscribe
 
   }   // end of namespace service

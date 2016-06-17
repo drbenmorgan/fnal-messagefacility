@@ -50,196 +50,158 @@
 //
 // ----------------------------------------------------------------------
 
-#include "messagefacility/MessageService/ELdestControl.h"
 
+
+#include "cetlib/exempt_ptr.h"
 #include "messagefacility/Auxiliaries/ELlist.h"
 #include "messagefacility/Auxiliaries/ELseverityLevel.h"
 #include "messagefacility/Auxiliaries/ErrorObj.h"
-
-#include "cetlib/exempt_ptr.h"
+#include "messagefacility/MessageService/ELdestControl.h"
 
 #include <memory>
 #include <type_traits>
 #include <utility>
 
 namespace mf {
-namespace service {
+  namespace service {
 
 
-// ----------------------------------------------------------------------
-// Prerequisite classes:
-// ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // Prerequisite classes:
+    // ----------------------------------------------------------------------
 
-class ELcontextSupplier;
-  //class ELdestination;
-class ELadminDestroyer;
-class ErrorLog;
-class ELtsErrorLog;
-class ELcout;
+    class ELcontextSupplier;
+    class ErrorLog;
+    class ELcout;
 
 
-// ----------------------------------------------------------------------
-// ELadministrator:
-// ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // ELadministrator:
+    // ----------------------------------------------------------------------
 
-class ELadministrator  {        // *** Destructable Singleton Pattern ***
+    class ELadministrator  {
 
-  friend class ELadminDestroyer;        // proper ELadministrator cleanup
-  friend class ErrorLog;                // ELadministrator user behavior
-  friend class ELcout;                  // ELcout behavior
-  friend class ELtsErrorLog;            // which walks sink list
+      friend class ErrorLog; // ELadministrator user behavior
+      friend class ELcout;   // ELcout behavior
 
-// *** Error Logger Functionality ***
+    public:
 
-public:
+      // ---  birth via a surrogate:
+      //
+      static ELadministrator* instance();
 
-  // ---  birth via a surrogate:
-  //
-  static ELadministrator * instance();          // *** Singleton Pattern
+      // ---  disable copy/move:
+      //
+      ELadministrator(ELadministrator const&) = delete;
+      ELadministrator& operator=(ELadministrator const&) = delete;
 
-  // ---  disable copy/move:
-  //
-  ELadministrator ( const ELadministrator&  ) = delete;
-  ELadministrator (       ELadministrator&& ) = delete;
-  ELadministrator& operator = ( const ELadministrator&  ) = delete;
-  ELadministrator& operator = (       ELadministrator&& ) = delete;
+      ELadministrator(ELadministrator&&) = delete;
+      ELadministrator& operator=(ELadministrator&&) = delete;
 
-  // ---  get/set fundamental properties:
-  //
-  void setProcess( const std::string & process );
-  void setApplication( const std::string & application );
-  std::string swapProcess( const std::string & process );
-  void setContextSupplier( const ELcontextSupplier & supplier );
-  const ELcontextSupplier & getContextSupplier() const;
-  ELcontextSupplier & swapContextSupplier( ELcontextSupplier & cs );
-  void setAbortThreshold( const ELseverityLevel & sev );
-  void setExitThreshold ( const ELseverityLevel & sev );
+      // ---  get/set fundamental properties:
+      //
+      void setProcess( const std::string & process );
+      void setApplication( const std::string & application );
+      std::string swapProcess( const std::string & process );
+      void setContextSupplier( const ELcontextSupplier & supplier );
+      const ELcontextSupplier & getContextSupplier() const;
+      ELcontextSupplier & swapContextSupplier( ELcontextSupplier & cs );
+      void setAbortThreshold(ELseverityLevel sev);
+      void setExitThreshold (ELseverityLevel sev);
 
-  // ---  furnish/recall destinations:
-  //
+      // ---  furnish/recall destinations:
+      //
 
-  template <typename DEST>
-  ELdestControl attach( const std::string& outputId,
-                        std::unique_ptr<DEST>&& dest,
-                        typename std::enable_if<std::is_base_of<ELdestination,DEST>::value>::type* = 0 ) {
-    auto emplacePair = attachedDestinations.emplace( outputId, std::move(dest) );
-    auto iterToIDdestPair = emplacePair.first;
-    const bool didEmplace = emplacePair.second;
-    return didEmplace ? ELdestControl( cet::exempt_ptr<ELdestination>( iterToIDdestPair->second.get() ) ) : ELdestControl();
-  }
+      template <typename DEST>
+      ELdestControl attach(std::string const& outputId,
+                           std::unique_ptr<DEST>&& dest,
+                           std::enable_if_t<std::is_base_of<ELdestination,DEST>::value>* = nullptr)
+      {
+        auto emplacePair = attachedDestinations.emplace(outputId, std::move(dest));
+        auto iterToIDdestPair = emplacePair.first;
+        bool const didEmplace = emplacePair.second;
+        return didEmplace ? ELdestControl(cet::exempt_ptr<ELdestination>(iterToIDdestPair->second.get())) : ELdestControl();
+      }
 
-  const std::map<std::string,std::unique_ptr<ELdestination>> & sinks();
-  bool getELdestControl ( const std::string & name, ELdestControl & theControl );
+      std::map<std::string,std::unique_ptr<ELdestination>> const& sinks();
+      bool getELdestControl (std::string const& name, ELdestControl& theControl);
 
-  // ---  handle severity information:
-  //
-  ELseverityLevel  checkSeverity();
-  int severityCount( const ELseverityLevel & sev ) const;
-  int severityCount( const ELseverityLevel & from,
-                     const ELseverityLevel & to ) const;
-  void resetSeverityCount( const ELseverityLevel & sev );
-  void resetSeverityCount( const ELseverityLevel & from,
-                           const ELseverityLevel & to );
-  void resetSeverityCount();                    // reset all
+      // ---  handle severity information:
+      //
+      ELseverityLevel checkSeverity();
+      int severityCount(ELseverityLevel sev) const;
+      int severityCount(ELseverityLevel from, ELseverityLevel to) const;
+      void resetSeverityCount(ELseverityLevel sev);
+      void resetSeverityCount(ELseverityLevel from, ELseverityLevel to);
+      void resetSeverityCount(); // reset all
 
-  // ---  apply the following actions to all attached destinations:
-  //
-  void setThresholds( const ELseverityLevel & sev );
-  void setLimits    ( const std::string        & id,  int limit    );
-  void setLimits    ( const ELseverityLevel & sev, int limit    );
-  void setIntervals ( const std::string        & id,  int interval );
-  void setIntervals ( const ELseverityLevel & sev, int interval );
-  void setTimespans ( const std::string        & id,  int seconds  );
-  void setTimespans ( const ELseverityLevel & sev, int seconds  );
-  void wipe();
-  void finish();
+      // ---  apply the following actions to all attached destinations:
+      //
+      void setThresholds(ELseverityLevel sev );
+      void setLimits    (std::string const& id, int limit);
+      void setIntervals (std::string const& id, int interval);
+      void setTimespans (std::string const& id, int seconds);
+      void setLimits    (ELseverityLevel sev, int limit);
+      void setIntervals (ELseverityLevel sev, int interval);
+      void setTimespans (ELseverityLevel sev, int seconds);
+      void wipe();
+      void finish();
 
-  const std::string              & application() const;
+      std::string const& application() const;
 
-protected:
-  // ---  member data accessors:
-  //
-  const std::string              & process() const;
-  ELcontextSupplier           & context() const;
-  const ELseverityLevel       & abortThreshold() const;
-  const ELseverityLevel       &  exitThreshold() const;
-  const ELseverityLevel       & highSeverity() const;
-  int                           severityCounts( int lev ) const;
+    protected:
+      // ---  member data accessors:
+      //
+      std::string const& process() const;
+      ELcontextSupplier& context() const;
+      ELseverityLevel abortThreshold() const;
+      ELseverityLevel exitThreshold() const;
+      ELseverityLevel highSeverity() const;
+      int severityCounts(int lev) const;
 
-  const std::string              & hostname() const;
-  const std::string              & hostaddr() const;
-  long                          pid() const;
+      std::string const& hostname() const;
+      std::string const& hostaddr() const;
+      long pid() const;
 
-  // ---  actions on messages:
-  //
-  void finishMsg();
-  void clearMsg();
+      // ---  actions on messages:
+      //
+      void finishMsg();
+      void clearMsg();
 
-protected:
-  // ---  traditional birth/death, but disallowed to users:
-  //
-  ELadministrator();
+    protected:
+      // ---  traditional birth/death, but disallowed to users:
+      //
+      ELadministrator();
 
-public:
-  virtual ~ELadministrator();
+    public:
+      virtual ~ELadministrator();
 
-private:
-  // ---  reach the actual (single) ELadministrator's instantiation
-  // ---  (the instance() method records the ELadminDestroyer object):
-  //
-  static ELadministrator* instance_;
+    private:
 
-  // ---  traditional member data:
-  //
-  std::string                   process_;
-  std::shared_ptr<ELcontextSupplier> context_;
-  ELseverityLevel            abortThreshold_;
-  ELseverityLevel            exitThreshold_;
-  std::list<std::unique_ptr<ELdestination> > sinks_;
-  ELseverityLevel            highSeverity_;
-  int                        severityCounts_[ ELseverityLevel::nLevels ];
-  mf::ErrorObj               msg;
-  bool                       msgIsActive;
+      static ELadministrator* instance_;
 
-  std::string                   hostname_;
-  std::string                   hostaddr_;
-  std::string                   application_;
-  long                       pid_;
+      std::string process_ {};
+      std::shared_ptr<ELcontextSupplier> context_;
+      ELseverityLevel abortThreshold_ {ELseverityLevel::ELsev_abort};
+      ELseverityLevel exitThreshold_ {ELseverityLevel::ELsev_highestSeverity};
+      ELseverityLevel highSeverity_ {ELseverityLevel::ELsev_zeroSeverity};
+      std::list<std::unique_ptr<ELdestination>> sinks_ {};
 
-  std::map <std::string,std::unique_ptr<ELdestination>> attachedDestinations;
+      int severityCounts_[ELseverityLevel::nLevels] {{0}}; // fill by aggregation
+      mf::ErrorObj msg {ELseverityLevel::ELsev_unspecified, ""};
+      bool msgIsActive {false};
 
-};  // ELadministrator
+      std::string hostname_ {};
+      std::string hostaddr_ {};
+      std::string application_ {};
+      long pid_ {};
 
+      std::map <std::string,std::unique_ptr<ELdestination>> attachedDestinations;
 
-// ----------------------------------------------------------------------
-// ELadminDestroyer:
-// ----------------------------------------------------------------------
+    };  // ELadministrator
 
-class ELadminDestroyer  {
-
-public:
-  // ---  birth/death:
-  //
-  ELadminDestroyer( ELadministrator * ad = 0 );
- ~ELadminDestroyer();
-
-  // ---  record our (single) self:
-  //
-  void setELadmin( ELadministrator * ad );
-
-private:
-  // ---  member data:
-  //
-  ELadministrator * admin_;     // keep track of our (single) self
-
-};  // ELadminDestroyer
-
-
-// ----------------------------------------------------------------------
-
-
-}        // end of namespace service
-}        // end of namespace mf
+  } // end of namespace service
+} // end of namespace mf
 
 
 #endif /* messagefacility_MessageService_ELadministrator_h */

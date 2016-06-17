@@ -11,6 +11,8 @@
 #include "cetlib/ostream_handle.h"
 #include "messagefacility/Auxiliaries/ELextendedID.h"
 #include "messagefacility/MessageService/ELdestination.h"
+#include "messagefacility/MessageService/ELcontextSupplier.h"
+#include "messagefacility/MessageService/MsgContext.h"
 
 #include <memory>
 
@@ -36,13 +38,19 @@ namespace mf {
     public:
 
       // Birth/death:
-      ELostreamOutput( const fhicl::ParameterSet& psetFormat );
-      ELostreamOutput( const fhicl::ParameterSet& psetFormat, std::ostream & os, bool emitAtStart = false );      // 6/11/07 mf
+      ELostreamOutput();
+      ELostreamOutput(fhicl::ParameterSet const& psetFormat);
+      ELostreamOutput(fhicl::ParameterSet const& psetFormat,
+                      std::ostream& os,
+                      bool emitAtStart = false);
 
-      ELostreamOutput() : ELostreamOutput( fhicl::ParameterSet() ) {}
-      ELostreamOutput( std::ostream& os, bool emitAtStart = false ) : ELostreamOutput( fhicl::ParameterSet(), os, emitAtStart ){}
+      ELostreamOutput(std::ostream& os,
+                      bool emitAtStart = false);
 
-      ELostreamOutput( const fhicl::ParameterSet& psetFormat, const std::string & fileName, const bool append, bool emitAtStart = false );
+      ELostreamOutput(fhicl::ParameterSet const& psetFormat,
+                      std::string const& fileName,
+                      bool append,
+                      bool emitAtStart = false );
 
       // Disable copy c'tor/assignment
       ELostreamOutput( const ELostreamOutput & orig ) = delete;
@@ -50,17 +58,19 @@ namespace mf {
 
     protected:
 
-      void routePayload  ( const std::ostringstream& oss,const mf::ErrorObj& msg ) override;
-      void summarization ( const std::string & fullTitle, const std::string & sumLines ) override;
+      void routePayload  (std::ostringstream const& oss,
+                          mf::ErrorObj const& msg,
+                          ELcontextSupplier const&) override;
+      void summarization ( const std::string & fullTitle, const std::string & sumLines, ELcontextSupplier const& ) override;
 
-      void changeFile (std::ostream & os) override;
-      void changeFile (const std::string & filename) override;
-      void flush() override;
+      void changeFile (std::ostream & os, ELcontextSupplier const&) override;
+      void changeFile (const std::string & filename, ELcontextSupplier const&) override;
+      void flush(ELcontextSupplier const&) override;
 
       // --- member data:
       //
       std::unique_ptr<cet::ostream_handle> osh;
-      mf::ELextendedID                     xid;
+      mf::ELextendedID xid {};
 
     };  // ELostreamOutput
 

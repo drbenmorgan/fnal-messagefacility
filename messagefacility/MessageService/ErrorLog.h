@@ -40,7 +40,6 @@ namespace mf {
     // ----------------------------------------------------------------------
 
     class ELadministrator;
-    class ELtsErrorLog;
     class ELdestControl;
 
     // ----------------------------------------------------------------------
@@ -48,9 +47,6 @@ namespace mf {
     // ----------------------------------------------------------------------
 
     class ErrorLog  {
-
-      friend class ELtsErrorLog;
-
     public:
 
       // -----  start a new logging operation:

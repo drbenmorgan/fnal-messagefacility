@@ -24,37 +24,32 @@
 //
 // ----------------------------------------------------------------------
 
-
 #include "messagefacility/Auxiliaries/ErrorObj.h"
 
 namespace mf {
-namespace service {
+  namespace service {
 
-// ----------------------------------------------------------------------
-// ELcontextSupplier:
-// ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // ELcontextSupplier:
+    // ----------------------------------------------------------------------
 
-class ELcontextSupplier  {
+    class ELcontextSupplier  {
 
-public:
-  virtual ELcontextSupplier * clone()          const = 0;
-  virtual std::string            context()        const = 0;
-  virtual std::string            summaryContext() const = 0;
-  virtual std::string            fullContext()    const = 0;
+    public:
+      virtual ELcontextSupplier* clone()   const = 0;
+      virtual std::string context()        const = 0;
+      virtual std::string summaryContext() const = 0;
+      virtual std::string fullContext()    const = 0;
 
-  virtual void editErrorObj( mf::ErrorObj & ) const  { }
-  virtual std::string traceRoutine( ) const  { return std::string(""); }
+      virtual void editErrorObj(mf::ErrorObj&) const {}
+      virtual std::string traceRoutine() const { return std::string(""); }
 
-  virtual ~ELcontextSupplier() noexcept = default;
+      virtual ~ELcontextSupplier() noexcept = default;
 
-};  // ELcontextSupplier
+    };  // ELcontextSupplier
 
-
-// ----------------------------------------------------------------------
-
-
-}        // end of namespace service
-}        // end of namespace mf
+  } // end of namespace service
+} // end of namespace mf
 
 
 #endif /* messagefacility_MessageService_ELcontextSupplier_h */

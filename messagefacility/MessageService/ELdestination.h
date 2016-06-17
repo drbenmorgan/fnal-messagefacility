@@ -15,6 +15,7 @@
 #include "messagefacility/Auxiliaries/ELextendedID.h"
 #include "messagefacility/Auxiliaries/ELset.h"
 #include "messagefacility/Auxiliaries/ErrorObj.h"
+#include "messagefacility/MessageService/ELcontextSupplier.h"
 #include "messagefacility/MessageService/MsgFormatSettings.h"
 #include "messagefacility/MessageService/MsgStatistics.h"
 
@@ -55,25 +56,24 @@ namespace mf {
 
     public:
 
-      ELdestination(const fhicl::ParameterSet& pset);
-
-      ELdestination() : ELdestination( fhicl::ParameterSet() ) {}
+      ELdestination();
+      ELdestination(fhicl::ParameterSet const& pset);
 
       virtual ~ELdestination() noexcept = default;
 
       // -----  Methods invoked by the ELadministrator:
       //
     public:
-      virtual void log( mf::ErrorObj & msg );
 
-      virtual void summarization(
-                                 const std::string & title,
-                                 const std::string & sumLines );
+      virtual void log(mf::ErrorObj& msg, ELcontextSupplier const&);
 
+      virtual void summarization(std::string const& title,
+                                 std::string const& sumLines,
+                                 ELcontextSupplier const&);
 
       virtual std::string getNewline() const;
 
-      virtual bool switchChannel( const std::string & channelName );
+      virtual bool switchChannel( std::string const& channelName );
 
       virtual void finish();
 
@@ -81,41 +81,41 @@ namespace mf {
       //
     protected:
 
-      void emit( std::ostream& os, const std::string & s, const bool nl = false );
+      void emit( std::ostream& os, std::string const& s, const bool nl = false );
 
       bool passLogMsgThreshold  (const mf::ErrorObj& msg);
       bool passLogStatsThreshold(const mf::ErrorObj& msg) const;
 
-      virtual void fillPrefix(std::ostringstream& oss, const mf::ErrorObj& msg);
-      virtual void fillUsrMsg(std::ostringstream& oss, const mf::ErrorObj& msg);
-      virtual void fillSuffix(std::ostringstream& oss, const mf::ErrorObj& msg);
+      virtual void fillPrefix(std::ostringstream& oss, mf::ErrorObj const& msg, ELcontextSupplier const&);
+      virtual void fillUsrMsg(std::ostringstream& oss, mf::ErrorObj const& msg);
+      virtual void fillSuffix(std::ostringstream& oss, mf::ErrorObj const& msg);
 
-      virtual void routePayload(const std::ostringstream& oss, const mf::ErrorObj& msg);
+      virtual void routePayload(std::ostringstream const& oss,
+                                mf::ErrorObj const& msg,
+                                ELcontextSupplier const&);
 
-      virtual void clearSummary();
+      virtual void clearSummary(ELcontextSupplier const&);
       virtual void wipe();
       virtual void zero();
       virtual void filterModule( std::string const & moduleName );
       virtual void excludeModule( std::string const & moduleName );
       virtual void ignoreModule( std::string const & moduleName );
       virtual void respondToModule( std::string const & moduleName );
-      virtual bool thisShouldBeIgnored(const std::string & s) const;
+      virtual bool thisShouldBeIgnored(std::string const& s) const;
 
-      virtual void summary( std::ostream  & os  , const std::string & title="" );
-      virtual void summary( std::string      & s   , const std::string & title="" );
-      virtual void summary( );
-      virtual void summaryForJobReport(std::map<std::string, double> & sm);
+      virtual void summary(std::ostream& os, std::string const& title="");
+      virtual void summary(std::string& s, std::string const& title="");
+      virtual void summary(ELcontextSupplier const&);
+      virtual void summaryForJobReport(std::map<std::string, double>& sm);
 
-      virtual void setTableLimit( int n );
+      virtual void setTableLimit(int n);
 
       virtual std::map<ELextendedID,StatsCount> statisticsMap() const;
 
-      virtual void changeFile (std::ostream & os);
-      virtual void changeFile (const std::string & filename);
-      virtual void flush();
+      virtual void changeFile(std::ostream & os, ELcontextSupplier const&);
+      virtual void changeFile(std::string const& filename, ELcontextSupplier const&);
+      virtual void flush(ELcontextSupplier const&);
 
-      // -----  Select output format options:
-      //
     private:
 
       virtual void noTerminationSummary(){}
@@ -126,27 +126,27 @@ namespace mf {
       //
     protected:
 
-      MsgStatistics     stats;
+      MsgStatistics stats;
       MsgFormatSettings format;
 
-      ELseverityLevel threshold;
-      std::string        preamble;
-      std::string        newline;
-      std::string        indent;
-      std::size_t     lineLength;
-      std::size_t     charsOnLine;
-      bool            ignoreMostModules;
-      ELset_string    respondToThese;
-      bool            respondToMostModules;
-      ELset_string    ignoreThese;
+      ELseverityLevel threshold {ELzeroSeverity};
+      std::string preamble {"%MSG"};
+      std::string newline {"\n"};
+      std::string indent {std::string(6,' ')};
+      std::size_t lineLength {80ull};
+      std::size_t charsOnLine {};
+      bool ignoreMostModules {false};
+      ELset_string respondToThese {};
+      bool respondToMostModules {false};
+      ELset_string ignoreThese {};
 
       bool userWantsStats;
 
       // -----  Verboten methods:
       //
     private:
-      ELdestination            ( const ELdestination & orig ) = delete;
-      ELdestination& operator= ( const ELdestination & orig ) = delete;
+      ELdestination(ELdestination const& orig) = delete;
+      ELdestination& operator= (ELdestination const& orig) = delete;
 
     };  // ELdestination
 

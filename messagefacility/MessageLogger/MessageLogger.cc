@@ -9,7 +9,6 @@
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "messagefacility/MessageService/MessageLoggerQ.h"
 #include "messagefacility/MessageService/ELadministrator.h"
-#include "messagefacility/MessageLogger/MessageServicePresence.h"
 #include "messagefacility/Utilities/exception.h"
 
 #include "fhiclcpp/make_ParameterSet.h"
@@ -333,7 +332,7 @@ namespace mf {
          */
 
         // MessageServicePresence
-        mfs.MFPresence.reset( PresenceFactory::createInstance(mode) );
+        mfs.MFPresence.reset(PresenceFactory::createInstance(mode));
 
         // The MessageLogger
         mfs.theML.reset( new service::MessageLogger(pset) );

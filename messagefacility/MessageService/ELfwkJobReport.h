@@ -52,23 +52,22 @@ namespace mf {
 
     public:
 
-      virtual void log( ErrorObj & msg ) override;
+      void log(ErrorObj& msg, ELcontextSupplier const&) override;
 
       // ---  Internal Methods -- Users should not invoke these:
       //
     protected:
-      void emit( const std::string & s, bool nl=false );
+      void emit(std::string const& s, bool nl=false );
 
-      void summarization ( const std::string & fullTitle,
-                           const std::string & sumLines ) override;
+      void summarization (std::string const& fullTitle,
+                          std::string const& sumLines,
+                          ELcontextSupplier const&) override;
 
-      void changeFile (std::ostream & os) override;
-      void changeFile (const std::string & filename) override;
-      void flush() override;
+      void changeFile (std::ostream & os, ELcontextSupplier const&) override;
+      void changeFile (const std::string & filename, ELcontextSupplier const&) override;
+      void flush(ELcontextSupplier const&) override;
       void finish() override;
 
-
-    protected:
       // --- member data:
       //
       std::unique_ptr<cet::ostream_handle> osh;

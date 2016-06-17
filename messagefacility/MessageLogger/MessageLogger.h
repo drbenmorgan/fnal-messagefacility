@@ -16,7 +16,7 @@
 #include "messagefacility/MessageService/MessageDrop.h"
 #include "messagefacility/MessageLogger/MessageSender.h"
 #include "messagefacility/MessageLogger/MessageLoggerImpl.h"
-#include "messagefacility/MessageLogger/Presence.h"
+#include "messagefacility/MessageLogger/createPresence.h"
 
 #include "fhiclcpp/ParameterSet.h"
 

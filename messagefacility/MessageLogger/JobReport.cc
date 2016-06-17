@@ -6,7 +6,7 @@
 
 #include "messagefacility/MessageLogger/JobReport.h"
 
-#include "messagefacility/MessageLogger/MessageLogger.h"
+#include "messagefacility/MessageLogger/MessageSender.h"
 #include "messagefacility/Utilities/exception.h"
 #include <iostream>
 #include <sstream>

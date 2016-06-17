@@ -46,8 +46,8 @@ namespace mf {
     void
     MessageLoggerScribe::run()
     {
-      MessageLoggerQ::OpCode  opcode;
-      void *                  operand;
+      OpCode opcode;
+      void * operand;
 
       MessageDrop::instance()->messageLoggerScribeIsRunning = MLSCRIBE_RUNNING_INDICATOR;
 
@@ -60,23 +60,22 @@ namespace mf {
 
     //=============================================================================
     void
-    MessageLoggerScribe::runCommand(
-                                    MessageLoggerQ::OpCode  opcode,
-                                    void * operand)
+    MessageLoggerScribe::runCommand(OpCode const opcode,
+                                    void* operand)
     {
       switch(opcode)  {  // interpret the work item
       default:  {
         assert(false);  // can't happen (we certainly hope!)
         break;
       }
-      case MessageLoggerQ::END_THREAD:  {
-        assert( operand == 0 );
+      case END_THREAD:  {
+        assert(operand == nullptr);
         done = true;
         MessageDrop::instance()->messageLoggerScribeIsRunning =
           (unsigned char) -1;
         break;
       }
-      case MessageLoggerQ::LOG_A_MESSAGE:  {
+      case LOG_A_MESSAGE:  {
         ErrorObj *  errorobj_p = static_cast<ErrorObj *>(operand);
         try {
           if(active && !purge_mode) log (errorobj_p);
@@ -105,7 +104,7 @@ namespace mf {
         delete errorobj_p;  // dispose of the message text
         break;
       }
-      case MessageLoggerQ::CONFIGURE:  {
+      case CONFIGURE:  {
         if (singleThread) {
           job_pset_p.reset(static_cast<fhicl::ParameterSet *>(operand));
           configure_errorlog();
@@ -137,8 +136,8 @@ namespace mf {
           break;
         }
       }
-      case MessageLoggerQ::SUMMARIZE: {
-        assert( operand == 0 );
+      case SUMMARIZE: {
+        assert( operand == nullptr );
         try {
           triggerStatisticsSummaries();
         }
@@ -155,9 +154,8 @@ namespace mf {
           }
         break;
       }
-      case MessageLoggerQ::JOBREPORT:  {
-        std::string* jobReportOption_p =
-          static_cast<std::string*>(operand);
+      case JOBREPORT:  {
+        std::string* jobReportOption_p = static_cast<std::string*>(operand);
         try {
           jobReportOption = *jobReportOption_p;
         }
@@ -181,7 +179,7 @@ namespace mf {
         // in MessageLogger.cc (service version)
         break;
       }
-      case MessageLoggerQ::JOBMODE:  {
+      case JOBMODE:  {
         std::string* jobMode_p = static_cast<std::string*>(operand);
 
         JobMode jm = MessageLoggerDefaults::mode(*jobMode_p);
@@ -192,12 +190,12 @@ namespace mf {
         // in MessageLogger.cc (service version)
         break;
       }
-      case MessageLoggerQ::SHUT_UP:  {
+      case SHUT_UP:  {
         assert( operand == 0 );
         active = false;
         break;
       }
-      case MessageLoggerQ::FLUSH_LOG_Q:  {
+      case FLUSH_LOG_Q:  {
         if (singleThread) return;
         ConfigurationHandshake* h_p = static_cast<ConfigurationHandshake*>(operand);
         job_pset_p.reset(static_cast<fhicl::ParameterSet *>(h_p->p));
@@ -206,13 +204,13 @@ namespace mf {
         // finally, release the scoped lock by letting it go out of scope
         break;
       }
-      case MessageLoggerQ::GROUP_STATS:  {
+      case GROUP_STATS:  {
         std::string* cat_p = static_cast<std::string*>(operand);
         ELstatistics::noteGroupedCategory(*cat_p);
         delete cat_p;  // dispose of the message text
         break;
       }
-      case MessageLoggerQ::FJR_SUMMARY:  {
+      case FJR_SUMMARY:  {
         if (singleThread) {
           std::map<std::string, double>* smp = static_cast<std::map<std::string, double>*>(operand);
           triggerFJRmessageSummary(*smp);
@@ -227,7 +225,7 @@ namespace mf {
           break;
         }
       }
-      case MessageLoggerQ::SWITCH_CHANNEL:  {
+      case SWITCH_CHANNEL:  {
         std::string * chanl_p = static_cast<std::string*>(operand);
         errorlog_p -> switchChannel( *chanl_p );
         delete chanl_p;
@@ -270,10 +268,10 @@ namespace mf {
         early_dest.formatSuppress( TIMESTAMP );
         LogError ("preconfiguration") << preconfiguration_message;
         if (!singleThread) {
-          MessageLoggerQ::OpCode  opcode;
-          void *                  operand;
+          OpCode opcode;
+          void * operand;
           m_queue->consume(opcode, operand);  // grab next work item from Q
-          assert (opcode == MessageLoggerQ::LOG_A_MESSAGE);
+          assert (opcode == LOG_A_MESSAGE);
           ErrorObj *  errorobj_p = static_cast<ErrorObj *>(operand);
           log (errorobj_p);
           delete errorobj_p;  // dispose of the message text
@@ -646,7 +644,7 @@ namespace mf {
         ELdestControl destControl;
         if (!admin_p->getELdestControl(idDestPair.first, destControl)) continue;
 
-        destControl.summary();
+        destControl.summary(admin_p->getContextSupplier());
         if (destControl.resetStats()) destControl.wipe();
 
       }

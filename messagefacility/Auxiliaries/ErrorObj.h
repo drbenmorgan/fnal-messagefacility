@@ -80,7 +80,7 @@ namespace mf {
 
     virtual ErrorObj&  eo_emit( const std::string & txt );
 
-    // ---  mutators for use by ELadministrator and ELtsErrorLog
+    // ---  mutators for use by ELadministrator
     //
     virtual void clear();
     virtual void set(ELseverityLevel const& sev, std::string const& id);

@@ -6,7 +6,6 @@
 
 
 #include "messagefacility/MessageService/ELstatistics.h"
-#include "messagefacility/MessageService/ELadministrator.h"
 #include "messagefacility/MessageService/ELcontextSupplier.h"
 
 #include "messagefacility/Auxiliaries/ErrorObj.h"
@@ -44,22 +43,23 @@ namespace mf {
     // Methods invoked by the ELadministrator
     // ----------------------------------------------------------------------
 
-    void  ELstatistics::log( mf::ErrorObj& msg ) {
-      if ( passLogStatsThreshold( msg ) ) stats.log( msg );
+    void  ELstatistics::log(mf::ErrorObj& msg, ELcontextSupplier const& contextSupplier) {
+      if (passLogStatsThreshold(msg))
+        stats.log(msg, contextSupplier);
     }
 
-    void  ELstatistics::clearSummary(){ stats.clearSummary(); }
+    void  ELstatistics::clearSummary(ELcontextSupplier const&){ stats.clearSummary(); }
     void  ELstatistics::wipe()        { stats.wipe();         }
     void  ELstatistics::zero()        { stats.zero();         }
 
-    void  ELstatistics::summary( std::ostream & os, const std::string & title )  {
+    void  ELstatistics::summary(std::ostream & os, const std::string & title )  {
 
       os << title << std::endl << stats.formSummary() << std::flush;
       stats.updatedStats = false;
 
     }  // summary()
 
-    void  ELstatistics::summary( )  {
+    void  ELstatistics::summary(ELcontextSupplier const&)  {
 
       termStream->stream() << "\n=============================================\n\n"
                            << "MessageLogger Summary" << std::endl << stats.formSummary()

@@ -144,17 +144,20 @@ namespace mf {
 
     // *** Active methods invoked by the framework ***
 
-    void ELdestControl::summary( std::ostream & os, char * title )  {
-      if (d) d->summary( os, title );
+    void ELdestControl::summary(std::ostream& os, char * title)
+    {
+      if (d) d->summary(os, title);
     }
 
 
-    void ELdestControl::summary( std::string & s, char * title )  {
-      if (d) d->summary( s, title );
+    void ELdestControl::summary(std::string& s, char * title)
+    {
+      if (d) d->summary(s, title);
     }
 
-    void ELdestControl::summary( )  {
-      if (d) d->summary( );
+    void ELdestControl::summary(ELcontextSupplier const& contextSupplier)
+    {
+      if (d) d->summary(contextSupplier);
     }
 
     void ELdestControl::summaryForJobReport( std::map<std::string, double> & sm)  {
@@ -162,32 +165,31 @@ namespace mf {
     }
 
 
-    ELdestControl & ELdestControl::clearSummary()  {
-      if (d) d->clearSummary();
+    ELdestControl & ELdestControl::clearSummary(ELcontextSupplier const& contextSupplier)  {
+      if (d) d->clearSummary(contextSupplier);
       return  * this;
     }
-
 
     ELdestControl & ELdestControl::wipe()  {
       if (d) d->wipe();
       return  * this;
     }
 
-
     ELdestControl & ELdestControl::zero()  {
       if (d) d->zero();
       return  * this;
     }
 
-
-    void ELdestControl::log( mf::ErrorObj & msg )  {
-      if (d) d->log( msg );
+    void ELdestControl::log(mf::ErrorObj& msg, ELcontextSupplier const& contextSupplier)
+    {
+      if (d) d->log(msg, contextSupplier);
     }
 
-    void ELdestControl::summarization( const std::string & title
-                                       , const std::string & sumLines
+    void ELdestControl::summarization( const std::string & title,
+                                       const std::string & sumLines,
+                                       ELcontextSupplier const& contextSupplier
                                        )  {
-      if (d) d->summarization ( title, sumLines );
+      if (d) d->summarization (title, sumLines, contextSupplier);
     }
 
     std::string ELdestControl::getNewline() const  {
@@ -206,16 +208,21 @@ namespace mf {
       }
     }
 
-    void ELdestControl::changeFile (std::ostream & os) {
-      if (d) d->changeFile(os);
+    void ELdestControl::changeFile (std::ostream& os,
+                                    ELcontextSupplier const& contextSupplier)
+    {
+      if (d) d->changeFile(os, contextSupplier);
     }
 
-    void ELdestControl::changeFile (const std::string & filename) {
-      if (d) d->changeFile(filename);
+    void ELdestControl::changeFile (std::string const& filename,
+                                    ELcontextSupplier const& contextSupplier)
+    {
+      if (d) d->changeFile(filename, contextSupplier);
     }
 
-    void ELdestControl::flush () {
-      if (d) d->flush();
+    void ELdestControl::flush(ELcontextSupplier const& contextSupplier)
+    {
+      if (d) d->flush(contextSupplier);
     }
 
 

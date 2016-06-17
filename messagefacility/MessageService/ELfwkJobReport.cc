@@ -83,9 +83,9 @@ namespace mf {
     // Methods invoked by the ELadministrator:
     // ----------------------------------------------------------------------
 
-    void ELfwkJobReport::log( mf::ErrorObj & msg )  {
-
-      xid = msg.xid();      // Save the xid.
+    void ELfwkJobReport::log( mf::ErrorObj & msg, ELcontextSupplier const&)
+    {
+      xid = msg.xid();
 
       // Change log 1:  React ONLY to category FwkJob
       if (xid.id != "FwkJob") return;
@@ -104,45 +104,17 @@ namespace mf {
            (xid.id == "postEventProcessing") ||
            (xid.id == "postEndJob")         ) return;
       if ( thisShouldBeIgnored(xid.module)  ) return;
-      if ( ! stats.limits.add( msg.xid() )  ) return;
-
-      // Output the prologue:
-      //
-      //emit ( "  <Report>\n" );
-      //emit ( "    <Severity> " );
-      //emit (xid.severity.getSymbol());
-      //emit (" </Severity>\n");
-      //emit ( "    <Category> ");
-      //emit (xid.id);
-      //emit ( " </Category>\n");
-      //emit ( "    <Message> \n");
-
-      //  emit( msg.idOverflow() ); this is how to get the rest of the category
+      if ( !stats.limits.add( msg.xid() ) ) return;
 
       // Output each item in the message:
       //
-      if ( format.want( TEXT ) )  {
+      if (format.want(TEXT)) {
         ELlist_string::const_iterator it;
         for ( it = msg.items().begin();  it != msg.items().end();  ++it )  {
-          //  emit( "      <Item> " );
           emit( *it);
           emit( "\n" );
-          //emit( " </Item>\n" );
         }
       }
-
-      // Close the body of the message
-      //emit ("    </Message>\n");
-
-      // Provide further identification: Module
-      //
-      //emit ("    <Module> ");
-      //emit ( xid.module );
-      //emit (" </Module>\n");
-
-      // close report
-      //
-      //emit ("  </Report>\n\n");
 
       msg.setReactedTo( true );
 
@@ -174,7 +146,8 @@ namespace mf {
     // ----------------------------------------------------------------------
 
     void ELfwkJobReport::summarization( const std::string & fullTitle,
-                                        const std::string & sumLines ) {
+                                        const std::string & sumLines,
+                                        ELcontextSupplier const&) {
       const int titleMaxLength( 40 );
 
       // title:
@@ -205,21 +178,25 @@ namespace mf {
     // Changing ostream:
     // ----------------------------------------------------------------------
 
-    void ELfwkJobReport::changeFile (std::ostream & os_) {
-      osh = std::make_unique<cet::ostream_observer>(os_);
-      emit( "\n=======================================================", true );
-      emit( "\nError Log changed to this stream\n" );
-      emit( "\n=======================================================\n", true );
+    void ELfwkJobReport::changeFile (std::ostream & os,
+                                     ELcontextSupplier const&)
+    {
+      osh = std::make_unique<cet::ostream_observer>(os);
+      emit("\n=======================================================", true);
+      emit("\nError Log changed to this stream\n" );
+      emit("\n=======================================================\n", true);
     }
 
-    void ELfwkJobReport::changeFile (const std::string & filename) {
-      osh = std::make_unique<cet::ostream_owner>(filename, std::ios/*_base*/::app);
-      emit( "\n=======================================================", true );
-      emit( "\nError Log changed to this file\n" );
-      emit( "\n=======================================================\n", true );
+    void ELfwkJobReport::changeFile (std::string const& filename,
+                                     ELcontextSupplier const&)
+    {
+      osh = std::make_unique<cet::ostream_owner>(filename, std::ios::app);
+      emit("\n=======================================================", true);
+      emit("\nError Log changed to this file\n");
+      emit("\n=======================================================\n", true);
     }
 
-    void ELfwkJobReport::flush()  {
+    void ELfwkJobReport::flush(ELcontextSupplier const&)  {
       osh->stream().flush();
     }
 

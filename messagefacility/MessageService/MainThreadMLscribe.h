@@ -2,7 +2,7 @@
 #define messagefacility_MessageService_MainThreadMLscribe_h
 
 #include "messagefacility/MessageService/AbstractMLscribe.h"
-#include "messagefacility/MessageService/MessageLoggerQ.h"
+#include "messagefacility/MessageService/OpCode.h"
 #include "messagefacility/Utilities/SingleConsumerQ.h"
 
 // I believe the below are not needed:
@@ -28,11 +28,12 @@ namespace mf {
     //
     // MainThreadMLscribe.h
     //
-    // This class is a concrete of AbstractMessageLoggerScribe
-    // Its purpose exists ONLY if there is a second thread running the workhorse
-    // scrribe.  In that case, the workhorse will be consuming from a
-    // SingleConsumerQ, and this class is the one that places the item on said
-    // queue.  It does work that used to be the realm of MessageLoggerQ.
+    // This class is a concrete of AbstractMessageLoggerScribe Its
+    // purpose exists ONLY if there is a second thread running the
+    // workhorse scribe.  In that case, the workhorse will be
+    // consuming from a SingleConsumerQ, and this class is the one
+    // that places the item on said queue.  It does work that used to
+    // be the realm of MessageLoggerQ.
     //
     // Changes:
     //
@@ -49,16 +50,16 @@ namespace mf {
       MainThreadMLscribe(std::shared_ptr<ThreadQueue> tqp);
 
       // --- receive and act on messages:
-      void  runCommand(MessageLoggerQ::OpCode  opcode, void * operand) override;
+      void  runCommand(OpCode  opcode, void * operand) override;
 
 
       // --- obtain a pointer to the errorlog
-      static ErrorLog * getErrorLog_ptr() {return static_errorlog_p;}
+      static ErrorLog* getErrorLog_ptr() {return static_errorlog_p;}
 
     private:
 
-      static ErrorLog                   * static_errorlog_p;
-      std::shared_ptr<ThreadQueue>   m_queue;
+      static ErrorLog* static_errorlog_p;
+      std::shared_ptr<ThreadQueue> m_queue;
     };  // MainThreadMLscribe
 
 

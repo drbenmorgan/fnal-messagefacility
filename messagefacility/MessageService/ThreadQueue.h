@@ -7,10 +7,10 @@
 //
 /**\class ThreadQueue ThreadQueue.h FWCore/MessageService/interface/ThreadQueue.h
 
- Description: <one line class summary>
+   Description: <one line class summary>
 
- Usage:
-    <usage>
+   Usage:
+   <usage>
 
 */
 //
@@ -19,51 +19,39 @@
 // $Id: ThreadQueue.h,v 1.1 2009/08/12 22:22:01 fischler Exp $
 //
 
-#include "messagefacility/MessageService/MessageLoggerQ.h"
+#include "messagefacility/MessageService/OpCode.h"
 #include "messagefacility/Utilities/SingleConsumerQ.h"
 
 
 
 
 namespace mf {
-namespace service {
+  namespace service {
 
-class ThreadQueue
-{
+    class ThreadQueue
+    {
 
-   public:
+    public:
       ThreadQueue();
-      virtual ~ThreadQueue();
+      virtual ~ThreadQueue() = default;
 
-      // ---------- const member functions ---------------------
+      // ---  obtain a message from the queue:
+      void consume(OpCode& opcode, void * & operand );
 
-      // ---------- static member functions --------------------
+      // ---  place a message onto the queue:
+      void produce(OpCode opcode, void *   operand );
 
-      // ---------- member functions ---------------------------
+      ThreadQueue(const ThreadQueue&) = delete;
+      ThreadQueue& operator=(const ThreadQueue&) = delete;
 
-  // ---  obtain a message from the queue:
-  void  consume( MessageLoggerQ::OpCode & opcode, void * & operand );
+    private:
+      // --- buffer parameters:  (were private but needed by MainThreadMLscribe
+      static constexpr int buf_depth {500};
+      static constexpr int buf_size {sizeof(OpCode)+sizeof(void*)};
+      SingleConsumerQ m_buf;
+    };
 
-  // ---  place a message onto the queue:
-  void  produce( MessageLoggerQ::OpCode opcode, void *   operand );
-
-
-   private:
-      ThreadQueue(const ThreadQueue&); // stop default
-
-      const ThreadQueue& operator=(const ThreadQueue&); // stop default
-
-      // ---------- member data --------------------------------
-
-  // --- buffer parameters:  (were private but needed by MainTrhreadMLscribe
-  static  const int  buf_depth = 500;
-  static  const int  buf_size  = sizeof(MessageLoggerQ::OpCode)
-                               + sizeof(void *);
-  SingleConsumerQ  m_buf;
-
-};
-
-} // end namespace service
+  } // end namespace service
 } // end namespace mf
 
 #endif /* messagefacility_MessageService_ThreadQueue_h */
