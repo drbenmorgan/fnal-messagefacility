@@ -166,21 +166,21 @@ namespace mf {
   inline ELseverityLevel constexpr ELfatalGen() {return ELseverityLevel::ELsev_fatal;}
   inline ELseverityLevel constexpr ELhighestSeverityGen() {return ELseverityLevel::ELsev_highestSeverity;}
 
-  ELslProxy< ELzeroSeverityGen    > constexpr  ELzeroSeverity;
-  ELslProxy< ELincidentalGen      > constexpr  ELincidental;
-  ELslProxy< ELsuccessGen         > constexpr  ELsuccess;
-  ELslProxy< ELinfoGen            > constexpr  ELinfo;
-  ELslProxy< ELwarningGen         > constexpr  ELwarning;
-  ELslProxy< ELwarning2Gen        > constexpr  ELwarning2;
-  ELslProxy< ELerrorGen           > constexpr  ELerror;
-  ELslProxy< ELerror2Gen          > constexpr  ELerror2;
-  ELslProxy< ELnextEventGen       > constexpr  ELnextEvent;
-  ELslProxy< ELunspecifiedGen     > constexpr  ELunspecified;
-  ELslProxy< ELsevereGen          > constexpr  ELsevere;
-  ELslProxy< ELsevere2Gen         > constexpr  ELsevere2;
-  ELslProxy< ELabortGen           > constexpr  ELabort;
-  ELslProxy< ELfatalGen           > constexpr  ELfatal;
-  ELslProxy< ELhighestSeverityGen > constexpr  ELhighestSeverity;
+  ELslProxy< ELzeroSeverityGen    > constexpr  ELzeroSeverity {};
+  ELslProxy< ELincidentalGen      > constexpr  ELincidental {};
+  ELslProxy< ELsuccessGen         > constexpr  ELsuccess {};
+  ELslProxy< ELinfoGen            > constexpr  ELinfo {};
+  ELslProxy< ELwarningGen         > constexpr  ELwarning {};
+  ELslProxy< ELwarning2Gen        > constexpr  ELwarning2 {};
+  ELslProxy< ELerrorGen           > constexpr  ELerror {};
+  ELslProxy< ELerror2Gen          > constexpr  ELerror2 {};
+  ELslProxy< ELnextEventGen       > constexpr  ELnextEvent {};
+  ELslProxy< ELunspecifiedGen     > constexpr  ELunspecified {};
+  ELslProxy< ELsevereGen          > constexpr  ELsevere {};
+  ELslProxy< ELsevere2Gen         > constexpr  ELsevere2 {};
+  ELslProxy< ELabortGen           > constexpr  ELabort {};
+  ELslProxy< ELfatalGen           > constexpr  ELfatal {};
+  ELslProxy< ELhighestSeverityGen > constexpr  ELhighestSeverity {};
 
 
   // ----------------------------------------------------------------------
