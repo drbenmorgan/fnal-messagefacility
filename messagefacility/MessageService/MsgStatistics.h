@@ -43,7 +43,6 @@ namespace mf {
       void zero();
       void noTerminationSummary();
 
-      ELmap_stats const& statisticsMap() const;
       void summaryForJobReport (std::map<std::string, double> & sm);
 
       int tableLimit;

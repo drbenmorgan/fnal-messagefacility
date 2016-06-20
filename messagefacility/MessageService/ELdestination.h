@@ -110,8 +110,6 @@ namespace mf {
 
       virtual void setTableLimit(int n);
 
-      virtual std::map<ELextendedID,StatsCount> statisticsMap() const;
-
       virtual void changeFile(std::ostream & os, ELcontextSupplier const&);
       virtual void changeFile(std::string const& filename, ELcontextSupplier const&);
       virtual void flush(ELcontextSupplier const&);

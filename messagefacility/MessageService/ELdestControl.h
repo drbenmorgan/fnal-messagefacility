@@ -109,8 +109,6 @@ namespace mf {
       virtual void summary(ELcontextSupplier const&);
       virtual void summaryForJobReport( std::map<std::string, double> & sm);
 
-      virtual std::map<ELextendedID , StatsCount> statisticsMap() const;
-
       virtual void log(mf::ErrorObj& msg, ELcontextSupplier const&);  // Backdoor to log a formed message
                                                // to only this destination.
 

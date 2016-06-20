@@ -4,8 +4,8 @@
 //
 //======================================================================
 
-#include "messagefacility/MessageService/ELdestination.h"
 #include "messagefacility/MessageService/ELdestConfigCheck.h"
+#include "messagefacility/MessageService/ELdestination.h"
 
 #include <fstream>
 #include <iostream>
@@ -39,17 +39,20 @@ namespace mf {
       , format{pset.get<fhicl::ParameterSet>("format", {})}
       , userWantsStats{pset.get<bool>("outputStatistics",false)}
     {
-      if (userWantsStats) ELdestConfig::checkType(pset.get<std::string>("type","file"), ELdestConfig::STATISTICS);
+      if (userWantsStats) {
+        auto const& dest_type = pset.get<std::string>("type","file");
+        ELdestConfig::checkType(dest_type, ELdestConfig::STATISTICS);
+      }
     }
 
     //=============================================================================
-    void ELdestination::emit( std::ostream& os,
-                              const std::string & s,
-                              const bool nl )  {
-
+    void ELdestination::emit(std::ostream& os,
+                             std::string const& s,
+                             bool const nl)
+    {
       if (s.length() == 0)  {
-        if ( nl )  {
-          os << newline << std::flush;
+        if (nl)  {
+          os << newline;
           charsOnLine = 0;
         }
         return;
@@ -67,41 +70,33 @@ namespace mf {
 
       if (format.preambleMode) {
 
-        //Accounts for newline @ the beginning of the std::string     JV:2
-        if ( first == '\n'
-             || (charsOnLine + static_cast<int>(s.length())) > lineLength )  {
-
-#ifdef HEADERS_BROKEN_INTO_LINES_AND_INDENTED
-          // Change log 3: Removed this code 6/11/07 mf
-          os << newline << indent;
-          charsOnLine = indent.length();
-#else
-          charsOnLine = 0;                                          // Change log 5
-#endif
-          if (second != ' ')  {
+        //Accounts for newline @ the beginning of the std::string
+        if (first == '\n' || (charsOnLine + static_cast<int>(s.length())) > lineLength) {
+          charsOnLine = 0;
+          if (second != ' ') {
             os << ' ';
             charsOnLine++;
           }
-          if ( first == '\n' )  {
+          if (first == '\n') {
             os << s.substr(1);
           }
-          else  {
+          else {
             os << s;
           }
         }
-        else  {
+        else {
           os << s;
         }
 
-        if (last == '\n' || last2 == '\n')  {  //accounts for newline @ end    $$ JV:2
-          os << indent;                    //of the std::string
+        if (last == '\n' || last2 == '\n') {  // accounts for newline @ end
+          os << indent;                       // of the std::string
           if (last != ' ')
             os << ' ';
           charsOnLine = indent.length() + 1;
         }
 
-        if ( nl )  { os << newline << std::flush; charsOnLine = 0;           }
-        else       {                              charsOnLine += s.length(); }
+        if (nl) { os << newline; charsOnLine = 0;           }
+        else    {                charsOnLine += s.length(); }
       }
 
       if (!format.preambleMode) {
@@ -114,8 +109,8 @@ namespace mf {
     bool ELdestination::passLogStatsThreshold(mf::ErrorObj const& msg) const
     {
       // See if this message is to be counted.
-      if ( msg.xid().severity < threshold )        return false;
-      if ( thisShouldBeIgnored(msg.xid().module) ) return false;
+      if (msg.xid().severity < threshold)        return false;
+      if (thisShouldBeIgnored(msg.xid().module)) return false;
 
       return true;
     }
@@ -189,7 +184,7 @@ namespace mf {
           emit(oss,std::string(" "));
           needAspace = false;
         }
-        emit( oss, xid.subroutine + "()" + std::string(" ") );
+        emit(oss, xid.subroutine + "()" + std::string(" ") );
       }
 
       // Provide time stamp:
@@ -262,7 +257,7 @@ namespace mf {
                                    mf::ErrorObj const& msg)
     {
       if (!msg.is_verbatim() && !format.want(NO_LINE_BREAKS)) {
-        emit (oss, "\n%MSG");
+        emit(oss, "\n%MSG");
       }
       oss << newline;
     }
@@ -367,18 +362,17 @@ namespace mf {
 
     void ELdestination::summary(ELcontextSupplier const& contextSupplier)
     {
-      if (userWantsStats &&
-          stats.updatedStats &&
-          stats.printAtTermination)
+      if (userWantsStats && stats.updatedStats && stats.printAtTermination)
         {
           std::ostringstream payload;
           payload << "\n=============================================\n\n"
-                  << "MessageLogger Summary" << std::endl << stats.formSummary();
+                  << "MessageLogger Summary\n"
+                  << stats.formSummary();
           routePayload(payload, mf::ErrorObj{ELzeroSeverity, noosMsg}, contextSupplier);
         }
     }
 
-    void ELdestination::summary(std::ostream & os, std::string const& title)
+    void ELdestination::summary(std::ostream& os, std::string const& title)
     {
       os << "%MSG" << ELwarning2.getSymbol() << " "
          << noSummaryMsg << " " << hereMsg << std::endl
@@ -388,11 +382,10 @@ namespace mf {
 
     void ELdestination::summary(std::string& s, std::string const& title)
     {
-      s = std::string("%MSG") + ELwarning2.getSymbol() + " "
-        + noSummaryMsg + " " + hereMsg + "\n"
-        + title + "\n";
-
-    }  // summary()
+      std::ostringstream ss;
+      summary(ss, title);
+      s = ss.str();
+    }
 
     void ELdestination::summaryForJobReport(std::map<std::string, double>&)
     {}
@@ -405,7 +398,6 @@ namespace mf {
       stats.limits.setTableLimit(n);
     }
 
-
     void ELdestination::summarization(std::string const& title,
                                       std::string const& /*sumfines*/,
                                       ELcontextSupplier const& contextSupplier)
@@ -413,11 +405,6 @@ namespace mf {
       mf::ErrorObj msg {ELwarning2, noSummarizationMsg};
       msg << hereMsg << newline << title;
       log(msg, contextSupplier);
-    }
-
-    std::map<ELextendedID , StatsCount> ELdestination::statisticsMap() const
-    {
-      return std::map<ELextendedID , StatsCount> ();
     }
 
     void ELdestination::changeFile(std::ostream&, ELcontextSupplier const& contextSupplier)
@@ -436,7 +423,7 @@ namespace mf {
 
     void ELdestination::flush(ELcontextSupplier const& contextSupplier)
     {
-      mf::ErrorObj msg  {ELwarning2, noosMsg};
+      mf::ErrorObj msg {ELwarning2, noosMsg};
       msg << "cannot flush()";
       log(msg, contextSupplier);
     }
@@ -445,34 +432,36 @@ namespace mf {
     // Output format options:
     // ----------------------------------------------------------------------
 
-    std::string ELdestination::getNewline() const  { return newline; }
+    std::string ELdestination::getNewline() const { return newline; }
 
-    int ELdestination::setLineLength (int len) {
-      int temp=lineLength;
+    int ELdestination::setLineLength (int const len)
+    {
+      int const temp = lineLength;
       lineLength = len;
       return temp;
     }
 
     int ELdestination::getLineLength () const { return lineLength; }
 
-
     // ----------------------------------------------------------------------
     // Protected helper methods:
     // ----------------------------------------------------------------------
 
-    bool ELdestination::thisShouldBeIgnored(std::string const& s) const {
+    bool ELdestination::thisShouldBeIgnored(std::string const& s) const
+    {
       if (respondToMostModules) {
-        return ( ignoreThese.find(s) != ignoreThese.end() );
+        return ignoreThese.find(s) != ignoreThese.end();
       } else if (ignoreMostModules) {
-        return ( respondToThese.find(s) == respondToThese.end() );
+        return respondToThese.find(s) == respondToThese.end();
       } else {
         return false;
       }
     }
 
 
-    void close_and_delete::operator()(std::ostream* os) const {
-      std::ofstream* p = static_cast<std::ofstream*>(os);
+    void close_and_delete::operator()(std::ostream* os) const
+    {
+      auto p = static_cast<std::ofstream*>(os);
       p->close();
       delete os;
     }

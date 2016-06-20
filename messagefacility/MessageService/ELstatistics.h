@@ -41,19 +41,14 @@ namespace mf {
       friend class ELdestControl;
 
     public:
-      // -----  constructor/destructor:
-      ELstatistics( const fhicl::ParameterSet& pset, std::ostream & osp );
-      ELstatistics( const fhicl::ParameterSet& pset, int, std::ostream & osp );
-      ELstatistics( const fhicl::ParameterSet& pset, const std::string& filename, const bool append);
 
-      // -----  delegating constructors
-      ELstatistics( const fhicl::ParameterSet& pset )      : ELstatistics( pset, std::cerr )    {}
-      ELstatistics( const fhicl::ParameterSet& pset, int ) : ELstatistics( pset, 0, std::cerr ) {}
+      ELstatistics(fhicl::ParameterSet const& pset );
+      ELstatistics(fhicl::ParameterSet const& pset, std::ostream& osp );
+      ELstatistics(fhicl::ParameterSet const& pset, std::string const& filename, bool const append);
 
       // copy c'tor/assignment disabled
       ELstatistics( const ELstatistics& ) = delete;
       ELstatistics& operator=(const ELstatistics&) = delete;
-
 
       // -----  Methods invoked by the ELadministrator:
       //
@@ -79,8 +74,6 @@ namespace mf {
       void summary(std::string& s, const std::string & title="" ) override;
       void summary(ELcontextSupplier const&) override;
       void noTerminationSummary() override;
-
-      std::map<ELextendedID,StatsCount> statisticsMap() const override;
 
       void summaryForJobReport (std::map<std::string, double> & sm) override;
 

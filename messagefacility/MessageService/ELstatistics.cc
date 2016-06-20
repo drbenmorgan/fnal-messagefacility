@@ -23,73 +23,69 @@ namespace mf {
     // Constructors
     //======================================================================
 
-    ELstatistics::ELstatistics( const fhicl::ParameterSet& pset, std::ostream & osp )
-      : ELdestination( pset )
-      , termStream   ( std::make_unique<cet::ostream_observer>(osp) )
+    ELstatistics::ELstatistics(fhicl::ParameterSet const& pset, std::ostream& osp)
+      : ELdestination{pset}
+      , termStream{std::make_unique<cet::ostream_observer>(osp)}
     {}
 
-    ELstatistics::ELstatistics( const fhicl::ParameterSet& pset, int /*spaceLimit*/, std::ostream & osp )
-      : ELstatistics( pset, osp )
+    ELstatistics::ELstatistics(fhicl::ParameterSet const& pset)
+      : ELstatistics{pset, std::cerr}
     {}
 
-    ELstatistics::ELstatistics( const fhicl::ParameterSet& pset,
-                                const std::string& fileName,
-                                const bool append )
-      : ELdestination     ( pset )
-      , termStream        ( std::make_unique<cet::ostream_owner>(fileName ,append ? std::ios::app : std::ios::trunc ) )
+    ELstatistics::ELstatistics(fhicl::ParameterSet const& pset,
+                               std::string const& fileName,
+                               bool const append)
+      : ELdestination{pset}
+      , termStream{std::make_unique<cet::ostream_owner>(fileName, append ? std::ios::app : std::ios::trunc )}
     {}
 
     // ----------------------------------------------------------------------
     // Methods invoked by the ELadministrator
     // ----------------------------------------------------------------------
 
-    void  ELstatistics::log(mf::ErrorObj& msg, ELcontextSupplier const& contextSupplier) {
+    void ELstatistics::log(mf::ErrorObj& msg, ELcontextSupplier const& contextSupplier)
+    {
       if (passLogStatsThreshold(msg))
         stats.log(msg, contextSupplier);
     }
 
-    void  ELstatistics::clearSummary(ELcontextSupplier const&){ stats.clearSummary(); }
-    void  ELstatistics::wipe()        { stats.wipe();         }
-    void  ELstatistics::zero()        { stats.zero();         }
+    void ELstatistics::clearSummary(ELcontextSupplier const&){ stats.clearSummary(); }
+    void ELstatistics::wipe() { stats.wipe(); }
+    void ELstatistics::zero() { stats.zero(); }
 
-    void  ELstatistics::summary(std::ostream & os, const std::string & title )  {
-
-      os << title << std::endl << stats.formSummary() << std::flush;
+    void ELstatistics::summary(std::ostream & os, std::string const& title)
+    {
+      os << title << '\n' << stats.formSummary();
       stats.updatedStats = false;
+    }
 
-    }  // summary()
-
-    void  ELstatistics::summary(ELcontextSupplier const&)  {
-
+    void ELstatistics::summary(ELcontextSupplier const&)
+    {
       termStream->stream() << "\n=============================================\n\n"
-                           << "MessageLogger Summary" << std::endl << stats.formSummary()
-                           << std::flush;
+                           << "MessageLogger Summary\n"
+                           << stats.formSummary();
       stats.updatedStats = false;
-
-    }  // summary()
-
-
-    void  ELstatistics::summary( std::string & s, const std::string & title )  {
-
-      s = title + '\n' + stats.formSummary();
-      stats.updatedStats = false;
-
-    }  // summary()
-
-
-    void  ELstatistics::noTerminationSummary()  { stats.printAtTermination = false; }
-
-    std::map<ELextendedID,StatsCount> ELstatistics::statisticsMap() const {
-      return stats.statisticsMap();
     }
 
-    void  ELstatistics::summaryForJobReport ( std::map<std::string, double> & sm) {
-      stats.summaryForJobReport( sm );
+
+    void ELstatistics::summary(std::string& s, std::string const& title)
+    {
+      std::ostringstream ss;
+      summary(ss, title);
+      s = ss.str();
     }
 
-    std::set<std::string> ELstatistics::groupedCategories; // 8/16/07 mf
+    void ELstatistics::noTerminationSummary() { stats.printAtTermination = false; }
 
-    void ELstatistics::noteGroupedCategory(std::string const & cat) {
+    void ELstatistics::summaryForJobReport (std::map<std::string, double>& sm)
+    {
+      stats.summaryForJobReport(sm);
+    }
+
+    std::set<std::string> ELstatistics::groupedCategories {};
+
+    void ELstatistics::noteGroupedCategory(std::string const& cat)
+    {
       groupedCategories.insert(cat);
     }
 

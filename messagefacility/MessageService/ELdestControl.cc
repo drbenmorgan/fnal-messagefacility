@@ -200,14 +200,6 @@ namespace mf {
       }
     }
 
-    std::map<ELextendedID , StatsCount> ELdestControl::statisticsMap() const {
-      if (d) {
-        return d->statisticsMap();
-      } else {
-        return std::map<ELextendedID , StatsCount>();
-      }
-    }
-
     void ELdestControl::changeFile (std::ostream& os,
                                     ELcontextSupplier const& contextSupplier)
     {

@@ -239,13 +239,6 @@ namespace mf {
     }  // formSummary()
 
 
-    ELmap_stats const& MsgStatistics::statisticsMap() const
-    {
-      return statsMap;
-    }
-
-
-    // 6/19/08 mf
     void  MsgStatistics::summaryForJobReport (std::map<std::string, double> & sm) {
 
       struct part3  {
