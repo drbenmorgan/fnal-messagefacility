@@ -44,113 +44,48 @@
 #include "messagefacility/Auxiliaries/ELmap.h"
 
 
-namespace mf
-{
+using ELmap = std::map<std::string const, mf::ELseverityLevel::ELsev_>;
 
+namespace {
+
+  template <mf::ELseverityLevel(F)()>
+  void setSeverity(ELmap& m, mf::ELslProxy<F> const proxy)
+  {
+    auto const severity = static_cast<mf::ELseverityLevel::ELsev_>(proxy.getLevel());
+    m[proxy.getSymbol()  ] = severity;
+    m[proxy.getName()    ] = severity;
+    m[proxy.getInputStr()] = severity;
+    m[proxy.getVarName() ] = severity;
+  }
+
+}
+
+namespace mf {
 
   // ----------------------------------------------------------------------
   // Helper to construct the string->ELsev_ map on demand:
   // ----------------------------------------------------------------------
 
-  typedef std::map< std::string const, ELseverityLevel::ELsev_ > ELmap;
-
   static
-  ELmap const &  loadMap()  {
-
-    static ELmap  m;
-
-    m[ ELzeroSeverity.getSymbol()   ] = ELseverityLevel::ELsev_zeroSeverity
-      , m[ ELzeroSeverity.getName()     ] = ELseverityLevel::ELsev_zeroSeverity
-      , m[ ELzeroSeverity.getInputStr() ] = ELseverityLevel::ELsev_zeroSeverity
-      , m[ ELzeroSeverity.getVarName()  ] = ELseverityLevel::ELsev_zeroSeverity
-      ;
-
-    m[ ELincidental.getSymbol()   ] = ELseverityLevel::ELsev_incidental
-      , m[ ELincidental.getName()     ] = ELseverityLevel::ELsev_incidental
-      , m[ ELincidental.getInputStr() ] = ELseverityLevel::ELsev_incidental
-      , m[ ELincidental.getVarName()  ] = ELseverityLevel::ELsev_incidental
-      ;
-
-    m[ ELsuccess.getSymbol()   ] = ELseverityLevel::ELsev_success
-      , m[ ELsuccess.getName()     ] = ELseverityLevel::ELsev_success
-      , m[ ELsuccess.getInputStr() ] = ELseverityLevel::ELsev_success
-      , m[ ELsuccess.getVarName()  ] = ELseverityLevel::ELsev_success
-      ;
-
-    m[ ELinfo.getSymbol()   ] = ELseverityLevel::ELsev_info
-      , m[ ELinfo.getName()     ] = ELseverityLevel::ELsev_info
-      , m[ ELinfo.getInputStr() ] = ELseverityLevel::ELsev_info
-      , m[ ELinfo.getVarName()  ] = ELseverityLevel::ELsev_info
-      ;
-
-    m[ ELwarning.getSymbol()   ] = ELseverityLevel::ELsev_warning
-      , m[ ELwarning.getName()     ] = ELseverityLevel::ELsev_warning
-      , m[ ELwarning.getInputStr() ] = ELseverityLevel::ELsev_warning
-      , m[ ELwarning.getVarName()  ] = ELseverityLevel::ELsev_warning
-      ;
-
-    m[ ELwarning2.getSymbol()   ] = ELseverityLevel::ELsev_warning2
-      , m[ ELwarning2.getName()     ] = ELseverityLevel::ELsev_warning2
-      , m[ ELwarning2.getInputStr() ] = ELseverityLevel::ELsev_warning2
-      , m[ ELwarning2.getVarName()  ] = ELseverityLevel::ELsev_warning2
-      ;
-
-    m[ ELerror.getSymbol()   ] = ELseverityLevel::ELsev_error
-      , m[ ELerror.getName()     ] = ELseverityLevel::ELsev_error
-      , m[ ELerror.getInputStr() ] = ELseverityLevel::ELsev_error
-      , m[ ELerror.getVarName()  ] = ELseverityLevel::ELsev_error
-      ;
-
-    m[ ELerror2.getSymbol()   ] = ELseverityLevel::ELsev_error2
-      , m[ ELerror2.getName()     ] = ELseverityLevel::ELsev_error2
-      , m[ ELerror2.getInputStr() ] = ELseverityLevel::ELsev_error2
-      , m[ ELerror2.getVarName()  ] = ELseverityLevel::ELsev_error2
-      ;
-
-    m[ ELnextEvent.getSymbol()   ] = ELseverityLevel::ELsev_next
-      , m[ ELnextEvent.getName()     ] = ELseverityLevel::ELsev_next
-      , m[ ELnextEvent.getInputStr() ] = ELseverityLevel::ELsev_next
-      , m[ ELnextEvent.getVarName()  ] = ELseverityLevel::ELsev_next
-      ;
-
-    m[ ELunspecified.getSymbol()   ] = ELseverityLevel::ELsev_unspecified
-      , m[ ELunspecified.getName()     ] = ELseverityLevel::ELsev_unspecified
-      , m[ ELunspecified.getInputStr() ] = ELseverityLevel::ELsev_unspecified
-      , m[ ELunspecified.getVarName()  ] = ELseverityLevel::ELsev_unspecified
-      ;
-
-    m[ ELsevere.getSymbol()   ] = ELseverityLevel::ELsev_severe
-      , m[ ELsevere.getName()     ] = ELseverityLevel::ELsev_severe
-      , m[ ELsevere.getInputStr() ] = ELseverityLevel::ELsev_severe
-      , m[ ELsevere.getVarName()  ] = ELseverityLevel::ELsev_severe
-      ;
-
-    m[ ELsevere2.getSymbol()   ] = ELseverityLevel::ELsev_severe2
-      , m[ ELsevere2.getName()     ] = ELseverityLevel::ELsev_severe2
-      , m[ ELsevere2.getInputStr() ] = ELseverityLevel::ELsev_severe2
-      , m[ ELsevere2.getVarName()  ] = ELseverityLevel::ELsev_severe2
-      ;
-
-    m[ ELabort.getSymbol()   ] = ELseverityLevel::ELsev_abort
-      , m[ ELabort.getName()     ] = ELseverityLevel::ELsev_abort
-      , m[ ELabort.getInputStr() ] = ELseverityLevel::ELsev_abort
-      , m[ ELabort.getVarName()  ] = ELseverityLevel::ELsev_abort
-      ;
-
-    m[ ELfatal.getSymbol()   ] = ELseverityLevel::ELsev_fatal
-      , m[ ELfatal.getName()     ] = ELseverityLevel::ELsev_fatal
-      , m[ ELfatal.getInputStr() ] = ELseverityLevel::ELsev_fatal
-      , m[ ELfatal.getVarName()  ] = ELseverityLevel::ELsev_fatal
-      ;
-
-    m[ ELhighestSeverity.getSymbol()   ] = ELseverityLevel::ELsev_highestSeverity
-      , m[ ELhighestSeverity.getName()     ] = ELseverityLevel::ELsev_highestSeverity
-      , m[ ELhighestSeverity.getInputStr() ] = ELseverityLevel::ELsev_highestSeverity
-      , m[ ELhighestSeverity.getVarName()  ] = ELseverityLevel::ELsev_highestSeverity
-      ;
-
+  ELmap const& loadMap()
+  {
+    static ELmap m;
+    setSeverity(m, ELzeroSeverity);
+    setSeverity(m, ELincidental);
+    setSeverity(m, ELsuccess);
+    setSeverity(m, ELinfo);
+    setSeverity(m, ELwarning);
+    setSeverity(m, ELwarning2);
+    setSeverity(m, ELerror);
+    setSeverity(m, ELerror2);
+    setSeverity(m, ELnextEvent);
+    setSeverity(m, ELunspecified);
+    setSeverity(m, ELsevere);
+    setSeverity(m, ELsevere2);
+    setSeverity(m, ELabort);
+    setSeverity(m, ELfatal);
+    setSeverity(m, ELhighestSeverity);
     return m;
-
   }
 
 
@@ -161,8 +96,7 @@ namespace mf
   ELseverityLevel::ELseverityLevel(std::string const& s)
   {
     static ELmap const& m = loadMap();
-
-    ELmap::const_iterator i = m.find(s);
+    auto i = m.find(s);
     myLevel = (i == m.end()) ? ELsev_unspecified : i->second;
   }
 
@@ -170,7 +104,8 @@ namespace mf
   // Comparator:
   // ----------------------------------------------------------------------
 
-  int ELseverityLevel::cmp(ELseverityLevel const e) const
+  int
+  ELseverityLevel::cmp(ELseverityLevel const e) const
   {
     return myLevel - e.myLevel;
   }

@@ -92,7 +92,7 @@ namespace mf {
     // ---  One ELseverityLevel is globally instantiated (see below)
     // ---  for each of the following levels:
     //
-    enum ELsev_  {
+    enum ELsev_ {
       ELsev_noValueAssigned = 0  // default returned by map when not found
         , ELsev_zeroSeverity         // threshold use only
         , ELsev_incidental           // flash this on a screen
@@ -134,9 +134,7 @@ namespace mf {
                                      ELseverityLevel const sev);
 
   private:
-
     int myLevel;
-
   };  // ELseverityLevel
 
   inline
@@ -166,21 +164,21 @@ namespace mf {
   inline ELseverityLevel constexpr ELfatalGen() {return ELseverityLevel::ELsev_fatal;}
   inline ELseverityLevel constexpr ELhighestSeverityGen() {return ELseverityLevel::ELsev_highestSeverity;}
 
-  ELslProxy< ELzeroSeverityGen    > constexpr  ELzeroSeverity;
-  ELslProxy< ELincidentalGen      > constexpr  ELincidental;
-  ELslProxy< ELsuccessGen         > constexpr  ELsuccess;
-  ELslProxy< ELinfoGen            > constexpr  ELinfo;
-  ELslProxy< ELwarningGen         > constexpr  ELwarning;
-  ELslProxy< ELwarning2Gen        > constexpr  ELwarning2;
-  ELslProxy< ELerrorGen           > constexpr  ELerror;
-  ELslProxy< ELerror2Gen          > constexpr  ELerror2;
-  ELslProxy< ELnextEventGen       > constexpr  ELnextEvent;
-  ELslProxy< ELunspecifiedGen     > constexpr  ELunspecified;
-  ELslProxy< ELsevereGen          > constexpr  ELsevere;
-  ELslProxy< ELsevere2Gen         > constexpr  ELsevere2;
-  ELslProxy< ELabortGen           > constexpr  ELabort;
-  ELslProxy< ELfatalGen           > constexpr  ELfatal;
-  ELslProxy< ELhighestSeverityGen > constexpr  ELhighestSeverity;
+  ELslProxy< ELzeroSeverityGen    > constexpr ELzeroSeverity {};
+  ELslProxy< ELincidentalGen      > constexpr ELincidental {};
+  ELslProxy< ELsuccessGen         > constexpr ELsuccess {};
+  ELslProxy< ELinfoGen            > constexpr ELinfo {};
+  ELslProxy< ELwarningGen         > constexpr ELwarning {};
+  ELslProxy< ELwarning2Gen        > constexpr ELwarning2 {};
+  ELslProxy< ELerrorGen           > constexpr ELerror {};
+  ELslProxy< ELerror2Gen          > constexpr ELerror2 {};
+  ELslProxy< ELnextEventGen       > constexpr ELnextEvent {};
+  ELslProxy< ELunspecifiedGen     > constexpr ELunspecified {};
+  ELslProxy< ELsevereGen          > constexpr ELsevere {};
+  ELslProxy< ELsevere2Gen         > constexpr ELsevere2 {};
+  ELslProxy< ELabortGen           > constexpr ELabort {};
+  ELslProxy< ELfatalGen           > constexpr ELfatal {};
+  ELslProxy< ELhighestSeverityGen > constexpr ELhighestSeverity {};
 
 
   // ----------------------------------------------------------------------
