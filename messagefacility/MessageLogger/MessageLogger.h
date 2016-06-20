@@ -26,26 +26,35 @@ namespace mf  {
   // helpers
   namespace detail {
 
-    constexpr int ELsev_warning = ELseverityLevel::ELsev_warning;
-    constexpr int ELsev_info    = ELseverityLevel::ELsev_info;
-    constexpr int ELsev_success = ELseverityLevel::ELsev_success;
+    constexpr int ELsev_warning {ELseverityLevel::ELsev_warning};
+    constexpr int ELsev_info    {ELseverityLevel::ELsev_info};
+    constexpr int ELsev_success {ELseverityLevel::ELsev_success};
 
     template <int SEV>
-    inline bool enabled() {
+    inline bool enabled()
+    {
       return true;
     }
 
-    template<> inline bool enabled<ELsev_warning>() {
+    template<>
+    inline bool enabled<ELsev_warning>()
+    {
       return MessageDrop::instance()->warningEnabled;
     }
-    template<> inline bool enabled<ELsev_info>() {
+
+    template<>
+    inline bool enabled<ELsev_info>()
+    {
       return MessageDrop::instance()->infoEnabled;
     }
-    template<> inline bool enabled<ELsev_success>() {
+
+    template<>
+    inline bool enabled<ELsev_success>()
+    {
       return MessageDrop::instance()->debugEnabled;
     }
 
-    inline std::string stripLeadingDirectoryTree( std::string const & file )
+    inline std::string stripLeadingDirectoryTree(std::string const& file)
     {
       const std::size_t lastSlash = file.find_last_of('/');
       if (lastSlash == std::string::npos) return file;
@@ -59,27 +68,27 @@ namespace mf  {
   class MFSdestroyer;
   class MessageFacilityService;
 
-  void LogStatistics( );
+  void LogStatistics();
 
   class ErrorObj;
-  void LogErrorObj(ErrorObj * eo_p);
+  void LogErrorObj(ErrorObj* eo_p);
 
-  bool isDebugEnabled( );
-  bool isInfoEnabled( );
-  bool isWarningEnabled( );
-  void HaltMessageLogging( );
-  void FlushMessageLog( );
-  void GroupLogStatistics(std::string const & category);
-  bool isMessageProcessingSetUp( );
+  bool isDebugEnabled();
+  bool isInfoEnabled();
+  bool isWarningEnabled();
+  void HaltMessageLogging();
+  void FlushMessageLog();
+  void GroupLogStatistics(std::string const& category);
+  bool isMessageProcessingSetUp();
 
   // The following two methods have no effect except in stand-alone apps
   // that do not create a MessageServicePresence:
-  void setStandAloneMessageThreshold    (std::string const & severity);
-  void squelchStandAloneMessageCategory (std::string const & category);
+  void setStandAloneMessageThreshold    (std::string const& severity);
+  void squelchStandAloneMessageCategory (std::string const& category);
 
-  void SetApplicationName(std::string const & application);
-  void SetModuleName(std::string const & modulename);
-  void SetContext(std::string const & context);
+  void SetApplicationName(std::string const& application);
+  void SetModuleName(std::string const& modulename);
+  void SetContext(std::string const& context);
 
   void SwitchChannel(int c);
 
@@ -89,20 +98,16 @@ namespace mf  {
 //=======================================================================
 namespace mf {
 
-  template < int SEV, bool VERB, bool PREFIX, bool CONDITIONAL >
+  template <int SEV, bool VERB, bool PREFIX, bool CONDITIONAL>
   class MaybeLogger_ {
-
     std::unique_ptr<MessageSender> msgSender_p;
-
   public:
 
-    MaybeLogger_ (){}
-    MaybeLogger_ ( const std::string& id, const std::string& file = "--", int line = 0 ) :
-      msgSender_p ( detail::enabled<SEV>() ?
-                    new MessageSender( ELseverityLevel::ELsev_(SEV), id, VERB ):
-                    nullptr )
+    MaybeLogger_() = default;
+    MaybeLogger_(std::string const& id, std::string const& file = "--", int line = 0)
+      : msgSender_p{detail::enabled<SEV>() ? new MessageSender{ELseverityLevel::ELsev_(SEV), id, VERB} : nullptr}
     {
-      if ( PREFIX ) {
+      if (PREFIX) {
         *this << " "
               << detail::stripLeadingDirectoryTree(file)
               << ":"
@@ -110,29 +115,29 @@ namespace mf {
       }
     }
 
-    MaybeLogger_ ( MaybeLogger_ && ) noexcept = default;
+    MaybeLogger_ (MaybeLogger_&&) noexcept = default;
 
     // Disable copy c'tor and copy/move assignment
-    MaybeLogger_             ( MaybeLogger_ const & ) = delete;
-    MaybeLogger_&  operator= ( MaybeLogger_ const & ) = delete;
-    MaybeLogger_&  operator= ( MaybeLogger_ && )      = delete;
+    MaybeLogger_             (MaybeLogger_ const&) = delete;
+    MaybeLogger_&  operator= (MaybeLogger_ const&) = delete;
+    MaybeLogger_&  operator= (MaybeLogger_&&)      = delete;
 
     template< class T >
     decltype(auto) operator << ( T const & t )
     {
-      if ( !CONDITIONAL || msgSender_p.get() ) *msgSender_p << t;
+      if (!CONDITIONAL || msgSender_p.get()) *msgSender_p << t;
       return std::forward<MaybeLogger_>(*this);
     }
 
     decltype(auto) operator << ( std::ostream&(*f)(std::ostream&) )
     {
-      if ( !CONDITIONAL || msgSender_p.get() ) *msgSender_p << f;
+      if (!CONDITIONAL || msgSender_p.get()) *msgSender_p << f;
       return std::forward<MaybeLogger_>(*this);
     }
 
     decltype(auto) operator << ( std::ios_base&(*f)(std::ios_base&) )
     {
-      if ( !CONDITIONAL || msgSender_p.get() ) *msgSender_p << f;
+      if (!CONDITIONAL || msgSender_p.get()) *msgSender_p << f;
       return std::forward<MaybeLogger_>(*this);
     }
 
@@ -144,10 +149,10 @@ namespace mf {
 
     // streamers:
     template< class T >
-    NeverLogger_ &  operator << ( T const & ){ return *this; }
+    NeverLogger_& operator << ( T const & ){ return *this; }
 
-    NeverLogger_ &  operator << ( std::ostream& (*)(std::ostream& ) ) { return *this; }
-    NeverLogger_ &  operator << ( std::ios_base&(*)(std::ios_base&) ) { return *this; }
+    NeverLogger_& operator << ( std::ostream& (*)(std::ostream& ) ) { return *this; }
+    NeverLogger_& operator << ( std::ios_base&(*)(std::ios_base&) ) { return *this; }
 
   };
 
@@ -175,26 +180,23 @@ namespace mf {
   using LogWarning   = MaybeLogger_< ELseverityLevel::ELsev_warning, false, true , detail::ConditionalLogger>;
   using LogPrint     = MaybeLogger_< ELseverityLevel::ELsev_warning, true , false, detail::ConditionalLogger>;
 
-  extern LogDebug dummyLogDebugObject_;
-  extern LogTrace dummyLogTraceObject_;
-
 }
 
 //=======================================================================================
 //  Macros for including file/line information
 
-#define LOG_ABSOLUTE(id)  ::mf::LogAbsolute(id, __FILE__, __LINE__)
-#define LOG_ERROR(id)     ::mf::LogError(id, __FILE__, __LINE__)
-#define LOG_IMPORTANT(id) ::mf::LogImportant(id, __FILE__, __LINE__)
-#define LOG_INFO(id)      ::mf::LogInfo(id, __FILE__, __LINE__)
-#define LOG_PROBLEM(id)   ::mf::LogProblem(id, __FILE__, __LINE__)
-#define LOG_PRINT(id)     ::mf::LogPrint(id, __FILE__, __LINE__)
-#define LOG_SYSTEM(id)    ::mf::LogSystem(id, __FILE__, __LINE__)
-#define LOG_VERBATIM(id)  ::mf::LogVerbatim(id, __FILE__, __LINE__)
-#define LOG_WARNING(id)   ::mf::LogWarning(id, __FILE__, __LINE__)
+#define LOG_ABSOLUTE(id)  mf::LogAbsolute(id, __FILE__, __LINE__)
+#define LOG_ERROR(id)     mf::LogError(id, __FILE__, __LINE__)
+#define LOG_IMPORTANT(id) mf::LogImportant(id, __FILE__, __LINE__)
+#define LOG_INFO(id)      mf::LogInfo(id, __FILE__, __LINE__)
+#define LOG_PROBLEM(id)   mf::LogProblem(id, __FILE__, __LINE__)
+#define LOG_PRINT(id)     mf::LogPrint(id, __FILE__, __LINE__)
+#define LOG_SYSTEM(id)    mf::LogSystem(id, __FILE__, __LINE__)
+#define LOG_VERBATIM(id)  mf::LogVerbatim(id, __FILE__, __LINE__)
+#define LOG_WARNING(id)   mf::LogWarning(id, __FILE__, __LINE__)
 
-// If ML_DEBUG is defined, LogDebug is active.
-// Otherwise, LogDebug is suppressed if either ML_NDEBUG or NDEBUG is defined.
+// If ML_DEBUG is defined, LogDebug is active.  Otherwise, LogDebug is
+// suppressed if either ML_NDEBUG or NDEBUG is defined.
 #undef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
 #if defined(NDEBUG) || defined(ML_NDEBUG)
 #define EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
@@ -205,11 +207,11 @@ namespace mf {
 
 // N.B.: no surrounding ()'s in the conditional expressions below!
 #ifdef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
-#define LOG_DEBUG(id) true ? ::mf::NeverLogger_() : ::mf::NeverLogger_()
-#define LOG_TRACE(id) true ? ::mf::NeverLogger_() : ::mf::NeverLogger_()
+#define LOG_DEBUG(id) true ? mf::NeverLogger_{} : mf::NeverLogger_{}
+#define LOG_TRACE(id) true ? mf::NeverLogger_{} : mf::NeverLogger_{}
 #else
-#define LOG_DEBUG(id) !mf::MessageDrop::instance()->debugEnabled ? mf::LogDebug() : mf::LogDebug(id, __FILE__, __LINE__)
-#define LOG_TRACE(id) !mf::MessageDrop::instance()->debugEnabled ? mf::LogTrace() : mf::LogTrace(id, __FILE__, __LINE__)
+#define LOG_DEBUG(id) !mf::MessageDrop::instance()->debugEnabled ? mf::LogDebug{} : mf::LogDebug{id, __FILE__, __LINE__}
+#define LOG_TRACE(id) !mf::MessageDrop::instance()->debugEnabled ? mf::LogTrace{} : mf::LogTrace{id, __FILE__, __LINE__}
 #endif
 #undef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
 
@@ -217,67 +219,46 @@ namespace mf {
 //=======================================================================================
 
 class mf::MessageFacilityService {
-private:
-  MessageFacilityService( );
-
 public:
-  static MessageFacilityService & instance( );
+  static MessageFacilityService& instance();
 
-  static fhicl::ParameterSet logConsole( );
+  static fhicl::ParameterSet logArchive(std::string const& filename = "msgarchive", bool append = false);
+  static fhicl::ParameterSet logCF(std::string const& filename = "logfile", bool append = false);
+  static fhicl::ParameterSet logCFS(std::string const& filename = "logfile", bool append = false, int partition = 0);
+  static fhicl::ParameterSet logCS(int partition = 0);
+  static fhicl::ParameterSet logConsole();
+  static fhicl::ParameterSet logFS(std::string const& filename = "logfile", bool append = false, int partition = 0);
+  static fhicl::ParameterSet logFile(std::string const& filename = "logfile", bool append = false);
+  static fhicl::ParameterSet logServer(int partition = 0);
 
-  static fhicl::ParameterSet logServer( int partition = 0 );
-
-  static fhicl::ParameterSet logFile( std::string const & filename = "logfile",
-                                      bool append = false );
-
-  static fhicl::ParameterSet logCS( int partition = 0 );
-
-  static fhicl::ParameterSet logCF( std::string const & filename = "logfile",
-                                    bool append = false );
-
-  static fhicl::ParameterSet logFS( std::string const & filename = "logfile",
-                                    bool append = false,
-                                    int partition = 0 );
-
-  static fhicl::ParameterSet logCFS( std::string const & filename = "logfile",
-                                     bool append = false,
-                                     int partition = 0 );
-
-  static fhicl::ParameterSet logArchive( std::string const & filename = "msgarchive",
-                                         bool append = false );
-
-  static fhicl::ParameterSet ConfigurationFile( std::string const & filename = "MessageFacility.cfg",
-                                                fhicl::ParameterSet const & def = logCF() );
+  static fhicl::ParameterSet ConfigurationFile(std::string const& filename = "MessageFacility.cfg",
+                                               fhicl::ParameterSet const& def = logCF());
 
   static std::string SingleThread;
   static std::string MultiThread;
 
-  bool   MFServiceEnabled;
+  std::shared_ptr<Presence> MFPresence {nullptr};
+  std::shared_ptr<MessageLoggerImpl> theML {nullptr};
+  std::mutex m {};
+  bool MFServiceEnabled {false};
 
-  std::shared_ptr<Presence> MFPresence;
-  std::shared_ptr<service::MessageLogger> theML;
-
-  std::mutex m;
 private:
-  static std::string commonPSet( );
+  MessageFacilityService() = default;
+  static std::string commonPSet();
 };
 
 // ----------------------------------------------------------------------
 
-class mf::MFSdestroyer
-{
+class mf::MFSdestroyer {
 public:
-  ~MFSdestroyer( );
+  ~MFSdestroyer();
 };
 
 // ----------------------------------------------------------------------
 
 namespace mf {
-
-  void StartMessageFacility(
-                            std::string const & mode,
-                            fhicl::ParameterSet const & pset = MessageFacilityService::ConfigurationFile());
-
+  void StartMessageFacility(std::string const& mode,
+                            fhicl::ParameterSet const& pset = MessageFacilityService::ConfigurationFile());
 }
 
 // ======================================================================

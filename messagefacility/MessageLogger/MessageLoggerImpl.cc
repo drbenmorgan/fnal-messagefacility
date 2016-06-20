@@ -59,445 +59,149 @@
 // user include files
 
 #include "fhiclcpp/ParameterSet.h"
-
+#include "messagefacility/MessageLogger/JobReport.h"
 #include "messagefacility/MessageLogger/MessageLoggerImpl.h"
-//#include "MessageService/interface/MessageServicePSetValidation.h"
-
 #include "messagefacility/MessageService/MessageLoggerQ.h"
 #include "messagefacility/MessageService/MessageDrop.h"
-
-//#include "DataFormats/Provenance/interface/ModuleDescription.h"
-
-#include "messagefacility/MessageLogger/JobReport.h"
 #include "messagefacility/Utilities/exception.h"
-//#include "ServiceRegistry/interface/Service.h"
 
 #include <sstream>
 #include <string>
 #include <map>
 
 using namespace mf;
-using namespace mf::service;
 
 namespace mf {
-namespace service {
 
-bool mf::service::MessageLogger::anyDebugEnabled_                    = false;
-bool mf::service::MessageLogger::everyDebugEnabled_                  = false;
-bool mf::service::MessageLogger::fjrSummaryRequested_                = false;
+  bool mf::MessageLoggerImpl::anyDebugEnabled_ = false;
+  bool mf::MessageLoggerImpl::everyDebugEnabled_ = false;
+  bool mf::MessageLoggerImpl::fjrSummaryRequested_ = false;
 
-//
-// constructors and destructor
-//
-mf::service::MessageLogger::
-MessageLogger( fhicl::ParameterSet const & iPS
-             /*, ActivityRegistry   & iRegistry*/
-                            )
-        : debugEnabled_(false)
-        , messageServicePSetHasBeenValidated_(false)
-        , messageServicePSetValidatationResults_()
-{
-  // prepare cfg validation string for later use
-  //MessageServicePSetValidation validator;
-  //messageServicePSetValidatationResults_ = validator(iPS);    // change log 12
+  //
+  // constructors and destructor
+  //
+  mf::MessageLoggerImpl::
+  MessageLoggerImpl(fhicl::ParameterSet const & iPS)
+    : debugEnabled_{false}
+    , messageServicePSetHasBeenValidated_{false}
+    , messageServicePSetValidatationResults_{}
+  {
+    typedef std::vector<std::string>  vString;
+    vString empty_vString;
+    vString debugModules;
+    vString suppressDebug;
+    vString suppressWarning;
+    vString suppressInfo;
 
-  typedef std::vector<std::string>  vString;
-  vString  empty_vString;
-  vString  debugModules;
-  vString suppressDebug;
-  vString suppressWarning;
-  vString suppressInfo;
+    try {
+      // decide whether a summary should be placed in job report
+      fjrSummaryRequested_ = iPS.get<bool>("messageSummaryToJobReport", false);
+      debugModules = iPS.get<std::vector<std::string>>("debugModules"  , empty_vString);
+      suppressDebug = iPS.get<std::vector<std::string>>("suppressDebug" , empty_vString);
+      suppressInfo = iPS.get<std::vector<std::string>>("suppressInfo"  , empty_vString);
+      suppressWarning = iPS.get<std::vector<std::string>>("suppressWarning", empty_vString);
+    } catch (...) {
+    }
 
-  try {                                                         // change log 13
-    // decide whether a summary should be placed in job report
-    fjrSummaryRequested_ =
-          iPS.get<bool>("messageSummaryToJobReport", false);
+    // Use these lists to prepare a map to use in tracking suppression
 
-    // grab list of debug-enabled modules
-    debugModules =
-          iPS.get<std::vector<std::string> >("debugModules"  , empty_vString);
+    // Do suppressDebug first and suppressWarning last to get proper order
+    for( vString::const_iterator it  = suppressDebug.begin();
+         it != suppressDebug.end(); ++it ) {
+      suppression_levels_[*it] = ELseverityLevel::ELsev_success;
+    }
 
-    // grab lists of suppressLEVEL modules
-    suppressDebug =
-          iPS.get<std::vector<std::string> >("suppressDebug" , empty_vString);
+    for( vString::const_iterator it  = suppressInfo.begin();
+         it != suppressInfo.end(); ++it ) {
+      suppression_levels_[*it] = ELseverityLevel::ELsev_info;
+    }
 
-    suppressInfo =
-          iPS.get<std::vector<std::string> >("suppressInfo"  , empty_vString);
+    for( vString::const_iterator it  = suppressWarning.begin();
+         it != suppressWarning.end(); ++it ) {
+      suppression_levels_[*it] = ELseverityLevel::ELsev_warning;
+    }
 
-    suppressWarning =
-          iPS.get<std::vector<std::string> >("suppressWarning", empty_vString);
-  } catch (cet::exception& e) {                                 // change log 13
-  }
+    // set up for tracking whether current module is debug-enabled
+    // (and info-enabled and warning-enabled)
+    if (debugModules.empty()) {
+      anyDebugEnabled_ = false;
+      MessageDrop::instance()->debugEnabled = false;
+    } else {
+      anyDebugEnabled_ = true;
+      MessageDrop::instance()->debugEnabled = false;
+      // this will be over-ridden when specific modules are entered
+    }
 
-  // Use these lists to prepare a map to use in tracking suppression
-
-  // Do suppressDebug first and suppressWarning last to get proper order
-  for( vString::const_iterator it  = suppressDebug.begin();
-                               it != suppressDebug.end(); ++it ) {
-    suppression_levels_[*it] = ELseverityLevel::ELsev_success;
-  }
-
-  for( vString::const_iterator it  = suppressInfo.begin();
-                               it != suppressInfo.end(); ++it ) {
-    suppression_levels_[*it] = ELseverityLevel::ELsev_info;
-  }
-
-  for( vString::const_iterator it  = suppressWarning.begin();
-                               it != suppressWarning.end(); ++it ) {
-    suppression_levels_[*it] = ELseverityLevel::ELsev_warning;
-  }
-
-  // set up for tracking whether current module is debug-enabled
-  // (and info-enabled and warning-enabled)
-  if ( debugModules.empty()) {
-    anyDebugEnabled_ = false;                                   // change log 11
-    MessageDrop::instance()->debugEnabled = false;              // change log 1
-  } else {
-    anyDebugEnabled_ = true;                                    // change log 11
-    MessageDrop::instance()->debugEnabled = false;
-    // this will be over-ridden when specific modules are entered
-  }
-
-  // if ( debugModules.empty()) anyDebugEnabled_ = true; // wrong; change log 11
-  for( vString::const_iterator it  = debugModules.begin();
-                               it != debugModules.end(); ++it ) {
-    if (*it == "*") {
+    for( vString::const_iterator it  = debugModules.begin();
+         it != debugModules.end(); ++it ) {
+      if (*it == "*") {
         everyDebugEnabled_ = true;
       } else {
         debugEnabledModules_.insert(*it);
       }
+    }
+
+    std::string jr_name = mf::MessageDrop::instance()->jobreport_name;
+    if (!jr_name.empty()) {
+      std::string * jr_name_p = new std::string(jr_name);
+      MessageLoggerQ::MLqJOB(jr_name_p);
+    }
+
+    std::string jm = mf::MessageDrop::instance()->jobMode;
+    std::string * jm_p = new std::string(jm);
+    MessageLoggerQ::MLqMOD( jm_p );
+
+    MessageLoggerQ::MLqCFG( new fhicl::ParameterSet(iPS) );
+
+  } // ctor
+
+  MessageLoggerImpl::EnabledState
+  MessageLoggerImpl::setContext(std::string const &currentPhase) {
+    return setContext(currentPhase, currentPhase);
   }
 
-                                                                // change log 5
-  std::string jr_name = mf::MessageDrop::instance()->jobreport_name;
-  if (!jr_name.empty()) {
-    std::string * jr_name_p = new std::string(jr_name);
-    MessageLoggerQ::MLqJOB( jr_name_p );                        // change log 9
+  void
+  MessageLoggerImpl::setMinimalContext(std::string const &currentPhase) {
+    MessageDrop::instance()->moduleName = currentPhase;
   }
 
-                                                                // change log 7
-  std::string jm = mf::MessageDrop::instance()->jobMode;
-  std::string * jm_p = new std::string(jm);
-  MessageLoggerQ::MLqMOD( jm_p );                               // change log 9
+  MessageLoggerImpl::EnabledState
+  MessageLoggerImpl::setContext(std::string const &currentProgramState,
+                                std::string const &levelsConfigLabel) {
+    MessageDrop *md = MessageDrop::instance();
+    EnabledState previousState(md->debugEnabled,
+                               md->infoEnabled,
+                               md->warningEnabled);
+    md->moduleName = currentProgramState;
 
-  MessageLoggerQ::MLqCFG( new fhicl::ParameterSet(iPS) );               // change log 9
-
-} // ctor
-
-   MessageLogger::EnabledState
-   MessageLogger::setContext(std::string const &currentPhase) {
-      return setContext(currentPhase, currentPhase);
-   }
-
-   void
-   MessageLogger::setMinimalContext(std::string const &currentPhase) {
-      MessageDrop::instance()->moduleName = currentPhase;
-   }
-
-   MessageLogger::EnabledState
-   MessageLogger::setContext(std::string const &currentProgramState,
-                             std::string const &levelsConfigLabel) {
-      MessageDrop *md = MessageDrop::instance();
-      EnabledState previousState(md->debugEnabled,
-                                 md->infoEnabled,
-                                 md->warningEnabled);
-      md->moduleName = currentProgramState;
-
-      if (!anyDebugEnabled_) {
-         md->debugEnabled = false;
-      } else if (everyDebugEnabled_) {
-         md->debugEnabled = true;
+    if (!anyDebugEnabled_) {
+      md->debugEnabled = false;
+    } else if (everyDebugEnabled_) {
+      md->debugEnabled = true;
+    } else {
+      md->debugEnabled =
+        debugEnabledModules_.count(levelsConfigLabel);
+      s_map_t::const_iterator it = suppression_levels_.find(levelsConfigLabel);
+      if (it != suppression_levels_.end()) {
+        md->debugEnabled = md->debugEnabled && (it->second < ELseverityLevel::ELsev_success);
+        md->infoEnabled = (it->second < ELseverityLevel::ELsev_info);
+        md->warningEnabled = (it->second < ELseverityLevel::ELsev_warning);
       } else {
-         md->debugEnabled =
-            debugEnabledModules_.count(levelsConfigLabel);
-         s_map_t::const_iterator it = suppression_levels_.find(levelsConfigLabel);
-         if (it != suppression_levels_.end()) {
-            md->debugEnabled = md->debugEnabled && (it->second < ELseverityLevel::ELsev_success);
-            md->infoEnabled = (it->second < ELseverityLevel::ELsev_info);
-            md->warningEnabled = (it->second < ELseverityLevel::ELsev_warning);
-         } else {
-            md->infoEnabled = true;
-            md->warningEnabled = true;
-         }
+        md->infoEnabled = true;
+        md->warningEnabled = true;
       }
-      return previousState;
-   }
-
-   void
-   MessageLogger::setContext(std::string const &currentPhase,
-                             EnabledState previousEnabledState) {
-      MessageDrop *md = MessageDrop::instance();
-      md->moduleName = currentPhase;
-      md->debugEnabled = previousEnabledState.debugEnabled();
-      md->infoEnabled = previousEnabledState.infoEnabled();
-      md->warningEnabled = previousEnabledState.warningEnabled();
-   }
-
-   /*
-//
-// callbacks that need to establish the module, and their counterparts
-//
-
-void
-MessageLogger::preModuleConstruction(const ModuleDescription& desc)
-{
-  if (!messageServicePSetHasBeenValidated_) {                   // change log 12
-    if (!messageServicePSetValidatationResults_.empty() ) {
-      throw ( mf::Exception
-                   ( mf::errors::Configuration
-                   , messageServicePSetValidatationResults_
-                   )                                         );
     }
-    messageServicePSetHasBeenValidated_ = true;
+    return previousState;
   }
-  establishModuleCtor (desc,"@ctor");                           // ChangeLog 16
-}
-void MessageLogger::postModuleConstruction(const ModuleDescription& iDescription)
-{ unEstablishModule (iDescription, "AfterModConstruction"); }
 
-void
-MessageLogger::preModuleBeginJob(const ModuleDescription& desc)
-{
-  establishModule (desc,"@beginJob");                           // ChangeLog 13
-}
-void MessageLogger::postModuleBeginJob(const ModuleDescription& iDescription)
-{ unEstablishModule (iDescription, "AfterModBeginJob"); }
-
-void
-MessageLogger::preSourceConstruction(const ModuleDescription& desc)
-{
-  if (!messageServicePSetHasBeenValidated_) {                   // change log 12
-    if (!messageServicePSetValidatationResults_.empty() ) {
-      throw ( mf::Exception
-                   ( mf::errors::Configuration
-                   , messageServicePSetValidatationResults_
-                   )                                         );
-    }
-    messageServicePSetHasBeenValidated_ = true;
+  void
+  MessageLoggerImpl::setContext(std::string const &currentPhase,
+                                EnabledState previousEnabledState) {
+    MessageDrop* md = MessageDrop::instance();
+    md->moduleName = currentPhase;
+    md->debugEnabled = previousEnabledState.debugEnabled();
+    md->infoEnabled = previousEnabledState.infoEnabled();
+    md->warningEnabled = previousEnabledState.warningEnabled();
   }
-  establishModuleCtor (desc,"@sourceConstruction");             // ChangeLog 16
-}
-void MessageLogger::postSourceConstruction(const ModuleDescription& iDescription)
-{ unEstablishModule (iDescription, "AfterSourceConstruction"); }
 
-void
-MessageLogger::preModuleBeginRun(const ModuleDescription& desc)
-{
-  establishModule (desc,"@beginRun");                           // ChangeLog 13
-}
-void MessageLogger::postModuleBeginRun(const ModuleDescription& iDescription)
-{ unEstablishModule (iDescription, "AfterModBeginRun"); }
-
-void
-MessageLogger::preModuleBeginLumi(const ModuleDescription& desc)
-{
-  establishModule (desc,"@beginLumi");                          // ChangeLog 13
-}
-void MessageLogger::postModuleBeginLumi(const ModuleDescription& iDescription)
-{ unEstablishModule (iDescription, "AfterModBeginLumi"); }
-
-void
-MessageLogger::preModule(const ModuleDescription& desc)
-{
-  establishModule (desc,"");                                    // ChangeLog 13
-}
-void MessageLogger::postModule(const ModuleDescription& iDescription)
-{ unEstablishModule (iDescription, "PostModule"); }
-
-void
-MessageLogger::preModuleEndLumi(const ModuleDescription& desc)
-{
-  establishModule (desc,"@endLumi");                            // ChangeLog 13
-}
-void MessageLogger::postModuleEndLumi(const ModuleDescription& iDescription)
-{ unEstablishModule (iDescription, "AfterModEndLumi"); }
-
-void
-MessageLogger::preModuleEndRun(const ModuleDescription& desc)
-{
-  establishModule (desc,"@endRun");                             // ChangeLog 13
-}
-void MessageLogger::postModuleEndRun(const ModuleDescription& iDescription)
-{ unEstablishModule (iDescription, "AfterModEndRun"); }
-
-void
-MessageLogger::preModuleEndJob(const ModuleDescription& desc)
-{
-  establishModule (desc,"@endJob");                             // ChangeLog 13
-}
-void MessageLogger::postModuleEndJob(const ModuleDescription& iDescription)
-{ unEstablishModule (iDescription, "AfterModEndJob"); }
-
-//
-// callbacks that don't know about the module
-//
-
-void
-MessageLogger::postBeginJob()
-{
-  MessageDrop::instance()->runEvent = "BeforeEvents";
-  MessageDrop::instance()->moduleName = "AfterBeginJob";
-}
-
-void
-MessageLogger::preSource()
-{
-  establish("source");
-}
-void MessageLogger::postSource()
-{ unEstablish("AfterSource"); }
-
-void MessageLogger::preFile()
-{  establish("file_open"); }
-void MessageLogger::preFileClose()
-{  establish("file_close"); }
-void MessageLogger::postFile()
-{ unEstablish("AfterFile"); }
-
-
-void
-MessageLogger::preEventProcessing( const mf::EventID& iID
-                                 , const mf::Timestamp& iTime )
-{
-  std::ostringstream ost;
-  curr_event_ = iID;
-  ost << "Run: " << curr_event_.run()
-      << " Event: " << curr_event_.event();                     // change log 2
-  mf::MessageDrop::instance()->runEvent = ost.str();
-}
-
-void
-MessageLogger::postEventProcessing(const Event&, const EventSetup&)
-{
-  mf::MessageDrop::instance()->runEvent = "PostProcessEvent";
-}
-
-void
-MessageLogger::preBeginRun( const mf::RunID& iID
-                          , const mf::Timestamp& iTime )        // change log 14
-{
-  std::ostringstream ost;
-  ost << "Run: " << iID.run();
-  mf::MessageDrop::instance()->runEvent = ost.str();
-}
-void MessageLogger::postBeginRun(const Run&, const EventSetup&)
-{ mf::MessageDrop::instance()->runEvent = "PostBeginRun"; }
-
-void
-MessageLogger::prePathBeginRun( const std::string & pathname )  // change log 14
-{
-  std::ostringstream ost;
-  ost << "RPath: " << pathname;
-  mf::MessageDrop::instance()->moduleName = ost.str();
-}
-void MessageLogger::postPathBeginRun(std::string const&,HLTPathStatus const&)
-{ mf::MessageDrop::instance()->moduleName = "PostPathBeginRun"; }
-
-void
-MessageLogger::prePathEndRun( const std::string & pathname )    // change log 14
-{
-  std::ostringstream ost;
-  ost << "RPathEnd: " << pathname;
-  mf::MessageDrop::instance()->moduleName = ost.str();
-}
-void MessageLogger::postPathEndRun(std::string const&,HLTPathStatus const&)
-{ mf::MessageDrop::instance()->moduleName = "PostPathEndRun"; }
-
-void
-MessageLogger::prePathBeginLumi( const std::string & pathname ) // change log 14
-{
-  std::ostringstream ost;
-  ost << "LPath: " << pathname;
-  mf::MessageDrop::instance()->moduleName = ost.str();
-}
-void MessageLogger::postPathBeginLumi(std::string const&,HLTPathStatus const&)
-{ mf::MessageDrop::instance()->moduleName = "PostPathBeginLumi"; }
-
-void
-MessageLogger::prePathEndLumi( const std::string & pathname )   // change log 14
-{
-  std::ostringstream ost;
-  ost << "LPathEnd: " << pathname;
-  mf::MessageDrop::instance()->moduleName = ost.str();
-}
-void MessageLogger::postPathEndLumi(std::string const&,HLTPathStatus const&)
-{ mf::MessageDrop::instance()->moduleName = "PostPathEndLumi"; }
-
-void
-MessageLogger::preProcessPath( const std::string & pathname )   // change log 14
-{
-  std::ostringstream ost;
-  ost << "PreProcPath " << pathname;
-  mf::MessageDrop::instance()->moduleName = ost.str();
-}
-void MessageLogger::postProcessPath(std::string const&,HLTPathStatus const&)
-{ mf::MessageDrop::instance()->moduleName = "PostProcessPath"; }
-
-void
-MessageLogger::preEndRun( const mf::RunID& iID
-                        , const mf::Timestamp& iTime )
-{
-  std::ostringstream ost;
-  ost << "End Run: " << iID.run();
-  mf::MessageDrop::instance()->runEvent = ost.str();
-}
-void MessageLogger::postEndRun(const Run&, const EventSetup&)
-{ mf::MessageDrop::instance()->runEvent = "PostEndRun"; }
-
-void
-MessageLogger::preBeginLumi( const mf::LuminosityBlockID& iID
-                          , const mf::Timestamp& iTime )
-{
-  std::ostringstream ost;
-  ost << "Run: " << iID.run() << " Lumi: " << iID.luminosityBlock();
-  mf::MessageDrop::instance()->runEvent = ost.str();
-}
-void MessageLogger::postBeginLumi(const LuminosityBlock&, const EventSetup&)
-{ mf::MessageDrop::instance()->runEvent = "PostBeginLumi"; }
-
-void
-MessageLogger::preEndLumi( const mf::LuminosityBlockID& iID
-                        , const mf::Timestamp& iTime )
-{
-  std::ostringstream ost;
-  ost << "Run: " << iID.run() << " Lumi: " << iID.luminosityBlock();
-  mf::MessageDrop::instance()->runEvent = ost.str();
-}
-void MessageLogger::postEndLumi(const LuminosityBlock&, const EventSetup&)
-{ mf::MessageDrop::instance()->runEvent = "PostEndLumi"; }
-
-void
-MessageLogger::postEndJob()
-{
-  SummarizeInJobReport();     // Put summary info into Job Rep  // change log 10
-  MessageLoggerQ::MLqSUM ( ); // trigger summary info.          // change log 9
-}
-
-void
-MessageLogger::jobFailure()
-{
-  MessageDrop* messageDrop = MessageDrop::instance();
-  messageDrop->moduleName = "jobFailure";
-  SummarizeInJobReport();     // Put summary info into Job Rep  // change log 10
-  MessageLoggerQ::MLqSUM ( ); // trigger summary info.          // change log 9
-}
-*/
-
-//
-// Other methods
-//
-/*
-void
-MessageLogger::SummarizeInJobReport() {
-  if ( fjrSummaryRequested_ ) {
-    std::map<std::string, double> * smp = new std::map<std::string, double> ();
-    MessageLoggerQ::MLqJRS ( smp );
-    Service<JobReport> reportSvc;
-    reportSvc->reportMessageInfo(*smp);
-    delete smp;
-  }
-}
-*/
-
-} // end of namespace service
 } // end of namespace mf

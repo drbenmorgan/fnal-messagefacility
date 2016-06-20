@@ -8,21 +8,19 @@
 #include <set>
 #include <string>
 
-
 namespace mf {
   namespace service {
     namespace ELdestConfig {
 
       enum dest_config { ORDINARY, STATISTICS, FWKJOBREPORT };
-      
-      inline void checkType( const std::string& type,
-                             const dest_config configuration ) {
-        
-        if ( configuration != STATISTICS ) return;
-        
+
+      inline void checkType(std::string const& type, dest_config const configuration)
+      {
+        if (configuration != STATISTICS) return;
+
         // Check for ostream-supported types for statistics
-        if ( !cet::search_all( std::set<std::string>{"cout","cerr","file"}, type ) ) {
-          throw mf::Exception ( mf::errors::Configuration )
+        if (!cet::search_all(std::set<std::string>{"cout","cerr","file"}, type)) {
+          throw mf::Exception{mf::errors::Configuration}
             <<"\n"
             <<"Unsupported type [ " << type << " ] chosen for statistics printout.\n"
             <<"Must choose ostream type: \"cout\", \"cerr\", or \"file\""
@@ -30,7 +28,7 @@ namespace mf {
         }
       }
 
-    }    // end of namespace ELdestConfig    
+    }    // end of namespace ELdestConfig
   }   // end of namespace service
 }  // namespace mf
 

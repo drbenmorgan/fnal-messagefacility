@@ -63,15 +63,15 @@ namespace mf {
       void  configure_default_fwkJobReport( ELdestControl & dest_ctrl);
 
       // --- util function to trim leading and trailing whitespaces from a string
-      std::string trim_copy(std::string const src);
+      std::string trim(std::string const& src);
 
       // --- other helpers
-      void parseCategories (std::string const & s, std::vector<std::string> & cats);
+      void parseCategories(std::string const& s, std::vector<std::string>& cats);
 
       // --- data:
       ELadministrator* admin_p {ELadministrator::instance()};
       ELdestControl early_dest;
-      std::shared_ptr<ErrorLog> errorlog_p { new ErrorLog };
+      std::shared_ptr<ErrorLog> errorlog_p {new ErrorLog};
       MsgContext msg_context;
       std::shared_ptr<fhicl::ParameterSet> job_pset_p {nullptr};
       std::string jobReportOption {};

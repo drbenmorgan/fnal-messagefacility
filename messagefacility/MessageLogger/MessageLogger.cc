@@ -16,79 +16,94 @@
 #include <iostream>
 #include <sstream>
 
+namespace {
+  auto pset_from_oss(std::ostringstream const& ss)
+  {
+    fhicl::ParameterSet pset;
+    std::string const pstr {ss.str()};
+    fhicl::make_ParameterSet(pstr, pset);
+    return pset;
+  }
+}
+
 namespace mf {
 
-  void LogStatistics() {
-    MessageLoggerQ::MLqSUM ( ); // trigger summary info
+  void LogStatistics()
+  {
+    MessageLoggerQ::MLqSUM(); // trigger summary info
   }
 
-  void LogErrorObj(ErrorObj * eo_p) {
+  void LogErrorObj(ErrorObj * eo_p)
+  {
     MessageLoggerQ::MLqLOG(eo_p);
   }
 
-  bool isDebugEnabled() {
-    return ( MessageDrop::instance()->debugEnabled );
+  bool isDebugEnabled()
+  {
+    return MessageDrop::instance()->debugEnabled;
   }
 
-  bool isInfoEnabled() {
-    return( MessageDrop::instance()->infoEnabled );
+  bool isInfoEnabled()
+  {
+    return MessageDrop::instance()->infoEnabled;
   }
 
-  bool isWarningEnabled() {
-    return( MessageDrop::instance()->warningEnabled );
+  bool isWarningEnabled()
+  {
+    return MessageDrop::instance()->warningEnabled;
   }
 
-  void HaltMessageLogging() {
-    MessageLoggerQ::MLqSHT ( ); // Shut the logger up
+  void HaltMessageLogging()
+  {
+    MessageLoggerQ::MLqSHT(); // Shut the logger up
   }
 
-  void FlushMessageLog() {
-    if (MessageDrop::instance()->messageLoggerScribeIsRunning !=
-        MLSCRIBE_RUNNING_INDICATOR) return;     // 6/20/08 mf
-    MessageLoggerQ::MLqFLS ( ); // Flush the message log queue
+  void FlushMessageLog()
+  {
+    if (MessageDrop::instance()->messageLoggerScribeIsRunning != MLSCRIBE_RUNNING_INDICATOR) return;
+    MessageLoggerQ::MLqFLS(); // Flush the message log queue
   }
 
-  bool isMessageProcessingSetUp() {                               // 6/20/08 mf
-    //  std::cerr << "isMessageProcessingSetUp: \n";
-    //  std::cerr << "messageLoggerScribeIsRunning = "
-    //          << (int)MessageDrop::instance()->messageLoggerScribeIsRunning << "\n";
-    return (MessageDrop::instance()->messageLoggerScribeIsRunning ==
-            MLSCRIBE_RUNNING_INDICATOR);
+  bool isMessageProcessingSetUp()
+  {
+    return MessageDrop::instance()->messageLoggerScribeIsRunning == MLSCRIBE_RUNNING_INDICATOR;
   }
 
-  void GroupLogStatistics(std::string const & category) {
-    std::string * cat_p = new std::string(category);
-    MessageLoggerQ::MLqGRP (cat_p); // Indicate a group summary category
-    // Note that the scribe will be responsible for deleting cat_p
+  void GroupLogStatistics(std::string const& category)
+  {
+    MessageLoggerQ::MLqGRP(new std::string{category}); // Indicate a group summary category
+    // The scribe is responsible for deleting the memory.
   }
 
-  void setStandAloneMessageThreshold(std::string const & severity) {
+  void setStandAloneMessageThreshold(std::string const& severity)
+  {
     MessageLoggerQ::standAloneThreshold(severity);
   }
-  void squelchStandAloneMessageCategory(std::string const & category){
+
+  void squelchStandAloneMessageCategory(std::string const& category)
+  {
     MessageLoggerQ::squelch(category);
   }
-
 
   // MessageFacilityService
   std::string MessageFacilityService::SingleThread = "SingleThreadMSPresence";
   std::string MessageFacilityService::MultiThread = "MessageServicePresence";
 
-  MessageFacilityService & MessageFacilityService::instance()
+  MessageFacilityService& MessageFacilityService::instance()
   {
     static MessageFacilityService mfs;
     return mfs;
   }
 
   // Read configurations from MessageFacility.cfg file
-  fhicl::ParameterSet MessageFacilityService::ConfigurationFile(
-                                                                std::string const & filename,
-                                                                fhicl::ParameterSet const & def)
+  fhicl::ParameterSet
+  MessageFacilityService::ConfigurationFile(std::string const& filename,
+                                            fhicl::ParameterSet const& def)
   {
-    size_t sub_start = filename.find("${");
-    size_t sub_end   = filename.find("}");
+    size_t const sub_start = filename.find("${");
+    size_t const sub_end   = filename.find("}");
 
-    const size_t npos = std::string::npos;
+    size_t const npos {std::string::npos};
 
     if(    (sub_start==npos && sub_end!=npos)
            || (sub_start!=npos && sub_end==npos)
@@ -105,20 +120,20 @@ namespace mf {
 
     if (sub_start==0)  // env embedded in the filename
       {
-        std::string env = filename.substr(2, sub_end-2);
+        std::string const env = filename.substr(2, sub_end-2);
         fname = filename.substr(sub_end+1);
-        policy_ptr.reset(new cet::filepath_lookup(env));
+        policy_ptr = std::make_unique<cet::filepath_lookup>(env);
       }
     else if (filename.find('/')==0)  // absolute path
       {
         fname = filename;
-        policy_ptr.reset(new cet::filepath_maker());
+        policy_ptr = std::make_unique<cet::filepath_maker>();
       }
     else                             // non-absolute path
       {
-        std::string env = std::string("FHICL_FILE_PATH");
+        std::string const env {"FHICL_FILE_PATH"};
         fname = filename;
-        policy_ptr.reset(new cet::filepath_lookup_after1(env));
+        policy_ptr = std::make_unique<cet::filepath_lookup_after1>(env);
       }
 
     fhicl::ParameterSet pset;
@@ -149,14 +164,10 @@ namespace mf {
        << "  destinations : { "
        << "    console : { type : \"cout\" threshold : \"DEBUG\" } "
        << "  } " ;
-
-    fhicl::ParameterSet pset;
-    std::string pstr(ss.str());
-    fhicl::make_ParameterSet(pstr, pset);
-    return pset;
+    return pset_from_oss(ss);
   }
 
-  fhicl::ParameterSet MessageFacilityService::logServer(int partition)
+  fhicl::ParameterSet MessageFacilityService::logServer(int const partition)
   {
     std::ostringstream ss;
     ss << commonPSet()
@@ -166,14 +177,10 @@ namespace mf {
        << "      partition : " << partition << " "
        << "    } "
        << "  } " ;
-
-    fhicl::ParameterSet pset;
-    std::string pstr(ss.str());
-    fhicl::make_ParameterSet(pstr, pset);
-    return pset;
+    return pset_from_oss(ss);
   }
 
-  fhicl::ParameterSet MessageFacilityService::logFile(std::string const & filename, bool append)
+  fhicl::ParameterSet MessageFacilityService::logFile(std::string const& filename, bool const append)
   {
     std::ostringstream ss;
     ss << commonPSet()
@@ -184,14 +191,10 @@ namespace mf {
        << "      append : " << (append ? "true" : "false")
        << "    } "
        << "  } " ;
-
-    fhicl::ParameterSet pset;
-    std::string pstr(ss.str());
-    fhicl::make_ParameterSet(pstr, pset);
-    return pset;
+    return pset_from_oss(ss);
   }
 
-  fhicl::ParameterSet MessageFacilityService::logCS(int partition)
+  fhicl::ParameterSet MessageFacilityService::logCS(int const partition)
   {
     std::ostringstream ss;
     ss << commonPSet()
@@ -202,14 +205,10 @@ namespace mf {
        << "      partition : " << partition << " "
        << "    } "
        << "  } " ;
-
-    fhicl::ParameterSet pset;
-    std::string pstr(ss.str());
-    fhicl::make_ParameterSet(pstr, pset);
-    return pset;
+    return pset_from_oss(ss);
   }
 
-  fhicl::ParameterSet MessageFacilityService::logCF(std::string const & filename, bool append)
+  fhicl::ParameterSet MessageFacilityService::logCF(std::string const& filename, bool const append)
   {
     std::ostringstream ss;
     ss << commonPSet()
@@ -221,14 +220,10 @@ namespace mf {
        << "      append : " << (append ? "true" : "false")
        << "    } "
        << "  } ";
-
-    fhicl::ParameterSet pset;
-    std::string pstr(ss.str());
-    fhicl::make_ParameterSet(pstr, pset);
-    return pset;
+    return pset_from_oss(ss);
   }
 
-  fhicl::ParameterSet MessageFacilityService::logFS(std::string const & filename, bool append, int partition)
+  fhicl::ParameterSet MessageFacilityService::logFS(std::string const& filename, bool const append, int const partition)
   {
     std::ostringstream ss;
     ss << commonPSet()
@@ -243,14 +238,10 @@ namespace mf {
        << "      partition : " << partition << " "
        << "    } "
        << "  } " ;
-
-    fhicl::ParameterSet pset;
-    std::string pstr(ss.str());
-    fhicl::make_ParameterSet(pstr, pset);
-    return pset;
+    return pset_from_oss(ss);
   }
 
-  fhicl::ParameterSet MessageFacilityService::logCFS(std::string const & filename, bool append, int partition)
+  fhicl::ParameterSet MessageFacilityService::logCFS(std::string const& filename, bool const append, int const partition)
   {
     std::ostringstream ss;
     ss << commonPSet()
@@ -266,14 +257,10 @@ namespace mf {
        << "      partition : " << partition << " "
        << "    } "
        << "  } " ;
-
-    fhicl::ParameterSet pset;
-    std::string pstr(ss.str());
-    fhicl::make_ParameterSet(pstr, pset);
-    return pset;
+    return pset_from_oss(ss);
   }
 
-  fhicl::ParameterSet MessageFacilityService::logArchive(std::string const & filename, bool append)
+  fhicl::ParameterSet MessageFacilityService::logArchive(std::string const& filename, bool const append)
   {
     std::ostringstream ss;
     ss << commonPSet()
@@ -284,17 +271,8 @@ namespace mf {
        << "      append : " << (append ? "true" : "false")
        << "    } "
        << "  } " ;
-
-    fhicl::ParameterSet pset;
-    std::string pstr(ss.str());
-    fhicl::make_ParameterSet(pstr, pset);
-    return pset;
+    return pset_from_oss(ss);
   }
-
-  MessageFacilityService::MessageFacilityService()
-    : MFServiceEnabled  (false)
-    , theML             (     )
-  { }
 
   MFSdestroyer::~MFSdestroyer()
   {
@@ -302,102 +280,98 @@ namespace mf {
   }
 
   // Start MessageFacility service
-  void StartMessageFacility(
-                            std::string const & mode,
-                            fhicl::ParameterSet const & pset)
+  void StartMessageFacility(std::string const& mode,
+                            fhicl::ParameterSet const& pset)
   {
     MessageFacilityService & mfs = MessageFacilityService::instance();
 
-    std::lock_guard<std::mutex> lock(mfs.m);
+    std::lock_guard<std::mutex> lock {mfs.m};
 
-    if( !mfs.MFServiceEnabled )
-      {
+    if(!mfs.MFServiceEnabled) {
 
-        /*
-         * qlu 03/10/10 The order of object initialization and destruction is
-         *              crucial in starting up and shutting down the Message
-         *              Facility service. In the d'tor of MessageServicePresence
-         *              it sends out a END message to the queue and waits for the
-         *              MLscribe thread to finish logging all remaining messages
-         *              in the queue. Therefore the ELadministrator singleton
-         *              (whose instance is handled by a local static variable)
-         *              and all attached destinations must be present during the
-         *              process. We must provide the secured method to guarantee
-         *              that the MessageServicePresence will be destroyed first,
-         *              and particularly *BEFORE* the destruction of ELadmin.
-         *              This is achieved by instantiating a static object, who
-         *              is responsible for killing the Presence at the *END* of
-         *              the start sequence. So this destroyer object will be killed
-         *              before everyone else.
-         */
+      /*
+       * qlu 03/10/10 The order of object initialization and destruction is
+       *              crucial in starting up and shutting down the Message
+       *              Facility service. In the d'tor of MessageServicePresence
+       *              it sends out a END message to the queue and waits for the
+       *              MLscribe thread to finish logging all remaining messages
+       *              in the queue. Therefore the ELadministrator singleton
+       *              (whose instance is handled by a local static variable)
+       *              and all attached destinations must be present during the
+       *              process. We must provide the secured method to guarantee
+       *              that the MessageServicePresence will be destroyed first,
+       *              and particularly *BEFORE* the destruction of ELadmin.
+       *              This is achieved by instantiating a static object, who
+       *              is responsible for killing the Presence at the *END* of
+       *              the start sequence. So this destroyer object will be killed
+       *              before everyone else.
+       */
 
-        // MessageServicePresence
-        mfs.MFPresence.reset(PresenceFactory::createInstance(mode));
+      // MessageServicePresence
+      mfs.MFPresence.reset(PresenceFactory::createInstance(mode));
 
-        // The MessageLogger
-        mfs.theML.reset( new service::MessageLogger(pset) );
+      // The MessageLogger
+      mfs.theML = std::make_shared<MessageLoggerImpl>(pset);
 
-        mfs.MFServiceEnabled = true;
+      mfs.MFServiceEnabled = true;
 
-        static MFSdestroyer destroyer;
-      }
+      static MFSdestroyer destroyer;
+    }
   }
 
   // Set application name
   void SetApplicationName(std::string const & application)
   {
-    MessageFacilityService & mfs = MessageFacilityService::instance();
+    MessageFacilityService& mfs = MessageFacilityService::instance();
 
-    if( ! mfs.MFServiceEnabled )    return;
+    if(!mfs.MFServiceEnabled) return;
 
-    std::lock_guard<std::mutex> lock(mfs.m);
+    std::lock_guard<std::mutex> lock {mfs.m};
 
     service::ELadministrator::instance()->setApplication(application);
     SetModuleName(application);
   }
 
   // Set module name and debug settings
-  void SetModuleName(std::string const & modulename)
+  void SetModuleName(std::string const& modulename)
   {
-    if( !MessageFacilityService::instance().MFServiceEnabled )
+    if(!MessageFacilityService::instance().MFServiceEnabled)
       return;
 
-    MessageDrop * drop = MessageDrop::instance();
+    MessageDrop* drop = MessageDrop::instance();
     drop->moduleName = modulename;
 
-    MessageFacilityService const & mfs = MessageFacilityService::instance();
+    MessageFacilityService const& mfs = MessageFacilityService::instance();
 
-    if( mfs.theML->everyDebugEnabled_ )
+    if(mfs.theML->everyDebugEnabled_)
       drop->debugEnabled = true;
-    else if( mfs.theML->debugEnabledModules_.count(modulename))
+    else if(mfs.theML->debugEnabledModules_.count(modulename))
       drop->debugEnabled = true;
     else
       drop->debugEnabled = false;
   }
 
   // Set the run/event context
-  void SetContext(std::string const & context)
+  void SetContext(std::string const& context)
   {
-    if( !MessageFacilityService::instance().MFServiceEnabled )
+    if(!MessageFacilityService::instance().MFServiceEnabled)
       return;
 
     MessageDrop::instance()->runEvent = context;
   }
 
   // Switch dds partition / channel
-  void SwitchChannel(int c)
+  void SwitchChannel(int const c)
   {
-    if( c<0 || c>4 )
-      {
-        LogWarning("RemoteMsg") << "Specified channel dose not exist";
-        return;
-      }
+    if(c<0 || c>4) {
+      LogWarning("RemoteMsg") << "Specified channel dose not exist";
+      return;
+    }
 
     std::stringstream ss;
     ss << "Partition" << c;
 
-    std::string * chanl = new std::string(ss.str());
-    MessageLoggerQ::MLqSWC(chanl);
+    MessageLoggerQ::MLqSWC(new std::string{ss.str()});
   }
 
 }  // namespace mf
