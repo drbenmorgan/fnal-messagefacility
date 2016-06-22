@@ -25,10 +25,9 @@ namespace {
   public:
     StandAloneScribe() = default;
     StandAloneScribe(StandAloneScribe const &) = delete;
-    StandAloneScribe & operator = (StandAloneScribe const &) = delete;
+    StandAloneScribe& operator= (StandAloneScribe const&) = delete;
 
-    void runCommand(OpCode  opcode, void * operand) override;
-
+    void runCommand(OpCode opcode, void* operand) override;
   };
 
   void
@@ -66,31 +65,31 @@ namespace {
     }
   }
 
-  std::shared_ptr<StandAloneScribe>& obtainStandAloneScribePtr()
+  std::unique_ptr<StandAloneScribe> obtainStandAloneScribePtr()
   {
-    static auto standAloneScribe_ptr = std::make_shared<StandAloneScribe>();
-    return standAloneScribe_ptr;
+    static auto standAloneScribe_ptr = std::make_unique<StandAloneScribe>();
+    return std::move(standAloneScribe_ptr);
   }
 
 
 } // end of anonymous namespace
 
-std::shared_ptr<AbstractMLscribe>
+std::unique_ptr<AbstractMLscribe>
 MessageLoggerQ::mlscribe_ptr = obtainStandAloneScribePtr();
 
-MessageLoggerQ *
+MessageLoggerQ*
 MessageLoggerQ::instance()
 {
   static MessageLoggerQ queue;
   return &queue;
 }
 void
-MessageLoggerQ::setMLscribe_ptr(std::shared_ptr<AbstractMLscribe> const& m)
+MessageLoggerQ::setMLscribe_ptr(std::unique_ptr<AbstractMLscribe> m)
 {
   if (!m) {
     mlscribe_ptr = obtainStandAloneScribePtr();
   } else {
-    mlscribe_ptr = m;
+    mlscribe_ptr = std::move(m);
   }
 }
 
@@ -199,12 +198,12 @@ MessageLoggerQ::MLqSWC(std::string* chanl_p)
 mf::ELseverityLevel MessageLoggerQ::threshold ("WARNING");
 std::set<std::string> MessageLoggerQ::squelchSet;
 
-void MessageLoggerQ::standAloneThreshold(std::string const & severity)
+void MessageLoggerQ::standAloneThreshold(std::string const& severity)
 {
   threshold = mf::ELseverityLevel(severity);
 }
 
-void MessageLoggerQ::squelch(std::string const & category)
+void MessageLoggerQ::squelch(std::string const& category)
 {
   squelchSet.insert(category);
 }

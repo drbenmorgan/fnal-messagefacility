@@ -28,8 +28,8 @@ namespace {
 namespace mf {
   namespace service {
 
-    MessageLoggerScribe::MessageLoggerScribe(std::shared_ptr<ThreadQueue> queue)
-      : early_dest{admin_p->attach("cerr_early", std::make_unique<ELostreamOutput>( std::cerr, false))}
+    MessageLoggerScribe::MessageLoggerScribe(cet::exempt_ptr<ThreadQueue> queue)
+      : early_dest{admin_p->attach("cerr_early", std::make_unique<ELostreamOutput>(std::cerr, false))}
       , singleThread{queue.get() == nullptr}
       , m_queue{queue}
     {
@@ -108,17 +108,17 @@ namespace mf {
         } else {
           ConfigurationHandshake* h_p = static_cast<ConfigurationHandshake*>(operand);
           job_pset_p.reset(static_cast<fhicl::ParameterSet*>(h_p->p));
-          ConfigurationHandshake::lock_guard sl(h_p->m);   // get lock
+          ConfigurationHandshake::lock_guard sl {h_p->m};   // get lock
           try {
             configure_errorlog();
           }
           catch(mf::Exception& e) {
             Place_for_passing_exception_ptr epp = h_p->epp;
-            if (!(*epp)) {
+            if (!*epp) {
               *epp = std::make_shared<mf::Exception>(e);
             } else {
               Pointer_to_new_exception_on_heap ep = *epp;
-              (*ep) << "\n and another exception: \n" << e.what();
+              *ep << "\n and another exception: \n" << e.what();
             }
           }
           // Note - since the configuring code has not made a new copy of the

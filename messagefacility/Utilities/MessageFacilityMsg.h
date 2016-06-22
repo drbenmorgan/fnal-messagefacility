@@ -16,20 +16,19 @@ namespace mf {
     ~MessageFacilityMsg();
 
     // Set methods
-    void setTimestamp   ( timeval const & tv );
-    void setSeverity    ( std::string const & severity );
-    void setCategory    ( std::string const & category );
-    void setHostname    ( std::string const & hostname );
-    void setHostaddr    ( std::string const & hostaddr );
-    void setProcess     ( std::string const & process );
-    void setPid         ( long pid );
-    void setApplication ( std::string const & app );
-    void setModule      ( std::string const & module );
-    void setContext     ( std::string const & context );
-    void setMessage     (
-                         std::string const & file,
-                         std::string const & line,
-                         std::string const & message );
+    void setTimestamp   (timeval const& tv);
+    void setSeverity    (std::string const& severity);
+    void setCategory    (std::string const& category);
+    void setHostname    (std::string const& hostname);
+    void setHostaddr    (std::string const& hostaddr);
+    void setProcess     (std::string const& process);
+    void setPid         (long pid);
+    void setApplication (std::string const& app);
+    void setModule      (std::string const& module);
+    void setContext     (std::string const& context);
+    void setMessage     (std::string const& file,
+                         std::string const& line,
+                         std::string const& message);
 
 
     // Get methods

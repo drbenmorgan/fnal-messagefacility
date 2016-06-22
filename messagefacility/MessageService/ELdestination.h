@@ -120,7 +120,6 @@ namespace mf {
 
       ELseverityLevel threshold {ELzeroSeverity};
       std::string preamble {"%MSG"};
-      std::string newline {"\n"};
       std::string indent {std::string(6,' ')};
       std::size_t lineLength {80ull};
       std::size_t charsOnLine {};

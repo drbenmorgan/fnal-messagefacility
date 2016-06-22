@@ -1,25 +1,12 @@
 #ifndef messagefacility_MessageService_MainThreadMLscribe_h
 #define messagefacility_MessageService_MainThreadMLscribe_h
 
+#include "cetlib/exempt_ptr.h"
 #include "messagefacility/MessageService/AbstractMLscribe.h"
+#include "messagefacility/MessageService/ErrorLog.h"
 #include "messagefacility/MessageService/OpCode.h"
-#include "messagefacility/Utilities/SingleConsumerQ.h"
-
-// I believe the below are not needed:
-
-#include "messagefacility/Utilities/exception.h"
-
-#include "messagefacility/MessageService/ELdestControl.h"
-#include "messagefacility/MessageService/MsgContext.h"
-#include "messagefacility/MessageService/MessageLoggerDefaults.h"
 
 #include <memory>
-
-#include <iosfwd>
-#include <vector>
-#include <map>
-
-#include <iostream>
 
 namespace mf {
   namespace service {
@@ -43,23 +30,13 @@ namespace mf {
 
     class ThreadQueue;
 
-    class MainThreadMLscribe : public AbstractMLscribe
-    {
+    class MainThreadMLscribe : public AbstractMLscribe {
     public:
-      // ---  birth/death:
-      MainThreadMLscribe(std::shared_ptr<ThreadQueue> tqp);
+      MainThreadMLscribe(cet::exempt_ptr<ThreadQueue> tqp);
 
-      // --- receive and act on messages:
-      void  runCommand(OpCode  opcode, void * operand) override;
-
-
-      // --- obtain a pointer to the errorlog
-      static ErrorLog* getErrorLog_ptr() {return static_errorlog_p;}
-
+      void runCommand(OpCode opcode, void* operand) override;
     private:
-
-      static ErrorLog* static_errorlog_p;
-      std::shared_ptr<ThreadQueue> m_queue;
+      cet::exempt_ptr<ThreadQueue> m_queue;
     };  // MainThreadMLscribe
 
 

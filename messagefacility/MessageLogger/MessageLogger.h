@@ -235,8 +235,8 @@ public:
   static std::string SingleThread;
   static std::string MultiThread;
 
-  std::shared_ptr<Presence> MFPresence {nullptr};
-  std::shared_ptr<MessageLoggerImpl> theML {nullptr};
+  std::unique_ptr<Presence> MFPresence {nullptr};
+  std::unique_ptr<MessageLoggerImpl> theML {nullptr};
   std::mutex m {};
   bool MFServiceEnabled {false};
 

@@ -2,9 +2,8 @@
 #define messagefacility_MessageLogger_MessageLoggerScribe_h
 
 #include "cetlib/BasicPluginFactory.h"
-
+#include "cetlib/exempt_ptr.h"
 #include "fhiclcpp/ParameterSet.h"
-
 #include "messagefacility/MessageService/ELadministrator.h"
 #include "messagefacility/MessageService/ELdestControl.h"
 #include "messagefacility/MessageService/ELdestConfigCheck.h"
@@ -31,16 +30,16 @@ namespace mf {
       ~MessageLoggerScribe();
 
       /// --- If queue is NULL, this sets singleThread true
-      explicit MessageLoggerScribe(std::shared_ptr<ThreadQueue> queue);
+      explicit MessageLoggerScribe(cet::exempt_ptr<ThreadQueue> queue);
 
       // --- receive and act on messages:
       void run();
-      void runCommand(OpCode  opcode, void * operand) override;
+      void runCommand(OpCode opcode, void* operand) override;
 
     private:
 
       // --- log one consumed message
-      void log(ErrorObj * errorobj_p);
+      void log(ErrorObj* errorobj_p);
 
       // --- cause statistics destinations to output
       void triggerStatisticsSummaries();
@@ -71,9 +70,9 @@ namespace mf {
       // --- data:
       ELadministrator* admin_p {ELadministrator::instance()};
       ELdestControl early_dest;
-      std::shared_ptr<ErrorLog> errorlog_p {new ErrorLog};
+      std::unique_ptr<ErrorLog> errorlog_p {std::make_unique<ErrorLog>()};
       MsgContext msg_context;
-      std::shared_ptr<fhicl::ParameterSet> job_pset_p {nullptr};
+      std::unique_ptr<fhicl::ParameterSet> job_pset_p {nullptr};
       std::string jobReportOption {};
       bool clean_slate_configuration {true};
       MessageLoggerDefaults messageLoggerDefaults {MessageLoggerDefaults::mode("grid")};
@@ -82,7 +81,7 @@ namespace mf {
       bool done {false};
       bool purge_mode {false};
       int  count {};
-      std::shared_ptr<ThreadQueue> m_queue;
+      cet::exempt_ptr<ThreadQueue> m_queue;
 
       cet::BasicPluginFactory pluginFactory {"mfPlugin"};
       cet::BasicPluginFactory pluginStatsFactory {"mfStatsPlugin"};

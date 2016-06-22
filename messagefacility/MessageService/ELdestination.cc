@@ -19,14 +19,13 @@ namespace mf {
   namespace service {
 
     namespace {
-
-      const std::string noSummarizationMsg = "No summarization()";
-      const std::string noSummaryMsg       = "No summary()";
-      const std::string noClearSummaryMsg  = "No clearSummary()";
-      const std::string hereMsg            = "available via this destination";
-      const std::string noosMsg            = "No ostream";
-      const std::string notELoutputMsg     = "This destination is not an ELoutput";
-
+      std::string const noSummarizationMsg = "No summarization()";
+      std::string const noSummaryMsg       = "No summary()";
+      std::string const noClearSummaryMsg  = "No clearSummary()";
+      std::string const hereMsg            = "available via this destination";
+      std::string const noosMsg            = "No ostream";
+      std::string const notELoutputMsg     = "This destination is not an ELoutput";
+      std::string const newline {"\n"};
     }
 
     //=============================================================================

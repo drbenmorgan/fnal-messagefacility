@@ -5,21 +5,21 @@
 namespace mf {
   namespace service {
 
-    MainThreadMLscribe::MainThreadMLscribe(std::shared_ptr<ThreadQueue> tqp)
-      : m_queue(tqp)
+    MainThreadMLscribe::MainThreadMLscribe(cet::exempt_ptr<ThreadQueue> tqp)
+      : m_queue{tqp}
     {}
 
     void
     MainThreadMLscribe::
-    runCommand(OpCode const opcode, void * operand)
+    runCommand(OpCode const opcode, void* operand)
     {
       if (handshaked(opcode)) {
-        Place_for_passing_exception_ptr epp(new Pointer_to_new_exception_on_heap());
-        ConfigurationHandshake h(operand,epp);
-        void* v (static_cast<void *>(&h));
+        Place_for_passing_exception_ptr epp {new Pointer_to_new_exception_on_heap()};
+        ConfigurationHandshake h {operand,epp};
+        void* v (static_cast<void*>(&h));
         Pointer_to_new_exception_on_heap ep;
         {
-          ConfigurationHandshake::unique_lock sl(h.m);       // get lock
+          ConfigurationHandshake::unique_lock sl {h.m};
           m_queue->produce(opcode, v);
           // wait for result to appear (in epp)
           h.c.wait(sl); // c.wait(sl) unlocks the scoped lock and sleeps till notified
@@ -28,11 +28,11 @@ namespace mf {
           // finally, release the scoped lock by letting it go out of scope
         }
         if (ep) {
-          mf::Exception ex(*ep);
+          mf::Exception ex {*ep};
           throw ex;
         }
       } else {
-        m_queue->produce (opcode, operand);
+        m_queue->produce(opcode, operand);
       }
     } // runCommand
 

@@ -21,62 +21,71 @@ namespace mf {
   }
 
   // Set methods
-  void MessageFacilityMsg::setTimestamp(timeval const & tv)           {
+  void MessageFacilityMsg::setTimestamp(timeval const& tv)
+  {
     ep->setTimestamp(tv);
     empty_ = false;
   }
 
-  void MessageFacilityMsg::setSeverity (std::string const & severity) {
-    ep->setSeverity(mf::ELseverityLevel(std::string(severity)));
+  void MessageFacilityMsg::setSeverity(std::string const& severity)
+  {
+    ep->setSeverity(mf::ELseverityLevel(severity));
     empty_ = false;
   }
 
-  void MessageFacilityMsg::setCategory (std::string const & category) {
+  void MessageFacilityMsg::setCategory(std::string const& category)
+  {
     ep->setID(category);
     empty_ = false;
   }
 
-  void MessageFacilityMsg::setHostname (std::string const & hostname) {
+  void MessageFacilityMsg::setHostname(std::string const& hostname)
+  {
     ep->setHostName(hostname);
     empty_ = false;
   }
 
-  void MessageFacilityMsg::setHostaddr (std::string const & hostaddr) {
+  void MessageFacilityMsg::setHostaddr(std::string const& hostaddr)
+  {
     ep->setHostAddr(hostaddr);
     empty_ = false;
   }
 
-  void MessageFacilityMsg::setProcess  (std::string const & process)  {
+  void MessageFacilityMsg::setProcess(std::string const& process)
+  {
     ep->setProcess(process);
     empty_ = false;
   }
 
-  void MessageFacilityMsg::setPid      (long pid)                     {
+  void MessageFacilityMsg::setPid(long const pid)
+  {
     ep->setPID(pid);
     empty_ = false;
   }
 
-  void MessageFacilityMsg::setApplication(std::string const & app)    {
+  void MessageFacilityMsg::setApplication(std::string const& app)
+  {
     ep->setApplication(app);
     empty_ = false;
   }
 
-  void MessageFacilityMsg::setModule   (std::string const & module)   {
+  void MessageFacilityMsg::setModule(std::string const& module)
+  {
     ep->setModule(module);
     empty_ = false;
   }
 
-  void MessageFacilityMsg::setContext  (std::string const & context)  {
+  void MessageFacilityMsg::setContext(std::string const& context)
+  {
     ep->setContext(context);
     empty_ = false;
   }
 
-  void MessageFacilityMsg::setMessage  (
-                                        std::string const & file
-                                        , std::string const & line
-                                        , std::string const & message )
+  void MessageFacilityMsg::setMessage(std::string const& file,
+                                      std::string const& line,
+                                      std::string const& message)
   {
-    (*ep) << " " << file << ":" << line << "\n" << message;
+    *ep << " " << file << ":" << line << "\n" << message;
     empty_ = false;
   }
 

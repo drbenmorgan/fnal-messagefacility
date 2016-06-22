@@ -2,12 +2,13 @@
 #define messagefacility_MessageLogger_createPresence_h
 
 #include "messagefacility/MessageLogger/Presence.h"
+#include <memory>
 #include <string>
 
 namespace mf {
 
   struct PresenceFactory {
-    static Presence* createInstance(std::string const& s);
+    static std::unique_ptr<Presence> createInstance(std::string const& s);
   };
 
 }

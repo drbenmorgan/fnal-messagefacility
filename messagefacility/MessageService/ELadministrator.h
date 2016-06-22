@@ -1,7 +1,6 @@
 #ifndef messagefacility_MessageService_ELadministrator_h
 #define messagefacility_MessageService_ELadministrator_h
 
-
 // ----------------------------------------------------------------------
 //
 // ELadminstrator.h  provides the singleton class that the framework uses to
@@ -65,7 +64,6 @@
 namespace mf {
   namespace service {
 
-
     // ----------------------------------------------------------------------
     // Prerequisite classes:
     // ----------------------------------------------------------------------
@@ -73,7 +71,6 @@ namespace mf {
     class ELcontextSupplier;
     class ErrorLog;
     class ELcout;
-
 
     // ----------------------------------------------------------------------
     // ELadministrator:
@@ -86,12 +83,8 @@ namespace mf {
 
     public:
 
-      // ---  birth via a surrogate:
-      //
       static ELadministrator* instance();
 
-      // ---  disable copy/move:
-      //
       ELadministrator(ELadministrator const&) = delete;
       ELadministrator& operator=(ELadministrator const&) = delete;
 
@@ -181,7 +174,7 @@ namespace mf {
       static ELadministrator* instance_;
 
       std::string process_ {};
-      std::shared_ptr<ELcontextSupplier> context_;
+      std::unique_ptr<ELcontextSupplier> context_;
       ELseverityLevel abortThreshold_ {ELseverityLevel::ELsev_abort};
       ELseverityLevel exitThreshold_ {ELseverityLevel::ELsev_highestSeverity};
       ELseverityLevel highSeverity_ {ELseverityLevel::ELsev_zeroSeverity};
@@ -196,7 +189,7 @@ namespace mf {
       std::string application_ {};
       long pid_ {};
 
-      std::map <std::string,std::unique_ptr<ELdestination>> attachedDestinations;
+      std::map<std::string, std::unique_ptr<ELdestination>> attachedDestinations;
 
     };  // ELadministrator
 

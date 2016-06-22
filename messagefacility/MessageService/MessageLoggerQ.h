@@ -43,7 +43,7 @@ namespace mf {
     static void MLqSWC(std::string* chanl_p);
 
     // ---  bookkeeping for single-thread mode
-    static void setMLscribe_ptr(std::shared_ptr<mf::service::AbstractMLscribe> const& m);
+    static void setMLscribe_ptr(std::unique_ptr<mf::service::AbstractMLscribe> m);
 
     // --- special control of standAlone logging behavior
     static void standAloneThreshold(std::string const & severity);
@@ -68,7 +68,7 @@ namespace mf {
                                   std::string const& commandMnemonic);
 
     // --- data:
-    static std::shared_ptr<mf::service::AbstractMLscribe> mlscribe_ptr;
+    static std::unique_ptr<mf::service::AbstractMLscribe> mlscribe_ptr;
     static mf::ELseverityLevel threshold;
     static std::set<std::string> squelchSet;
 

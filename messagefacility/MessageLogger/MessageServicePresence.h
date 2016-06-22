@@ -21,16 +21,13 @@ namespace mf  {
       MessageServicePresence(MessageServicePresence const&) = delete;
       void operator= (MessageServicePresence const&) = delete;
    private:
+      std::unique_ptr<ThreadQueue> m_queue;
+      cet::exempt_ptr<ThreadQueue> m_queue_exempt;
+      std::thread m_scribeThread;
+    };
 
-      // --- data:
-      std::shared_ptr<ThreadQueue> m_queue;
-      std::thread  m_scribeThread;
-
-    };  // MessageServicePresence
-
-
-  }   // end of namespace service
-}  // namespace mf
+  } // end of namespace service
+} // namespace mf
 
 #endif /* messagefacility_MessageLogger_MessageServicePresence_h */
 

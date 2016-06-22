@@ -1,42 +1,27 @@
-// ----------------------------------------------------------------------
-//
-// SingleThreadMSPresence.cc
-//
-// Changes:
-//
-//
-
-#include "messagefacility/MessageLogger/SingleThreadMSPresence.h"
-#include "messagefacility/MessageLogger/MessageLoggerScribe.h"
-
-#include "messagefacility/MessageService/MessageLoggerQ.h"
 #include "messagefacility/MessageLogger/MessageDrop.h"
+#include "messagefacility/MessageLogger/MessageLoggerScribe.h"
+#include "messagefacility/MessageLogger/SingleThreadMSPresence.h"
+#include "messagefacility/MessageService/MessageLoggerQ.h"
+#include "messagefacility/MessageService/ThreadQueue.h"
 
 #include <memory>
 
-
 namespace mf {
-namespace service {
+  namespace service {
 
+    SingleThreadMSPresence::SingleThreadMSPresence()
+      : m_queue {std::make_unique<ThreadQueue>()}
+      , m_queue_exempt {m_queue.get()}
+    {
+      MessageLoggerQ::setMLscribe_ptr(std::make_unique<MessageLoggerScribe>(m_queue_exempt));
+      MessageDrop::instance()->messageLoggerScribeIsRunning = MLSCRIBE_RUNNING_INDICATOR;
+    }
 
-SingleThreadMSPresence::SingleThreadMSPresence()
-  : Presence()
-{
-  //std::cout << "SingleThreadMSPresence ctor\n";
-  MessageLoggerQ::setMLscribe_ptr(
-     std::shared_ptr<mf::service::AbstractMLscribe>
-     (new MessageLoggerScribe(
-     std::shared_ptr<ThreadQueue>())));
-  MessageDrop::instance()->messageLoggerScribeIsRunning =
-                                MLSCRIBE_RUNNING_INDICATOR;
-}
+    SingleThreadMSPresence::~SingleThreadMSPresence()
+    {
+      MessageLoggerQ::MLqEND();
+      MessageLoggerQ::setMLscribe_ptr(nullptr);
+    }
 
-SingleThreadMSPresence::~SingleThreadMSPresence()
-{
-  MessageLoggerQ::MLqEND();
-  MessageLoggerQ::setMLscribe_ptr
-    (std::shared_ptr<mf::service::AbstractMLscribe>());
-}
-
-} // end of namespace service
+  } // end of namespace service
 } // end of namespace mf

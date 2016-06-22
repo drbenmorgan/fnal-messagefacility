@@ -105,10 +105,10 @@ namespace mf {
 
     size_t const npos {std::string::npos};
 
-    if(    (sub_start==npos && sub_end!=npos)
-           || (sub_start!=npos && sub_end==npos)
-           || (sub_start > sub_end)
-           || (sub_start!=0 && sub_start!=npos) )
+    if( (sub_start==npos && sub_end!=npos)
+        || (sub_start!=npos && sub_end==npos)
+        || (sub_start > sub_end)
+        || (sub_start!=0 && sub_start!=npos) )
       {
         std::cout << "Unrecognized configuration file. "
                   << "Use default configuration instead.\n";
@@ -283,7 +283,7 @@ namespace mf {
   void StartMessageFacility(std::string const& mode,
                             fhicl::ParameterSet const& pset)
   {
-    MessageFacilityService & mfs = MessageFacilityService::instance();
+    MessageFacilityService& mfs = MessageFacilityService::instance();
 
     std::lock_guard<std::mutex> lock {mfs.m};
 
@@ -308,10 +308,10 @@ namespace mf {
        */
 
       // MessageServicePresence
-      mfs.MFPresence.reset(PresenceFactory::createInstance(mode));
+      mfs.MFPresence = PresenceFactory::createInstance(mode);
 
       // The MessageLogger
-      mfs.theML = std::make_shared<MessageLoggerImpl>(pset);
+      mfs.theML = std::make_unique<MessageLoggerImpl>(pset);
 
       mfs.MFServiceEnabled = true;
 
