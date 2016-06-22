@@ -9,29 +9,20 @@ namespace mf {
 
   struct MessageDrop {
   private:
-    MessageDrop()
-      : moduleName ("")
-      , runEvent("MF-online")
-      , jobreport_name()
-      , jobMode("")
-      , debugEnabled(true)
-      , infoEnabled(true)
-      , warningEnabled(true)
-    {}
-
+    MessageDrop() = default;
   public:
-    static MessageDrop * instance ();
-    std::string moduleName;
-    std::string runEvent;
-    std::string jobreport_name;
-    std::string jobMode;
+    static MessageDrop* instance();
+    std::string moduleName {};
+    std::string runEvent {"MF-online"};
+    std::string jobreport_name {};
+    std::string jobMode {};
 
-    bool debugEnabled;
-    bool infoEnabled;
-    bool warningEnabled;
+    bool debugEnabled {true};
+    bool infoEnabled {true};
+    bool warningEnabled {true};
 
     static unsigned char messageLoggerScribeIsRunning;
-    static mf::Exception * ex_p;
+    static mf::Exception* ex_p;
 
     // Disable copy/move
     MessageDrop ( const MessageDrop&  ) = delete;
@@ -40,7 +31,7 @@ namespace mf {
     MessageDrop& operator = (       MessageDrop&& ) = delete;
   };
 
-  static const unsigned char  MLSCRIBE_RUNNING_INDICATOR = 29;
+  static const unsigned char MLSCRIBE_RUNNING_INDICATOR = 29;
 
 } // end of namespace mf
 

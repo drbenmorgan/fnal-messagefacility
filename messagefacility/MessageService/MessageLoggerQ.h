@@ -1,7 +1,7 @@
 #ifndef messagefacility_MessageService_MessageLoggerQ_h
 #define messagefacility_MessageService_MessageLoggerQ_h
 
-#include "messagefacility/Auxiliaries/ELseverityLevel.h"
+#include "messagefacility/Utilities/ELseverityLevel.h"
 #include "messagefacility/MessageService/OpCode.h"
 
 #include <string>

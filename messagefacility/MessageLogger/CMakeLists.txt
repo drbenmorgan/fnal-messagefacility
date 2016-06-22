@@ -1,7 +1,9 @@
 cet_make_library(
-  LIBRARY_NAME MF_MessageLogger
+  LIBRARY_NAME
+  MF_MessageLogger
   SOURCE
   JobReport.cc
+  MessageDrop.cc
   MessageLogger.cc
   MessageLoggerImpl.cc
   MessageLoggerScribe.cc
@@ -12,11 +14,12 @@ cet_make_library(
   createPresence.cc
   LIBRARIES
   MF_MessageService
+  MF_Utilities
   fhiclcpp
   ${Boost_THREAD_LIBRARY}
   )
 
-cet_make_exec( ELdestinationTester
+cet_make_exec(ELdestinationTester
   SOURCE ELdestinationTester.cc
   LIBRARIES
   MF_MessageLogger

@@ -12,11 +12,10 @@ using mf::service::ELostreamOutput;
 
 extern "C" {
 
-  auto makePlugin( const std::string&,
-                   const fhicl::ParameterSet& pset ) {
-
-    return std::make_unique<ELostreamOutput>( pset, std::cout );
-
+  auto makePlugin(std::string const&,
+                  fhicl::ParameterSet const& pset)
+  {
+    return std::make_unique<ELostreamOutput>(pset, std::cout);
   }
 
 }

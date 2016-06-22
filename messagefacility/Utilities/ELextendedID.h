@@ -1,7 +1,7 @@
 #ifndef messagefacility_Auxiliaries_ELextendedID_h
 #define messagefacility_Auxiliaries_ELextendedID_h
 
-#include "messagefacility/Auxiliaries/ELseverityLevel.h"
+#include "messagefacility/Utilities/ELseverityLevel.h"
 
 namespace mf {
 

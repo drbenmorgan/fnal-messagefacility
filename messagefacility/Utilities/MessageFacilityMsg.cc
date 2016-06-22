@@ -1,13 +1,5 @@
-/*
- * MessageFacilityMsg.cpp
- *
- *  Created on: Jun 11, 2010
- *      Author: qlu
- */
-
-#include "messagefacility/Auxiliaries/MessageFacilityMsg.h"
-#include "messagefacility/Auxiliaries/ErrorObj.h"
-
+#include "messagefacility/Utilities/ErrorObj.h"
+#include "messagefacility/Utilities/MessageFacilityMsg.h"
 #include "messagefacility/Utilities/formatTime.h"
 
 namespace mf {

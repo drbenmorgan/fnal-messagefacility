@@ -62,7 +62,7 @@
 #include "messagefacility/MessageLogger/JobReport.h"
 #include "messagefacility/MessageLogger/MessageLoggerImpl.h"
 #include "messagefacility/MessageService/MessageLoggerQ.h"
-#include "messagefacility/MessageService/MessageDrop.h"
+#include "messagefacility/MessageLogger/MessageDrop.h"
 #include "messagefacility/Utilities/exception.h"
 
 #include <sstream>

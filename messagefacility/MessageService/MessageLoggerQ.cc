@@ -2,7 +2,7 @@
 #include "messagefacility/MessageService/AbstractMLscribe.h"
 #include "messagefacility/MessageService/ConfigurationHandshake.h"
 #include "messagefacility/Utilities/exception.h"
-#include "messagefacility/Auxiliaries/ErrorObj.h"
+#include "messagefacility/Utilities/ErrorObj.h"
 
 #include <cstring>
 #include <iostream>
@@ -36,9 +36,8 @@ namespace {
     //even though we don't print, have to clean up memory
     switch (opcode) {
     case LOG_A_MESSAGE: {
-      mf::ErrorObj *  errorobj_p = static_cast<mf::ErrorObj *>(operand);
-      if ( MessageLoggerQ::ignore                         // ChangeLog 13
-           (errorobj_p->xid().severity, errorobj_p->xid().id) ) {
+      mf::ErrorObj* errorobj_p = static_cast<mf::ErrorObj*>(operand);
+      if (MessageLoggerQ::ignore(errorobj_p->xid().severity, errorobj_p->xid().id)) {
         delete errorobj_p;
         break;
       }
@@ -58,7 +57,7 @@ namespace {
     case JOBMODE:
     case GROUP_STATS:
       {
-        std::string* string_p = static_cast<std::string*> (operand);
+        auto string_p = static_cast<std::string*>(operand);
         delete string_p;
         break;
       }
@@ -67,7 +66,8 @@ namespace {
     }
   }
 
-  std::shared_ptr<StandAloneScribe> & obtainStandAloneScribePtr() {
+  std::shared_ptr<StandAloneScribe>& obtainStandAloneScribePtr()
+  {
     static auto standAloneScribe_ptr = std::make_shared<StandAloneScribe>();
     return standAloneScribe_ptr;
   }
@@ -85,7 +85,7 @@ MessageLoggerQ::instance()
   return &queue;
 }
 void
-MessageLoggerQ::setMLscribe_ptr(std::shared_ptr<AbstractMLscribe> const & m)
+MessageLoggerQ::setMLscribe_ptr(std::shared_ptr<AbstractMLscribe> const& m)
 {
   if (!m) {
     mlscribe_ptr = obtainStandAloneScribePtr();
@@ -121,38 +121,38 @@ MessageLoggerQ::handshakedCommand(OpCode const opcode,
 void
 MessageLoggerQ::MLqEND()
 {
-  simpleCommand (END_THREAD, (void *)0);
+  simpleCommand(END_THREAD, nullptr);
 }
 
 void
 MessageLoggerQ::MLqSHT()
 {
-  simpleCommand (SHUT_UP, (void *)0);
+  simpleCommand(SHUT_UP, nullptr);
 }
 
 void
-MessageLoggerQ::MLqLOG( ErrorObj * p )
+MessageLoggerQ::MLqLOG(ErrorObj* p)
 {
-  simpleCommand (LOG_A_MESSAGE, static_cast<void *>(p));
+  simpleCommand(LOG_A_MESSAGE, static_cast<void*>(p));
 }
 
 
 void
-MessageLoggerQ::MLqCFG( fhicl::ParameterSet * p )
+MessageLoggerQ::MLqCFG(fhicl::ParameterSet* p)
 {
-  handshakedCommand(CONFIGURE, p, "CFG" );
+  handshakedCommand(CONFIGURE, p, "CFG");
 }
 
 void
-MessageLoggerQ::MLqEXT( NamedDestination* p )
+MessageLoggerQ::MLqEXT(NamedDestination* p)
 {
-  simpleCommand (EXTERN_DEST, static_cast<void *>(p));
+  simpleCommand (EXTERN_DEST, static_cast<void*>(p));
 }
 
 void
 MessageLoggerQ::MLqSUM()
 {
-  simpleCommand(SUMMARIZE, 0);
+  simpleCommand(SUMMARIZE, nullptr);
 }
 
 void
@@ -175,7 +175,7 @@ MessageLoggerQ::MLqFLS()
   // place to convey exception information.  FLS does not need this, nor does
   // it need the parameter set, but we are reusing ConfigurationHandshake
   // rather than reinventing the mechanism.
-  handshakedCommand(FLUSH_LOG_Q, 0, "FLS");
+  handshakedCommand(FLUSH_LOG_Q, nullptr, "FLS");
 }
 
 void
@@ -193,21 +193,26 @@ MessageLoggerQ::MLqJRS(std::map<std::string, double>* sum_p)
 void
 MessageLoggerQ::MLqSWC(std::string* chanl_p)
 {
-  handshakedCommand(SWITCH_CHANNEL, static_cast<void *>(chanl_p), "SWC");
+  handshakedCommand(SWITCH_CHANNEL, static_cast<void*>(chanl_p), "SWC");
 }
 
 mf::ELseverityLevel MessageLoggerQ::threshold ("WARNING");
 std::set<std::string> MessageLoggerQ::squelchSet;
 
-void MessageLoggerQ::standAloneThreshold(std::string const & severity) {
+void MessageLoggerQ::standAloneThreshold(std::string const & severity)
+{
   threshold = mf::ELseverityLevel(severity);
 }
-void MessageLoggerQ::squelch(std::string const & category) {
+
+void MessageLoggerQ::squelch(std::string const & category)
+{
   squelchSet.insert(category);
 }
-bool MessageLoggerQ::ignore ( mf::ELseverityLevel const & severity,
-                              std::string const & category ) {
-  if ( severity < threshold ) return true;
-  if ( squelchSet.count(category) > 0 ) return true;
+
+bool MessageLoggerQ::ignore (mf::ELseverityLevel const& severity,
+                             std::string const& category)
+{
+  if (severity < threshold) return true;
+  if (squelchSet.count(category) > 0) return true;
   return false;
 }

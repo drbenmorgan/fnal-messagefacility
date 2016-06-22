@@ -432,8 +432,6 @@ namespace mf {
     // Output format options:
     // ----------------------------------------------------------------------
 
-    std::string ELdestination::getNewline() const { return newline; }
-
     int ELdestination::setLineLength (int const len)
     {
       int const temp = lineLength;

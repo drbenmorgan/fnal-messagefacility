@@ -1,18 +1,30 @@
-#
-#  Utilities/CMakeLists.txt
-#  -------------------------------------------------------------------
-#
-#  CMake build file for library Utilities and UtilitiesS
-#
-
-cet_make( LIBRARY_NAME MF_Utilities
-          LIBRARIES cetlib
-          ${Boost_FILESYSTEM_LIBRARY}
-          ${Boost_REGEX_LIBRARY}
-          ${Boost_SYSTEM_LIBRARY}
-          ${Boost_THREAD_LIBRARY}
-          -lpthread
-          WITH_STATIC_LIBRARY )
+cet_make_library(
+  LIBRARY_NAME
+  MF_Utilities
+  SOURCE
+  DebugMacros.cc
+  ELextendedID.cc
+  ELlimitsTable.cc
+  ELmap.cc
+  ELseverityLevel.cc
+  ErrorObj.cc
+  eq_nocase.cc
+  exception.cc
+  formatTime.cc
+  MessageFacilityMsg.cc
+  SingleConsumerQ.cc
+  tinyxml.cc
+  tinyxmlerror.cc
+  tinyxmlparser.cc
+  UnixSignalHandlers.cc
+  LIBRARIES
+  cetlib
+  ${Boost_FILESYSTEM_LIBRARY}
+  ${Boost_REGEX_LIBRARY}
+  ${Boost_SYSTEM_LIBRARY}
+  ${Boost_THREAD_LIBRARY}
+  -lpthread
+  )
 
 # install files
 install_headers()

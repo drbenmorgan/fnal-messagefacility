@@ -11,7 +11,6 @@ cet_make_library(
   ErrorLog.cc
   HardwiredDefaults.cc
   MainThreadMLscribe.cc
-  MessageDrop.cc
   MessageLoggerDefaults.cc
   MessageLoggerQ.cc
   MsgContext.cc
@@ -19,13 +18,10 @@ cet_make_library(
   MsgStatistics.cc
   ThreadQueue.cc
   LIBRARIES
-  MF_Auxiliaries
   MF_Utilities
   fhiclcpp
   ${Boost_THREAD_LIBRARY}
   )
-
-add_subdirectory(plugins)
 
 install_headers()
 install_source()

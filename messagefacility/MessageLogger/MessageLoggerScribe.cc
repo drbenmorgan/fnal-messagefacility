@@ -4,7 +4,7 @@
 //
 // ----------------------------------------------------------------------
 
-#include "messagefacility/Auxiliaries/ErrorObj.h"
+#include "messagefacility/Utilities/ErrorObj.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "messagefacility/MessageLogger/MessageLoggerScribe.h"
 #include "messagefacility/MessageService/ConfigurationHandshake.h"
@@ -47,13 +47,13 @@ namespace mf {
     MessageLoggerScribe::run()
     {
       OpCode opcode;
-      void * operand;
+      void* operand;
 
       MessageDrop::instance()->messageLoggerScribeIsRunning = MLSCRIBE_RUNNING_INDICATOR;
 
-      do  {
+      do {
         m_queue->consume(opcode, operand);  // grab next work item from Q
-        runCommand (opcode, operand);
+        runCommand(opcode, operand);
       } while(!done);
 
     }  // MessageLoggerScribe::run()
@@ -280,20 +280,15 @@ namespace mf {
 
     //=============================================================================
     void
-    MessageLoggerScribe::configure_dest( ELdestControl& dest_ctrl,
-                                         string const & dest_pset_name,
-                                         fhicl::ParameterSet const & dest_pset )
+    MessageLoggerScribe::configure_dest(ELdestControl& dest_ctrl,
+                                        string const& dest_pset_name,
+                                        fhicl::ParameterSet const& dest_pset)
     {
       if (dest_pset.get<bool>("placeholder", false))
         return;
 
-      int constexpr NO_VALUE_SET {-45654};
-
       // Defaults:
       std::string const COMMON_DEFAULT_THRESHOLD {"INFO"};
-      int constexpr COMMON_DEFAULT_LIMIT {NO_VALUE_SET};
-      int constexpr COMMON_DEFAULT_INTERVAL {NO_VALUE_SET};
-      int constexpr COMMON_DEFAULT_TIMESPAN {NO_VALUE_SET};
 
       vstring const severities {"WARNING", "INFO", "ERROR", "DEBUG"};
 
@@ -301,7 +296,7 @@ namespace mf {
       auto const& cats_pset = dest_pset.get<fhicl::ParameterSet>("categories", {});
 
       // grab list of categories
-      vstring  categories = cats_pset.get_pset_names();
+      vstring categories = cats_pset.get_pset_names();
       categories.erase(std::remove_if(categories.begin(),
                                       categories.end(),
                                       [](auto const& category) {
@@ -315,73 +310,62 @@ namespace mf {
       cet::copy_all(messageLoggerDefaults.categories,
                     std::back_inserter(categories));
 
-      // default threshold for the destination
-      // grab this destination's default limit/interval/timespan:
-      auto const& category_default_pset = cats_pset.get<fhicl::ParameterSet>("default", {});
+      // default threshold for the destination grab this destination's
+      // default limit/interval/timespan:
+      auto const& default_category_pset = cats_pset.get<fhicl::ParameterSet>("default", {});
 
-      int  dest_default_limit    = category_default_pset.get<int>("limit"      , COMMON_DEFAULT_LIMIT   );
-      int  dest_default_interval = category_default_pset.get<int>("reportEvery", COMMON_DEFAULT_INTERVAL);
-      int  dest_default_timespan = category_default_pset.get<int>("timespan"   , COMMON_DEFAULT_TIMESPAN);
+      int constexpr two_billion {2000'000'000};
+      int constexpr NO_VALUE_SET {-45654};
 
-      if ( dest_default_limit != NO_VALUE_SET )
-        {
-          if (dest_default_limit < 0) dest_default_limit = 2000000000;
-          dest_ctrl.setLimit("*", dest_default_limit );
-        }
-      if (dest_default_interval != NO_VALUE_SET)
-        {
-          dest_ctrl.setInterval("*", dest_default_interval );
-        }
-      if ( dest_default_timespan != NO_VALUE_SET )
-        {
-          if ( dest_default_timespan < 0 ) dest_default_timespan = 2000000000;
-          dest_ctrl.setTimespan("*", dest_default_timespan );
-        }
+      int default_limit {NO_VALUE_SET};
+      if (default_category_pset.get_if_present<int>("limit", default_limit)) {
+        if (default_limit < 0) default_limit = two_billion;
+        dest_ctrl.setLimit("*", default_limit);
+      }
+
+      int default_interval {NO_VALUE_SET};
+      if (default_category_pset.get_if_present<int>("reportEvery", default_interval)) {
+        // interval <= 0 implies no reporting
+        dest_ctrl.setInterval("*", default_interval);
+      }
+
+      int default_timespan {NO_VALUE_SET};
+      if (default_category_pset.get_if_present<int>("timespan", default_timespan)) {
+        if (default_timespan < 0) default_timespan = two_billion;
+        dest_ctrl.setTimespan("*", default_timespan);
+      }
 
       // establish this destination's threshold:
       string dest_threshold = dest_pset.get<std::string>("threshold", {});
       if (dest_threshold.empty()) dest_threshold = messageLoggerDefaults.threshold(dest_pset_name);
       if (dest_threshold.empty()) dest_threshold = COMMON_DEFAULT_THRESHOLD;
 
-      ELseverityLevel threshold_sev(dest_threshold);
+      ELseverityLevel const threshold_sev {dest_threshold};
       dest_ctrl.setThreshold(threshold_sev);
 
       // establish this destination's limit/interval/timespan for each category:
-      auto const& default_category_pset = cats_pset.get<fhicl::ParameterSet>("default", {});
-
       for(auto const& category : categories) {
         auto const& category_pset = cats_pset.get<fhicl::ParameterSet>(category, default_category_pset);
 
-        int const category_default_limit = default_category_pset.get<int>("limit", NO_VALUE_SET);
-        int limit = category_pset.get<int>("limit", category_default_limit);
-        if (limit == NO_VALUE_SET) limit = dest_default_limit;
-
-        int const category_default_interval = default_category_pset.get<int>("reportEvery", NO_VALUE_SET);
-        int interval = category_pset.get<int>("reportEvery",category_default_interval);
-        if (interval == NO_VALUE_SET) interval = dest_default_interval;
-
-        int const category_default_timespan = default_category_pset.get<int>("timespan", NO_VALUE_SET);
-        int timespan = category_pset.get<int>("timespan", category_default_timespan);
-        if (timespan == NO_VALUE_SET) timespan = dest_default_timespan;
-
+        int limit    = category_pset.get<int>("limit"      , default_limit);
+        int interval = category_pset.get<int>("reportEvery", default_interval);
+        int timespan = category_pset.get<int>("timespan"   , default_timespan);
 
         if (limit    == NO_VALUE_SET) limit    = messageLoggerDefaults.limit      (dest_pset_name,category);
         if (interval == NO_VALUE_SET) interval = messageLoggerDefaults.reportEvery(dest_pset_name,category);
         if (timespan == NO_VALUE_SET) timespan = messageLoggerDefaults.timespan   (dest_pset_name,category);
 
-
-        if(limit     != NO_VALUE_SET)  {
-          if (limit < 0) limit = 2000000000;
+        if(limit != NO_VALUE_SET)  {
+          if (limit < 0) limit = two_billion;
           dest_ctrl.setLimit(category, limit);
         }
-        if(interval  != NO_VALUE_SET)  {
+        if(interval != NO_VALUE_SET)  {
           dest_ctrl.setInterval(category, interval);
         }
-        if(timespan  != NO_VALUE_SET)  {
-          if ( timespan < 0 ) timespan = 2000000000;
+        if(timespan != NO_VALUE_SET)  {
+          if ( timespan < 0 ) timespan = two_billion;
           dest_ctrl.setTimespan(category, timespan);
         }
-
       }  // for
 
       // establish this destination's linebreak policy:
@@ -408,7 +392,7 @@ namespace mf {
     void
     MessageLoggerScribe::configure_default_fwkJobReport(ELdestControl& dest_ctrl)
     {
-      dest_ctrl.setLimit("*", 0 );
+      dest_ctrl.setLimit("*", 0);
       string const msgID {"FwkJob"};
       int constexpr FwkJob_limit = 10000000;
       dest_ctrl.setLimit(msgID, FwkJob_limit);

@@ -30,9 +30,9 @@
 // ----------------------------------------------------------------------
 
 
-#include "messagefacility/Auxiliaries/ELmap.h"
-#include "messagefacility/Auxiliaries/ELseverityLevel.h"
-#include "messagefacility/Auxiliaries/ErrorObj.h"
+#include "messagefacility/Utilities/ELmap.h"
+#include "messagefacility/Utilities/ELseverityLevel.h"
+#include "messagefacility/Utilities/ErrorObj.h"
 #include "messagefacility/MessageService/ELdestination.h"
 #include "messagefacility/MessageService/MsgFormatSettings.h"
 
@@ -96,21 +96,20 @@ namespace mf {
       virtual ELdestControl & zero();
 
       virtual ELdestControl & setPreamble( const std::string & preamble );
-      virtual ELdestControl & setNewline( const std::string & newline );
 
       // -----  Active methods invoked by the framework:
       //
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wwrite-strings"
 #pragma GCC diagnostic ignored "-Wpedantic"
-      virtual void summary( std::ostream  & os  , char * title="" );
-      virtual void summary( std::string      & s   , char * title="" );
+      virtual void summary(std::ostream& os, char* title="");
+      virtual void summary(std::string& s, char* title="");
 #pragma GCC diagnostic pop
       virtual void summary(ELcontextSupplier const&);
-      virtual void summaryForJobReport( std::map<std::string, double> & sm);
+      virtual void summaryForJobReport(std::map<std::string, double>& sm);
 
       virtual void log(mf::ErrorObj& msg, ELcontextSupplier const&);  // Backdoor to log a formed message
-                                               // to only this destination.
+                                                                      // to only this destination.
 
       virtual void changeFile (std::ostream & os, ELcontextSupplier const&);
       virtual void changeFile (const std::string & filename, ELcontextSupplier const&);
@@ -121,8 +120,6 @@ namespace mf {
       virtual void summarization(const std::string & title,
                                  const std::string & sumLines,
                                  ELcontextSupplier const&);
-
-      std::string getNewline() const;
 
       // -----  Data implementing the trivial handle pattern:
       //

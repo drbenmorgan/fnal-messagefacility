@@ -1,8 +1,8 @@
 #ifndef messagefacility_MessageLogger_MessageLoggerImpl_h
 #define messagefacility_MessageLogger_MessageLoggerImpl_h
 
-#include "messagefacility/Auxiliaries/ELseverityLevel.h"
-#include "messagefacility/Auxiliaries/ErrorObj.h"
+#include "messagefacility/Utilities/ELseverityLevel.h"
+#include "messagefacility/Utilities/ErrorObj.h"
 
 #include <memory>
 #include <string>

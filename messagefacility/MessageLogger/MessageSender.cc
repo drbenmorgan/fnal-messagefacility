@@ -1,6 +1,6 @@
 #include "messagefacility/MessageLogger/MessageSender.h"
 #include "messagefacility/MessageService/MessageLoggerQ.h"
-#include "messagefacility/MessageService/MessageDrop.h"
+#include "messagefacility/MessageLogger/MessageDrop.h"
 
 #define TRACE_DROP
 #ifdef TRACE_DROP
@@ -9,14 +9,14 @@
 
 using namespace mf;
 
-bool MessageSender::errorSummaryIsBeingKept = false;            // change log 1
-bool MessageSender::freshError              = false;
-std::map<ErrorSummaryMapKey, unsigned int> MessageSender::errorSummaryMap;
+bool MessageSender::errorSummaryIsBeingKept = false;
+bool MessageSender::freshError = false;
+std::map<ErrorSummaryMapKey, unsigned int> MessageSender::errorSummaryMap {};
 
-MessageSender::MessageSender( ELseverityLevel const & sev,
-                              std::string const & id,
-                              bool verbatim )
-: errorobj_p( new ErrorObj(sev,id,verbatim) )
+MessageSender::MessageSender(ELseverityLevel const sev,
+                             std::string const& id,
+                             bool const verbatim )
+  : errorobj_p{new ErrorObj{sev,id,verbatim}}
 {}
 
 // This destructor must not be permitted to throw. A

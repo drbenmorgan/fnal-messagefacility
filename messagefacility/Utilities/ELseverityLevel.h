@@ -198,7 +198,7 @@ namespace mf {
 // ----------------------------------------------------------------------
 
 #define ELSEVERITYLEVEL_ICC
-#include "messagefacility/Auxiliaries/ELseverityLevel.icc"
+#include "messagefacility/Utilities/ELseverityLevel.icc"
 #undef  ELSEVERITYLEVEL_ICC
 
 // ----------------------------------------------------------------------

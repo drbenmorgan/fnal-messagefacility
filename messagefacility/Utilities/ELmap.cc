@@ -1,4 +1,4 @@
-#include "messagefacility/Auxiliaries/ELmap.h"
+#include "messagefacility/Utilities/ELmap.h"
 
 namespace mf {
 
@@ -36,7 +36,7 @@ namespace mf {
          &&
          (difftime(now, lastTime) >= timespan) )  {
       n = 0;
-      if ( interval > 0 ) {
+      if (interval > 0) {
         skipped = interval - 1; // So this message will be reacted to
       } else {
         skipped = 0;

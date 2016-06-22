@@ -36,9 +36,9 @@
 // ----------------------------------------------------------------------
 
 
-#include "messagefacility/Auxiliaries/ELseverityLevel.h"
-#include "messagefacility/Auxiliaries/ELextendedID.h"
-#include "messagefacility/Auxiliaries/ELmap.h"
+#include "messagefacility/Utilities/ELseverityLevel.h"
+#include "messagefacility/Utilities/ELextendedID.h"
+#include "messagefacility/Utilities/ELmap.h"
 
 namespace mf {
 namespace service {

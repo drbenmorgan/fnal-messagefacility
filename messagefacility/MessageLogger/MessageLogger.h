@@ -12,8 +12,8 @@
 #include <ostream>
 #include <string>
 
-#include "messagefacility/Auxiliaries/ELseverityLevel.h"
-#include "messagefacility/MessageService/MessageDrop.h"
+#include "messagefacility/Utilities/ELseverityLevel.h"
+#include "messagefacility/MessageLogger/MessageDrop.h"
 #include "messagefacility/MessageLogger/MessageSender.h"
 #include "messagefacility/MessageLogger/MessageLoggerImpl.h"
 #include "messagefacility/MessageLogger/createPresence.h"
@@ -56,7 +56,7 @@ namespace mf  {
 
     inline std::string stripLeadingDirectoryTree(std::string const& file)
     {
-      const std::size_t lastSlash = file.find_last_of('/');
+      std::size_t const lastSlash = file.find_last_of('/');
       if (lastSlash == std::string::npos) return file;
       if (lastSlash == file.size()-1)     return file;
       return file.substr(lastSlash+1, file.size()-lastSlash-1);
@@ -100,7 +100,7 @@ namespace mf {
 
   template <int SEV, bool VERB, bool PREFIX, bool CONDITIONAL>
   class MaybeLogger_ {
-    std::unique_ptr<MessageSender> msgSender_p;
+    std::unique_ptr<MessageSender> msgSender_p {nullptr};
   public:
 
     MaybeLogger_() = default;
@@ -123,7 +123,7 @@ namespace mf {
     MaybeLogger_&  operator= (MaybeLogger_&&)      = delete;
 
     template< class T >
-    decltype(auto) operator << ( T const & t )
+    decltype(auto) operator << (T const& t)
     {
       if (!CONDITIONAL || msgSender_p.get()) *msgSender_p << t;
       return std::forward<MaybeLogger_>(*this);
@@ -146,39 +146,37 @@ namespace mf {
   //=======================================================================================
   class NeverLogger_ {
   public:
-
     // streamers:
     template< class T >
     NeverLogger_& operator << ( T const & ){ return *this; }
 
     NeverLogger_& operator << ( std::ostream& (*)(std::ostream& ) ) { return *this; }
     NeverLogger_& operator << ( std::ios_base&(*)(std::ios_base&) ) { return *this; }
-
   };
 
   //=======================================================================================
   //  Specific type aliases for users
 
   namespace detail {
-    constexpr bool AlwaysLogger      = false;
-    constexpr bool ConditionalLogger = true;
+    constexpr bool AlwaysLogger {false};
+    constexpr bool ConditionalLogger {true};
   }
 
   // Statements follow pattern:
   //    using LogXXX = MaybeLogger_< ELseverityLevel::ELsev_ , verbatim, prefix, conditional construction >;
 
-  using LogError     = MaybeLogger_< ELseverityLevel::ELsev_error  , false, true , detail::AlwaysLogger>;
-  using LogProblem   = MaybeLogger_< ELseverityLevel::ELsev_error  , true , false, detail::AlwaysLogger>;
-  using LogImportant = MaybeLogger_< ELseverityLevel::ELsev_error  , true , false, detail::AlwaysLogger>;
-  using LogSystem    = MaybeLogger_< ELseverityLevel::ELsev_severe , false, false, detail::AlwaysLogger>;
-  using LogAbsolute  = MaybeLogger_< ELseverityLevel::ELsev_severe , true , false, detail::AlwaysLogger>;
+  using LogError     = MaybeLogger_<ELseverityLevel::ELsev_error  , false, true , detail::AlwaysLogger>;
+  using LogProblem   = MaybeLogger_<ELseverityLevel::ELsev_error  , true , false, detail::AlwaysLogger>;
+  using LogImportant = MaybeLogger_<ELseverityLevel::ELsev_error  , true , false, detail::AlwaysLogger>;
+  using LogSystem    = MaybeLogger_<ELseverityLevel::ELsev_severe , false, false, detail::AlwaysLogger>;
+  using LogAbsolute  = MaybeLogger_<ELseverityLevel::ELsev_severe , true , false, detail::AlwaysLogger>;
 
-  using LogDebug     = MaybeLogger_< ELseverityLevel::ELsev_success, false, true , detail::ConditionalLogger>;
-  using LogTrace     = MaybeLogger_< ELseverityLevel::ELsev_success, true , false, detail::ConditionalLogger>;
-  using LogInfo      = MaybeLogger_< ELseverityLevel::ELsev_info,    false, true , detail::ConditionalLogger>;
-  using LogVerbatim  = MaybeLogger_< ELseverityLevel::ELsev_info,    true , false, detail::ConditionalLogger>;
-  using LogWarning   = MaybeLogger_< ELseverityLevel::ELsev_warning, false, true , detail::ConditionalLogger>;
-  using LogPrint     = MaybeLogger_< ELseverityLevel::ELsev_warning, true , false, detail::ConditionalLogger>;
+  using LogDebug     = MaybeLogger_<ELseverityLevel::ELsev_success, false, true , detail::ConditionalLogger>;
+  using LogTrace     = MaybeLogger_<ELseverityLevel::ELsev_success, true , false, detail::ConditionalLogger>;
+  using LogInfo      = MaybeLogger_<ELseverityLevel::ELsev_info,    false, true , detail::ConditionalLogger>;
+  using LogVerbatim  = MaybeLogger_<ELseverityLevel::ELsev_info,    true , false, detail::ConditionalLogger>;
+  using LogWarning   = MaybeLogger_<ELseverityLevel::ELsev_warning, false, true , detail::ConditionalLogger>;
+  using LogPrint     = MaybeLogger_<ELseverityLevel::ELsev_warning, true , false, detail::ConditionalLogger>;
 
 }
 

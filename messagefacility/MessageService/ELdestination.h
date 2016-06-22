@@ -1,7 +1,6 @@
 #ifndef messagefacility_MessageService_ELdestination_h
 #define messagefacility_MessageService_ELdestination_h
 
-
 // ----------------------------------------------------------------------
 //
 // ELdestination   is a virtual class defining the interface to a
@@ -12,26 +11,21 @@
 //
 // ----------------------------------------------------------------------
 
-#include "messagefacility/Auxiliaries/ELextendedID.h"
-#include "messagefacility/Auxiliaries/ELset.h"
-#include "messagefacility/Auxiliaries/ErrorObj.h"
+#include "messagefacility/Utilities/ELextendedID.h"
+#include "messagefacility/Utilities/ELset.h"
+#include "messagefacility/Utilities/ErrorObj.h"
 #include "messagefacility/MessageService/ELcontextSupplier.h"
 #include "messagefacility/MessageService/MsgFormatSettings.h"
 #include "messagefacility/MessageService/MsgStatistics.h"
 
 #include "cetlib/PluginTypeDeducer.h"
 #include "fhiclcpp/ParameterSet.h"
+#include "fhiclcpp/types/Table.h"
 
 namespace mf {
-
   namespace service {
-    class ELdestination;
-
-    // ----------------------------------------------------------------------
-    // prerequisite classes:
-    // ----------------------------------------------------------------------
-
     class ELdestControl;
+    class ELdestination;
     class ELadministrator;
   }
 }
@@ -63,15 +57,12 @@ namespace mf {
 
       // -----  Methods invoked by the ELadministrator:
       //
-    public:
 
       virtual void log(mf::ErrorObj& msg, ELcontextSupplier const&);
 
       virtual void summarization(std::string const& title,
                                  std::string const& sumLines,
                                  ELcontextSupplier const&);
-
-      virtual std::string getNewline() const;
 
       virtual bool switchChannel( std::string const& channelName );
 
@@ -81,10 +72,10 @@ namespace mf {
       //
     protected:
 
-      void emit( std::ostream& os, std::string const& s, const bool nl = false );
+      void emit(std::ostream& os, std::string const& s, bool nl = false);
 
-      bool passLogMsgThreshold  (const mf::ErrorObj& msg);
-      bool passLogStatsThreshold(const mf::ErrorObj& msg) const;
+      bool passLogMsgThreshold  (mf::ErrorObj const& msg);
+      bool passLogStatsThreshold(mf::ErrorObj const& msg) const;
 
       virtual void fillPrefix(std::ostringstream& oss, mf::ErrorObj const& msg, ELcontextSupplier const&);
       virtual void fillUsrMsg(std::ostringstream& oss, mf::ErrorObj const& msg);
@@ -97,10 +88,10 @@ namespace mf {
       virtual void clearSummary(ELcontextSupplier const&);
       virtual void wipe();
       virtual void zero();
-      virtual void filterModule( std::string const & moduleName );
-      virtual void excludeModule( std::string const & moduleName );
-      virtual void ignoreModule( std::string const & moduleName );
-      virtual void respondToModule( std::string const & moduleName );
+      virtual void filterModule(std::string const& moduleName);
+      virtual void excludeModule(std::string const& moduleName);
+      virtual void ignoreModule(std::string const& moduleName);
+      virtual void respondToModule(std::string const& moduleName);
       virtual bool thisShouldBeIgnored(std::string const& s) const;
 
       virtual void summary(std::ostream& os, std::string const& title="");
@@ -110,7 +101,7 @@ namespace mf {
 
       virtual void setTableLimit(int n);
 
-      virtual void changeFile(std::ostream & os, ELcontextSupplier const&);
+      virtual void changeFile(std::ostream& os, ELcontextSupplier const&);
       virtual void changeFile(std::string const& filename, ELcontextSupplier const&);
       virtual void flush(ELcontextSupplier const&);
 

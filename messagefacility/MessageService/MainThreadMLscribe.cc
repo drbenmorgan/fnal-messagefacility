@@ -7,8 +7,7 @@ namespace mf {
 
     MainThreadMLscribe::MainThreadMLscribe(std::shared_ptr<ThreadQueue> tqp)
       : m_queue(tqp)
-    {
-    }
+    {}
 
     void
     MainThreadMLscribe::
@@ -17,11 +16,11 @@ namespace mf {
       if (handshaked(opcode)) {
         Place_for_passing_exception_ptr epp(new Pointer_to_new_exception_on_heap());
         ConfigurationHandshake h(operand,epp);
-        void* v(static_cast<void *>(&h));
+        void* v (static_cast<void *>(&h));
         Pointer_to_new_exception_on_heap ep;
         {
           ConfigurationHandshake::unique_lock sl(h.m);       // get lock
-          m_queue->produce (opcode, v);
+          m_queue->produce(opcode, v);
           // wait for result to appear (in epp)
           h.c.wait(sl); // c.wait(sl) unlocks the scoped lock and sleeps till notified
           // ... and once the MessageLoggerScribe does h.c.notify_all() ...

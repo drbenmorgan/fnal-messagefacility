@@ -13,7 +13,7 @@
   buffers within a fixed size pool and using a circular buffer as the
   queue alleviates most of this problem because exceptions will not
   occur during manipulation.  The only problem left to be checked is
-  how (or if) the boost mutex manipulation can throw and when.
+  how (or if) the std mutex manipulation can throw and when.
 
   Note: the current implementation has no protection again unsigned int
   overflows
@@ -22,13 +22,12 @@
   - the ring buffer is really not used to its fullest extent
   - the buffer sizes are fixed and cannot grow
   - a simple Buffer object is returned that has the pointer and len
-  separate.  The length should be stored as the first word of the
-  buffer itself
+    separate.  The length should be stored as the first word of the
+    buffer itself
   - timeouts for consumer
   - good way to signal to consumer to end
   - keeping the instance of this thing around until all using threads are
-  done with it
-
+    done with it
 */
 
 #include <vector>
@@ -40,46 +39,38 @@ namespace mf {
   class SingleConsumerQ {
   public:
 
-   struct Buffer {
-     Buffer() = default;
-     Buffer(void* p,int len) : ptr_{p},len_{len} { }
+    struct Buffer {
+      Buffer() = default;
+      Buffer(void* p,int const len) : ptr_{p},len_{len} { }
 
-     void* ptr_ {nullptr};
-     int len_ {};
-   };
-
-    SingleConsumerQ(int max_event_size, int max_queue_depth);
-
-    struct ConsumerType
-    {
-      static SingleConsumerQ::Buffer get(SingleConsumerQ& b)   { return b.getConsumerBuffer(); }
-      static void release(SingleConsumerQ& b, void* v)
-      { b.releaseConsumerBuffer(v); }
-      static void commit(SingleConsumerQ& b, void* v,int size)
-      { b.commitConsumerBuffer(v,size); }
+      void* ptr_ {nullptr};
+      int len_ {};
     };
-    struct ProducerType
-    {
-      static SingleConsumerQ::Buffer get(SingleConsumerQ& b)
-      { return b.getProducerBuffer(); }
-      static void release(SingleConsumerQ& b, void* v)
-      { b.releaseProducerBuffer(v); }
-      static void commit(SingleConsumerQ& b, void* v,int size)
-      { b.commitProducerBuffer(v,size); }
+
+    SingleConsumerQ(int const max_event_size, int const max_queue_depth);
+
+    struct ConsumerType {
+      static SingleConsumerQ::Buffer get(SingleConsumerQ& b) { return b.getConsumerBuffer(); }
+      static void release(SingleConsumerQ& b, void* v) { b.releaseConsumerBuffer(v); }
+      static void commit(SingleConsumerQ& b, void* v, int size) { b.commitConsumerBuffer(v,size); }
+    };
+
+    struct ProducerType {
+      static SingleConsumerQ::Buffer get(SingleConsumerQ& b) { return b.getProducerBuffer(); }
+      static void release(SingleConsumerQ& b, void* v) { b.releaseProducerBuffer(v); }
+      static void commit(SingleConsumerQ& b, void* v, int size) { b.commitProducerBuffer(v,size); }
     };
 
     template <class T>
-    class OperateBuffer
-    {
+    class OperateBuffer {
     public:
-      explicit OperateBuffer(SingleConsumerQ& b):
-        b_(b),v_(T::get(b)),committed_(false) { }
+      explicit OperateBuffer(SingleConsumerQ& b): b_{b},v_{T::get(b)},committed_{false} {}
       ~OperateBuffer()
       { if(!committed_) T::release(b_,v_.ptr_); }
 
       void* buffer() const { return v_.ptr_; }
       int size() const { return v_.len_; }
-      void commit(int theSize=0) { T::commit(b_, v_.ptr_, theSize); committed_=true; }
+      void commit(int const theSize=0) { T::commit(b_, v_.ptr_, theSize); committed_=true; }
 
     private:
       SingleConsumerQ& b_;
@@ -87,8 +78,8 @@ namespace mf {
       bool committed_;
     };
 
-    typedef OperateBuffer<ConsumerType> ConsumerBuffer;
-    typedef OperateBuffer<ProducerType> ProducerBuffer;
+    using ConsumerBuffer = OperateBuffer<ConsumerType>;
+    using ProducerBuffer = OperateBuffer<ProducerType>;
 
     Buffer getProducerBuffer();
     void releaseProducerBuffer(void*);
@@ -106,15 +97,15 @@ namespace mf {
     SingleConsumerQ(const SingleConsumerQ&);
 
     // the memory for the buffers
-    typedef std::vector<char> ByteArray;
+    using ByteArray = std::vector<char>;
     // the pool of buffers
-    typedef std::vector<void*> Pool;
+    using Pool = std::vector<void*>;
     // the queue
-    typedef std::vector<Buffer> Queue;
+    using Queue = std::vector<Buffer>;
 
     int max_event_size_;
     int max_queue_depth_;
-    int pos_; // use pool as stack of avaiable buffers
+    int pos_; // use pool as stack of available buffers
     ByteArray mem_;
     Pool buffer_pool_ {};
     Queue queue_;

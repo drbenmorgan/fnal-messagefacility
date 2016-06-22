@@ -26,8 +26,8 @@
 //
 // ----------------------------------------------------------------------
 
-#include "messagefacility/Auxiliaries/ELseverityLevel.h"
-#include "messagefacility/Auxiliaries/ErrorObj.h"
+#include "messagefacility/Utilities/ELseverityLevel.h"
+#include "messagefacility/Utilities/ErrorObj.h"
 
 #include <sstream>
 

@@ -9,7 +9,7 @@
 // ----------------------------------------------------------------------
 
 #include "cetlib/ostream_handle.h"
-#include "messagefacility/Auxiliaries/ELextendedID.h"
+#include "messagefacility/Utilities/ELextendedID.h"
 #include "messagefacility/MessageService/ELdestination.h"
 #include "messagefacility/MessageService/ELcontextSupplier.h"
 #include "messagefacility/MessageService/MsgContext.h"
@@ -50,21 +50,21 @@ namespace mf {
       ELostreamOutput(fhicl::ParameterSet const& psetFormat,
                       std::string const& fileName,
                       bool append,
-                      bool emitAtStart = false );
+                      bool emitAtStart = false);
 
       // Disable copy c'tor/assignment
-      ELostreamOutput( const ELostreamOutput & orig ) = delete;
-      ELostreamOutput & operator=( const ELostreamOutput & ) = delete;
+      ELostreamOutput(ELostreamOutput const&) = delete;
+      ELostreamOutput & operator=(ELostreamOutput const&) = delete;
 
     protected:
 
-      void routePayload  (std::ostringstream const& oss,
-                          mf::ErrorObj const& msg,
-                          ELcontextSupplier const&) override;
-      void summarization ( const std::string & fullTitle, const std::string & sumLines, ELcontextSupplier const& ) override;
+      void routePayload(std::ostringstream const& oss,
+                        mf::ErrorObj const& msg,
+                        ELcontextSupplier const&) override;
+      void summarization(std::string const& fullTitle, std::string const& sumLines, ELcontextSupplier const& ) override;
 
-      void changeFile (std::ostream & os, ELcontextSupplier const&) override;
-      void changeFile (const std::string & filename, ELcontextSupplier const&) override;
+      void changeFile(std::ostream& os, ELcontextSupplier const&) override;
+      void changeFile(std::string const& filename, ELcontextSupplier const&) override;
       void flush(ELcontextSupplier const&) override;
 
       // --- member data:

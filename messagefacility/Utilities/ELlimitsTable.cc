@@ -17,7 +17,7 @@
 // ----------------------------------------------------------------------
 
 
-#include "messagefacility/Auxiliaries/ELlimitsTable.h"
+#include "messagefacility/Utilities/ELlimitsTable.h"
 
 namespace mf {
 namespace service {

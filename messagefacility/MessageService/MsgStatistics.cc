@@ -1,7 +1,7 @@
 #include "messagefacility/MessageService/MsgStatistics.h"
 #include "messagefacility/MessageService/ELcontextSupplier.h"
 
-#include "messagefacility/Auxiliaries/ErrorObj.h"
+#include "messagefacility/Utilities/ErrorObj.h"
 
 #include <iostream>
 #include <iomanip>

@@ -40,8 +40,8 @@
 
 #include <ostream>
 
-#include "messagefacility/Auxiliaries/ELseverityLevel.h"
-#include "messagefacility/Auxiliaries/ELmap.h"
+#include "messagefacility/Utilities/ELseverityLevel.h"
+#include "messagefacility/Utilities/ELmap.h"
 
 
 using ELmap = std::map<std::string const, mf::ELseverityLevel::ELsev_>;

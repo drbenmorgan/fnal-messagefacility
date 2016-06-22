@@ -132,12 +132,6 @@ namespace mf {
     }
 
 
-    ELdestControl & ELdestControl::setNewline( const std::string & newline )  {
-      if (d) d->newline = newline;
-      return  * this;
-    }
-
-
     // ----------------------------------------------------------------------
     // Active methods invoked by the framework, forwarded to the destination:
     // ----------------------------------------------------------------------
@@ -190,14 +184,6 @@ namespace mf {
                                        ELcontextSupplier const& contextSupplier
                                        )  {
       if (d) d->summarization (title, sumLines, contextSupplier);
-    }
-
-    std::string ELdestControl::getNewline() const  {
-      if (d) {
-        return d->getNewline();
-      } else {
-        return std::string();
-      }
     }
 
     void ELdestControl::changeFile (std::ostream& os,
