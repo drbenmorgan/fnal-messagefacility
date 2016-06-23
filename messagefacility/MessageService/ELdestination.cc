@@ -19,13 +19,14 @@ namespace mf {
   namespace service {
 
     namespace {
-      std::string const noSummarizationMsg = "No summarization()";
-      std::string const noSummaryMsg       = "No summary()";
-      std::string const noClearSummaryMsg  = "No clearSummary()";
-      std::string const hereMsg            = "available via this destination";
-      std::string const noosMsg            = "No ostream";
-      std::string const notELoutputMsg     = "This destination is not an ELoutput";
+      std::string const noSummarizationMsg {"No summarization()"};
+      std::string const noClearSummaryMsg {"No clearSummary()"};
+      std::string const noSummaryMsg {"No summary()"};
+      std::string const hereMsg {"available via this destination"};
+      std::string const noosMsg {"No ostream"};
+      std::string const notELoutputMsg {"This destination is not an ELoutput"};
       std::string const newline {"\n"};
+      std::string const preamble {"%MSG"};
     }
 
     //=============================================================================
@@ -108,7 +109,7 @@ namespace mf {
     bool ELdestination::passLogStatsThreshold(mf::ErrorObj const& msg) const
     {
       // See if this message is to be counted.
-      if (msg.xid().severity < threshold)        return false;
+      if (msg.xid().severity < threshold) return false;
       if (thisShouldBeIgnored(msg.xid().module)) return false;
 
       return true;
@@ -155,7 +156,7 @@ namespace mf {
       if ( format.want( SERIAL ) )  {
         std::ostringstream s;
         s << msg.serial();
-        emit(oss, "[serial #" + s.str() + std::string("] "));
+        emit(oss, "[serial #" + s.str() + "] ");
       }
 
       // Provide further identification:
@@ -173,35 +174,38 @@ namespace mf {
       }
       if (format.want(MODULE) && (xid.module.length() > 0)) {
         if (needAspace) {
-          emit(oss,std::string(" "));
+          emit(oss," ");
           needAspace = false;
         }
-        emit(oss, xid.module + std::string(" "));
+        emit(oss, xid.module + " ");
       }
       if (format.want(SUBROUTINE) && (xid.subroutine.length() > 0) ) {
         if (needAspace) {
-          emit(oss,std::string(" "));
+          emit(oss," ");
           needAspace = false;
         }
-        emit(oss, xid.subroutine + "()" + std::string(" ") );
+        emit(oss, xid.subroutine + "() ");
       }
 
       // Provide time stamp:
       //
       if (format.want(TIMESTAMP))  {
         if (format.want(TIME_SEPARATE))  {
-          emit(oss, std::string("\n"));
+          emit(oss, "\n");
           needAspace = false;
         }
-        if (needAspace) { emit( oss,std::string(" ")); needAspace = false; }
-        emit(oss, format.timestamp(msg.timestamp()) + std::string(" "));
+        if (needAspace) {
+          emit(oss," ");
+          needAspace = false;
+        }
+        emit(oss, format.timestamp(msg.timestamp()) + " ");
       }
 
       // Provide the context information:
       //
       if (format.want(SOME_CONTEXT)) {
         if (needAspace) {
-          emit(oss,std::string(" "));
+          emit(oss, " ");
           needAspace = false;
         }
         if (format.want(FULL_CONTEXT)) {
@@ -321,7 +325,7 @@ namespace mf {
       stats.limits.zero();
     }
 
-    void ELdestination::respondToModule( std::string const & moduleName )
+    void ELdestination::respondToModule(std::string const& moduleName)
     {
       if (moduleName=="*") {
         ignoreMostModules = false;
@@ -334,7 +338,7 @@ namespace mf {
       }
     }
 
-    void ELdestination::ignoreModule( std::string const & moduleName )
+    void ELdestination::ignoreModule(std::string const& moduleName)
     {
       if (moduleName=="*") {
         respondToMostModules = false;
@@ -347,7 +351,7 @@ namespace mf {
       }
     }
 
-    void ELdestination::filterModule( std::string const & moduleName )
+    void ELdestination::filterModule(std::string const& moduleName)
     {
       ignoreModule("*");
       respondToModule(moduleName);
@@ -413,7 +417,8 @@ namespace mf {
       log(msg, contextSupplier);
     }
 
-    void ELdestination::changeFile(std::string const& filename, ELcontextSupplier const& contextSupplier)
+    void ELdestination::changeFile(std::string const& filename,
+                                   ELcontextSupplier const& contextSupplier)
     {
       mf::ErrorObj msg {ELwarning2, noosMsg};
       msg << notELoutputMsg << newline << "file requested is" << filename;

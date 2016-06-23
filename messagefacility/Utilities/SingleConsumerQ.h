@@ -41,7 +41,7 @@ namespace mf {
 
     struct Buffer {
       Buffer() = default;
-      Buffer(void* p,int const len) : ptr_{p},len_{len} { }
+      Buffer(void* p,int const len) : ptr_{p},len_{len} {}
 
       void* ptr_ {nullptr};
       int len_ {};
@@ -92,9 +92,10 @@ namespace mf {
     int maxEventSize() const { return max_event_size_; }
     int maxQueueDepth() const { return max_queue_depth_; }
 
+    SingleConsumerQ(SingleConsumerQ const&) = delete;
+    SingleConsumerQ operator=(SingleConsumerQ const&) = delete;
+
   private:
-    // no copy
-    SingleConsumerQ(const SingleConsumerQ&);
 
     // the memory for the buffers
     using ByteArray = std::vector<char>;

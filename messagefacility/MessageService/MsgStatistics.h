@@ -6,6 +6,7 @@
 #include "messagefacility/Utilities/ELmap.h"
 
 #include "fhiclcpp/ParameterSet.h"
+#include "fhiclcpp/types/Atom.h"
 
 #include <set>
 
@@ -19,15 +20,22 @@ namespace mf {
     class MsgStatistics {
     public:
 
+      // struct Config {
+      //   fhicl::Atom<bool> reset { fhicl::Name("reset"),
+      //       fhicl::Comment("Used for statistics destinations"),
+      //       false};
+      //   fhicl::Atom<bool> resetStatistics { fhicl::Name("resetStatistics"),
+      //       false};
+      // };
+
       MsgStatistics();
       MsgStatistics(fhicl::ParameterSet const& pset);
       MsgStatistics(int spaceLimit);
       MsgStatistics(fhicl::ParameterSet const& pset, int spaceLimit);
 
       // copy c'tor/assignment disabled
-      MsgStatistics( const MsgStatistics& ) = delete;
-      MsgStatistics& operator=(const MsgStatistics&) = delete;
-
+      MsgStatistics(MsgStatistics const&) = delete;
+      MsgStatistics& operator=(MsgStatistics const&) = delete;
 
       // -----  Methods invoked by the ELadministrator:
       //
@@ -36,14 +44,14 @@ namespace mf {
 
       // ----- Methods invoked by the MessageLoggerScribe, bypassing destControl
       //
-      static void noteGroupedCategory(std::string const & cat);  // 8/16/07 mf
+      static void noteGroupedCategory(std::string const& cat);
 
       void clearSummary();
       void wipe();
       void zero();
       void noTerminationSummary();
 
-      void summaryForJobReport (std::map<std::string, double> & sm);
+      void summaryForJobReport (std::map<std::string, double>& sm);
 
       int tableLimit;
       ELlimitsTable limits {};
@@ -54,7 +62,7 @@ namespace mf {
 
     protected:
 
-      static std::set<std::string> groupedCategories;               // 8/16/07 mf
+      static std::set<std::string> groupedCategories;
 
     private:
 

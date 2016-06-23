@@ -94,11 +94,6 @@ namespace mf {
 
     void ELdestControl::noTerminationSummary()  {if (d) d->noTerminationSummary(); }
 
-    ELdestControl & ELdestControl::setPreamble( const std::string & preamble )  {
-      if (d) d->preamble = preamble;
-      return  * this;
-    }
-
     int ELdestControl::setLineLength (int len) {
       if (d) {
         return d->setLineLength(len);

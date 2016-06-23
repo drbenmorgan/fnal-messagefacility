@@ -95,8 +95,6 @@ namespace mf {
       virtual ELdestControl & wipe();
       virtual ELdestControl & zero();
 
-      virtual ELdestControl & setPreamble( const std::string & preamble );
-
       // -----  Active methods invoked by the framework:
       //
 #pragma GCC diagnostic push

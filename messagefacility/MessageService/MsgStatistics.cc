@@ -17,15 +17,15 @@ namespace mf {
     // ----------------------------------------------------------------------
 
     MsgStatistics::MsgStatistics()
-      : MsgStatistics{fhicl::ParameterSet(), -1}
+      : MsgStatistics{fhicl::ParameterSet{}, -1}
     {}
 
-    MsgStatistics::MsgStatistics( const fhicl::ParameterSet& pset )
-      : MsgStatistics(pset, -1)
+    MsgStatistics::MsgStatistics(fhicl::ParameterSet const& pset)
+      : MsgStatistics{pset, -1}
     {}
 
     MsgStatistics::MsgStatistics(int const spaceLimit)
-      : MsgStatistics({}, spaceLimit)
+      : MsgStatistics{{}, spaceLimit}
     {}
 
     MsgStatistics::MsgStatistics(fhicl::ParameterSet const& pset, int const spaceLimit)

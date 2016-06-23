@@ -53,6 +53,10 @@ namespace mf {
       ELdestination();
       ELdestination(fhicl::ParameterSet const& pset);
 
+      // Suppress copy operations
+      ELdestination(ELdestination const& orig) = delete;
+      ELdestination& operator= (ELdestination const& orig) = delete;
+
       virtual ~ELdestination() noexcept = default;
 
       // -----  Methods invoked by the ELadministrator:
@@ -119,7 +123,6 @@ namespace mf {
       MsgFormatSettings format;
 
       ELseverityLevel threshold {ELzeroSeverity};
-      std::string preamble {"%MSG"};
       std::string indent {std::string(6,' ')};
       std::size_t lineLength {80ull};
       std::size_t charsOnLine {};
@@ -129,12 +132,6 @@ namespace mf {
       ELset_string ignoreThese {};
 
       bool userWantsStats;
-
-      // -----  Verboten methods:
-      //
-    private:
-      ELdestination(ELdestination const& orig) = delete;
-      ELdestination& operator= (ELdestination const& orig) = delete;
 
     };  // ELdestination
 

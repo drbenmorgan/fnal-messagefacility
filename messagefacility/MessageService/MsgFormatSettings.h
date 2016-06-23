@@ -1,11 +1,16 @@
 #ifndef messagefacility_MessageService_MsgFormatSettings_h
 #define messagefacility_MessageService_MsgFormatSettings_h
 
+#include "fhiclcpp/types/OptionalAtom.h"
+#include "fhiclcpp/types/Table.h"
 #include "messagefacility/Utilities/formatTime.h"
 #include <bitset>
 #include <functional>
+#include <string>
 
-namespace fhicl { class ParameterSet; }
+namespace fhicl {
+  class ParameterSet;
+}
 
 namespace mf {
   namespace service {
@@ -21,36 +26,69 @@ namespace mf {
                      FULL_CONTEXT,
                      TIME_SEPARATE,
                      EPILOGUE_SEPARATE,
-                     NFLAGS            };
+                     NFLAGS };
 
     struct MsgFormatSettings {
 
+      struct Config {
+        using Name = fhicl::Name;
+        fhicl::OptionalAtom<std::string> timestamp   { Name("timestamp")    };
+        fhicl::OptionalAtom<bool> noLineBreaks       { Name("noLineBreaks")    };
+        fhicl::OptionalAtom<bool> wantMillisecond    { Name("wantMillisecond") };
+        fhicl::OptionalAtom<bool> wantModule         { Name("wantModule")      };
+        fhicl::OptionalAtom<bool> wantSubroutine     { Name("wantSubroutine")  };
+        fhicl::OptionalAtom<bool> wantText           { Name("wantText")        };
+        fhicl::OptionalAtom<bool> wantSomeContext    { Name("wantSomeContext") };
+        fhicl::OptionalAtom<bool> wantSerial         { Name("wantSerial")      };
+        fhicl::OptionalAtom<bool> wantFullContext    { Name("wantFullContext") };
+        fhicl::OptionalAtom<bool> wantTimeSeparate   { Name("wantTimeSeparate") };
+        fhicl::OptionalAtom<bool> wantEpilogueSeparate { Name("wantEpilogueSeparate") };
+      };
+
       MsgFormatSettings();
-      MsgFormatSettings( const fhicl::ParameterSet& pset );
 
-      // accessors and modifiers
-      bool want    (flag_enum FLAG) const { return flags.test(FLAG); }
+      template <typename T>
+      class Table {
+      public:
+        Table(fhicl::ParameterSet const& pset)
+          : config{pset, std::set<std::string>{}}
+        {}
 
-      void suppress(flag_enum FLAG) { flags.set(FLAG,false); }
+        auto operator()() const { return config(); }
 
-      void include (flag_enum FLAG) {
+      private:
+        fhicl::Table<T> config;
+      };
+
+      using Parameters = Table<Config>;
+      MsgFormatSettings(Parameters const& pset);
+
+      bool want(flag_enum FLAG) const
+      {
+        return flags.test(FLAG);
+      }
+
+      void suppress(flag_enum FLAG)
+      {
+        flags.set(FLAG,false);
+      }
+
+      void include (flag_enum FLAG)
+      {
         flags.set(FLAG,true );
         if ( FLAG == MILLISECOND ) timeStamp_ = mf::timestamp::legacy_ms;
       }
 
-      std::string timestamp(timeval const& t) { return timeStamp_(t); }
+      std::string timestamp(timeval const& t)
+      {
+        return timeStamp_(t);
+      }
 
       bool preambleMode;
       std::bitset<NFLAGS> flags;
 
     private:
-
       std::function<std::string(timeval const& t)> timeStamp_;
-
-      // defaults
-      static const bool default_preambleMode_ = false;
-      static const std::bitset<NFLAGS> default_flags_;
-
     };
 
   } // end namespace service

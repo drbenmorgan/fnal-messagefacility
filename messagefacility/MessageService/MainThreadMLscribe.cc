@@ -15,7 +15,7 @@ namespace mf {
     {
       if (handshaked(opcode)) {
         Place_for_passing_exception_ptr epp {new Pointer_to_new_exception_on_heap()};
-        ConfigurationHandshake h {operand,epp};
+        ConfigurationHandshake h {operand, epp};
         void* v (static_cast<void*>(&h));
         Pointer_to_new_exception_on_heap ep;
         {
@@ -27,7 +27,7 @@ namespace mf {
           ep = *h.epp;
           // finally, release the scoped lock by letting it go out of scope
         }
-        if (ep) {
+        if (ep != nullptr) {
           mf::Exception ex {*ep};
           throw ex;
         }

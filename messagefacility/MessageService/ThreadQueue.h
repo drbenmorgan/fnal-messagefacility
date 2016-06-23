@@ -19,8 +19,8 @@ namespace mf {
       // ---  place a message onto the queue:
       void produce(OpCode opcode, void* operand);
 
-      ThreadQueue(const ThreadQueue&) = delete;
-      ThreadQueue& operator=(const ThreadQueue&) = delete;
+      ThreadQueue(ThreadQueue const&) = delete;
+      ThreadQueue& operator=(ThreadQueue const&) = delete;
 
     private:
       // --- buffer parameters:  (were private but needed by MainThreadMLscribe)
