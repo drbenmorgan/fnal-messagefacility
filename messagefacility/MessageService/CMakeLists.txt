@@ -23,5 +23,7 @@ cet_make_library(
   ${Boost_THREAD_LIBRARY}
   )
 
+add_subdirectory(plugins)
+
 install_headers()
 install_source()
