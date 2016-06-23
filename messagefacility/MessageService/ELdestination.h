@@ -11,16 +11,15 @@
 //
 // ----------------------------------------------------------------------
 
+#include "cetlib/PluginTypeDeducer.h"
+#include "fhiclcpp/ParameterSet.h"
+#include "fhiclcpp/types/Table.h"
 #include "messagefacility/Utilities/ELextendedID.h"
 #include "messagefacility/Utilities/ELset.h"
 #include "messagefacility/Utilities/ErrorObj.h"
 #include "messagefacility/MessageService/ELcontextSupplier.h"
 #include "messagefacility/MessageService/MsgFormatSettings.h"
 #include "messagefacility/MessageService/MsgStatistics.h"
-
-#include "cetlib/PluginTypeDeducer.h"
-#include "fhiclcpp/ParameterSet.h"
-#include "fhiclcpp/types/Table.h"
 
 namespace mf {
   namespace service {
@@ -112,11 +111,9 @@ namespace mf {
     private:
 
       virtual void noTerminationSummary(){}
-      virtual int  getLineLength() const;
-      virtual int  setLineLength(int len);
+      virtual int getLineLength() const;
+      virtual int setLineLength(int len);
 
-      // -----  Data affected by methods of the ELdestControl handle:
-      //
     protected:
 
       MsgStatistics stats;
@@ -126,18 +123,14 @@ namespace mf {
       std::string indent {std::string(6,' ')};
       std::size_t lineLength {80ull};
       std::size_t charsOnLine {};
-      bool ignoreMostModules {false};
       ELset_string respondToThese {};
+      bool ignoreMostModules {false};
       bool respondToMostModules {false};
       ELset_string ignoreThese {};
 
       bool userWantsStats;
 
     };  // ELdestination
-
-    struct close_and_delete {
-      void operator()(std::ostream* os) const;
-    };
 
   } // end of namespace service
 }   // end of namespace mf

@@ -11,11 +11,10 @@ using mf::service::ELstatistics;
 
 extern "C" {
 
-  auto makePlugin( const std::string&,
-                   const fhicl::ParameterSet& pset) {
-
-    return std::make_unique<ELstatistics>( pset, std::cerr );
-
+  auto makePlugin(std::string const&,
+                  fhicl::ParameterSet const& pset)
+  {
+    return std::make_unique<ELstatistics>(pset, std::cerr);
   }
 
 }

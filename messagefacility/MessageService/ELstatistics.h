@@ -28,8 +28,8 @@ namespace mf {
 
   class ErrorObj;
   namespace service {
-    class ELdestControl;
 
+    class ELdestControl;
 
     // ----------------------------------------------------------------------
     // ELstatistics:
@@ -42,13 +42,13 @@ namespace mf {
 
     public:
 
-      ELstatistics(fhicl::ParameterSet const& pset );
-      ELstatistics(fhicl::ParameterSet const& pset, std::ostream& osp );
+      ELstatistics(fhicl::ParameterSet const& pset);
+      ELstatistics(fhicl::ParameterSet const& pset, std::ostream& osp);
       ELstatistics(fhicl::ParameterSet const& pset, std::string const& filename, bool const append);
 
       // copy c'tor/assignment disabled
-      ELstatistics( const ELstatistics& ) = delete;
-      ELstatistics& operator=(const ELstatistics&) = delete;
+      ELstatistics(ELstatistics const&) = delete;
+      ELstatistics& operator=(ELstatistics const&) = delete;
 
       // -----  Methods invoked by the ELadministrator:
       //
@@ -59,7 +59,7 @@ namespace mf {
       // ----- Methods invoked by the MessageLoggerScribe, bypassing destControl
       //
     public:
-      static void noteGroupedCategory(std::string const & cat);
+      static void noteGroupedCategory(std::string const& cat);
 
 
       // -----  Methods invoked through the ELdestControl handle:
@@ -70,8 +70,8 @@ namespace mf {
       void wipe() override;
       void zero() override;
 
-      void summary(std::ostream& os, const std::string & title="" ) override;
-      void summary(std::string& s, const std::string & title="" ) override;
+      void summary(std::ostream& os, std::string const& title="") override;
+      void summary(std::string& s, std::string const& title="") override;
       void summary(ELcontextSupplier const&) override;
       void noTerminationSummary() override;
 

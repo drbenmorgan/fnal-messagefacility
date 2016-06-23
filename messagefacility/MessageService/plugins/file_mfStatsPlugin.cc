@@ -13,14 +13,13 @@ using namespace mf::service;
 
 extern "C" {
 
-  auto makePlugin( const std::string& psetname,
-                   const fhicl::ParameterSet& pset ){
+  auto makePlugin(std::string const& psetname,
+                  fhicl::ParameterSet const& pset)
+  {
+    std::string const& filename = mfplugins::formatFilename(psetname, pset);
+    bool const append = pset.get<bool>("append", false);
 
-    const std::string filename = mfplugins::formatFilename( psetname, pset );
-    const bool        append   = pset.get<bool>("append", false);
-
-    return std::make_unique<ELstatistics> ( pset, filename, append );
-
+    return std::make_unique<ELstatistics>(pset, filename, append);
   }
 
 }

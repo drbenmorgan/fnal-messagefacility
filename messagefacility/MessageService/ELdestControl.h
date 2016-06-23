@@ -30,16 +30,14 @@
 // ----------------------------------------------------------------------
 
 
+#include "cetlib/exempt_ptr.h"
 #include "messagefacility/Utilities/ELmap.h"
 #include "messagefacility/Utilities/ELseverityLevel.h"
 #include "messagefacility/Utilities/ErrorObj.h"
 #include "messagefacility/MessageService/ELdestination.h"
 #include "messagefacility/MessageService/MsgFormatSettings.h"
 
-#include "cetlib/exempt_ptr.h"
-
 #include <memory>
-
 
 namespace mf {
   namespace service {
@@ -49,51 +47,53 @@ namespace mf {
     // ----------------------------------------------------------------------
 
     class ELdestControl  {
-
     public:
-      ELdestControl( cet::exempt_ptr<ELdestination> dest );
-      ELdestControl();
+
+      ELdestControl() = default;
+      ELdestControl(cet::exempt_ptr<ELdestination> dest);
+
       virtual ~ELdestControl() noexcept = default;
 
       explicit operator bool() const { return d != nullptr; }
 
       // -----  Behavior control methods invoked by the framework:
       //
-      virtual ELdestControl & setThreshold( const ELseverityLevel & sv );
-      virtual ELdestControl & setLimit( const std::string & s, int n );
-      virtual ELdestControl & setLimit( const ELseverityLevel & sv, int n );
-      virtual ELdestControl & setInterval( const std::string & s, int interval );
-      virtual ELdestControl & setInterval( const ELseverityLevel& sv, int interval);
-      virtual ELdestControl & setTimespan( const std::string& s, int n );
-      virtual ELdestControl & setTimespan( const ELseverityLevel & sv, int n );
+      virtual ELdestControl& setThreshold(ELseverityLevel sv);
+      virtual ELdestControl& setLimit(ELseverityLevel sv, int n);
+      virtual ELdestControl& setInterval(ELseverityLevel sv, int interval);
+      virtual ELdestControl& setTimespan(ELseverityLevel sv, int n);
 
-      virtual ELdestControl & setTableLimit( int n );
+      virtual ELdestControl& setLimit(std::string const& s, int n);
+      virtual ELdestControl& setInterval(std::string const& s, int interval);
+      virtual ELdestControl& setTimespan(std::string const& s, int n);
+
+      virtual ELdestControl& setTableLimit(int n);
 
       // -----  Statistics resetting
       //
       bool resetStats();
       bool statsFlag();
-      void setResetStats( const bool flag );
+      void setResetStats(bool flag);
       void userWantsStats();
 
       // -----  Select output format options:
       //
       void formatSuppress(mf::service::flag_enum FLAG);
-      void formatInclude (mf::service::flag_enum FLAG);
+      void formatInclude(mf::service::flag_enum FLAG);
 
       virtual void noTerminationSummary();
 
-      virtual int  setLineLength(int len);
-      virtual int  getLineLength() const;
+      virtual int setLineLength(int len);
+      virtual int getLineLength() const;
 
-      virtual void filterModule    ( std::string const & moduleName );
-      virtual void excludeModule   ( std::string const & moduleName );
-      virtual void respondToModule ( std::string const & moduleName );
-      virtual void ignoreModule    ( std::string const & moduleName );
+      virtual void filterModule(std::string const& moduleName);
+      virtual void excludeModule(std::string const& moduleName);
+      virtual void respondToModule(std::string const& moduleName);
+      virtual void ignoreModule(std::string const& moduleName);
 
-      virtual ELdestControl & clearSummary(ELcontextSupplier const&);
-      virtual ELdestControl & wipe();
-      virtual ELdestControl & zero();
+      virtual ELdestControl& clearSummary(ELcontextSupplier const&);
+      virtual ELdestControl& wipe();
+      virtual ELdestControl& zero();
 
       // -----  Active methods invoked by the framework:
       //
@@ -106,32 +106,25 @@ namespace mf {
       virtual void summary(ELcontextSupplier const&);
       virtual void summaryForJobReport(std::map<std::string, double>& sm);
 
-      virtual void log(mf::ErrorObj& msg, ELcontextSupplier const&);  // Backdoor to log a formed message
-                                                                      // to only this destination.
+      virtual void log(mf::ErrorObj& msg, ELcontextSupplier const&); // Backdoor to log a formed message
+                                                                     // to only this destination.
 
-      virtual void changeFile (std::ostream & os, ELcontextSupplier const&);
-      virtual void changeFile (const std::string & filename, ELcontextSupplier const&);
+      virtual void changeFile (std::ostream& os, ELcontextSupplier const&);
+      virtual void changeFile (std::string const& filename, ELcontextSupplier const&);
       virtual void flush(ELcontextSupplier const&);
 
       // -----  Helper methods invoked by other ErrorLogger classes
 
-      virtual void summarization(const std::string & title,
-                                 const std::string & sumLines,
+      virtual void summarization(std::string const& title,
+                                 std::string const& sumLines,
                                  ELcontextSupplier const&);
-
-      // -----  Data implementing the trivial handle pattern:
-      //
     protected:
-      cet::exempt_ptr<ELdestination> d; // destination owned by ELadministrator
+      cet::exempt_ptr<ELdestination> d {nullptr}; // destination owned by ELadministrator
 
     };  // ELdestControl
 
-
-    // ----------------------------------------------------------------------
-
-
-  }        // end of namespace service
-}        // end of namespace mf
+  } // end of namespace service
+} // end of namespace mf
 
 
 #endif /* messagefacility_MessageService_ELdestControl_h */

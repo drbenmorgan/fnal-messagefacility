@@ -6,11 +6,9 @@
 
 
 #include "messagefacility/MessageService/ELstatistics.h"
-#include "messagefacility/MessageService/ELcontextSupplier.h"
-
-#include "messagefacility/Utilities/ErrorObj.h"
-
 #include "fhiclcpp/ParameterSet.h"
+#include "messagefacility/MessageService/ELcontextSupplier.h"
+#include "messagefacility/Utilities/ErrorObj.h"
 
 #include <fstream>
 #include <iomanip>
@@ -53,7 +51,7 @@ namespace mf {
     void ELstatistics::wipe() { stats.wipe(); }
     void ELstatistics::zero() { stats.zero(); }
 
-    void ELstatistics::summary(std::ostream & os, std::string const& title)
+    void ELstatistics::summary(std::ostream& os, std::string const& title)
     {
       os << title << '\n' << stats.formSummary();
       stats.updatedStats = false;
@@ -75,7 +73,10 @@ namespace mf {
       s = ss.str();
     }
 
-    void ELstatistics::noTerminationSummary() { stats.printAtTermination = false; }
+    void ELstatistics::noTerminationSummary()
+    {
+      stats.printAtTermination = false;
+    }
 
     void ELstatistics::summaryForJobReport (std::map<std::string, double>& sm)
     {

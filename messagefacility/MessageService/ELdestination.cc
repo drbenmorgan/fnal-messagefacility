@@ -31,13 +31,13 @@ namespace mf {
 
     //=============================================================================
     ELdestination::ELdestination()
-      : ELdestination(fhicl::ParameterSet{})
+      : ELdestination{fhicl::ParameterSet{}}
     {}
 
     ELdestination::ELdestination(fhicl::ParameterSet const& pset)
       : stats{pset}
       , format{pset.get<fhicl::ParameterSet>("format", {})}
-      , userWantsStats{pset.get<bool>("outputStatistics",false)}
+      , userWantsStats{pset.get<bool>("outputStatistics", false)}
     {
       if (userWantsStats) {
         auto const& dest_type = pset.get<std::string>("type","file");
@@ -122,7 +122,6 @@ namespace mf {
 
       // See if this message is to be acted upon, and add it to limits table
       // if it was not already present:
-      //
       if (xid.severity < threshold)  return false;
       if (xid.severity < ELsevere && thisShouldBeIgnored(xid.module)) return false;
       if (xid.severity < ELsevere && !stats.limits.add(xid)) return false;
@@ -153,7 +152,7 @@ namespace mf {
 
       // Output serial number of message:
       //
-      if ( format.want( SERIAL ) )  {
+      if (format.want(SERIAL)) {
         std::ostringstream s;
         s << msg.serial();
         emit(oss, "[serial #" + s.str() + "] ");
@@ -244,12 +243,12 @@ namespace mf {
         }
 
         // Check for user-requested line breaks
-        if (format.want(NO_LINE_BREAKS)) emit (oss, " ==> ");
+        if (format.want(NO_LINE_BREAKS)) emit(oss, " ==> ");
         else emit(oss, "", true);
       }
 
       // For verbatim (and user-supplied) messages, just print the contents
-      for ( ;  it != msg.items().cend(); ++it )  {
+      for ( ;  it != msg.items().cend(); ++it ) {
         emit(oss, *it);
       }
 
@@ -294,7 +293,7 @@ namespace mf {
     }
 
     //=============================================================================
-    bool ELdestination::switchChannel( std::string const& /*channelName*/ )
+    bool ELdestination::switchChannel(std::string const& /*channelName*/)
     {
       return false;
     }
@@ -377,11 +376,12 @@ namespace mf {
 
     void ELdestination::summary(std::ostream& os, std::string const& title)
     {
-      os << "%MSG" << ELwarning2.getSymbol() << " "
-         << noSummaryMsg << " " << hereMsg << std::endl
-         << title << std::endl;
+      os << preamble
+         << ELwarning2.getSymbol() << " "
+         << noSummaryMsg << " "
+         << hereMsg << '\n'
+         << title << '\n';
     }
-
 
     void ELdestination::summary(std::string& s, std::string const& title)
     {
@@ -458,14 +458,6 @@ namespace mf {
       } else {
         return false;
       }
-    }
-
-
-    void close_and_delete::operator()(std::ostream* os) const
-    {
-      auto p = static_cast<std::ofstream*>(os);
-      p->close();
-      delete os;
     }
 
   } // end of namespace service
