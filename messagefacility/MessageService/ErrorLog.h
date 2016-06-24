@@ -40,7 +40,6 @@ namespace mf {
     // ----------------------------------------------------------------------
 
     class ELadministrator;
-    class ELdestControl;
 
     // ----------------------------------------------------------------------
     // ErrorLog:
@@ -92,11 +91,6 @@ namespace mf {
       void            setDebugVerbosity   (int debugVerbosity);
       void            setDebugMessages    (ELseverityLevel sev, std::string id);
 
-      // -----  recovery of an ELdestControl handle
-
-      bool getELdestControl (const std::string & name,
-                             ELdestControl & theDestControl) const;
-
       // -----  information about this ErrorLog instance
 
       std::string moduleName() const;
@@ -117,7 +111,7 @@ namespace mf {
       bool             discarding {false};
       int              debugVerbosityLevel {0};
       ELseverityLevel  debugSeverityLevel {ELinfo};
-      std::string         debugMessageId {"DEBUG"};
+      std::string      debugMessageId {"DEBUG"};
 
     };  // ErrorLog
 

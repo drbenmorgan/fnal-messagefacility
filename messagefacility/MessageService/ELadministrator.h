@@ -19,44 +19,14 @@
 //      Physicist users get at it indirectly through using an ErrorLog
 //      set up in their Module class.
 //
-// ELadminDestroyer  A class whose sole purpose is the destruction of the
-//                   ELadministrator when the program is over.  Right now,
-//                   we do not have anything that needs to be done when the
-//                   ELadministrator (and thus the error logger) goes away;
-//                   but since by not deleting the copies of ELdestination's
-//                   that were attached we would be left with an apparent
-//                   memory leak, we include a protected destructor which will
-//                   clean up.  ELadminDestroyer provides the only way for
-//                   this destructor to be called.
-//
 // ----------------------------------------------------------------------
-//
-// 7/2/98 mf    Created file.
-// 2/29/00 mf   Added method swapContextSupplier for ELrecv to use.
-// 4/5/00 mf    Added method swapProcess for same reason:  ELrecv wants to
-//              be able to mock up the process and reset it afterward.
-// 6/6/00 web   Consolidate ELadministrator/X; adapt to consolidated
-//              ELcout/X.
-// 6/14/00 web  Declare classes before granting friendship.
-// 6/4/01  mf   Grant friedship to ELtsErrorLog
-// 3/6/02  mf   Items for recovering handles to attached destinations:
-//              the attachedDestinations map,
-//              an additional signature for attach(),
-//              and getELdestControl() method
-// 3/17/04 mf   exitThreshold and setExitThreshold
-// 1/10/06 mf   finish
-// 9/25/14 kjk  Disable copy/move
-//
-// ----------------------------------------------------------------------
-
-
 
 #include "cetlib/exempt_ptr.h"
+#include "messagefacility/MessageService/ELdestination.h"
 #include "messagefacility/Utilities/ELlist.h"
 #include "messagefacility/Utilities/ELseverityLevel.h"
 #include "messagefacility/Utilities/ErrorObj.h"
-#include "messagefacility/MessageService/ELdestControl.h"
-
+#include <map>
 #include <memory>
 #include <type_traits>
 #include <utility>
@@ -70,7 +40,6 @@ namespace mf {
 
     class ELcontextSupplier;
     class ErrorLog;
-    class ELcout;
 
     // ----------------------------------------------------------------------
     // ELadministrator:
@@ -79,7 +48,6 @@ namespace mf {
     class ELadministrator  {
 
       friend class ErrorLog; // ELadministrator user behavior
-      friend class ELcout;   // ELcout behavior
 
     public:
 
@@ -104,20 +72,18 @@ namespace mf {
 
       // ---  furnish/recall destinations:
       //
-
       template <typename DEST>
-      ELdestControl attach(std::string const& outputId,
-                           std::unique_ptr<DEST>&& dest,
-                           std::enable_if_t<std::is_base_of<ELdestination,DEST>::value>* = nullptr)
+      std::enable_if_t<std::is_base_of<ELdestination,DEST>::value, ELdestination&>
+      attach(std::string const& outputId,
+             std::unique_ptr<DEST>&& dest)
       {
         auto emplacePair = attachedDestinations.emplace(outputId, std::move(dest));
-        auto iterToIDdestPair = emplacePair.first;
-        bool const didEmplace = emplacePair.second;
-        return didEmplace ? ELdestControl(cet::exempt_ptr<ELdestination>(iterToIDdestPair->second.get())) : ELdestControl();
+        auto& mapPair = *emplacePair.first;
+        return *mapPair.second;
       }
 
       std::map<std::string,std::unique_ptr<ELdestination>> const& sinks();
-      bool getELdestControl (std::string const& name, ELdestControl& theControl);
+      bool hasDestination(std::string const&);
 
       // ---  handle severity information:
       //
@@ -131,12 +97,12 @@ namespace mf {
       // ---  apply the following actions to all attached destinations:
       //
       void setThresholds(ELseverityLevel sev );
-      void setLimits    (std::string const& id, int limit);
-      void setIntervals (std::string const& id, int interval);
-      void setTimespans (std::string const& id, int seconds);
-      void setLimits    (ELseverityLevel sev, int limit);
-      void setIntervals (ELseverityLevel sev, int interval);
-      void setTimespans (ELseverityLevel sev, int seconds);
+      void setLimits(std::string const& id, int limit);
+      void setIntervals(std::string const& id, int interval);
+      void setTimespans(std::string const& id, int seconds);
+      void setLimits(ELseverityLevel sev, int limit);
+      void setIntervals(ELseverityLevel sev, int interval);
+      void setTimespans(ELseverityLevel sev, int seconds);
       void wipe();
       void finish();
 

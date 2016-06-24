@@ -280,7 +280,7 @@ namespace mf {
 
     //=============================================================================
     void
-    MessageLoggerScribe::configure_dest(ELdestControl& dest_ctrl,
+    MessageLoggerScribe::configure_dest(ELdestination& dest,
                                         string const& dest_pset_name,
                                         fhicl::ParameterSet const& dest_pset)
     {
@@ -320,19 +320,19 @@ namespace mf {
       int default_limit {NO_VALUE_SET};
       if (default_category_pset.get_if_present<int>("limit", default_limit)) {
         if (default_limit < 0) default_limit = two_billion;
-        dest_ctrl.setLimit("*", default_limit);
+        dest.setLimit("*", default_limit);
       }
 
       int default_interval {NO_VALUE_SET};
       if (default_category_pset.get_if_present<int>("reportEvery", default_interval)) {
         // interval <= 0 implies no reporting
-        dest_ctrl.setInterval("*", default_interval);
+        dest.setInterval("*", default_interval);
       }
 
       int default_timespan {NO_VALUE_SET};
       if (default_category_pset.get_if_present<int>("timespan", default_timespan)) {
         if (default_timespan < 0) default_timespan = two_billion;
-        dest_ctrl.setTimespan("*", default_timespan);
+        dest.setTimespan("*", default_timespan);
       }
 
       // establish this destination's threshold:
@@ -341,7 +341,7 @@ namespace mf {
       if (dest_threshold.empty()) dest_threshold = COMMON_DEFAULT_THRESHOLD;
 
       ELseverityLevel const threshold_sev {dest_threshold};
-      dest_ctrl.setThreshold(threshold_sev);
+      dest.setThreshold(threshold_sev);
 
       // establish this destination's limit/interval/timespan for each category:
       for(auto const& category : categories) {
@@ -357,47 +357,47 @@ namespace mf {
 
         if(limit != NO_VALUE_SET)  {
           if (limit < 0) limit = two_billion;
-          dest_ctrl.setLimit(category, limit);
+          dest.setLimit(category, limit);
         }
         if(interval != NO_VALUE_SET)  {
-          dest_ctrl.setInterval(category, interval);
+          dest.setInterval(category, interval);
         }
         if(timespan != NO_VALUE_SET)  {
           if ( timespan < 0 ) timespan = two_billion;
-          dest_ctrl.setTimespan(category, timespan);
+          dest.setTimespan(category, timespan);
         }
       }  // for
 
       // establish this destination's linebreak policy:
       if (dest_pset.get<bool> ("noLineBreaks", false)) {
-        dest_ctrl.setLineLength(32000);
+        dest.setLineLength(32000);
       }
       else {
         int constexpr lenDef {80};
         int const lineLen = dest_pset.get<int> ("lineLength", lenDef);
-        dest_ctrl.setLineLength(lineLen);
+        dest.setLineLength(lineLen);
       }
 
       if (dest_pset.get<bool>("noTimeStamps", false)) {
-        dest_ctrl.formatSuppress(TIMESTAMP);
+        dest.formatSuppress(TIMESTAMP);
       }
 
       if (dest_pset.get<bool>("useMilliseconds", false)) {
-        dest_ctrl.formatInclude(MILLISECOND);
+        dest.formatInclude(MILLISECOND);
       }
 
     }  // MessageLoggerScribe::configure_dest()
 
     //=============================================================================
     void
-    MessageLoggerScribe::configure_default_fwkJobReport(ELdestControl& dest_ctrl)
+    MessageLoggerScribe::configure_default_fwkJobReport(ELdestination& dest)
     {
-      dest_ctrl.setLimit("*", 0);
+      dest.setLimit("*", 0);
       string const msgID {"FwkJob"};
       int constexpr FwkJob_limit = 10000000;
-      dest_ctrl.setLimit(msgID, FwkJob_limit);
-      dest_ctrl.setLineLength(32000);
-      dest_ctrl.formatSuppress(TIMESTAMP);
+      dest.setLimit(msgID, FwkJob_limit);
+      dest.setLineLength(32000);
+      dest.formatSuppress(TIMESTAMP);
     }
 
     //=============================================================================
@@ -471,11 +471,11 @@ namespace mf {
         jobReportExists = true;
         if (actual_filename == jobReportOption) jobReportOption = empty_string;
 
-        ELdestControl dest_ctrl = admin_p->attach(outputId,
-                                                  std::make_unique<ELfwkJobReport>(actual_filename));
+        ELdestination& dest = admin_p->attach(outputId,
+                                              std::make_unique<ELfwkJobReport>(actual_filename));
 
         // now configure this destination:
-        configure_dest(dest_ctrl, psetname, fjr_pset);
+        configure_dest(dest, psetname, fjr_pset);
 
       }  // for [it = fwkJobReports.begin() to end()]
 
@@ -495,10 +495,10 @@ namespace mf {
       // use already-specified configuration if destination exists
       if (duplicateDest) return;
 
-      ELdestControl dest_ctrl = admin_p->attach(outputId, std::make_unique<ELfwkJobReport>( actual_filename));
+      ELdestination& dest = admin_p->attach(outputId, std::make_unique<ELfwkJobReport>( actual_filename));
 
       // now configure this destination, in the jobreport default manner:
-      configure_default_fwkJobReport(dest_ctrl);
+      configure_default_fwkJobReport(dest);
 
     }
 
@@ -551,16 +551,16 @@ namespace mf {
           pluginFactory;
 
         // attach the current destination, keeping a control handle to it:
-        ELdestControl dest_ctrl = admin_p->attach(outputId,
-                                                  makePlugin_(plugin_factory,
-                                                              libspec,
-                                                              psetname,
-                                                              dest_pset));
-        configure_dest(dest_ctrl, psetname, dest_pset);
+        ELdestination& dest = admin_p->attach(outputId,
+                                              makePlugin_(plugin_factory,
+                                                          libspec,
+                                                          psetname,
+                                                          dest_pset));
+        configure_dest(dest, psetname, dest_pset);
 
         // Suppress the desire to do an extra termination summary just because
         // of end-of-job info message for statistics jobs
-        if (configuration == ELdestConfig::STATISTICS) dest_ctrl.noTerminationSummary() ;
+        if (configuration == ELdestConfig::STATISTICS) dest.noTerminationSummary() ;
       }
 
     } // make_destinations()
@@ -610,13 +610,10 @@ namespace mf {
     MessageLoggerScribe::triggerStatisticsSummaries() {
 
       for (auto& idDestPair : admin_p->sinks()) {
-
-        ELdestControl destControl;
-        if (!admin_p->getELdestControl(idDestPair.first, destControl)) continue;
-
-        destControl.summary(admin_p->getContextSupplier());
-        if (destControl.resetStats()) destControl.wipe();
-
+        auto& dest = *idDestPair.second;
+        dest.summary(admin_p->getContextSupplier());
+        if (dest.resetStats())
+          dest.wipe();
       }
 
     }
@@ -735,8 +732,8 @@ namespace mf {
       else if (configuration == ELdestConfig::ORDINARY    ) config_str = "MessageLogger";
       else if (configuration == ELdestConfig::STATISTICS  ) config_str = "MessageLogger Statistics";
 
-      ELdestControl destControl;
-      if (!admin_p->getELdestControl(output_id, destControl)) return false;
+      auto dest_pr = admin_p->sinks().find(output_id);
+      if (dest_pr == admin_p->sinks().end()) return false;
 
       // For duplicate destinations
       std::string const hrule {"\n============================================================================ \n"};
@@ -755,7 +752,7 @@ namespace mf {
       // needs to be set to 'true' so that statistics are output.
 
       if (configuration == ELdestConfig::STATISTICS) {
-        destControl.userWantsStats();
+        dest_pr->second->userWantsStats();
         return true; // don't emit warning for statistics
       }
 

@@ -266,10 +266,10 @@ namespace mf {
       debugMessageId = id;
     }
 
-    bool ErrorLog::getELdestControl (const std::string & name,
-                                     ELdestControl & theDestControl) const {
-      return a->getELdestControl(name, theDestControl);
-    }
+    // bool ErrorLog::getELdestControl (const std::string & name,
+    //                                  ELdestControl & theDestControl) const {
+    //   return a->getELdestControl(name, theDestControl);
+    // }
 
     // ----------------------------------------------------------------------
     // Obtaining Information:

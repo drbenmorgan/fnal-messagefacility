@@ -1,5 +1,4 @@
 #include "messagefacility/MessageService/ELadministrator.h"
-#include "messagefacility/MessageService/ELdestination.h"
 #include "messagefacility/MessageService/ELcontextSupplier.h"
 #include "messagefacility/MessageService/ELostreamOutput.h"
 #include "messagefacility/Utilities/exception.h"
@@ -47,12 +46,12 @@ namespace mf {
 
     ELcontextSupplier const& ELadministrator::getContextSupplier() const
     {
-      return *(context_);
+      return *context_;
     }
 
     ELcontextSupplier& ELadministrator::swapContextSupplier(ELcontextSupplier& cs)
     {
-      ELcontextSupplier& save = *(context_);
+      ELcontextSupplier& save = *context_;
       context_.reset(&cs);
       return save;
     }
@@ -67,15 +66,9 @@ namespace mf {
       exitThreshold_ = sev;
     }
 
-    bool ELadministrator::getELdestControl (std::string const& name,
-                                            ELdestControl& theDestControl)
+    bool ELadministrator::hasDestination(std::string const& name)
     {
-      if (attachedDestinations.find(name) != attachedDestinations.end()) {
-        theDestControl = ELdestControl ( cet::exempt_ptr<ELdestination>( attachedDestinations[name].get() ) );
-        return true;
-      } else {
-        return false;
-      }
+      return attachedDestinations.find(name) != attachedDestinations.end();
     }
 
     ELseverityLevel ELadministrator::checkSeverity()
@@ -100,7 +93,7 @@ namespace mf {
       while ( ++k <= to.getLevel() )
         sum += severityCounts_[k];
 
-      return  sum;
+      return sum;
     }
 
     void ELadministrator::resetSeverityCount(ELseverityLevel const sev)
@@ -133,7 +126,6 @@ namespace mf {
     long ELadministrator::pid() const { return pid_;}
 
     std::string const& ELadministrator::process() const  { return process_; }
-
 
     ELcontextSupplier & ELadministrator::context() const  { return *context_; }
 
@@ -322,9 +314,9 @@ namespace mf {
       }
       else {
         // enumerate all network interfaces
-        struct ifaddrs * ifAddrStruct = NULL;
-        struct ifaddrs * ifa = NULL;
-        void * tmpAddrPtr = NULL;
+        struct ifaddrs* ifAddrStruct = nullptr;
+        struct ifaddrs* ifa = nullptr;
+        void* tmpAddrPtr = nullptr;
 
         if(getifaddrs(&ifAddrStruct)) {
           // failed to get addr struct
@@ -332,7 +324,7 @@ namespace mf {
         }
         else {
           // iterate through all interfaces
-          for( ifa=ifAddrStruct; ifa!=NULL; ifa=ifa->ifa_next ) {
+          for( ifa=ifAddrStruct; ifa!=nullptr; ifa=ifa->ifa_next ) {
             if( ifa->ifa_addr->sa_family==AF_INET ) {
               // a valid IPv4 addres
               tmpAddrPtr = &((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
@@ -362,12 +354,12 @@ namespace mf {
 
       // process id
       pid_t pid = getpid();
-      pid_ = (long) pid;
+      pid_ = static_cast<long>(pid);
 
       // get process name from '/proc/pid/cmdline'
       std::stringstream ss;
       ss << "//proc//" << pid_ << "//cmdline";
-      std::ifstream procfile(ss.str().c_str());
+      std::ifstream procfile {ss.str().c_str()};
 
       std::string procinfo;
 

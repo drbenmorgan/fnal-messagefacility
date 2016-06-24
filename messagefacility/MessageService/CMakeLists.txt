@@ -2,7 +2,6 @@ cet_make_library(
   LIBRARY_NAME MF_MessageService
   SOURCE
   ELadministrator.cc
-  ELdestControl.cc
   ELdestination.cc
   ELfwkJobReport.cc
   ELostreamOutput.cc

@@ -37,9 +37,9 @@ namespace mf {
     ELdestination::ELdestination(fhicl::ParameterSet const& pset)
       : stats{pset}
       , format{pset.get<fhicl::ParameterSet>("format", {})}
-      , userWantsStats{pset.get<bool>("outputStatistics", false)}
+      , enableStats{pset.get<bool>("outputStatistics", false)}
     {
-      if (userWantsStats) {
+      if (enableStats) {
         auto const& dest_type = pset.get<std::string>("type","file");
         ELdestConfig::checkType(dest_type, ELdestConfig::STATISTICS);
       }
@@ -288,7 +288,7 @@ namespace mf {
 
       msgObj.setReactedTo(true);
 
-      if (userWantsStats && passLogStatsThreshold(msgObj))
+      if (enableStats && passLogStatsThreshold(msgObj))
         stats.log(msgObj, contextSupplier);
     }
 
@@ -298,14 +298,12 @@ namespace mf {
       return false;
     }
 
-    // ----------------------------------------------------------------------
-    // Methods invoked through the ELdestControl handle:
-    // ----------------------------------------------------------------------
-
-    // Each of these must be overridden by any destination for which they make
-    // sense.   In this base class, where they are all no-ops, the methods which
-    // generate data to a destination, stream or stream will warn at that place,
-    // and all the no-op methods will issue an ELwarning2 at their own destination.
+    // Each of the functions below must be overridden by any
+    // destination for which they make sense.  In this base class,
+    // where they are all no-ops, the methods which generate data to a
+    // destination, stream or stream will warn at that place, and all
+    // the no-op methods will issue an ELwarning2 at their own
+    // destination.
 
     void ELdestination::clearSummary(ELcontextSupplier const& contextSupplier)
     {
@@ -364,7 +362,7 @@ namespace mf {
 
     void ELdestination::summary(ELcontextSupplier const& contextSupplier)
     {
-      if (userWantsStats && stats.updatedStats && stats.printAtTermination)
+      if (enableStats && stats.updatedStats && stats.printAtTermination)
         {
           std::ostringstream payload;
           payload << "\n=============================================\n\n"
@@ -395,6 +393,52 @@ namespace mf {
 
     void ELdestination::finish()
     {}
+
+    void ELdestination::setThreshold(ELseverityLevel const sv)
+    {
+      threshold = sv;
+    }
+
+    void ELdestination::setLimit(std::string const& s, int const n)
+    {
+      stats.limits.setLimit(s, n);
+    }
+
+    void ELdestination::setInterval(ELseverityLevel const sv, int const interval)
+    {
+      stats.limits.setInterval(sv, interval);
+    }
+
+    void ELdestination::setInterval(std::string const& s, int const interval)
+    {
+      stats.limits.setInterval(s, interval);
+    }
+
+    void ELdestination::setLimit(ELseverityLevel const sv, int const n)
+    {
+      stats.limits.setLimit(sv, n);
+    }
+
+    void ELdestination::setTimespan(std::string const& s, int const n)
+    {
+      stats.limits.setTimespan(s, n);
+    }
+
+    void ELdestination::setTimespan(ELseverityLevel const sv, int const n)
+    {
+      stats.limits.setTimespan(sv, n);
+    }
+
+    void ELdestination::formatSuppress(flag_enum const FLAG)
+    {
+      format.suppress(FLAG);
+    }
+
+    void ELdestination::formatInclude(flag_enum const FLAG)
+    {
+      format.include(FLAG);
+    }
+
 
     void ELdestination::setTableLimit(int const n)
     {

@@ -5,7 +5,7 @@
 #include "cetlib/exempt_ptr.h"
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageService/ELadministrator.h"
-#include "messagefacility/MessageService/ELdestControl.h"
+#include "messagefacility/MessageService/ELdestination.h"
 #include "messagefacility/MessageService/ELdestConfigCheck.h"
 #include "messagefacility/MessageService/ErrorLog.h"
 #include "messagefacility/MessageService/MsgContext.h"
@@ -50,16 +50,16 @@ namespace mf {
       void  configure_fwkJobReports();
       void  configure_destinations();
 
-      void  make_destinations( const fhicl::ParameterSet& dests,
-                               const std::vector<std::string>& dest_list,
-                               const ELdestConfig::dest_config config,
-                               const bool should_throw );
+      void  make_destinations(fhicl::ParameterSet const& dests,
+                              std::vector<std::string> const& dest_list,
+                              ELdestConfig::dest_config const config,
+                              bool const should_throw);
 
-      void  configure_dest( ELdestControl& dest_ctrl,
-                            const std::string& dest_pset_name,
-                            const fhicl::ParameterSet& dest_pset );
+      void  configure_dest(ELdestination& dest_ctrl,
+                           std::string const& dest_pset_name,
+                           fhicl::ParameterSet const& dest_pset);
 
-      void  configure_default_fwkJobReport( ELdestControl & dest_ctrl);
+      void  configure_default_fwkJobReport(ELdestination& dest_ctrl);
 
       // --- util function to trim leading and trailing whitespaces from a string
       std::string trim(std::string const& src);
@@ -69,7 +69,7 @@ namespace mf {
 
       // --- data:
       ELadministrator* admin_p {ELadministrator::instance()};
-      ELdestControl early_dest;
+      ELdestination& early_dest;
       std::unique_ptr<ErrorLog> errorlog_p {std::make_unique<ErrorLog>()};
       MsgContext msg_context;
       std::unique_ptr<fhicl::ParameterSet> job_pset_p {nullptr};

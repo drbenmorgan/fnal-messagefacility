@@ -23,7 +23,6 @@
 
 namespace mf {
   namespace service {
-    class ELdestControl;
     class ELdestination;
     class ELadministrator;
   }
@@ -45,7 +44,6 @@ namespace mf {
     class ELdestination  {
 
       friend class ELadministrator;
-      friend class ELdestControl;
 
     public:
 
@@ -71,8 +69,29 @@ namespace mf {
 
       virtual void finish();
 
-      // -----  Methods invoked through the ELdestControl handle:
-      //
+      virtual void noTerminationSummary(){}
+
+      void setThreshold(ELseverityLevel sv);
+      void setLimit(ELseverityLevel sv, int n);
+      void setInterval(ELseverityLevel sv, int interval);
+      void setTimespan(ELseverityLevel sv, int n);
+
+      void setLimit(std::string const& s, int n);
+      void setInterval(std::string const& s, int interval);
+      void setTimespan(std::string const& s, int n);
+
+      int setLineLength(int len);
+
+      bool resetStats() const { return stats.reset; }
+      void setResetStats(bool const flag) { stats.reset = flag; }
+      void userWantsStats() { enableStats = true; }
+      virtual void wipe();
+
+      void formatSuppress(flag_enum);
+      void formatInclude(flag_enum);
+
+      virtual void summary(ELcontextSupplier const&);
+
     protected:
 
       void emit(std::ostream& os, std::string const& s, bool nl = false);
@@ -89,7 +108,6 @@ namespace mf {
                                 ELcontextSupplier const&);
 
       virtual void clearSummary(ELcontextSupplier const&);
-      virtual void wipe();
       virtual void zero();
       virtual void filterModule(std::string const& moduleName);
       virtual void excludeModule(std::string const& moduleName);
@@ -99,7 +117,6 @@ namespace mf {
 
       virtual void summary(std::ostream& os, std::string const& title="");
       virtual void summary(std::string& s, std::string const& title="");
-      virtual void summary(ELcontextSupplier const&);
       virtual void summaryForJobReport(std::map<std::string, double>& sm);
 
       virtual void setTableLimit(int n);
@@ -110,9 +127,7 @@ namespace mf {
 
     private:
 
-      virtual void noTerminationSummary(){}
       virtual int getLineLength() const;
-      virtual int setLineLength(int len);
 
     protected:
 
@@ -128,7 +143,7 @@ namespace mf {
       bool respondToMostModules {false};
       ELset_string ignoreThese {};
 
-      bool userWantsStats;
+      bool enableStats;
 
     };  // ELdestination
 
