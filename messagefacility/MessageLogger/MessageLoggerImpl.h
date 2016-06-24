@@ -45,7 +45,7 @@ namespace mf  {
     void fillErrorObj(mf::ErrorObj& obj) const;
     bool debugEnabled() const { return debugEnabled_; }
 
-    static bool anyDebugEnabled() { return anyDebugEnabled_; }
+    bool anyDebugEnabled() const { return anyDebugEnabled_; }
 
     // Set the context for following messages.  Note that it is caller's
     // responsibility to ensure that any saved EnableState is saved in a
@@ -57,28 +57,20 @@ namespace mf  {
     void setContext(std::string const &currentPhase,
                     EnabledState previousEnabledState);
 
+  public:
+    std::set<std::string> debugEnabledModules_;
+    bool everyDebugEnabled_ {false};
+
   private:
-
     // put an ErrorLog object here, and maybe more
-
-    typedef std::map<std::string,ELseverityLevel> s_map_t;
+    using s_map_t = std::map<std::string,ELseverityLevel>;
     s_map_t suppression_levels_;
     bool debugEnabled_;
-    //this is a cache which profiling has shown to be helpful
-    //std::map<const ModuleDescription*, std::string> descToCalcName_;
-    static bool   anyDebugEnabled_;
-    //static bool everyDebugEnabled_;
-
-    static bool fjrSummaryRequested_;
     bool messageServicePSetHasBeenValidated_;
     std::string  messageServicePSetValidatationResults_;
 
-    // TODO: Use of nonModule_debugEnabled and friends is NOT thread-safe!
-    // Need to do something soon.
-
-  public:
-    std::set<std::string> debugEnabledModules_;
-    static bool everyDebugEnabled_;
+    bool anyDebugEnabled_;
+    bool fjrSummaryRequested_;
 
   };  // MessageLoggerImpl
 

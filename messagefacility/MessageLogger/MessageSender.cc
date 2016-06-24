@@ -2,11 +2,6 @@
 #include "messagefacility/MessageService/MessageLoggerQ.h"
 #include "messagefacility/MessageLogger/MessageDrop.h"
 
-#define TRACE_DROP
-#ifdef TRACE_DROP
-#include <iostream>
-#endif
-
 using namespace mf;
 
 bool MessageSender::errorSummaryIsBeingKept = false;
@@ -16,52 +11,41 @@ std::map<ErrorSummaryMapKey, unsigned int> MessageSender::errorSummaryMap {};
 MessageSender::MessageSender(ELseverityLevel const sev,
                              std::string const& id,
                              bool const verbatim )
-  : errorobj_p{new ErrorObj{sev,id,verbatim}}
+  : errorobj_p{std::make_unique<ErrorObj>(sev,id,verbatim)}
 {}
 
-// This destructor must not be permitted to throw. A
-// boost::thread_resoruce_error is thrown at static destruction time,
-// if the MessageLogger library is loaded -- even if it is not used.
 MessageSender::~MessageSender()
-{
-  try
-    {
-      // surrender ownership of our ErrorObj, transferring ownership
-      // (via the intermediate MessageLoggerQ) to the MessageLoggerScribe
-      // that will (a) route the message text to its destination(s)
-      // and will then (b) dispose of the ErrorObj
+try
+  {
+    // surrender ownership of our ErrorObj, transferring ownership
+    // (via the intermediate MessageLoggerQ) to the MessageLoggerScribe
+    // that will (a) route the message text to its destination(s)
+    // and will then (b) dispose of the ErrorObj
 
-      MessageDrop * drop = MessageDrop::instance();
-      if (drop) {
-        errorobj_p->setModule(drop->moduleName);
-        errorobj_p->setContext(drop->runEvent);
-      }
-#ifdef TRACE_DROP
-      if (!drop) std::cerr << "MessageSender::~MessageSender() - Null drop pointer \n";
-#endif
-                                                                // change log 1
-      if ( errorSummaryIsBeingKept &&
-           errorobj_p->xid().severity >= ELwarning )
-      {
-        ELextendedID const & xid = errorobj_p->xid();
-        ErrorSummaryMapKey key (xid.id, xid.module, xid.severity);
-        ErrorSummaryMapIterator i = errorSummaryMap.find(key);
-        if (i != errorSummaryMap.end()) {
-          ++(i->second);  // same as ++errorSummaryMap[key]
-        } else {
-          errorSummaryMap[key] = 1;
-        }
-        freshError = true;
-      }
-      MessageLoggerQ::MLqLOG(errorobj_p);
+    if (auto drop = MessageDrop::instance()) {
+      errorobj_p->setModule(drop->moduleName);
+      errorobj_p->setContext(drop->runEvent);
     }
-  catch ( ... )
-    {
-      // nothing to do
 
-      // for test that removal of thread-involved static works,
-      // simply throw here, then run in trivial_main in totalview
-      // and Next or Step so that the exception would be detected.
-      // That test has been done 12/14/07.
+    if (errorSummaryIsBeingKept && errorobj_p->xid().severity >= ELwarning) {
+      ELextendedID const& xid = errorobj_p->xid();
+      ErrorSummaryMapKey const key {xid.id, xid.module, xid.severity};
+      auto i = errorSummaryMap.find(key);
+      if (i != errorSummaryMap.end()) {
+        ++(i->second);  // same as ++errorSummaryMap[key]
+      } else {
+        errorSummaryMap[key] = 1;
+      }
+      freshError = true;
     }
-}
+    MessageLoggerQ::MLqLOG(errorobj_p.release());
+  }
+ catch (...)
+   {
+     // nothing to do
+
+     // for test that removal of thread-involved static works,
+     // simply throw here, then run in trivial_main in totalview
+     // and Next or Step so that the exception would be detected.
+     // That test has been done 12/14/07.
+   }

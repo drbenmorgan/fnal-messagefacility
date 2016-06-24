@@ -6,9 +6,9 @@
 #include "messagefacility/MessageLogger/ErrorSummaryEntry.h"
 
 #include <map>
+#include <memory>
 
-namespace mf
-{
+namespace mf {
 
   using ErrorSummaryMapKey = ErrorSummaryEntry;
   using ErrorSummaryMapIterator = std::map<ErrorSummaryMapKey, unsigned int>::iterator;
@@ -19,7 +19,7 @@ namespace mf
     MessageSender(ELseverityLevel const sev,
                   std::string const& id,
                   bool verbatim = false);
-    ~MessageSender();
+    ~MessageSender() noexcept;
 
     // ---  stream out the next part of a message:
     template<class T>
@@ -30,16 +30,18 @@ namespace mf
       return *this;
     }
 
-    static bool errorSummaryIsBeingKept;
-    static bool freshError;
-    static std::map<ErrorSummaryMapKey, unsigned int> errorSummaryMap;
-
     // no copying:
     MessageSender(MessageSender const&) = delete;
     MessageSender& operator=(MessageSender const&) = delete;
 
   private:
-    ErrorObj* errorobj_p;
+
+    std::unique_ptr<ErrorObj> errorobj_p;
+
+    static bool errorSummaryIsBeingKept;
+    static bool freshError;
+    static std::map<ErrorSummaryMapKey, unsigned int> errorSummaryMap;
+
   };  // MessageSender
 
 

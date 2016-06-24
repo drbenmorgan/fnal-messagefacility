@@ -73,52 +73,34 @@ using namespace mf;
 
 namespace mf {
 
-  bool mf::MessageLoggerImpl::anyDebugEnabled_ = false;
-  bool mf::MessageLoggerImpl::everyDebugEnabled_ = false;
-  bool mf::MessageLoggerImpl::fjrSummaryRequested_ = false;
-
-  //
   // constructors and destructor
   //
   mf::MessageLoggerImpl::
-  MessageLoggerImpl(fhicl::ParameterSet const & iPS)
+  MessageLoggerImpl(fhicl::ParameterSet const& iPS)
     : debugEnabled_{false}
     , messageServicePSetHasBeenValidated_{false}
     , messageServicePSetValidatationResults_{}
+    , anyDebugEnabled_{false}
+    , fjrSummaryRequested_{iPS.get<bool>("messageSummaryToJobReport", false)}
   {
-    typedef std::vector<std::string>  vString;
-    vString empty_vString;
-    vString debugModules;
-    vString suppressDebug;
-    vString suppressWarning;
-    vString suppressInfo;
-
-    try {
-      // decide whether a summary should be placed in job report
-      fjrSummaryRequested_ = iPS.get<bool>("messageSummaryToJobReport", false);
-      debugModules = iPS.get<std::vector<std::string>>("debugModules"  , empty_vString);
-      suppressDebug = iPS.get<std::vector<std::string>>("suppressDebug" , empty_vString);
-      suppressInfo = iPS.get<std::vector<std::string>>("suppressInfo"  , empty_vString);
-      suppressWarning = iPS.get<std::vector<std::string>>("suppressWarning", empty_vString);
-    } catch (...) {
-    }
+    auto const& debugModules = iPS.get<std::vector<std::string>>("debugModules", {});
+    auto const& suppressDebug = iPS.get<std::vector<std::string>>("suppressDebug", {});
+    auto const& suppressInfo = iPS.get<std::vector<std::string>>("suppressInfo", {});
+    auto const& suppressWarning = iPS.get<std::vector<std::string>>("suppressWarning", {});
 
     // Use these lists to prepare a map to use in tracking suppression
 
     // Do suppressDebug first and suppressWarning last to get proper order
-    for( vString::const_iterator it  = suppressDebug.begin();
-         it != suppressDebug.end(); ++it ) {
-      suppression_levels_[*it] = ELseverityLevel::ELsev_success;
+    for (auto const& mod : suppressDebug) {
+      suppression_levels_[mod] = ELseverityLevel::ELsev_success;
     }
 
-    for( vString::const_iterator it  = suppressInfo.begin();
-         it != suppressInfo.end(); ++it ) {
-      suppression_levels_[*it] = ELseverityLevel::ELsev_info;
+    for (auto const& mod : suppressInfo) {
+      suppression_levels_[mod] = ELseverityLevel::ELsev_info;
     }
 
-    for( vString::const_iterator it  = suppressWarning.begin();
-         it != suppressWarning.end(); ++it ) {
-      suppression_levels_[*it] = ELseverityLevel::ELsev_warning;
+    for (auto const& mod : suppressWarning) {
+      suppression_levels_[mod] = ELseverityLevel::ELsev_warning;
     }
 
     // set up for tracking whether current module is debug-enabled
@@ -132,26 +114,23 @@ namespace mf {
       // this will be over-ridden when specific modules are entered
     }
 
-    for( vString::const_iterator it  = debugModules.begin();
-         it != debugModules.end(); ++it ) {
-      if (*it == "*") {
+    for(auto const& mod : debugModules) {
+      if (mod == "*") {
         everyDebugEnabled_ = true;
       } else {
-        debugEnabledModules_.insert(*it);
+        debugEnabledModules_.insert(mod);
       }
     }
 
-    std::string jr_name = mf::MessageDrop::instance()->jobreport_name;
+    std::string const& jr_name = mf::MessageDrop::instance()->jobreport_name;
     if (!jr_name.empty()) {
-      std::string * jr_name_p = new std::string(jr_name);
-      MessageLoggerQ::MLqJOB(jr_name_p);
+      MessageLoggerQ::MLqJOB(new std::string{jr_name});
     }
 
-    std::string jm = mf::MessageDrop::instance()->jobMode;
-    std::string * jm_p = new std::string(jm);
-    MessageLoggerQ::MLqMOD( jm_p );
+    std::string const& jm = mf::MessageDrop::instance()->jobMode;
+    MessageLoggerQ::MLqMOD(new std::string{jm});
 
-    MessageLoggerQ::MLqCFG( new fhicl::ParameterSet(iPS) );
+    MessageLoggerQ::MLqCFG(new fhicl::ParameterSet{iPS});
 
   } // ctor
 

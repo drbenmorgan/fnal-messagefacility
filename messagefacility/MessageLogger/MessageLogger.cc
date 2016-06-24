@@ -320,7 +320,7 @@ namespace mf {
   }
 
   // Set application name
-  void SetApplicationName(std::string const & application)
+  void SetApplicationName(std::string const& application)
   {
     MessageFacilityService& mfs = MessageFacilityService::instance();
 
