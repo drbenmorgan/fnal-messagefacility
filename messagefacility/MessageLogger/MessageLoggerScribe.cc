@@ -258,7 +258,7 @@ namespace mf {
         LogError ("preconfiguration") << preconfiguration_message;
         if (!singleThread) {
           OpCode opcode;
-          void * operand;
+          void* operand;
           m_queue->consume(opcode, operand);  // grab next work item from Q
           assert(opcode == LOG_A_MESSAGE);
           ErrorObj* errorobj_p = static_cast<ErrorObj*>(operand);
@@ -267,7 +267,7 @@ namespace mf {
         }
       }
 
-      if (admin_p->sinks().size() > 1) {
+      if (admin_p->destinations().size() > 1) {
         LogWarning ("multiLogConfig")
           << "The message logger has been configured multiple times";
         clean_slate_configuration = false;
@@ -607,15 +607,14 @@ namespace mf {
 
     //=============================================================================
     void
-    MessageLoggerScribe::triggerStatisticsSummaries() {
-
-      for (auto& idDestPair : admin_p->sinks()) {
+    MessageLoggerScribe::triggerStatisticsSummaries()
+    {
+      for (auto& idDestPair : admin_p->destinations()) {
         auto& dest = *idDestPair.second;
         dest.summary(admin_p->getContextSupplier());
         if (dest.resetStats())
           dest.wipe();
       }
-
     }
 
     //=============================================================================
@@ -732,8 +731,8 @@ namespace mf {
       else if (configuration == ELdestConfig::ORDINARY    ) config_str = "MessageLogger";
       else if (configuration == ELdestConfig::STATISTICS  ) config_str = "MessageLogger Statistics";
 
-      auto dest_pr = admin_p->sinks().find(output_id);
-      if (dest_pr == admin_p->sinks().end()) return false;
+      auto dest_pr = admin_p->destinations().find(output_id);
+      if (dest_pr == admin_p->destinations().end()) return false;
 
       // For duplicate destinations
       std::string const hrule {"\n============================================================================ \n"};

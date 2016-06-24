@@ -1,40 +1,3 @@
-// ----------------------------------------------------------------------
-//
-// ErrorLog.cc
-//
-// Created 7/7/98 mf
-// 5/2/99  web  Added non-default constructor.
-// 6/16/99 jvr  Attaches a destination when an ErrorObj is logged and no
-//              destinations are attached                       $$ jvr
-// 6/6/00  web  Reflect consolidation of ELadministrator/X; consolidate
-//              ErrorLog/X
-// 6/12/00 web  Attach cerr, rather than cout, in case of no previously-
-//              attached destination
-// 6/14/00 web  Append missing quote on conditional output
-// 3/13/01 mf   hexTrigger and related global methods
-// 3/13/01 mf   setDiscardThreshold(), and discardThreshold mechanism
-// 3/14/01 web  g/setfill(0)/s//setfill('0')/g; move #include <string>
-// 3/14/01 web  Insert missing initializers in constructor
-// 5/7/01  mf   operator<< (const char[])
-// 6/7/01  mf   operator()(ErrorObj&) should have been doing level bookkeeping
-//              and abort checking; inserted this code
-// 11/15/01 mf  static_cast to unsigned int and long in comparisons in
-//              operator<<( ErrorLog & e, unsigned int n) and long, and
-//              also rwriting 0xFFFFFFFF as 0xFFFFFFFFL when comparing to a
-//              long.  THese cure warnings when -Wall -pedantic are turned on.
-// 3/06/01 mf   getELdestControl() forwards to *a
-// 12/3/02 mf   discardVerbosityLevel, and items related to operator()(int)
-// 6/23/03 mf   moduleName() and subroutineName()
-// 3/17/04 mf   spaces after ints.
-// 3/17/04 mf   exit threshold
-//
-// --- CMS
-//
-// 12/12/05 mf  replace exit() with throw
-//
-// ----------------------------------------------------------------------
-
-
 #include "messagefacility/MessageService/ErrorLog.h"
 #include "messagefacility/MessageService/ELadministrator.h"
 #include "messagefacility/MessageService/ELdestination.h"
@@ -42,6 +5,7 @@
 #include "messagefacility/MessageService/ELrecv.h"
 #include "messagefacility/MessageService/ELcontextSupplier.h"
 #include "messagefacility/Utilities/exception.h"
+#include "messagefacility/Utilities/possiblyAbortOrExit.h"
 
 #include <iostream>
 #include <iomanip>
@@ -62,8 +26,7 @@ namespace mf {
       , module{pkgName}
     {}
 
-    ErrorLog & ErrorLog::operator() (ELseverityLevel const& sev,
-                                     std::string const& id)
+    ErrorLog& ErrorLog::operator()(ELseverityLevel const sev, std::string const& id)
     {
       if (sev < discardThreshold) {
         discarding = true;
@@ -76,17 +39,17 @@ namespace mf {
 
       // -----  form ErrorObj for this new message:
       //
-      a->msgIsActive = true;
-      a->msg.set            (sev, id);
-      a->msg.setProcess     (a->process());
-      a->msg.setModule      (module);
-      a->msg.setSubroutine  (subroutine);
-      a->msg.setReactedTo   (false);
+      a->setMsgIsActive(true);
+      a->msg().set(sev, id);
+      a->msg().setProcess(a->process());
+      a->msg().setModule(module);
+      a->msg().setSubroutine(subroutine);
+      a->msg().setReactedTo(false);
 
-      a->msg.setHostName    (a->hostname());
-      a->msg.setHostAddr    (a->hostaddr());
-      a->msg.setApplication (a->application());
-      a->msg.setPID         (a->pid());
+      a->msg().setHostName(a->hostname());
+      a->msg().setHostAddr(a->hostaddr());
+      a->msg().setApplication(a->application());
+      a->msg().setPID(a->pid());
 
       return *this;
     }
@@ -99,39 +62,14 @@ namespace mf {
 
     void ErrorLog::switchChannel(std::string const& channelName)
     {
-      cet::for_all(a->sinks(), [&channelName](auto const& d){ d.second->switchChannel(channelName); });
+      cet::for_all(a->destinations(), [&channelName](auto const& d){ d.second->switchChannel(channelName); });
     }
 
     namespace {
 
-      [[noreturn]] inline void msgexit(int s)
-      {
-        std::ostringstream os;
-        os << "msgexit - MessageLogger Log requested to exit with status " << s;
-        throw mf::Exception {mf::errors::LogicError, os.str()};
-      }
-
-      [[noreturn]] inline void msgabort()
-      {
-        std::ostringstream os;
-        os << "msgabort - MessageLogger Log requested to abort";
-        throw mf::Exception {mf::errors::LogicError, os.str()};
-      }
-
-      inline void possiblyAbOrEx (int const s, int const a, int const e)
-      {
-        if (s < a && s < e) return;
-        if (a < e) {
-          if (s < e) msgabort();
-          msgexit(s);
-        } else {
-          if (s < a) msgexit(s);
-          msgabort();
-        }
-      }
     }
 
-    ErrorLog & ErrorLog::operator()( mf::ErrorObj & msg )  {
+    ErrorLog& ErrorLog::operator()(mf::ErrorObj& msg) {
 
       endmsg();  // precautionary
 
@@ -155,28 +93,26 @@ namespace mf {
       if ( updateApplication)  msg.setApplication( a->application() );
       if ( updatePID        )  msg.setPID        ( a->pid()      );
 
-      // severity level statistics keeping:                 // $$ mf 6/7/01
-      int lev = msg.xid().severity.getLevel();
-      ++ a->severityCounts_[lev];
-      if ( lev > a->highSeverity_.getLevel() )
-        a->highSeverity_ = msg.xid().severity;
+      // severity level statistics keeping:
+      int const lev = msg.xid().severity.getLevel();
+      a->incrementSeverityCount(lev);
+      if (lev > a->highSeverity().getLevel())
+        a->setHighSeverity(msg.xid().severity);
 
-      a->context_->editErrorObj( msg );
+      a->context().editErrorObj(msg);
 
       // -----  send the message to each destination:
       //
-      if ( a->sinks().empty() ) {
+      if (a->destinations().empty()) {
         std::cerr << "\nERROR LOGGED WITHOUT DESTINATION!\n"
                   << "Attaching destination \"cerr\" to ELadministrator by default\n\n";
         a->attach("cerr", std::make_unique<ELostreamOutput>(std::cerr));
       }
 
       auto const& context = a->getContextSupplier();
-      cet::for_all(a->sinks(), [&msg,&context](auto const& d) { d.second->log(msg, context); });
+      cet::for_all(a->destinations(), [&msg,&context](auto const& d) { d.second->log(msg, context); });
 
-      possiblyAbOrEx ( msg.xid().severity.getLevel(),
-                       a->abortThreshold().getLevel(),
-                       a->exitThreshold().getLevel()   );   // $$ mf 3/17/04
+      possiblyAbortOrExit(msg.xid().severity, a->abortThreshold(), a->exitThreshold());
 
       // -----  restore, if we poked above:
       //
@@ -218,16 +154,16 @@ namespace mf {
 
     ErrorLog & ErrorLog::emit(std::string const& s)
     {
-      if (!a->msgIsActive) {
+      if (!a->msgIsActive()) {
         (*this)(ELunspecified, "...");
       }
-      a->msg.eo_emit(s);
+      a->msg().eo_emit(s);
       return *this;
     }
 
     ErrorLog & ErrorLog::endmsg()
     {
-      if (a->msgIsActive) {
+      if (a->msgIsActive()) {
         a->finishMsg();
         a->clearMsg();
       }
@@ -265,11 +201,6 @@ namespace mf {
       debugSeverityLevel = sev;
       debugMessageId = id;
     }
-
-    // bool ErrorLog::getELdestControl (const std::string & name,
-    //                                  ELdestControl & theDestControl) const {
-    //   return a->getELdestControl(name, theDestControl);
-    // }
 
     // ----------------------------------------------------------------------
     // Obtaining Information:

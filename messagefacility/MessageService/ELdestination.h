@@ -24,7 +24,6 @@
 namespace mf {
   namespace service {
     class ELdestination;
-    class ELadministrator;
   }
 }
 
@@ -41,10 +40,7 @@ namespace mf {
     // ELdestination:
     // ----------------------------------------------------------------------
 
-    class ELdestination  {
-
-      friend class ELadministrator;
-
+    class ELdestination {
     public:
 
       ELdestination();
@@ -55,9 +51,6 @@ namespace mf {
       ELdestination& operator= (ELdestination const& orig) = delete;
 
       virtual ~ELdestination() noexcept = default;
-
-      // -----  Methods invoked by the ELadministrator:
-      //
 
       virtual void log(mf::ErrorObj& msg, ELcontextSupplier const&);
 

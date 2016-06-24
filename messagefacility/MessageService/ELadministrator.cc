@@ -2,6 +2,7 @@
 #include "messagefacility/MessageService/ELcontextSupplier.h"
 #include "messagefacility/MessageService/ELostreamOutput.h"
 #include "messagefacility/Utilities/exception.h"
+#include "messagefacility/Utilities/possiblyAbortOrExit.h"
 
 #include <arpa/inet.h>
 #include <ifaddrs.h>
@@ -12,8 +13,8 @@
 #include <iostream>
 #include <list>
 #include <sstream>
-using std::cerr;
 
+using std::cerr;
 
 namespace mf {
   namespace service {
@@ -68,7 +69,7 @@ namespace mf {
 
     bool ELadministrator::hasDestination(std::string const& name)
     {
-      return attachedDestinations.find(name) != attachedDestinations.end();
+      return destinations_.find(name) != destinations_.end();
     }
 
     ELseverityLevel ELadministrator::checkSeverity()
@@ -127,92 +128,62 @@ namespace mf {
 
     std::string const& ELadministrator::process() const  { return process_; }
 
-    ELcontextSupplier & ELadministrator::context() const  { return *context_; }
+    ELcontextSupplier& ELadministrator::context() const  { return *context_; }
 
-
-    ELseverityLevel ELadministrator::abortThreshold() const  {
+    ELseverityLevel ELadministrator::abortThreshold() const
+    {
       return abortThreshold_;
     }
 
-    ELseverityLevel ELadministrator::exitThreshold() const  {
+    ELseverityLevel ELadministrator::exitThreshold() const
+    {
       return exitThreshold_;
     }
 
-    const std::map<std::string,std::unique_ptr<ELdestination>>& ELadministrator::sinks()  { return attachedDestinations; }
-
+    std::map<std::string, std::unique_ptr<ELdestination>> const&
+    ELadministrator::destinations()
+    {
+      return destinations_;
+    }
 
     ELseverityLevel ELadministrator::highSeverity() const  {
       return highSeverity_;
     }
 
-
-    int ELadministrator::severityCounts( const int lev ) const  {
-      return severityCounts_[lev];
-    }
-
-
     // ----------------------------------------------------------------------
     // Message handling:
     // ----------------------------------------------------------------------
 
-    static inline void msgexit(int s) {
-      std::ostringstream os;
-      os << "msgexit - MessageLogger requested to exit with status " << s;
-      mf::Exception e(mf::errors::LogicError, os.str());
-      throw e;
-    }
-
-    static inline void msgabort() {
-      std::ostringstream os;
-      os << "msgabort - MessageLogger requested to abort";
-      mf::Exception e(mf::errors::LogicError, os.str());
-      throw e;
-    }
-
-    static inline void possiblyAbortOrExit (int s, int a, int e) {
-      if (s < a && s < e) return;
-      if (a < e) {
-        if ( s < e ) msgabort();
-        msgexit(s);
-      } else {
-        if ( s < a ) msgexit(s);
-        msgabort();
-      }
-    }
-
     void ELadministrator::finishMsg()
     {
-      if (!msgIsActive)
+      if (!msgIsActive_)
         return;
 
-      int lev = msg.xid().severity.getLevel();
+      auto const severity = msg_.xid().severity;
+      int const lev = severity.getLevel();
       ++severityCounts_[lev];
-      if (lev > highSeverity_.getLevel())
-        highSeverity_ = msg.xid().severity;
+      if (severity > highSeverity_)
+        highSeverity_ = severity;
 
-      context_->editErrorObj(msg);
+      context_->editErrorObj(msg_);
 
-      if (sinks().begin() == sinks().end()) {
+      if (destinations_.empty()) {
         std::cerr << "\nERROR LOGGED WITHOUT DESTINATION!\n"
                   << "Attaching destination \"cerr\" to ELadministrator by default\n\n";
-        attachedDestinations.emplace("cerr", std::make_unique<ELostreamOutput>(cerr));
+        destinations_.emplace("cerr", std::make_unique<ELostreamOutput>(cerr));
       }
 
-      auto const& contextSupplier = getContextSupplier();
-      for (auto const& d : sinks()) { d.second->log(msg, contextSupplier); }
+      for_all_destinations([this](auto& d){ d.log(msg_, *context_); });
+      msgIsActive_ = false;
 
-      msgIsActive = false;
-
-      possiblyAbortOrExit (lev,
-                           abortThreshold().getLevel(),
-                           exitThreshold().getLevel());
+      possiblyAbortOrExit(severity, abortThreshold(), exitThreshold());
     } // finishMsg()
 
 
     void ELadministrator::clearMsg()
     {
-      msgIsActive = false;
-      msg.clear();
+      msgIsActive_ = false;
+      msg_.clear();
     }
 
     // ----------------------------------------------------------------------
@@ -221,47 +192,47 @@ namespace mf {
 
     void ELadministrator::setThresholds(ELseverityLevel const sev)
     {
-      for(auto const& d : sinks()) d.second->threshold = sev;
+      for_all_destinations([sev](auto& d){ d.setThreshold(sev); });
     }
 
     void ELadministrator::setLimits(std::string const& id, int const limit)
     {
-      for(auto const& d : sinks()) d.second->stats.limits.setLimit(id, limit);
+      for_all_destinations([&id,limit](auto& d){ d.setLimit(id, limit); });
     }
 
     void ELadministrator::setIntervals(ELseverityLevel const sev, int const interval)
     {
-      for(auto const& d : sinks()) d.second->stats.limits.setInterval(sev, interval);
+      for_all_destinations([sev,interval](auto& d){ d.setInterval(sev, interval); });
     }
 
     void ELadministrator::setIntervals(std::string const& id, int const interval)
     {
-      for(auto const& d : sinks()) d.second->stats.limits.setInterval(id, interval);
+      for_all_destinations([&id,interval](auto& d){ d.setInterval(id, interval); });
     }
 
     void ELadministrator::setLimits(ELseverityLevel const sev, int const limit)
     {
-      for(auto const& d : sinks()) d.second->stats.limits.setLimit(sev, limit);
+      for_all_destinations([sev,limit](auto& d){ d.setLimit(sev,limit); });
     }
 
     void ELadministrator::setTimespans(std::string const& id, int const seconds)
     {
-      for (auto const& d : sinks()) d.second->stats.limits.setTimespan(id, seconds);
+      for_all_destinations([&id,seconds](auto& d){ d.setTimespan(id, seconds); });
     }
 
     void ELadministrator::setTimespans(ELseverityLevel const sev, int const seconds)
     {
-      for (auto const& d: sinks()) d.second->stats.limits.setTimespan(sev, seconds);
+      for_all_destinations([sev,seconds](auto& d){ d.setTimespan(sev, seconds); });
     }
 
     void ELadministrator::wipe()
     {
-      for (auto const& d : sinks()) d.second->stats.limits.wipe();
+      for_all_destinations([](auto& d){ d.wipe(); });
     }
 
     void ELadministrator::finish()
     {
-      for (auto const& d : sinks()) d.second->finish();
+      for_all_destinations([](auto& d){ d.finish(); });
     }
 
     // ----------------------------------------------------------------------
@@ -383,7 +354,7 @@ namespace mf {
     ELadministrator::~ELadministrator()
     {
       finishMsg();
-      attachedDestinations.clear();
+      destinations_.clear();
     }  // ~ELadministrator()
 
   } // end of namespace service

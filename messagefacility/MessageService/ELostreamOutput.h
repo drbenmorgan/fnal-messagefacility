@@ -17,27 +17,15 @@
 #include <memory>
 
 namespace mf {
-
-  // ----------------------------------------------------------------------
-  // prerequisite classes:
-  // ----------------------------------------------------------------------
-
   class ErrorObj;
+}
+
+namespace mf {
   namespace service {
 
-    class ELdestControl;
-
-    // ----------------------------------------------------------------------
-    // ELostreamOutput:
-    // ----------------------------------------------------------------------
-
     class ELostreamOutput : public ELdestination  {
-
-      friend class ELdestControl;
-
     public:
 
-      // Birth/death:
       ELostreamOutput();
       ELostreamOutput(fhicl::ParameterSet const& psetFormat);
       ELostreamOutput(fhicl::ParameterSet const& psetFormat,
@@ -56,7 +44,7 @@ namespace mf {
       ELostreamOutput(ELostreamOutput const&) = delete;
       ELostreamOutput & operator=(ELostreamOutput const&) = delete;
 
-    protected:
+    private:
 
       void routePayload(std::ostringstream const& oss,
                         mf::ErrorObj const& msg,
@@ -67,15 +55,13 @@ namespace mf {
       void changeFile(std::string const& filename, ELcontextSupplier const&) override;
       void flush(ELcontextSupplier const&) override;
 
-      // --- member data:
-      //
       std::unique_ptr<cet::ostream_handle> osh;
       mf::ELextendedID xid {};
 
     };  // ELostreamOutput
 
-  }        // end of namespace service
-}        // end of namespace mf
+  } // end of namespace service
+} // end of namespace mf
 
 
 #endif /* messagefacility_MessageService_ELostreamOutput_h */

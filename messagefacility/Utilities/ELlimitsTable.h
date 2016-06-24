@@ -26,13 +26,6 @@
 // Limits of 0 in the auxilliary defaults indicate that the corresponding
 // limit was not specified.
 //
-// 7/6/98 mf    Created file.
-// 6/7/00 web   Reflect consolidation of ELdestination/X
-// 6/14/00 web  Declare classes before granting friendship.
-// 6/15/01 mf   Grant friendship to ELoutput so that faithful copying of
-//              ELoutput destinations becomes possible.
-// 5/16/06 mf   Added wildcardInterval member, and severityIntervals
-//
 // ----------------------------------------------------------------------
 
 
@@ -40,78 +33,67 @@
 #include "messagefacility/Utilities/ELextendedID.h"
 #include "messagefacility/Utilities/ELmap.h"
 
+#include <array>
+
 namespace mf {
-namespace service {
+  namespace service {
+
+    // ----------------------------------------------------------------------
+    // Prerequisite class:
+    // ----------------------------------------------------------------------
+
+    class ELdestination;
+    class ELoutput;
+    class ELfwkJobReport;
+
+    // ----------------------------------------------------------------------
+    // ELlimitsTable:
+    // ----------------------------------------------------------------------
+
+    class ELlimitsTable  {
+
+      friend class ELdestination;
+      friend class ELoutput;
+      friend class ELfwkJobReport;
+
+    public:
+
+      ELlimitsTable();
+
+      bool add(ELextendedID const& xid);
+      void setTableLimit(int n);
+
+      void wipe();  // Clears everything -- counts and limits established.
+      void zero();  // Clears only counts.
+
+      void setLimit   (std::string const& id, int n);
+      void setInterval(std::string const& id, int interval);
+      void setTimespan(std::string const& id, int n);
+
+      void setLimit   (ELseverityLevel sev, int n);
+      void setInterval(ELseverityLevel sev, int interval);
+      void setTimespan(ELseverityLevel sev, int n);
+
+    protected:
+
+      std::array<int, ELseverityLevel::nLevels> severityLimits;
+      std::array<int, ELseverityLevel::nLevels> severityTimespans;
+      std::array<int, ELseverityLevel::nLevels> severityIntervals;
+      int wildcardLimit {-1};
+      int wildcardInterval {-1};
+      int wildcardTimespan {-1};
+      int tableLimit {-1};
+
+      ELmap_limits limits {};
+      ELmap_counts counts {};
+
+    };  // ELlimitsTable
 
 
-// ----------------------------------------------------------------------
-// Prerequisite class:
-// ----------------------------------------------------------------------
-
-class ELdestination;
-class ELoutput;
-class ELfwkJobReport;
+    // ----------------------------------------------------------------------
 
 
-// ----------------------------------------------------------------------
-// ELlimitsTable:
-// ----------------------------------------------------------------------
-
-class ELlimitsTable  {
-
-  friend class ELdestination;
-  friend class ELoutput;
-  friend class ELfwkJobReport;
-
-public:
-
-  ELlimitsTable();
-  ~ELlimitsTable();
-
-// -----  Methods invoked by the destination under impetus from the logger:
-//
-public:
-  bool add( const ELextendedID & xid );
-  void setTableLimit( int n );
-
-// -----  Control methods invoked by the framework:
-//
-public:
-
-  void wipe();  // Clears everything -- counts and limits established.
-  void zero();  // Clears only counts.
-
-  void setLimit   ( const std::string        & id,  int n        );
-  void setLimit   ( const ELseverityLevel & sev, int n        );
-  void setInterval( const std::string        & id,  int interval );
-  void setInterval( const ELseverityLevel & sev, int interval );
-  void setTimespan( const std::string        & id,  int n        );
-  void setTimespan( const ELseverityLevel & sev, int n        );
-
-  ELlimitsTable & operator= (const ELlimitsTable & t);
-
-// -----  Tables and auxilliary private data:
-//
-protected:
-
-  int severityLimits   [ELseverityLevel::nLevels];
-  int severityTimespans[ELseverityLevel::nLevels];
-  int severityIntervals[ELseverityLevel::nLevels];
-  int wildcardLimit;
-  int wildcardInterval;
-  int wildcardTimespan;
-
-  int tableLimit;
-  ELmap_limits limits;
-  ELmap_counts counts;
-
-};  // ELlimitsTable
-
-
-// ----------------------------------------------------------------------
-
-
-}        // end of namespace service
+  }        // end of namespace service
 }        // end of namespace mf
 
 

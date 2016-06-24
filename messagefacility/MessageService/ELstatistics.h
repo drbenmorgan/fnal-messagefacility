@@ -10,61 +10,34 @@
 
 #include "cetlib/ostream_handle.h"
 #include "messagefacility/MessageService/ELdestination.h"
-
 #include "messagefacility/Utilities/ELextendedID.h"
 #include "messagefacility/Utilities/ELmap.h"
 
-#include <iostream>
 #include <memory>
 #include <set>
 
 namespace fhicl { class ParameterSet; }
+namespace mf { class ErrorObj; }
 
 namespace mf {
-
-  // ----------------------------------------------------------------------
-  // prerequisite classes:
-  // ----------------------------------------------------------------------
-
-  class ErrorObj;
   namespace service {
 
-    class ELdestControl;
-
-    // ----------------------------------------------------------------------
-    // ELstatistics:
-    // ----------------------------------------------------------------------
-
-    class ELstatistics : public ELdestination  {
-
-      friend class ELadministrator;
-      friend class ELdestControl;
-
+    class ELstatistics : public ELdestination {
     public:
 
       ELstatistics(fhicl::ParameterSet const& pset);
       ELstatistics(fhicl::ParameterSet const& pset, std::ostream& osp);
       ELstatistics(fhicl::ParameterSet const& pset, std::string const& filename, bool const append);
 
+      void log(mf::ErrorObj& msg, ELcontextSupplier const&) override;
+      static void noteGroupedCategory(std::string const& cat);
+
       // copy c'tor/assignment disabled
       ELstatistics(ELstatistics const&) = delete;
       ELstatistics& operator=(ELstatistics const&) = delete;
 
-      // -----  Methods invoked by the ELadministrator:
-      //
-    public:
+    private:
 
-      void log(mf::ErrorObj& msg, ELcontextSupplier const&) override;
-
-      // ----- Methods invoked by the MessageLoggerScribe, bypassing destControl
-      //
-    public:
-      static void noteGroupedCategory(std::string const& cat);
-
-
-      // -----  Methods invoked through the ELdestControl handle:
-      //
-    protected:
       void clearSummary(ELcontextSupplier const&) override;
 
       void wipe() override;
@@ -75,13 +48,9 @@ namespace mf {
       void summary(ELcontextSupplier const&) override;
       void noTerminationSummary() override;
 
-      void summaryForJobReport (std::map<std::string, double> & sm) override;
+      void summaryForJobReport (std::map<std::string, double>& sm) override;
 
-      // -----  Data affected by methods of specific ELdestControl handle:
-      //
-    protected:
       std::unique_ptr<cet::ostream_handle> termStream;
-
       static std::set<std::string> groupedCategories;
 
     };  // ELstatistics

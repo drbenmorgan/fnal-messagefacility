@@ -1,7 +1,6 @@
 #ifndef messagefacility_MessageService_ErrorLog_h
 #define messagefacility_MessageService_ErrorLog_h
 
-
 // ----------------------------------------------------------------------
 //
 // ErrorLog     provides interface to the module-wide variable by which
@@ -9,20 +8,6 @@
 //              frameworker interact with this class, which has a piece
 //              of module name information, but mainly works thru
 //              dispatching to the ELadministrator.
-//
-// 7/6/98  mf   Created file.
-// 5/2/99  web  Added non-default constructor.
-// 3/16/00 mf   Added operator() (nbytes, data) to invoke ELrecv.
-// 6/6/00  web  Reflect consolidation of ELadministrator/X; consolidate
-//              ErrorLog/X.
-// 3/13/01 mf   hexTrigger and related global methods
-// 3/13/01 mf   setDiscardThreshold
-// 5/7/01  mf   operator<< (const char[]) to avoid many instantiations of
-//              the template one for each length of potential error message
-// 3/6/02  mf   getELdestControl()
-// 12/2/02 mf   operator()( int debugLevel ); also
-//              debugVerbosityLevel, debugSeverityLevel, debugMessageId
-// 3/17/04 mf   spaceAfterInts
 //
 // ----------------------------------------------------------------------
 
@@ -34,54 +19,41 @@
 namespace mf {
   namespace service {
 
-
-    // ----------------------------------------------------------------------
-    // Prerequisite classes:
-    // ----------------------------------------------------------------------
-
     class ELadministrator;
 
-    // ----------------------------------------------------------------------
-    // ErrorLog:
-    // ----------------------------------------------------------------------
-
-    class ErrorLog  {
+    class ErrorLog {
     public:
 
       // -----  start a new logging operation:
       //
-      ErrorLog & operator()( const ELseverityLevel & sev, const std::string & id );
-      //-| If overriding this, please see Note 1
-      //-| at the bottom of this file!
+      ErrorLog & operator()(ELseverityLevel const sev, std::string const& id);
+      //-| If overriding this, please see Note 1 at the bottom of this
+      //-| file!
 
-      inline ErrorLog & operator()( int debugLevel );
+      inline ErrorLog& operator()(int debugLevel);
+      ErrorLog& operator()(mf::ErrorObj& msg);    // an entire message
+      ErrorLog & operator()(int nbytes, char* data);
 
-      void setSubroutine( const std::string & subName );
-      void switchChannel( const std::string & channelName );
+      void setSubroutine(std::string const& subName);
+      void switchChannel(std::string const& channelName);
       // switchChannel is only meant for remote msg logging
 
-      ErrorLog& operator()( mf::ErrorObj & msg );    // an entire message
-
-      ErrorLog& emit( const std::string & msg );        // just one part of a message
+      ErrorLog& emit(std::string const& msg);     // just one part of a message
       ErrorLog& endmsg();                            // no more parts forthcoming
-      ErrorLog& operator<<( void (* f)(ErrorLog &) );// allow log << zmel::endmsg
+      ErrorLog& operator<<(void(*f)(ErrorLog&));// allow log << zmel::endmsg
 
       // ----------------------------------------------------------------------
       // -----  Methods meant for the Module base class in the framework:
       // ----------------------------------------------------------------------
 
       ErrorLog();
-      ErrorLog( const std::string & pkgName );
-      virtual ~ErrorLog() = default;
+      ErrorLog(std::string const& pkgName);
+      virtual ~ErrorLog() noexcept = default;
 
       // -----  mutators:
       //
-      void setModule ( const std::string & modName );  // These two are IDENTICAL
-      void setPackage( const std::string & pkgName );  // These two are IDENTICAL
-
-      // -----  logging collected message:
-      //
-      ErrorLog & operator()( int nbytes, char * data );
+      void setModule (std::string const& modName);  // These two are IDENTICAL
+      void setPackage(std::string const& pkgName);  // These two are IDENTICAL
 
       // -----  advanced control options:
 
@@ -96,15 +68,6 @@ namespace mf {
       std::string moduleName() const;
       std::string subroutineName() const;
 
-      // -----  member data:
-      //
-    protected:
-      ELadministrator* a;
-
-    private:
-      std::string subroutine {};
-      std::string module {};
-    public:
       int hexTrigger {-1};
       bool spaceAfterInt {false};
       ELseverityLevel  discardThreshold {ELzeroSeverity};
@@ -113,36 +76,39 @@ namespace mf {
       ELseverityLevel  debugSeverityLevel {ELinfo};
       std::string      debugMessageId {"DEBUG"};
 
+    private:
+      ELadministrator* a;
+      std::string subroutine {};
+      std::string module {};
+
     };  // ErrorLog
-
-
 
     // ----------------------------------------------------------------------
     // Global functions:
     // ----------------------------------------------------------------------
 
-    void endmsg( ErrorLog & log );
+    void endmsg(ErrorLog& log);
 
     template <class T>
-    inline ErrorLog & operator<<( ErrorLog & e, const T & t );
+    inline ErrorLog& operator<<(ErrorLog & e, T const& t);
 
-    ErrorLog & operator<<( ErrorLog & e, int n );
-    ErrorLog & operator<<( ErrorLog & e, long n );
-    ErrorLog & operator<<( ErrorLog & e, short n );
-    ErrorLog & operator<<( ErrorLog & e, unsigned int n );
-    ErrorLog & operator<<( ErrorLog & e, unsigned long n );
-    ErrorLog & operator<<( ErrorLog & e, unsigned short n );
-    ErrorLog & operator<<( ErrorLog & e, const char s[] );
+    ErrorLog& operator<<(ErrorLog& e, int n);
+    ErrorLog& operator<<(ErrorLog& e, long n);
+    ErrorLog& operator<<(ErrorLog& e, short n);
+    ErrorLog& operator<<(ErrorLog& e, unsigned int n);
+    ErrorLog& operator<<(ErrorLog& e, unsigned long n);
+    ErrorLog& operator<<(ErrorLog& e, unsigned short n);
+    ErrorLog& operator<<(ErrorLog& e, char const s[]);
 
     // ----------------------------------------------------------------------
     // Macros:
     // ----------------------------------------------------------------------
 
 #define ERRLOG(sev,id)                                          \
-    errlog( sev, id ) << __FILE__ <<":" << __LINE__ << " "
+    errlog(sev, id) << __FILE__ <<":" << __LINE__ << " "
 
 #define ERRLOGTO(logname,sev,id)                                \
-    logname( sev, id ) << __FILE__ <<":" << __LINE__ << " "
+    logname(sev, id) << __FILE__ <<":" << __LINE__ << " "
 
 
     // ----------------------------------------------------------------------
@@ -165,7 +131,7 @@ namespace mf {
 // Technical Notes
 // ----------------------------------------------------------------------
 //
-//-| Note 1:  Overiding methods that return ErrorLog &:
+//-| Note 1:  Overiding methods that return ErrorLog&:
 //-| --------------------------------------------------
 //-|
 //-| Both operator() and in the icc file operator<< return ErrorLog&

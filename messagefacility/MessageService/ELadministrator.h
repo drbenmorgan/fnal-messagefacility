@@ -26,6 +26,8 @@
 #include "messagefacility/Utilities/ELlist.h"
 #include "messagefacility/Utilities/ELseverityLevel.h"
 #include "messagefacility/Utilities/ErrorObj.h"
+
+#include <array>
 #include <map>
 #include <memory>
 #include <type_traits>
@@ -39,16 +41,12 @@ namespace mf {
     // ----------------------------------------------------------------------
 
     class ELcontextSupplier;
-    class ErrorLog;
 
     // ----------------------------------------------------------------------
     // ELadministrator:
     // ----------------------------------------------------------------------
 
-    class ELadministrator  {
-
-      friend class ErrorLog; // ELadministrator user behavior
-
+    class ELadministrator {
     public:
 
       static ELadministrator* instance();
@@ -61,28 +59,21 @@ namespace mf {
 
       // ---  get/set fundamental properties:
       //
-      void setProcess( const std::string & process );
-      void setApplication( const std::string & application );
-      std::string swapProcess( const std::string & process );
-      void setContextSupplier( const ELcontextSupplier & supplier );
-      const ELcontextSupplier & getContextSupplier() const;
-      ELcontextSupplier & swapContextSupplier( ELcontextSupplier & cs );
+      void setProcess(std::string const& process);
+      void setApplication(std::string const& application);
+      std::string swapProcess(std::string const& process);
+      void setContextSupplier(ELcontextSupplier const& supplier);
+      void setHighSeverity(ELseverityLevel const sev) { highSeverity_ = sev; }
+      ELcontextSupplier& swapContextSupplier(ELcontextSupplier& cs);
       void setAbortThreshold(ELseverityLevel sev);
       void setExitThreshold (ELseverityLevel sev);
+      void setMsgIsActive(bool const flag) { msgIsActive_ = flag; }
 
-      // ---  furnish/recall destinations:
-      //
-      template <typename DEST>
-      std::enable_if_t<std::is_base_of<ELdestination,DEST>::value, ELdestination&>
-      attach(std::string const& outputId,
-             std::unique_ptr<DEST>&& dest)
-      {
-        auto emplacePair = attachedDestinations.emplace(outputId, std::move(dest));
-        auto& mapPair = *emplacePair.first;
-        return *mapPair.second;
-      }
+      ELcontextSupplier const& getContextSupplier() const;
+      ELcontextSupplier& context() const;
+      ErrorObj& msg() { return msg_; }
 
-      std::map<std::string,std::unique_ptr<ELdestination>> const& sinks();
+      std::map<std::string, std::unique_ptr<ELdestination>> const& destinations();
       bool hasDestination(std::string const&);
 
       // ---  handle severity information:
@@ -107,55 +98,65 @@ namespace mf {
       void finish();
 
       std::string const& application() const;
-
-    protected:
-      // ---  member data accessors:
-      //
-      std::string const& process() const;
-      ELcontextSupplier& context() const;
       ELseverityLevel abortThreshold() const;
       ELseverityLevel exitThreshold() const;
       ELseverityLevel highSeverity() const;
-      int severityCounts(int lev) const;
-
       std::string const& hostname() const;
       std::string const& hostaddr() const;
       long pid() const;
+      std::string const& process() const;
+      bool msgIsActive() const { return msgIsActive_; }
+
+      void incrementSeverityCount(int const sev) { ++severityCounts_[sev]; }
+
+      virtual ~ELadministrator();
 
       // ---  actions on messages:
       //
       void finishMsg();
       void clearMsg();
 
-    protected:
-      // ---  traditional birth/death, but disallowed to users:
+      // ---  furnish/recall destinations:
       //
-      ELadministrator();
-
-    public:
-      virtual ~ELadministrator();
+      template <typename DEST>
+      std::enable_if_t<std::is_base_of<ELdestination,DEST>::value, ELdestination&>
+      attach(std::string const& outputId,
+             std::unique_ptr<DEST>&& dest)
+      {
+        return *(destinations_[outputId] = std::move(dest));
+        // If you don't like the above, an alternative is something equivalent to:
+        //   return *destinations_.emplace(outputId, std::move(dest)).first->second;
+      }
 
     private:
+
+      ELadministrator();
 
       static ELadministrator* instance_;
 
       std::string process_ {};
       std::unique_ptr<ELcontextSupplier> context_;
+      std::array<int, ELseverityLevel::nLevels> severityCounts_ {{0}}; // fill by aggregation
       ELseverityLevel abortThreshold_ {ELseverityLevel::ELsev_abort};
       ELseverityLevel exitThreshold_ {ELseverityLevel::ELsev_highestSeverity};
       ELseverityLevel highSeverity_ {ELseverityLevel::ELsev_zeroSeverity};
-      std::list<std::unique_ptr<ELdestination>> sinks_ {};
 
-      int severityCounts_[ELseverityLevel::nLevels] {{0}}; // fill by aggregation
-      mf::ErrorObj msg {ELseverityLevel::ELsev_unspecified, ""};
-      bool msgIsActive {false};
+      ErrorObj msg_ {ELseverityLevel::ELsev_unspecified, ""};
+      bool msgIsActive_ {false};
 
       std::string hostname_ {};
       std::string hostaddr_ {};
       std::string application_ {};
       long pid_ {};
 
-      std::map<std::string, std::unique_ptr<ELdestination>> attachedDestinations;
+      std::map<std::string, std::unique_ptr<ELdestination>> destinations_;
+
+      template <typename F>
+      void for_all_destinations(F f)
+      {
+        for (auto& pr : destinations_)
+          f(*pr.second);
+      }
 
     };  // ELadministrator
 

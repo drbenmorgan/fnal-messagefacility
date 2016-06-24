@@ -60,12 +60,8 @@ namespace mf {
       bool reset;
       bool printAtTermination {true};
 
-    protected:
-
-      static std::set<std::string> groupedCategories;
-
     private:
-
+      static std::set<std::string> groupedCategories;
       std::string dualLogName(std::string const& s);
 
     };  // MsgStatistics

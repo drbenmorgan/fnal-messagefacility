@@ -13,64 +13,25 @@
 //      might use is to check the relative level of two severities
 //      using operator< or the like.
 //
-// 30-Jun-1998 mf       Created file.
-// 26-Aug-1998 WEB      Made ELseverityLevel object less weighty.
-// 16-Jun-1999 mf       Added constructor from string.
-// 23-Jun-1999 mf       Additional ELsev_noValueAssigned to allow constructor
-//                      from string to give ELunspecified when not found, while
-//                      still allowing finding zero severity.
-// 23-Jun-1999 mf       Corrections for subtleties in initialization of
-//                      global symbols:
-//                              Added ELsevLevGlobals array
-//                              Changed extern consts of SLseverityLevels into
-//                                const ELseverityLevel & 's
-//                              Inserted class ELinitializeGlobalSeverityObjects
-//                                in place of the
-//                                initializeGlobalSeverityObjects() function.
-//                              Changed globalSeverityObjectsGuarantor to an
-//                                ELinitializeGlobalSeverityObjects instance.
-// 30-Jun-1999 mf       Modifications to eliminate problems with order of
-//                      globals initializations:
-//                              translate(), getInputStr(), getVarName()
-// 12-Jun-2000 web      Final fix to global static initialization problem
-// 14-Jun-2000 web      Declare classes before granting friendship.
-// 27-Jun-2000 web      Fix order-of-static-destruction problem
-//
 // ----------------------------------------------------------------------
-
 
 #include <string>
 
 namespace mf {
 
-
-  // ----------------------------------------------------------------------
-  // Forward declaration:
-  // ----------------------------------------------------------------------
-
   class ELseverityLevel;
 
-
-  // ----------------------------------------------------------------------
-  // Synonym for type of ELseverityLevel-generating function:
-  // ----------------------------------------------------------------------
-
-  typedef  ELseverityLevel ELslGen();
-
+  using ELslGen = ELseverityLevel();
 
   // ----------------------------------------------------------------------
   // ELslProxy class template:
   // ----------------------------------------------------------------------
 
   template<ELslGen ELgen>
-  struct ELslProxy  {
+  struct ELslProxy {
 
-    // --- conversion:
-    //
     operator ELseverityLevel() const;
 
-    // --- forwarding:
-    //
     int         getLevel()    const;
     std::string getSymbol()   const;
     std::string getName()     const;
@@ -78,9 +39,6 @@ namespace mf {
     std::string getVarName()  const;
 
   };  // ELslProxy<ELslGen>
-
-  // ----------------------------------------------------------------------
-
 
   // ----------------------------------------------------------------------
   // ELseverityLevel:
@@ -91,7 +49,7 @@ namespace mf {
 
     // ---  One ELseverityLevel is globally instantiated (see below)
     // ---  for each of the following levels:
-    //
+
     enum ELsev_ {
       ELsev_noValueAssigned = 0  // default returned by map when not found
         , ELsev_zeroSeverity         // threshold use only
@@ -115,15 +73,11 @@ namespace mf {
 
     constexpr ELseverityLevel(ELsev_ lev = ELsev_unspecified);
     ELseverityLevel (std::string const& str);
-    // str may match getSymbol, getName, getInputStr,
-    // or getVarName -- see accessors
+    // str may match getSymbol, getName, getInputStr, or getVarName --
+    // see accessors
 
-    // -----  Comparator:
-    //
     int cmp(ELseverityLevel e) const;
 
-    // -----  Accessors:
-    //
     int          getLevel()    const;
     std::string  getSymbol()   const;  // example: "-e"
     std::string  getName()     const;  // example: "Error"
@@ -185,12 +139,12 @@ namespace mf {
   // Comparators:
   // ----------------------------------------------------------------------
 
-  extern bool operator== (ELseverityLevel e1, ELseverityLevel e2);
-  extern bool operator!= (ELseverityLevel e1, ELseverityLevel e2);
-  extern bool operator<  (ELseverityLevel e1, ELseverityLevel e2);
-  extern bool operator<= (ELseverityLevel e1, ELseverityLevel e2);
-  extern bool operator>  (ELseverityLevel e1, ELseverityLevel e2);
-  extern bool operator>= (ELseverityLevel e1, ELseverityLevel e2);
+  extern bool operator==(ELseverityLevel e1, ELseverityLevel e2);
+  extern bool operator!=(ELseverityLevel e1, ELseverityLevel e2);
+  extern bool operator< (ELseverityLevel e1, ELseverityLevel e2);
+  extern bool operator<=(ELseverityLevel e1, ELseverityLevel e2);
+  extern bool operator> (ELseverityLevel e1, ELseverityLevel e2);
+  extern bool operator>=(ELseverityLevel e1, ELseverityLevel e2);
 
 } // end of namespace mf
 
