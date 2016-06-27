@@ -13,9 +13,7 @@ namespace mf {
         , JOBMODE        // MOD
         , SHUT_UP        // SHT
         , FLUSH_LOG_Q    // FLS -- handshaked
-        , GROUP_STATS    // GRP
         , FJR_SUMMARY    // JRS -- handshaked
-        , SWITCH_CHANNEL // SWG
       };  // OpCode
 
     inline bool handshaked(OpCode const op)

@@ -87,14 +87,6 @@ namespace mf {
 
       // ---  apply the following actions to all attached destinations:
       //
-      void setThresholds(ELseverityLevel sev );
-      void setLimits(std::string const& id, int limit);
-      void setIntervals(std::string const& id, int interval);
-      void setTimespans(std::string const& id, int seconds);
-      void setLimits(ELseverityLevel sev, int limit);
-      void setIntervals(ELseverityLevel sev, int interval);
-      void setTimespans(ELseverityLevel sev, int seconds);
-      void wipe();
       void finish();
 
       std::string const& application() const;

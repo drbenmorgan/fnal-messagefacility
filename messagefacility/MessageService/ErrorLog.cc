@@ -60,15 +60,6 @@ namespace mf {
       subroutine = subName;
     }
 
-    void ErrorLog::switchChannel(std::string const& channelName)
-    {
-      cet::for_all(a->destinations(), [&channelName](auto const& d){ d.second->switchChannel(channelName); });
-    }
-
-    namespace {
-
-    }
-
     ErrorLog& ErrorLog::operator()(mf::ErrorObj& msg) {
 
       endmsg();  // precautionary
@@ -139,20 +130,20 @@ namespace mf {
       setModule(pkgName);
     }
 
-    ErrorLog& ErrorLog::operator()(int nbytes, char * data)
+    ErrorLog& ErrorLog::operator()(int const nbytes, char* data)
     {
       ELrecv(nbytes, data, module);
       return *this;
     }
 
-    ErrorLog & ErrorLog::operator<<( void (* f)(ErrorLog &) )
+    ErrorLog& ErrorLog::operator<<( void(*f)(ErrorLog&) )
     {
       if (discarding) return *this;
       f(*this);
       return *this;
     }
 
-    ErrorLog & ErrorLog::emit(std::string const& s)
+    ErrorLog& ErrorLog::emit(std::string const& s)
     {
       if (!a->msgIsActive()) {
         (*this)(ELunspecified, "...");
@@ -161,43 +152,47 @@ namespace mf {
       return *this;
     }
 
-    ErrorLog & ErrorLog::endmsg()
+    ErrorLog& ErrorLog::endmsg()
     {
       if (a->msgIsActive()) {
         a->finishMsg();
         a->clearMsg();
       }
       return *this;
-
     }
 
     // ----------------------------------------------------------------------
     // Advanced Control Options:
     // ----------------------------------------------------------------------
 
-    bool ErrorLog::setSpaceAfterInt(bool space) {
-      bool temp = spaceAfterInt;
+    bool ErrorLog::setSpaceAfterInt(bool const space)
+    {
+      bool const temp = spaceAfterInt;
       spaceAfterInt = space;
       return temp;
     }
 
-    int ErrorLog::setHexTrigger (int trigger) {
-      int oldTrigger = hexTrigger;
+    int ErrorLog::setHexTrigger (int const trigger)
+    {
+      int const oldTrigger = hexTrigger;
       hexTrigger = trigger;
       return oldTrigger;
     }
 
-    ELseverityLevel ErrorLog::setDiscardThreshold (ELseverityLevel sev) {
-      ELseverityLevel oldSev = discardThreshold;
+    ELseverityLevel ErrorLog::setDiscardThreshold (ELseverityLevel const sev)
+    {
+      ELseverityLevel const oldSev = discardThreshold;
       discardThreshold = sev;
       return oldSev;
     }
 
-    void ErrorLog::setDebugVerbosity (int debugVerbosity) {
+    void ErrorLog::setDebugVerbosity (int const debugVerbosity)
+    {
       debugVerbosityLevel = debugVerbosity;
     }
 
-    void ErrorLog::setDebugMessages (ELseverityLevel sev, std::string id) {
+    void ErrorLog::setDebugMessages (ELseverityLevel const sev, std::string const& id)
+    {
       debugSeverityLevel = sev;
       debugMessageId = id;
     }
@@ -213,15 +208,16 @@ namespace mf {
     // Global endmsg:
     // ----------------------------------------------------------------------
 
-    void endmsg( ErrorLog & log )  { log.endmsg(); }
+    void endmsg(ErrorLog& log) { log.endmsg(); }
 
     // ----------------------------------------------------------------------
     // operator<< for integer types
     // ----------------------------------------------------------------------
 
-    ErrorLog & operator<<( ErrorLog & e, int n)  {
+    ErrorLog& operator<<(ErrorLog& e, int const n)
+    {
       if (e.discarding) return e;
-      std::ostringstream  ost;
+      std::ostringstream ost;
       ost << n;
       int m = (n<0) ? -n : n;
       if ( (e.hexTrigger >= 0) && (m >= e.hexTrigger) ) {
@@ -229,14 +225,15 @@ namespace mf {
             << std::hex << std::setw(8) << std::setfill('0')
             << n << "] ";
       } else {
-        if (e.spaceAfterInt) ost << " ";                    // $$mf 3/17/04
+        if (e.spaceAfterInt) ost << " ";
       }
-      return e.emit( ost.str() );
+      return e.emit(ost.str());
     }
 
-    ErrorLog & operator<<( ErrorLog & e, unsigned int n)  {
+    ErrorLog& operator<<(ErrorLog& e, unsigned int const n)
+    {
       if (e.discarding) return e;
-      std::ostringstream  ost;
+      std::ostringstream ost;
       ost << n;
       if ( (e.hexTrigger >= 0) &&
            (n >= static_cast<unsigned int>(e.hexTrigger)) ) {
@@ -244,14 +241,15 @@ namespace mf {
             << std::hex << std::setw(8) << std::setfill('0')
             << n << "] ";
       } else {
-        if (e.spaceAfterInt) ost << " ";                    // $$mf 3/17/04
+        if (e.spaceAfterInt) ost << " ";
       }
-      return e.emit( ost.str() );
+      return e.emit(ost.str());
     }
 
-    ErrorLog & operator<<( ErrorLog & e, long n)  {
+    ErrorLog& operator<<(ErrorLog& e, long const n)
+    {
       if (e.discarding) return e;
-      std::ostringstream  ost;
+      std::ostringstream ost;
       ost << n;
       long m = (n<0) ? -n : n;
       if ( (e.hexTrigger >= 0) && (m >= e.hexTrigger) ) {
@@ -261,12 +259,13 @@ namespace mf {
             << std::hex << std::setw(width) << std::setfill('0')
             << n << "] ";
       } else {
-        if (e.spaceAfterInt) ost << " ";                    // $$mf 3/17/04
+        if (e.spaceAfterInt) ost << " ";
       }
-      return  e.emit( ost.str() );
+      return  e.emit(ost.str());
     }
 
-    ErrorLog & operator<<( ErrorLog & e, unsigned long n)  {
+    ErrorLog& operator<<(ErrorLog& e, unsigned long const n)
+    {
       if (e.discarding) return e;
       std::ostringstream  ost;
       ost << n;
@@ -278,12 +277,13 @@ namespace mf {
             << std::hex << std::setw(width) << std::setfill('0')
             << n << "] ";
       } else {
-        if (e.spaceAfterInt) ost << " ";                    // $$mf 3/17/04
+        if (e.spaceAfterInt) ost << " ";
       }
-      return  e.emit( ost.str() );
+      return  e.emit(ost.str());
     }
 
-    ErrorLog & operator<<( ErrorLog & e, short n)  {
+    ErrorLog& operator<<(ErrorLog& e, short const n)
+    {
       if (e.discarding) return e;
       std::ostringstream  ost;
       ost << n;
@@ -293,12 +293,13 @@ namespace mf {
             << std::hex << std::setw(4) << std::setfill('0')
             << n << "] ";
       } else {
-        if (e.spaceAfterInt) ost << " ";                    // $$mf 3/17/04
+        if (e.spaceAfterInt) ost << " ";
       }
-      return  e.emit( ost.str() );
+      return  e.emit(ost.str());
     }
 
-    ErrorLog & operator<<( ErrorLog & e, unsigned short n)  {
+    ErrorLog& operator<<(ErrorLog& e, unsigned short const n)
+    {
       if (e.discarding) return e;
       std::ostringstream  ost;
       ost << n;
@@ -307,24 +308,24 @@ namespace mf {
             << std::hex << std::setw(4) << std::setfill('0')
             << n << "] ";
       } else {
-        if (e.spaceAfterInt) ost << " ";                    // $$mf 3/17/04
+        if (e.spaceAfterInt) ost << " ";
       }
-      return  e.emit( ost.str() );
+      return  e.emit(ost.str());
     }
-
 
     // ----------------------------------------------------------------------
     // operator<< for const char[]
     // ----------------------------------------------------------------------
 
-    ErrorLog & operator<<( ErrorLog & e, const char s[] ) {
+    ErrorLog& operator<<(ErrorLog& e, const char s[])
+    {
       // Exactly equivalent to the general template.
       // If this is not provided explicitly, then the template will
       // be instantiated once for each length of string ever used.
       if (e.discarding) return e;
       std::ostringstream  ost;
       ost << s << ' ';
-      return  e.emit( ost.str() );
+      return e.emit(ost.str());
     }
 
 

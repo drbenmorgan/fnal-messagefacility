@@ -78,7 +78,6 @@ namespace mf  {
   bool isWarningEnabled();
   void HaltMessageLogging();
   void FlushMessageLog();
-  void GroupLogStatistics(std::string const& category);
   bool isMessageProcessingSetUp();
 
   // The following two methods have no effect except in stand-alone apps
@@ -89,8 +88,6 @@ namespace mf  {
   void SetApplicationName(std::string const& application);
   void SetModuleName(std::string const& modulename);
   void SetContext(std::string const& context);
-
-  void SwitchChannel(int c);
 
 }  // mf
 

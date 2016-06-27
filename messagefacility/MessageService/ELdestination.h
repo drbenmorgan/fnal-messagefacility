@@ -58,8 +58,6 @@ namespace mf {
                                  std::string const& sumLines,
                                  ELcontextSupplier const&);
 
-      virtual bool switchChannel( std::string const& channelName );
-
       virtual void finish();
 
       virtual void noTerminationSummary(){}
@@ -100,8 +98,6 @@ namespace mf {
                                 mf::ErrorObj const& msg,
                                 ELcontextSupplier const&);
 
-      virtual void clearSummary(ELcontextSupplier const&);
-      virtual void zero();
       virtual void filterModule(std::string const& moduleName);
       virtual void excludeModule(std::string const& moduleName);
       virtual void ignoreModule(std::string const& moduleName);
@@ -111,8 +107,6 @@ namespace mf {
       virtual void summary(std::ostream& os, std::string const& title="");
       virtual void summary(std::string& s, std::string const& title="");
       virtual void summaryForJobReport(std::map<std::string, double>& sm);
-
-      virtual void setTableLimit(int n);
 
       virtual void changeFile(std::ostream& os, ELcontextSupplier const&);
       virtual void changeFile(std::string const& filename, ELcontextSupplier const&);

@@ -47,10 +47,6 @@ namespace mf {
         stats.log(msg, contextSupplier);
     }
 
-    void ELstatistics::clearSummary(ELcontextSupplier const&){ stats.clearSummary(); }
-    void ELstatistics::wipe() { stats.wipe(); }
-    void ELstatistics::zero() { stats.zero(); }
-
     void ELstatistics::summary(std::ostream& os, std::string const& title)
     {
       os << title << '\n' << stats.formSummary();
@@ -81,13 +77,6 @@ namespace mf {
     void ELstatistics::summaryForJobReport (std::map<std::string, double>& sm)
     {
       stats.summaryForJobReport(sm);
-    }
-
-    std::set<std::string> ELstatistics::groupedCategories {};
-
-    void ELstatistics::noteGroupedCategory(std::string const& cat)
-    {
-      groupedCategories.insert(cat);
     }
 
   } // end of namespace service

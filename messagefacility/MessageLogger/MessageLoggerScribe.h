@@ -68,41 +68,41 @@ namespace mf {
       void parseCategories(std::string const& s, std::vector<std::string>& cats);
 
       // --- data:
-      ELadministrator* admin_p {ELadministrator::instance()};
-      ELdestination& early_dest;
-      std::unique_ptr<ErrorLog> errorlog_p {std::make_unique<ErrorLog>()};
-      MsgContext msg_context;
-      std::unique_ptr<fhicl::ParameterSet> job_pset_p {nullptr};
-      std::string jobReportOption {};
-      bool clean_slate_configuration {true};
-      MessageLoggerDefaults messageLoggerDefaults {MessageLoggerDefaults::mode("grid")};
-      bool active {true};
-      bool singleThread;
-      bool done {false};
-      bool purge_mode {false};
-      int  count {};
-      cet::exempt_ptr<ThreadQueue> m_queue;
+      cet::exempt_ptr<ELadministrator> admin_ {ELadministrator::instance()};
+      std::unique_ptr<fhicl::ParameterSet> jobConfig_ {nullptr};
+      std::unique_ptr<ErrorLog> errorLog_ {std::make_unique<ErrorLog>()};
+      ELdestination& earlyDest_;
+      MsgContext msgContext_;
+      std::string jobReportOption_ {};
+      bool cleanSlateConfiguration_ {true};
+      MessageLoggerDefaults messageLoggerDefaults_ {};
+      bool active_ {true};
+      bool singleThread_;
+      bool done_ {false};
+      bool purgeMode_ {false};
+      int  count_ {};
+      cet::exempt_ptr<ThreadQueue> queue_;
 
-      cet::BasicPluginFactory pluginFactory {"mfPlugin"};
-      cet::BasicPluginFactory pluginStatsFactory {"mfStatsPlugin"};
+      cet::BasicPluginFactory pluginFactory_ {"mfPlugin"};
+      cet::BasicPluginFactory pluginStatsFactory_ {"mfStatsPlugin"};
 
-      std::vector<std::string> fetch_ordinary_destinations   ( fhicl::ParameterSet& pset );
-      std::vector<std::string> fetch_statistics_destinations ( fhicl::ParameterSet& pset );
+      std::vector<std::string> fetch_ordinary_destinations   (fhicl::ParameterSet& pset);
+      std::vector<std::string> fetch_statistics_destinations (fhicl::ParameterSet& pset);
 
-      std::string createId( std::set<std::string>& existing_ids,
-                            const std::string& type,
-                            const std::string& filename,
-                            const fhicl::ParameterSet& pset = fhicl::ParameterSet(),
-                            const bool should_throw = true);
+      std::string createId(std::set<std::string>& existing_ids,
+                           std::string const& type,
+                           std::string const& filename,
+                           fhicl::ParameterSet const& pset = {},
+                           bool const should_throw = true);
 
-      bool duplicateDestination( const std::string& output_id,
-                                 const ELdestConfig::dest_config config,
-                                 const bool should_throw );
+      bool duplicateDestination(std::string const& output_id,
+                                ELdestConfig::dest_config const config,
+                                bool const should_throw);
 
-      std::unique_ptr<ELdestination>  makePlugin_( cet::BasicPluginFactory& pluginFactory,
-                                                   const std::string& libspec,
-                                                   const std::string& psetname,
-                                                   const fhicl::ParameterSet& pset );
+      std::unique_ptr<ELdestination>  makePlugin_(cet::BasicPluginFactory& pluginFactory,
+                                                  std::string const& libspec,
+                                                  std::string const& psetname,
+                                                  fhicl::ParameterSet const& pset);
 
     };  // MessageLoggerScribe
 

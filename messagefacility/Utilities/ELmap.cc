@@ -96,7 +96,6 @@ namespace mf {
 
     if (!reactedTo)
       ignoredFlag = true;
-
-  }  // add()
+  }
 
 } // end of namespace mf  */

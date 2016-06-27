@@ -190,46 +190,6 @@ namespace mf {
     // The following do the indicated action to all attached destinations:
     // ----------------------------------------------------------------------
 
-    void ELadministrator::setThresholds(ELseverityLevel const sev)
-    {
-      for_all_destinations([sev](auto& d){ d.setThreshold(sev); });
-    }
-
-    void ELadministrator::setLimits(std::string const& id, int const limit)
-    {
-      for_all_destinations([&id,limit](auto& d){ d.setLimit(id, limit); });
-    }
-
-    void ELadministrator::setIntervals(ELseverityLevel const sev, int const interval)
-    {
-      for_all_destinations([sev,interval](auto& d){ d.setInterval(sev, interval); });
-    }
-
-    void ELadministrator::setIntervals(std::string const& id, int const interval)
-    {
-      for_all_destinations([&id,interval](auto& d){ d.setInterval(id, interval); });
-    }
-
-    void ELadministrator::setLimits(ELseverityLevel const sev, int const limit)
-    {
-      for_all_destinations([sev,limit](auto& d){ d.setLimit(sev,limit); });
-    }
-
-    void ELadministrator::setTimespans(std::string const& id, int const seconds)
-    {
-      for_all_destinations([&id,seconds](auto& d){ d.setTimespan(id, seconds); });
-    }
-
-    void ELadministrator::setTimespans(ELseverityLevel const sev, int const seconds)
-    {
-      for_all_destinations([sev,seconds](auto& d){ d.setTimespan(sev, seconds); });
-    }
-
-    void ELadministrator::wipe()
-    {
-      for_all_destinations([](auto& d){ d.wipe(); });
-    }
-
     void ELadministrator::finish()
     {
       for_all_destinations([](auto& d){ d.finish(); });
@@ -251,15 +211,14 @@ namespace mf {
       std::string fullContext()    const override { return ""; }
     };
 
-    static ELemptyContextSupplier emptyContext;
+    static ELemptyContextSupplier emptyContext {};
 
     // ----------------------------------------------------------------------
     // The Destructable Singleton pattern
     // (see "To Kill a Singleton," Vlissides, C++ Report):
     // ----------------------------------------------------------------------
 
-
-    ELadministrator* ELadministrator::instance_ = nullptr;
+    ELadministrator* ELadministrator::instance_ {nullptr};
 
     ELadministrator* ELadministrator::instance()
     {
@@ -295,8 +254,8 @@ namespace mf {
         }
         else {
           // iterate through all interfaces
-          for( ifa=ifAddrStruct; ifa!=nullptr; ifa=ifa->ifa_next ) {
-            if( ifa->ifa_addr->sa_family==AF_INET ) {
+          for (ifa=ifAddrStruct; ifa!=nullptr; ifa=ifa->ifa_next) {
+            if (ifa->ifa_addr->sa_family==AF_INET) {
               // a valid IPv4 addres
               tmpAddrPtr = &((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
               char addressBuffer[INET_ADDRSTRLEN];
@@ -318,14 +277,13 @@ namespace mf {
               break;
           }
 
-          if( hostaddr_.empty() ) // failed to find anything
+          if(hostaddr_.empty()) // failed to find anything
             hostaddr_ = "127.0.0.1";
         }
       }
 
       // process id
-      pid_t pid = getpid();
-      pid_ = static_cast<long>(pid);
+      pid_ = static_cast<long>(getpid());
 
       // get process name from '/proc/pid/cmdline'
       std::stringstream ss;
@@ -355,7 +313,7 @@ namespace mf {
     {
       finishMsg();
       destinations_.clear();
-    }  // ~ELadministrator()
+    }
 
   } // end of namespace service
 } // end of namespace mf

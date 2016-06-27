@@ -20,12 +20,10 @@ namespace mf {
 
     namespace {
       std::string const noSummarizationMsg {"No summarization()"};
-      std::string const noClearSummaryMsg {"No clearSummary()"};
       std::string const noSummaryMsg {"No summary()"};
       std::string const hereMsg {"available via this destination"};
       std::string const noosMsg {"No ostream"};
       std::string const notELoutputMsg {"This destination is not an ELoutput"};
-      std::string const newline {"\n"};
       std::string const preamble {"%MSG"};
     }
 
@@ -52,7 +50,7 @@ namespace mf {
     {
       if (s.length() == 0)  {
         if (nl)  {
-          os << newline;
+          os << '\n';
           charsOnLine = 0;
         }
         return;
@@ -95,8 +93,8 @@ namespace mf {
           charsOnLine = indent.length() + 1;
         }
 
-        if (nl) { os << newline; charsOnLine = 0;           }
-        else    {                charsOnLine += s.length(); }
+        if (nl) { os << '\n'; charsOnLine = 0;           }
+        else    {             charsOnLine += s.length(); }
       }
 
       if (!format.preambleMode) {
@@ -261,7 +259,7 @@ namespace mf {
       if (!msg.is_verbatim() && !format.want(NO_LINE_BREAKS)) {
         emit(oss, "\n%MSG");
       }
-      oss << newline;
+      oss << '\n';
     }
 
     //=============================================================================
@@ -292,12 +290,6 @@ namespace mf {
         stats.log(msgObj, contextSupplier);
     }
 
-    //=============================================================================
-    bool ELdestination::switchChannel(std::string const& /*channelName*/)
-    {
-      return false;
-    }
-
     // Each of the functions below must be overridden by any
     // destination for which they make sense.  In this base class,
     // where they are all no-ops, the methods which generate data to a
@@ -305,21 +297,9 @@ namespace mf {
     // the no-op methods will issue an ELwarning2 at their own
     // destination.
 
-    void ELdestination::clearSummary(ELcontextSupplier const& contextSupplier)
-    {
-      mf::ErrorObj msg {ELwarning2, noClearSummaryMsg};
-      msg << hereMsg;
-      log(msg, contextSupplier);
-    }
-
     void ELdestination::wipe()
     {
       stats.limits.wipe();
-    }
-
-    void ELdestination::zero()
-    {
-      stats.limits.zero();
     }
 
     void ELdestination::respondToModule(std::string const& moduleName)
@@ -439,18 +419,12 @@ namespace mf {
       format.include(FLAG);
     }
 
-
-    void ELdestination::setTableLimit(int const n)
-    {
-      stats.limits.setTableLimit(n);
-    }
-
     void ELdestination::summarization(std::string const& title,
                                       std::string const& /*sumfines*/,
                                       ELcontextSupplier const& contextSupplier)
     {
       mf::ErrorObj msg {ELwarning2, noSummarizationMsg};
-      msg << hereMsg << newline << title;
+      msg << hereMsg << '\n' << title;
       log(msg, contextSupplier);
     }
 
@@ -465,7 +439,7 @@ namespace mf {
                                    ELcontextSupplier const& contextSupplier)
     {
       mf::ErrorObj msg {ELwarning2, noosMsg};
-      msg << notELoutputMsg << newline << "file requested is" << filename;
+      msg << notELoutputMsg << '\n' << "file requested is" << filename;
       log(msg, contextSupplier);
     }
 

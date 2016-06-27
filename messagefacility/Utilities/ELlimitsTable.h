@@ -61,10 +61,8 @@ namespace mf {
       ELlimitsTable();
 
       bool add(ELextendedID const& xid);
-      void setTableLimit(int n);
 
       void wipe();  // Clears everything -- counts and limits established.
-      void zero();  // Clears only counts.
 
       void setLimit   (std::string const& id, int n);
       void setInterval(std::string const& id, int interval);

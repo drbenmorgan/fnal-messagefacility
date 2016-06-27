@@ -53,13 +53,11 @@ namespace {
       break;
     }
     case JOBREPORT:
-    case JOBMODE:
-    case GROUP_STATS:
-      {
-        auto string_p = static_cast<std::string*>(operand);
-        delete string_p;
-        break;
-      }
+    case JOBMODE: {
+      auto string_p = static_cast<std::string*>(operand);
+      delete string_p;
+      break;
+    }
     default:
       break;
     }
@@ -178,21 +176,9 @@ MessageLoggerQ::MLqFLS()
 }
 
 void
-MessageLoggerQ::MLqGRP(std::string* cat_p)
-{
-  simpleCommand(GROUP_STATS, static_cast<void*>(cat_p));
-}
-
-void
 MessageLoggerQ::MLqJRS(std::map<std::string, double>* sum_p)
 {
   handshakedCommand(FJR_SUMMARY, sum_p, "JRS");
-}
-
-void
-MessageLoggerQ::MLqSWC(std::string* chanl_p)
-{
-  handshakedCommand(SWITCH_CHANNEL, static_cast<void*>(chanl_p), "SWC");
 }
 
 mf::ELseverityLevel MessageLoggerQ::threshold ("WARNING");

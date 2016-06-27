@@ -31,7 +31,7 @@ namespace mf {
     MsgStatistics::MsgStatistics(fhicl::ParameterSet const& pset, int const spaceLimit)
       : tableLimit{spaceLimit}
       , reset{pset.get<bool>("reset", false) || // for statistics dest.
-            pset.get<bool>("resetStatistics", false)}  // for ordinary dest.
+              pset.get<bool>("resetStatistics", false)}  // for ordinary dest.
     {}
 
     // ----------------------------------------------------------------------
@@ -40,51 +40,17 @@ namespace mf {
 
     void MsgStatistics::log(mf::ErrorObj const& msg, ELcontextSupplier const& contextSupplier)
     {
-      // Account for this message, making a new table entry if needed:
-      //
-      auto s = statsMap.find(msg.xid());
-      if (s == statsMap.end())  {
-        if (tableLimit < 0  ||  static_cast<int>(statsMap.size()) < tableLimit) {
-          statsMap[msg.xid()] = StatsCount();
-          s = statsMap.find(msg.xid());
-        }
-      }
+      statsMap[msg.xid()].add(contextSupplier.summaryContext(), msg.reactedTo());
+      updatedStats = true;
+    }
 
-      if (s != statsMap.end()) {
-        s->second.add(contextSupplier.summaryContext(), msg.reactedTo());
-        updatedStats = true;
-      }
-    }  // log()
-
-
-    // ----------------------------------------------------------------------
-    // Methods invoked through the ELdestControl handle
-    // ----------------------------------------------------------------------
-
-    void  MsgStatistics::clearSummary()
-    {
-      limits.zero();
-      ELmap_stats::iterator s;
-      for ( s = statsMap.begin();  s != statsMap.end();  ++s )  {
-        (*s).second.n = 0;
-        (*s).second.context1 = (*s).second.context2 = (*s).second.contextLast = "";
-      }
-    }  // clearSummary()
-
-
-    void  MsgStatistics::wipe()
+    void MsgStatistics::wipe()
     {
       limits.wipe();
       statsMap.clear();
     }
 
-
-    void  MsgStatistics::zero()
-    {
-      limits.zero();
-    }
-
-    std::string  MsgStatistics::formSummary()
+    std::string MsgStatistics::formSummary()
     {
       using std::ios;
       using std::setw;
@@ -92,20 +58,18 @@ namespace mf {
       using std::left;
 
       std::ostringstream s;
-      int                n = 0;
+      int n {};
 
       // -----  Summary part I:
       //
-      std::string  lastProcess( "" );
-      bool      ftnote( false );
+      std::string lastProcess;
+      bool ftnote {false};
 
       struct part3  {
-        long n, t;
-        part3() : n(0L), t(0L)  { ; }
-      }  p3[ELseverityLevel::nLevels];
+        long n {}, t{};
+      } p3[ELseverityLevel::nLevels];
 
-      std::set<std::string>::iterator gcEnd = groupedCategories.end();
-      std::set<std::string> gCats = groupedCategories;  // TEMP FOR DEBUGGING SANITY
+      auto gcEnd = groupedCategories.end();
       for (auto const& pr : statsMap) {
 
         // If this is a grouped category, wait till later to output its stats
@@ -125,9 +89,9 @@ namespace mf {
             s << "Process " << xid.process << '\n';
           }
           s << " type     category        sev    module        "
-               "subroutine        count    total\n"
+            "subroutine        count    total\n"
             << " ---- -------------------- -- ---------------- "
-               "----------------  -----    -----\n"
+            "----------------  -----    -----\n"
             ;
         }
         // -----  Emit detailed message information:
@@ -208,9 +172,9 @@ namespace mf {
         if (n == 0) {
           s << '\n'
             << " type    category    Examples: "
-               "run/evt        run/evt          run/evt\n"
+            "run/evt        run/evt          run/evt\n"
             << " ---- -------------------- ----"
-               "------------ ---------------- ----------------\n"
+            "------------ ---------------- ----------------\n"
             ;
         }
         s << right << std::setw( 5) << ++n << ' '
@@ -238,16 +202,13 @@ namespace mf {
       return s.str();
     }  // formSummary()
 
+    void MsgStatistics::summaryForJobReport (std::map<std::string, double>& sm)
+    {
+      struct part3 {
+        long n {}, t {};
+      } p3[ELseverityLevel::nLevels];
 
-    void  MsgStatistics::summaryForJobReport (std::map<std::string, double> & sm) {
-
-      struct part3  {
-        long n, t;
-        part3() : n(0L), t(0L)  {}
-      }  p3[ELseverityLevel::nLevels];
-
-      std::set<std::string>::iterator gcEnd = groupedCategories.end();
-      std::set<std::string> gCats = groupedCategories;  // TEMP FOR DEBUGGING SANITY
+      auto gcEnd = groupedCategories.end();
 
       // ----- Part I:  The ungrouped categories
       for (auto const& pr : statsMap) {
@@ -264,7 +225,7 @@ namespace mf {
         std::ostringstream s;
         s << "Category_";
         std::string sevSymbol = xid.severity.getSymbol();
-        if ( sevSymbol[0] == '-' ) sevSymbol = sevSymbol.substr(1);
+        if (sevSymbol[0] == '-') sevSymbol = sevSymbol.substr(1);
         s << sevSymbol << "_" << xid.id;
         int n = count.aggregateN;
         std::string catstr = s.str();
@@ -280,7 +241,7 @@ namespace mf {
       }  // for i
 
       // ----- Part Ia:  The grouped categories
-      for ( std::set<std::string>::iterator g = groupedCategories.begin(); g != gcEnd; ++g ) {
+      for (auto g = groupedCategories.begin(); g != gcEnd; ++g)  {
         int groupTotal = 0;
         int groupAggregateN = 0;
         ELseverityLevel severityLevel;
@@ -321,7 +282,7 @@ namespace mf {
 
       // -----  Summary part III:
       //
-      for ( int k = 0;  k < ELseverityLevel::nLevels;  ++k )  {
+      for (int k = 0; k < ELseverityLevel::nLevels; ++k) {
         std::string sevName;
         sevName = ELseverityLevel( ELseverityLevel::ELsev_(k) ).getName();
         if (sevName == "Severe")  sevName = "System";
@@ -335,21 +296,22 @@ namespace mf {
 
     } // summaryForJobReport()
 
-    std::string MsgStatistics::dualLogName (std::string const & s)
+    std::string MsgStatistics::dualLogName(std::string const& s)
     {
-      if (s=="LogDebug")   return  "LogDebug_LogTrace";
-      if (s=="LogInfo")    return  "LogInfo_LogVerbatim";
-      if (s=="LogWarning") return  "LogWarning_LogPrint";
-      if (s=="LogError")   return  "LogError_LogProblem";
-      if (s=="LogSystem")  return  "LogSystem_LogAbsolute";
+      if (s=="LogDebug")   return "LogDebug_LogTrace";
+      if (s=="LogInfo")    return "LogInfo_LogVerbatim";
+      if (s=="LogWarning") return "LogWarning_LogPrint";
+      if (s=="LogError")   return "LogError_LogProblem";
+      if (s=="LogSystem")  return "LogSystem_LogAbsolute";
       return "UnusedSeverity";
     }
 
-    std::set<std::string> MsgStatistics::groupedCategories; // 8/16/07 mf
+    std::set<std::string> MsgStatistics::groupedCategories {};
 
-    void MsgStatistics::noteGroupedCategory(std::string const & cat) {
+    void MsgStatistics::noteGroupedCategory(std::string const& cat)
+    {
       groupedCategories.insert(cat);
     }
 
-} // end of namespace service
+  } // end of namespace service
 } // end of namespace mf

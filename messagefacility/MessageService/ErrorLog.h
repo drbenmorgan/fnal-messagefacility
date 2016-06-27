@@ -35,12 +35,10 @@ namespace mf {
       ErrorLog & operator()(int nbytes, char* data);
 
       void setSubroutine(std::string const& subName);
-      void switchChannel(std::string const& channelName);
-      // switchChannel is only meant for remote msg logging
 
-      ErrorLog& emit(std::string const& msg);     // just one part of a message
-      ErrorLog& endmsg();                            // no more parts forthcoming
-      ErrorLog& operator<<(void(*f)(ErrorLog&));// allow log << zmel::endmsg
+      ErrorLog& emit(std::string const& msg);    // just one part of a message
+      ErrorLog& endmsg();                        // no more parts forthcoming
+      ErrorLog& operator<<(void(*f)(ErrorLog&)); // allow log << zmel::endmsg
 
       // ----------------------------------------------------------------------
       // -----  Methods meant for the Module base class in the framework:
@@ -61,7 +59,7 @@ namespace mf {
       bool            setSpaceAfterInt    (bool space=true);
       ELseverityLevel setDiscardThreshold (ELseverityLevel sev);
       void            setDebugVerbosity   (int debugVerbosity);
-      void            setDebugMessages    (ELseverityLevel sev, std::string id);
+      void            setDebugMessages    (ELseverityLevel sev, std::string const& id);
 
       // -----  information about this ErrorLog instance
 
@@ -110,12 +108,8 @@ namespace mf {
 #define ERRLOGTO(logname,sev,id)                                \
     logname(sev, id) << __FILE__ <<":" << __LINE__ << " "
 
-
-    // ----------------------------------------------------------------------
-
-
-  }        // end of namespace service
-}        // end of namespace mf
+  } // end of namespace service
+} // end of namespace mf
 
 
 // ----------------------------------------------------------------------

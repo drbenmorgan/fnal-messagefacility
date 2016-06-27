@@ -46,9 +46,7 @@ namespace mf {
       //
       static void noteGroupedCategory(std::string const& cat);
 
-      void clearSummary();
       void wipe();
-      void zero();
       void noTerminationSummary();
 
       void summaryForJobReport (std::map<std::string, double>& sm);

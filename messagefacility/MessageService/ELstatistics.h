@@ -30,18 +30,12 @@ namespace mf {
       ELstatistics(fhicl::ParameterSet const& pset, std::string const& filename, bool const append);
 
       void log(mf::ErrorObj& msg, ELcontextSupplier const&) override;
-      static void noteGroupedCategory(std::string const& cat);
 
       // copy c'tor/assignment disabled
       ELstatistics(ELstatistics const&) = delete;
       ELstatistics& operator=(ELstatistics const&) = delete;
 
     private:
-
-      void clearSummary(ELcontextSupplier const&) override;
-
-      void wipe() override;
-      void zero() override;
 
       void summary(std::ostream& os, std::string const& title="") override;
       void summary(std::string& s, std::string const& title="") override;
@@ -51,16 +45,10 @@ namespace mf {
       void summaryForJobReport (std::map<std::string, double>& sm) override;
 
       std::unique_ptr<cet::ostream_handle> termStream;
-      static std::set<std::string> groupedCategories;
-
     };  // ELstatistics
 
-
-    // ----------------------------------------------------------------------
-
-
-  }        // end of namespace service
-}        // end of namespace mf
+  } // end of namespace service
+} // end of namespace mf
 
 
 #endif /* messagefacility_MessageService_ELstatistics_h */

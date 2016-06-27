@@ -69,12 +69,6 @@ namespace mf {
     return MessageDrop::instance()->messageLoggerScribeIsRunning == MLSCRIBE_RUNNING_INDICATOR;
   }
 
-  void GroupLogStatistics(std::string const& category)
-  {
-    MessageLoggerQ::MLqGRP(new std::string{category}); // Indicate a group summary category
-    // The scribe is responsible for deleting the memory.
-  }
-
   void setStandAloneMessageThreshold(std::string const& severity)
   {
     MessageLoggerQ::standAloneThreshold(severity);
@@ -358,20 +352,6 @@ namespace mf {
       return;
 
     MessageDrop::instance()->runEvent = context;
-  }
-
-  // Switch dds partition / channel
-  void SwitchChannel(int const c)
-  {
-    if(c<0 || c>4) {
-      LogWarning("RemoteMsg") << "Specified channel dose not exist";
-      return;
-    }
-
-    std::stringstream ss;
-    ss << "Partition" << c;
-
-    MessageLoggerQ::MLqSWC(new std::string{ss.str()});
   }
 
 }  // namespace mf

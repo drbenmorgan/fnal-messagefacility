@@ -91,7 +91,7 @@ int main(int argc, char* argv[])
           << boost::filesystem::path(argv[0]).filename().native()
           << " -c <config-file> \n\n"
           << "Allowed options";
-  bpo::options_description desc(descstr.str());
+  bpo::options_description desc {descstr.str()};
   desc.add_options()
     ("config,c", bpo::value<std::string>(), "Configuration file.")
     ("help,h", "produce help message");
@@ -116,14 +116,14 @@ int main(int argc, char* argv[])
   }
   std::string const config_string = vm["config"].as<std::string>();
 
-  cet::filepath_lookup_nonabsolute filepath("FHICL_FILE_PATH");
+  cet::filepath_lookup_nonabsolute filepath {"FHICL_FILE_PATH"};
 
   fhicl::ParameterSet main_pset;
   try {
     // create an intermediate table from the input string
     make_ParameterSet(config_string, filepath, main_pset);
   }
-  catch ( cet::exception & e ) {
+  catch (cet::exception const& e) {
     std::cerr << "ERROR: Failed to create a parameter set from an input configuration string with exception "
               << e.what()
               << ".\n";
@@ -140,18 +140,16 @@ int main(int argc, char* argv[])
 
   // Start MessageFacility Service
   try {
-    mf::StartMessageFacility(
-                             mf::MessageFacilityService::MultiThread,
-                             main_pset.get<fhicl::ParameterSet>("message")
-                             );
+    mf::StartMessageFacility(mf::MessageFacilityService::MultiThread,
+                             main_pset.get<fhicl::ParameterSet>("message"));
   }
-  catch ( mf::Exception& e ) {
+  catch (mf::Exception const& e) {
     std::cerr << e.what() << std::endl;
-    return 0;
+    return 4;
   }
-  catch ( ... ) {
+  catch (...) {
     std::cerr << "Caught unknown exception from mf::StartMessageFacility" << std::endl;
-    return 8003;
+    return 5;
   }
 
   // Set module name for the main thread
@@ -170,10 +168,10 @@ int main(int argc, char* argv[])
   mf::LogInfo linfo("info");
   linfo << " vint contains: ";
 
-  std::vector<int> vint{ { 1, 2, 5, 89, 3 } };
+  std::vector<int> vint { 1, 2, 5, 89, 3 };
 
-  auto       i = std::begin(vint);
-  auto const e = std::end  (vint);
+  auto i = std::begin(vint);
+  auto const e = std::end(vint);
   while (i != e) {
     linfo << *i;
     if (++i != e) {
@@ -187,8 +185,6 @@ int main(int argc, char* argv[])
 
   // Switch context
   mf::SetContext("pro-event");
-
-  //mf::SwitchChannel(2);
 
   // Log Debugs
   for(int i = 0; i != 5; ++i)
@@ -211,15 +207,8 @@ int main(int argc, char* argv[])
     log << "second line.";
   }
 
-  // Thread join
-  //loggerThread.join();
-
   runModule("module1");
   runModule("module5");
-
   mf::LogStatistics();
 
-  //sleep(2);
-
-  return 0;
 }

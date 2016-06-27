@@ -10,26 +10,20 @@ namespace mf {
       severityIntervals.fill(-1);
     }
 
-    void ELlimitsTable::setTableLimit(int const n)
-    {
-      tableLimit = n;
-    }
-
     bool ELlimitsTable::add(ELextendedID const& xid)
     {
       auto c = counts.find(xid);
-
       if (c == counts.end()) {
 
         int lim {};
         int ivl {};
         int ts {};
         auto l = limits.find(xid.id);
-
         if (l != limits.end()) { // use limits previously established for this id
-          lim = l->second.limit;
-          ivl = l->second.interval;
-          ts  = l->second.timespan;
+          auto const& lat = l->second;
+          lim = lat.limit;
+          ivl = lat.interval;
+          ts  = lat.timespan;
           if (lim < 0)  {
             lim = severityLimits[xid.severity.getLevel()];
             if (lim < 0) {
@@ -47,10 +41,8 @@ namespace mf {
             if (ts < 0) {
               ts = wildcardTimespan;
             }
-            limits[xid.id] = LimitAndTimespan(lim, ts);
           }
-          limits[xid.id] = LimitAndTimespan(lim, ts, ivl);
-        } else {   // establish and use limits new to this id
+        } else { // establish and use limits new to this id
           lim = severityLimits   [xid.severity.getLevel()];
           ivl = severityIntervals[xid.severity.getLevel()];
           ts  = severityTimespans[xid.severity.getLevel()];
@@ -63,55 +55,23 @@ namespace mf {
           if (ts < 0) {
             ts = wildcardTimespan;
           }
-
-          // save, if possible, id's future limits:
-          if (tableLimit < 0  || static_cast<int>(limits.size()) < tableLimit)
-            limits[xid.id] = LimitAndTimespan(lim, ts, ivl);
         }
 
-        // save, if possible, this xid's initial entry:
-        if (tableLimit < 0  || static_cast<int>(counts.size()) < tableLimit)
-          counts[xid] = CountAndLimit(lim, ts, ivl);
+        limits[xid.id] = LimitAndTimespan(lim, ts, ivl);
+        counts[xid] = CountAndLimit(lim, ts, ivl);
         c = counts.find(xid);
       }
 
-      return  c == counts.end()
-        ? true             // no limit filtering can be applied
-        : c->second.add()  // apply limit filtering
-        ;
-
-    }  // add()
+      return c->second.add();
+    } // add()
 
 
     void ELlimitsTable::wipe()
     {
-      // This clears everything -- counts and aggregate counts for severity levels
-      // and for individual ID's, as well as any limits established, the limit
-      // for "*" all messages, and the collection of severity defaults.  wipe()
-      // does not not affect thresholds.
-
-      limits.clear();
-      for (auto& pr : counts) {
-        auto& c = pr.second;
-        c.limit = -1;
-        c.n = c.aggregateN = 0;
-      }
-
-      severityLimits.fill(-1);
-      severityIntervals.fill(-1);
-      severityTimespans.fill(-1);
-
-      wildcardLimit    = -1;
-      wildcardTimespan = -1;
+      ELlimitsTable tmp {};
+      std::swap(tmp, *this);
     }
 
-
-    void ELlimitsTable::zero()
-    {
-      // This clears counts but not aggregate counts for severity levels
-      // and for individual ID's.
-      for (auto& c : counts) c.second.n = 0;
-    }
 
     void ELlimitsTable::setLimit(std::string const& id, int const n)
     {
