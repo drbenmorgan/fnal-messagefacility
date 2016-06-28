@@ -1,9 +1,6 @@
-#include "messagefacility/MessageService/MessageLoggerDefaults.h"
 #include "messagefacility/MessageService/plugins/formatFilename.h"
 
 #include "fhiclcpp/ParameterSet.h"
-
-using namespace mf::service;
 
 namespace mfplugins {
 
@@ -12,18 +9,10 @@ namespace mfplugins {
   {
     // Determine the destination file name to use if no explicit filename is
     // supplied in the .fcl file.
-    std::string filename_default = pset.get<std::string>("output", std::string() );
+    auto const& filename_default = pset.get<std::string>("output", psetname);
 
-    if (filename_default.empty()) {
-      MessageLoggerDefaults const defaults {};
-      filename_default = defaults.output(psetname);
-      if (filename_default.empty()) {
-        filename_default  = psetname;
-      }
-    }
-
-    std::string       filename           = pset.get<std::string>("filename", filename_default);
-    std::string const explicit_extension = pset.get<std::string>("extension", std::string() );
+    auto filename = pset.get<std::string>("filename", filename_default);
+    auto const& explicit_extension = pset.get<std::string>("extension", {});
 
     if (!explicit_extension.empty()) {
       if (explicit_extension[0] == '.')
@@ -37,7 +26,6 @@ namespace mfplugins {
       filename += ".log";
 
     return filename;
-
   }
 
 }

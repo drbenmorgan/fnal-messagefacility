@@ -9,7 +9,6 @@ cet_make_library(
   ELstatistics.cc
   ErrorLog.cc
   MainThreadMLscribe.cc
-  MessageLoggerDefaults.cc
   MessageLoggerQ.cc
   MsgContext.cc
   MsgFormatSettings.cc

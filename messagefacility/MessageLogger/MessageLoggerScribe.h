@@ -9,7 +9,6 @@
 #include "messagefacility/MessageService/ELdestConfigCheck.h"
 #include "messagefacility/MessageService/ErrorLog.h"
 #include "messagefacility/MessageService/MsgContext.h"
-#include "messagefacility/MessageService/MessageLoggerDefaults.h"
 #include "messagefacility/MessageService/MessageLoggerQ.h"
 #include "messagefacility/MessageService/AbstractMLscribe.h"
 
@@ -56,7 +55,6 @@ namespace mf {
                               bool const should_throw);
 
       void  configure_dest(ELdestination& dest_ctrl,
-                           std::string const& dest_pset_name,
                            fhicl::ParameterSet const& dest_pset);
 
       void  configure_default_fwkJobReport(ELdestination& dest_ctrl);
@@ -75,7 +73,6 @@ namespace mf {
       MsgContext msgContext_;
       std::string jobReportOption_ {};
       bool cleanSlateConfiguration_ {true};
-      MessageLoggerDefaults messageLoggerDefaults_ {};
       bool active_ {true};
       bool singleThread_;
       bool done_ {false};

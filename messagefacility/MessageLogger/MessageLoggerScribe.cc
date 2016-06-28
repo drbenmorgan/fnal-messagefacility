@@ -4,6 +4,7 @@
 //
 // ----------------------------------------------------------------------
 
+#include "fhiclcpp/make_ParameterSet.h"
 #include "messagefacility/Utilities/ErrorObj.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "messagefacility/MessageLogger/MessageLoggerScribe.h"
@@ -244,12 +245,9 @@ namespace mf {
     //=============================================================================
     void
     MessageLoggerScribe::configure_dest(ELdestination& dest,
-                                        string const& dest_pset_name,
                                         fhicl::ParameterSet const& dest_pset)
     {
       // Defaults:
-      std::string const COMMON_DEFAULT_THRESHOLD {"INFO"};
-
       vstring const severities {"WARNING", "INFO", "ERROR", "DEBUG"};
 
       // grab the pset for category list for this destination
@@ -288,11 +286,7 @@ namespace mf {
         dest.setTimespan("*", default_timespan);
       }
 
-      // establish this destination's threshold:
-      string dest_threshold = dest_pset.get<std::string>("threshold",
-                                                         messageLoggerDefaults_.threshold(dest_pset_name));
-      if (dest_threshold.empty()) dest_threshold = COMMON_DEFAULT_THRESHOLD;
-
+      auto const& dest_threshold = dest_pset.get<std::string>("threshold", "INFO");
       ELseverityLevel const threshold_sev {dest_threshold};
       dest.setThreshold(threshold_sev);
 
@@ -304,30 +298,26 @@ namespace mf {
         int interval = category_pset.get<int>("reportEvery", default_interval);
         int timespan = category_pset.get<int>("timespan"   , default_timespan);
 
-        if (limit    == NO_VALUE_SET) limit    = messageLoggerDefaults_.limit      (dest_pset_name,category);
-        if (interval == NO_VALUE_SET) interval = messageLoggerDefaults_.reportEvery(dest_pset_name,category);
-        if (timespan == NO_VALUE_SET) timespan = messageLoggerDefaults_.timespan   (dest_pset_name,category);
-
-        if(limit != NO_VALUE_SET)  {
+        if (limit != NO_VALUE_SET)  {
           if (limit < 0) limit = two_billion;
           dest.setLimit(category, limit);
         }
-        if(interval != NO_VALUE_SET)  {
+        if (interval != NO_VALUE_SET)  {
           dest.setInterval(category, interval);
         }
-        if(timespan != NO_VALUE_SET)  {
-          if ( timespan < 0 ) timespan = two_billion;
+        if (timespan != NO_VALUE_SET)  {
+          if (timespan < 0) timespan = two_billion;
           dest.setTimespan(category, timespan);
         }
       }  // for
 
       // establish this destination's linebreak policy:
-      if (dest_pset.get<bool> ("noLineBreaks", false)) {
+      if (dest_pset.get<bool>("noLineBreaks", false)) {
         dest.setLineLength(32000);
       }
       else {
         int constexpr lenDef {80};
-        int const lineLen = dest_pset.get<int> ("lineLength", lenDef);
+        int const lineLen = dest_pset.get<int>("lineLength", lenDef);
         dest.setLineLength(lineLen);
       }
 
@@ -347,7 +337,7 @@ namespace mf {
     {
       dest.setLimit("*", 0);
       string const msgID {"FwkJob"};
-      int constexpr FwkJob_limit = 10000000;
+      int constexpr FwkJob_limit {10000000};
       dest.setLimit(msgID, FwkJob_limit);
       dest.setLineLength(32000);
       dest.formatSuppress(TIMESTAMP);
@@ -357,8 +347,7 @@ namespace mf {
     void
     MessageLoggerScribe::configure_fwkJobReports()
     {
-      vstring  empty_vstring;
-      string   empty_string;
+      string empty_string;
 
       // decide whether to configure any job reports at all
       bool jobReportExists {false};
@@ -369,21 +358,13 @@ namespace mf {
       if (!enableJobReports) return;
 
       if ((jobReportOption_ != "*") && (jobReportOption_ != empty_string)) {
-        const std::string::size_type npos = std::string::npos;
-        if ( jobReportOption_.find('.') == npos ) {
+        if (jobReportOption_.find('.') == std::string::npos) {
           jobReportOption_ += ".xml";
         }
       }
 
       // grab list of fwkJobReports:
-      vstring fwkJobReports = jobConfig_->get<vstring >("fwkJobReports", empty_vstring);
-
-      // // Use the default list of fwkJobReports if and only if the
-      // // grabbed list is empty
-      // if (fwkJobReports.empty()) {
-      //   fwkJobReports = messageLoggerDefaults_.fwkJobReports;
-      // }
-
+      auto const& fwkJobReports = jobConfig_->get<vstring>("fwkJobReports", {});
       std::set<std::string> existing_ids;
 
       // establish each fwkJobReports destination:
@@ -393,13 +374,12 @@ namespace mf {
 
         // check that this destination is not just a placeholder
         auto const& fjr_pset = jobConfig_->get<fhicl::ParameterSet>(psetname, {});
-        bool is_placeholder = fjr_pset.get<bool>("placeholder", false);
-        if (is_placeholder) continue;
+        if (fjr_pset.get<bool>("placeholder", false)) continue;
 
         // Modify the file name if extension or name is explicitly specified
-        string explicit_filename = fjr_pset.get<std::string>("filename", empty_string);
+        string explicit_filename = fjr_pset.get<std::string>("filename", {});
         if (explicit_filename != empty_string) filename = explicit_filename;
-        string explicit_extension = fjr_pset.get<std::string>("extension", empty_string);
+        string explicit_extension = fjr_pset.get<std::string>("extension", {});
         if (explicit_extension != empty_string) {
           if (explicit_extension[0] == '.') {
             filename += explicit_extension;
@@ -410,23 +390,20 @@ namespace mf {
 
         // Attach a default extension of .xml if there is no extension on a file
         std::string actual_filename = filename;
-        auto const npos = std::string::npos;
-        if (filename.find('.') == npos) {
+        if (filename.find('.') == std::string::npos) {
           actual_filename += ".xml";
         }
 
-        std::string const outputId = createId(existing_ids, "file", actual_filename);
-        bool const duplicateDest = duplicateDestination(outputId, ELdestConfig::FWKJOBREPORT, throw_on_clean_slate);
-
         // use already-specified configuration if destination exists
-        if (duplicateDest) continue;
+        std::string const& outputId = createId(existing_ids, "file", actual_filename);
+        if (duplicateDestination(outputId, ELdestConfig::FWKJOBREPORT, throw_on_clean_slate)) continue;
 
         jobReportExists = true;
         if (actual_filename == jobReportOption_) jobReportOption_ = empty_string;
 
         ELdestination& dest = admin_->attach(outputId, make_unique<ELfwkJobReport>(actual_filename));
 
-        configure_dest(dest, psetname, fjr_pset);
+        configure_dest(dest, fjr_pset);
 
       }  // for [it = fwkJobReports.begin() to end()]
 
@@ -439,12 +416,10 @@ namespace mf {
       // name would not be a configuration error, but we shouldn't do it twice
       std::string actual_filename = jobReportOption_;
 
+      // use already-specified configuration if destination exists
       std::set<std::string> tmpIdSet;
       std::string const outputId = createId(tmpIdSet, "file", actual_filename);
-      bool const duplicateDest = duplicateDestination(outputId, ELdestConfig::FWKJOBREPORT, no_throw_on_clean_slate);
-
-      // use already-specified configuration if destination exists
-      if (duplicateDest) return;
+      if (duplicateDestination(outputId, ELdestConfig::FWKJOBREPORT, no_throw_on_clean_slate)) return;
 
       ELdestination& dest = admin_->attach(outputId, make_unique<ELfwkJobReport>(actual_filename));
 
@@ -454,7 +429,6 @@ namespace mf {
     //=============================================================================
     void MessageLoggerScribe::configure_destinations()
     {
-      // grab list of destinations:
       auto dests_pset = jobConfig_->get<fhicl::ParameterSet>("destinations", {});
       auto origDests_pset = dests_pset;
 
@@ -505,7 +479,7 @@ namespace mf {
                                                          libspec,
                                                          psetname,
                                                          dest_pset));
-        configure_dest(dest, psetname, dest_pset);
+        configure_dest(dest, dest_pset);
 
         // Suppress the desire to do an extra termination summary just because
         // of end-of-job info message for statistics jobs
@@ -585,10 +559,19 @@ namespace mf {
       if(destinations.empty()) {
         std::string const dest {"cerr"};
         destinations.push_back(dest);
-        fhicl::ParameterSet tmp;
-        tmp.put("type", "file");
-        tmp.put("filename", "cerr.log");
-        dests.put(dest, tmp);
+        std::string const config {
+          "type: file "
+            "filename: \"cerr.log\" "
+            "threshold: INFO\n"
+            "categories: { "
+            "  default: { "
+            "    limit: 10000000"
+            "  } "
+            "}"
+            };
+        fhicl::ParameterSet pset;
+        make_ParameterSet(config, pset);
+        dests.put(dest, pset);
       }
 
       // Dial down the early destination if other dest's are supplied:
@@ -613,9 +596,15 @@ namespace mf {
       if (statsDests.empty() && ordinaryDests.get_pset_names().empty()) {
         std::string const dest {"cerr_stats"};
         statsDests.push_back(dest);
+        std::string const config {
+          "type: file "
+            "filename: \"cerr.log\" "
+            "threshold: WARNING"
+            };
         fhicl::ParameterSet tmp;
         tmp.put("type", "file");
         tmp.put("filename", "cerr.log");
+        tmp.put("threshold", "WARNING");
         dests.put(dest, tmp);
       }
 
