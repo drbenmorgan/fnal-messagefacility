@@ -17,6 +17,7 @@
 #include <cassert>
 #include <iostream>
 
+using std::make_unique;
 using std::string;
 using vstring = std::vector<std::string>;
 
@@ -29,7 +30,7 @@ namespace mf {
   namespace service {
 
     MessageLoggerScribe::MessageLoggerScribe(cet::exempt_ptr<ThreadQueue> queue)
-      : earlyDest_{admin_->attach("cerr_early", std::make_unique<ELostreamOutput>(std::cerr, false))}
+      : earlyDest_{admin_->attach("cerr_early", make_unique<ELostreamOutput>(make_unique<cet::ostream_observer>(std::cerr), false))}
       , singleThread_{queue.get() == nullptr}
       , queue_{queue}
     {
@@ -166,8 +167,8 @@ namespace mf {
                     << "However, the rest of the logger continues to run.\n";
         }
         delete jobReportOption_p;  // dispose of the message text
-        // which will have been new-ed
-        // in MessageLogger.cc (service version)
+        // which will have been new-ed in MessageLogger.cc (service
+        // version)
         break;
       }
       case SHUT_UP:  {
@@ -183,21 +184,6 @@ namespace mf {
         h_p->c.notify_all();  // Signal to MessageLoggerQ that we are done
         // finally, release the scoped lock by letting it go out of scope
         break;
-      }
-      case FJR_SUMMARY: {
-        if (singleThread_) {
-          std::map<std::string, double>* smp = static_cast<std::map<std::string, double>*>(operand);
-          triggerFJRmessageSummary(*smp);
-          break;
-        } else {
-          ConfigurationHandshake* h_p = static_cast<ConfigurationHandshake*>(operand);
-          ConfigurationHandshake::lock_guard sl {h_p->m};   // get lock
-          std::map<std::string, double>* smp = static_cast<std::map<std::string, double>*>(h_p->p);
-          triggerFJRmessageSummary(*smp);
-          h_p->c.notify_all();  // Signal to MessageLoggerQ that we are done
-          // finally, release the scoped lock by letting it go out of scope
-          break;
-        }
       }
       }  // switch
 
@@ -240,7 +226,7 @@ namespace mf {
           assert(opcode == LOG_A_MESSAGE);
           ErrorObj* errorobj_p = static_cast<ErrorObj*>(operand);
           log(errorobj_p);
-          delete errorobj_p;  // dispose of the message text
+          delete errorobj_p; // dispose of the message text
         }
       }
 
@@ -445,7 +431,7 @@ namespace mf {
         jobReportExists = true;
         if (actual_filename == jobReportOption_) jobReportOption_ = empty_string;
 
-        ELdestination& dest = admin_->attach(outputId, std::make_unique<ELfwkJobReport>(actual_filename));
+        ELdestination& dest = admin_->attach(outputId, make_unique<ELfwkJobReport>(actual_filename));
 
         configure_dest(dest, psetname, fjr_pset);
 
@@ -467,7 +453,7 @@ namespace mf {
       // use already-specified configuration if destination exists
       if (duplicateDest) return;
 
-      ELdestination& dest = admin_->attach(outputId, std::make_unique<ELfwkJobReport>(actual_filename));
+      ELdestination& dest = admin_->attach(outputId, make_unique<ELfwkJobReport>(actual_filename));
 
       configure_default_fwkJobReport(dest);
     }
@@ -492,7 +478,7 @@ namespace mf {
     make_destinations(fhicl::ParameterSet const& dests,
                       vstring const& dest_list,
                       ELdestConfig::dest_config const configuration,
-                      bool const should_throw [[gnu::unused]])
+                      bool const should_throw)
     {
       std::set<std::string> ids;
 
@@ -587,12 +573,6 @@ namespace mf {
           dest.wipe();
       }
     }
-
-    //=============================================================================
-    // Currently not supported ... specify empty implementation
-    void
-    MessageLoggerScribe::
-    triggerFJRmessageSummary(std::map<std::string, double>&){}
 
     //=============================================================================
     vstring

@@ -18,7 +18,6 @@ namespace mf {
   class ErrorObj;
   class ELdestination;
   namespace service {
-    class NamedDestination;
     class AbstractMLscribe;
   }
 
@@ -32,15 +31,10 @@ namespace mf {
     static void MLqEND();
     static void MLqLOG(ErrorObj* p);
     static void MLqCFG(fhicl::ParameterSet* p);
-    static void MLqEXT(service::NamedDestination* p);
     static void MLqSUM();
     static void MLqJOB(std::string* j);
-    static void MLqMOD(std::string* jm);
     static void MLqSHT();
     static void MLqFLS();
-    static void MLqGRP(std::string* cat_p);
-    static void MLqJRS(std::map<std::string, double>* sum_p);
-    static void MLqSWC(std::string* chanl_p);
 
     // ---  bookkeeping for single-thread mode
     static void setMLscribe_ptr(std::unique_ptr<mf::service::AbstractMLscribe> m);

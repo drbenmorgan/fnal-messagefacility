@@ -15,7 +15,8 @@ extern "C" {
   auto makePlugin(std::string const&,
                   fhicl::ParameterSet const& pset)
   {
-    return std::make_unique<ELostreamOutput>(pset, std::cout);
+    std::unique_ptr<cet::ostream_handle> osh = std::make_unique<cet::ostream_observer>(std::cout);
+    return std::make_unique<ELostreamOutput>(pset, std::move(osh));
   }
 
 }

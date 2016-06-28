@@ -52,8 +52,7 @@ namespace {
       delete errorobj_p;
       break;
     }
-    case JOBREPORT:
-    case JOBMODE: {
+    case JOBREPORT: {
       auto string_p = static_cast<std::string*>(operand);
       delete string_p;
       break;
@@ -141,12 +140,6 @@ MessageLoggerQ::MLqCFG(fhicl::ParameterSet* p)
 }
 
 void
-MessageLoggerQ::MLqEXT(NamedDestination* p)
-{
-  simpleCommand (EXTERN_DEST, static_cast<void*>(p));
-}
-
-void
 MessageLoggerQ::MLqSUM()
 {
   simpleCommand(SUMMARIZE, nullptr);
@@ -159,13 +152,6 @@ MessageLoggerQ::MLqJOB(std::string* j)
 }
 
 void
-MessageLoggerQ::MLqMOD(std::string* jm)
-{
-  simpleCommand(JOBMODE, static_cast<void*>(jm));
-}
-
-
-void
 MessageLoggerQ::MLqFLS()
 {
   // The ConfigurationHandshake, developed for synchronous CFG, contains a
@@ -173,12 +159,6 @@ MessageLoggerQ::MLqFLS()
   // it need the parameter set, but we are reusing ConfigurationHandshake
   // rather than reinventing the mechanism.
   handshakedCommand(FLUSH_LOG_Q, nullptr, "FLS");
-}
-
-void
-MessageLoggerQ::MLqJRS(std::map<std::string, double>* sum_p)
-{
-  handshakedCommand(FJR_SUMMARY, sum_p, "JRS");
 }
 
 mf::ELseverityLevel MessageLoggerQ::threshold ("WARNING");

@@ -1,6 +1,6 @@
 #include "cetlib/PluginTypeDeducer.h"
+#include "cetlib/ostream_handle.h"
 #include "fhiclcpp/ParameterSet.h"
-
 #include "messagefacility/MessageService/ELdestination.h"
 #include "messagefacility/MessageService/ELostreamOutput.h"
 #include "messagefacility/MessageService/plugins/formatFilename.h"
@@ -18,8 +18,8 @@ extern "C" {
   {
     std::string const& filename = mfplugins::formatFilename(psetname, pset);
     bool const append = pset.get<bool>("append", false);
-
-    return std::make_unique<ELostreamOutput>(pset, filename, append);
+    std::unique_ptr<cet::ostream_handle> osh = std::make_unique<cet::ostream_owner>(filename, append ? std::ios::app : std::ios::trunc);
+    return std::make_unique<ELostreamOutput>(pset, std::move(osh));
   }
 
 }

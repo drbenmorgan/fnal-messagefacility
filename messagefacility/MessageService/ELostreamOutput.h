@@ -26,18 +26,11 @@ namespace mf {
     class ELostreamOutput : public ELdestination  {
     public:
 
-      ELostreamOutput();
-      ELostreamOutput(fhicl::ParameterSet const& psetFormat);
       ELostreamOutput(fhicl::ParameterSet const& psetFormat,
-                      std::ostream& os,
+                      std::unique_ptr<cet::ostream_handle>,
                       bool emitAtStart = false);
 
-      ELostreamOutput(std::ostream& os,
-                      bool emitAtStart = false);
-
-      ELostreamOutput(fhicl::ParameterSet const& psetFormat,
-                      std::string const& fileName,
-                      bool append,
+      ELostreamOutput(std::unique_ptr<cet::ostream_handle>,
                       bool emitAtStart = false);
 
       // Disable copy c'tor/assignment

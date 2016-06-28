@@ -33,7 +33,7 @@ namespace mf {
     MessageLoggerQ::MLqSUM(); // trigger summary info
   }
 
-  void LogErrorObj(ErrorObj * eo_p)
+  void LogErrorObj(ErrorObj* eo_p)
   {
     MessageLoggerQ::MLqLOG(eo_p);
   }
@@ -80,8 +80,8 @@ namespace mf {
   }
 
   // MessageFacilityService
-  std::string MessageFacilityService::SingleThread = "SingleThreadMSPresence";
-  std::string MessageFacilityService::MultiThread = "MessageServicePresence";
+  std::string MessageFacilityService::SingleThread {"SingleThreadMSPresence"};
+  std::string MessageFacilityService::MultiThread {"MessageServicePresence"};
 
   MessageFacilityService& MessageFacilityService::instance()
   {
