@@ -257,18 +257,11 @@ namespace mf {
 
       // grab list of categories
       vstring categories = cats_pset.get_pset_names();
-      categories.erase(std::remove_if(categories.begin(),
-                                      categories.end(),
-                                      [](auto const& category) {
-                                        return category == "default";
-                                      }),
-                       categories.cend());
-
-      // grab list of default categories -- these are to be added to
-      // the list of categories (don't worry about possible duplicates
-      // for now)
-      cet::copy_all(messageLoggerDefaults_.categories,
-                    std::back_inserter(categories));
+      auto erase_from = std::remove_if(categories.begin(), categories.end(),
+                                       [](auto const& category) {
+                                         return category == "default";
+                                       });
+      categories.erase(erase_from, categories.cend());
 
       // default threshold for the destination grab this destination's
       // default limit/interval/timespan:
@@ -385,11 +378,11 @@ namespace mf {
       // grab list of fwkJobReports:
       vstring fwkJobReports = jobConfig_->get<vstring >("fwkJobReports", empty_vstring);
 
-      // Use the default list of fwkJobReports if and only if the
-      // grabbed list is empty
-      if (fwkJobReports.empty()) {
-        fwkJobReports = messageLoggerDefaults_.fwkJobReports;
-      }
+      // // Use the default list of fwkJobReports if and only if the
+      // // grabbed list is empty
+      // if (fwkJobReports.empty()) {
+      //   fwkJobReports = messageLoggerDefaults_.fwkJobReports;
+      // }
 
       std::set<std::string> existing_ids;
 
@@ -590,19 +583,16 @@ namespace mf {
 
       // Fill with default (and augment pset) if destinations is empty
       if(destinations.empty()) {
-
-        destinations = messageLoggerDefaults_.destinations;
-
-        for (auto const& dest : destinations) {
-          fhicl::ParameterSet tmp;
-          tmp.put("type", "file");
-          tmp.put("filename", messageLoggerDefaults_.output(dest));
-          dests.put(dest, tmp);
-        }
+        std::string const dest {"cerr"};
+        destinations.push_back(dest);
+        fhicl::ParameterSet tmp;
+        tmp.put("type", "file");
+        tmp.put("filename", "cerr.log");
+        dests.put(dest, tmp);
       }
 
-      // Also dial down the early destination if other dest's are supplied:
-      if(!destinations.empty()) earlyDest_.setThreshold(ELhighestSeverity);
+      // Dial down the early destination if other dest's are supplied:
+      earlyDest_.setThreshold(ELhighestSeverity);
 
       return destinations;
     }
@@ -621,15 +611,12 @@ namespace mf {
       // destinations.  (If a FHiCL file specifies destinations, and
       // no statistics, assume that is what the user wants.)
       if (statsDests.empty() && ordinaryDests.get_pset_names().empty()) {
-
-        statsDests = messageLoggerDefaults_.statistics;
-
-        for (auto const& dest : statsDests) {
-          fhicl::ParameterSet tmp;
-          tmp.put("type", "file");
-          tmp.put("filename", messageLoggerDefaults_.output(dest));
-          dests.put(dest, tmp);
-        }
+        std::string const dest {"cerr_stats"};
+        statsDests.push_back(dest);
+        fhicl::ParameterSet tmp;
+        tmp.put("type", "file");
+        tmp.put("filename", "cerr.log");
+        dests.put(dest, tmp);
       }
 
       return statsDests;

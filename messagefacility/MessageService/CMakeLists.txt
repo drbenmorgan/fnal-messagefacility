@@ -8,7 +8,6 @@ cet_make_library(
   ELrecv.cc
   ELstatistics.cc
   ErrorLog.cc
-  HardwiredDefaults.cc
   MainThreadMLscribe.cc
   MessageLoggerDefaults.cc
   MessageLoggerQ.cc

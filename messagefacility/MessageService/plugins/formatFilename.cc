@@ -15,8 +15,8 @@ namespace mfplugins {
     std::string filename_default = pset.get<std::string>("output", std::string() );
 
     if (filename_default.empty()) {
-      auto messageLoggerDefaults = MessageLoggerDefaults(MessageLoggerDefaults::mode("grid"));
-      filename_default = messageLoggerDefaults.output(psetname);
+      MessageLoggerDefaults const defaults {};
+      filename_default = defaults.output(psetname);
       if (filename_default.empty()) {
         filename_default  = psetname;
       }

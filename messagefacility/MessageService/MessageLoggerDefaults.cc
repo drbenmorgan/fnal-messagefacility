@@ -1,347 +1,120 @@
-// ----------------------------------------------------------------------
-//
-// MessageLoggerDefaults.cc
-//
-// All the mechanics of hardwired defaults, but without the values, which are
-// coded in HardwiredDefaults.cc
-//
-// Changes:
-//
-// 11/02/07 mf  Corrected sev_limit, sev_reportEvery, and sev_timespan
-//              changing if (c != def_destin.category.end()) to
-//              if (c != def_destin.sev.end()) if 4 places in each.
-//              This fixes the skipped framework job report message
-//              problem.  The bug also could have been causing other
-//              messages to be skipped.
-//
-// ----------------------------------------------------------------------
-
-
-
 #include "messagefacility/MessageService/MessageLoggerDefaults.h"
 
+namespace {
+  template <typename Value, typename T>
+  bool fill_if_present(std::map<std::string, Value> const& map,
+                       std::string const& key,
+                       T Value::* m,
+                       T& t)
+  {
+    auto it = map.find(key);
+    if (it == map.end())
+      return false;
+
+    t = it->second.*m;
+    return true;
+  }
+
+  template <typename Value, typename T>
+  void tiered_fill_if_present(std::map<std::string, mf::service::MessageLoggerDefaults::Destination> const& map,
+                              std::string const& dest,
+                              std::string const& category,
+                              T Value::* m,
+                              T& value)
+  {
+    constexpr auto NO_VALUE_SET = mf::service::MessageLoggerDefaults::NO_VALUE_SET;
+    auto d = map.find(dest);
+    if (d != map.end()) {
+      fill_if_present(d->second.category, category, m, value);
+    }
+    if (value == NO_VALUE_SET) {
+      auto dd = map.find("default");
+      if (dd != map.end()) {
+        fill_if_present(dd->second.category, category, m, value);
+      }
+    }
+    if (value == NO_VALUE_SET) {
+      if (d != map.end()) {
+        fill_if_present(d->second.category, "default", m, value);
+      }
+    }
+    if (value == NO_VALUE_SET) {
+      auto dd = map.find("default");
+      if (dd != map.end()) {
+        fill_if_present(dd->second.category, "default", m, value);
+      }
+    }
+  }
+}
+
 namespace mf {
-namespace service {
+  namespace service {
 
-std::string
-MessageLoggerDefaults::
-threshold(std::string const & dest)
-{
-  std::string thr = "";
-  std::map<std::string,Destination>::iterator d = destination.find(dest);
-  if (d != destination.end()) {
-    Destination & destin = d->second;
-    thr = destin.threshold;
-  }
-  std::map<std::string,Destination>::iterator dd = destination.find("default");
-  if ( thr == "" ) {
-    if (dd != destination.end()) {
-      Destination & def_destin = dd->second;
-      thr = def_destin.threshold;
+    MessageLoggerDefaults::MessageLoggerDefaults()
+    {
+      { Destination cerr;
+        cerr.threshold = "INFO";
+        cerr.output    = "cerr";
+        cerr.sev.emplace("INFO", Category{0}); // limit = 0;
+        cerr.category.emplace("default", Category{10000000}); // limit = 10000000
+        destination["cerr"] = std::move(cerr);
+      }
+      { Destination FrameworkJobReport;
+        FrameworkJobReport.category.emplace("default", Category{0});
+        destination["FrameworkJobReport"] = std::move(FrameworkJobReport);
+      }
+      { Destination cerr_stats;
+        cerr_stats.threshold = "WARNING";
+        cerr_stats.output = "cerr";
+        destination["cerr_stats"] = std::move(cerr_stats);
+      }
     }
-  }
-  return thr;
-} // threshold
 
-std::string
-MessageLoggerDefaults::
-output(std::string const & dest)
-{
-  std::string otpt = "";
-  std::map<std::string,Destination>::iterator d = destination.find(dest);
-  if (d != destination.end()) {
-    Destination & destin = d->second;
-    otpt = destin.output;
-  }
-  // There is no default output; so if we did not find the dest, then return ""
-  return otpt;
-} // output
+    std::string
+    MessageLoggerDefaults::
+    threshold(std::string const& dest) const
+    {
+      std::string thr = "";
+      if (!fill_if_present(destination, dest, &Destination::threshold, thr))
+        fill_if_present(destination, "default", &Destination::threshold, thr);
+      return thr;
+    }
 
-int
-MessageLoggerDefaults::
-limit(std::string const & dest, std::string const & cat)
-{
-  int lim = NO_VALUE_SET;
-  std::map<std::string,Destination>::iterator d = destination.find(dest);
-  if (d != destination.end()) {
-    Destination & destin = d->second;
-    std::map<std::string,Category>::iterator c = destin.category.find(cat);
-    if (c != destin.category.end()) {
-      lim = c->second.limit;
+    std::string
+    MessageLoggerDefaults::
+    output(std::string const& dest) const
+    {
+      std::string otpt = "";
+      fill_if_present(destination, dest, &Destination::output, otpt);
+      return otpt;
     }
-  }
-  std::map<std::string,Destination>::iterator dd = destination.find("default");
-  if ( lim == NO_VALUE_SET ) {
-    if (dd != destination.end()) {
-      Destination & def_destin = dd->second;
-      std::map<std::string,Category>::iterator
-                      c = def_destin.category.find(cat);
-      if (c != def_destin.category.end()) {
-        lim = c->second.limit;
-      }
-    }
-  }
-  if ( lim == NO_VALUE_SET ) {
-    if (d != destination.end()) {
-      Destination & destin = d->second;
-      std::map<std::string,Category>::iterator
-                      cd = destin.category.find("default");
-      if (cd != destin.category.end()) {
-        lim = cd->second.limit;
-      }
-    }
-  }
-  if ( lim == NO_VALUE_SET ) {
-    if (dd != destination.end()) {
-      Destination & def_destin = dd->second;
-      std::map<std::string,Category>::iterator
-                      cdd = def_destin.category.find("default");
-      if (cdd != def_destin.category.end()) {
-        lim = cdd->second.limit;
-      }
-    }
-  }
-  return lim;
-} // limit
 
-int
-MessageLoggerDefaults::
-reportEvery(std::string const & dest, std::string const & cat)
-{
-  int re = NO_VALUE_SET;
-  std::map<std::string,Destination>::iterator d = destination.find(dest);
-  if (d != destination.end()) {
-    Destination & destin = d->second;
-    std::map<std::string,Category>::iterator c = destin.category.find(cat);
-    if (c != destin.category.end()) {
-      re = c->second.reportEvery;
+    int
+    MessageLoggerDefaults::
+    limit(std::string const& dest, std::string const& cat)
+    {
+      int limit {NO_VALUE_SET};
+      tiered_fill_if_present(destination, dest, cat, &Category::limit, limit);
+      return limit;
     }
-  }
-  std::map<std::string,Destination>::iterator dd = destination.find("default");
-  if ( re == NO_VALUE_SET ) {
-    if (dd != destination.end()) {
-      Destination & def_destin = dd->second;
-      std::map<std::string,Category>::iterator
-                      c = def_destin.category.find(cat);
-      if (c != def_destin.category.end()) {
-        re = c->second.reportEvery;
-      }
-    }
-  }
-  if ( re == NO_VALUE_SET ) {
-    if (d != destination.end()) {
-      Destination & destin = d->second;
-      std::map<std::string,Category>::iterator
-                      cd = destin.category.find("default");
-      if (cd != destin.category.end()) {
-        re = cd->second.reportEvery;
-      }
-    }
-  }
-  if ( re == NO_VALUE_SET ) {
-    if (dd != destination.end()) {
-      Destination & def_destin = dd->second;
-      std::map<std::string,Category>::iterator
-                      cdd = def_destin.category.find("default");
-      if (cdd != def_destin.category.end()) {
-        re = cdd->second.reportEvery;
-      }
-    }
-  }
-  return re;
-} // reportEvery
 
-int
-MessageLoggerDefaults::
-timespan(std::string const & dest, std::string const & cat)
-{
-  int tim = NO_VALUE_SET;
-  std::map<std::string,Destination>::iterator d = destination.find(dest);
-  if (d != destination.end()) {
-    Destination & destin = d->second;
-    std::map<std::string,Category>::iterator c = destin.category.find(cat);
-    if (c != destin.category.end()) {
-      tim = c->second.timespan;
+    int
+    MessageLoggerDefaults::
+    reportEvery(std::string const& dest, std::string const& cat)
+    {
+      int reportEvery {NO_VALUE_SET};
+      tiered_fill_if_present(destination, dest, cat, &Category::reportEvery, reportEvery);
+      return reportEvery;
     }
-  }
-  std::map<std::string,Destination>::iterator dd = destination.find("default");
-  if ( tim == NO_VALUE_SET ) {
-    if (dd != destination.end()) {
-      Destination & def_destin = dd->second;
-      std::map<std::string,Category>::iterator
-                      c = def_destin.category.find(cat);
-      if (c != def_destin.category.end()) {
-        tim = c->second.timespan;
-      }
-    }
-  }
-  if ( tim == NO_VALUE_SET ) {
-    if (d != destination.end()) {
-      Destination & destin = d->second;
-      std::map<std::string,Category>::iterator
-                      cd = destin.category.find("default");
-      if (cd != destin.category.end()) {
-        tim = cd->second.timespan;
-      }
-    }
-  }
-  if ( tim == NO_VALUE_SET ) {
-    if (dd != destination.end()) {
-      Destination & def_destin = dd->second;
-      std::map<std::string,Category>::iterator
-                      cdd = def_destin.category.find("default");
-      if (cdd != def_destin.category.end()) {
-        tim = cdd->second.timespan;
-      }
-    }
-  }
-  return tim;
-} // timespan
 
-int
-MessageLoggerDefaults::
-sev_limit(std::string const & dest, std::string const & cat)
-{
-  int lim = NO_VALUE_SET;
-  std::map<std::string,Destination>::iterator d = destination.find(dest);
-  if (d != destination.end()) {
-    Destination & destin = d->second;
-    std::map<std::string,Category>::iterator c = destin.sev.find(cat);
-    if (c != destin.sev.end()) {
-      lim = c->second.limit;
+    int
+    MessageLoggerDefaults::
+    timespan(std::string const& dest, std::string const& cat)
+    {
+      int timespan {NO_VALUE_SET};
+      tiered_fill_if_present(destination, dest, cat, &Category::timespan, timespan);
+      return timespan;
     }
-  }
-  std::map<std::string,Destination>::iterator dd = destination.find("default");
-  if ( lim == NO_VALUE_SET ) {
-    if (dd != destination.end()) {
-      Destination & def_destin = dd->second;
-      std::map<std::string,Category>::iterator
-                      c = def_destin.sev.find(cat);
-      if (c != def_destin.sev.end()) {
-        lim = c->second.limit;
-      }
-    }
-  }
-  if ( lim == NO_VALUE_SET ) {
-    if (d != destination.end()) {
-      Destination & destin = d->second;
-      std::map<std::string,Category>::iterator
-                      cd = destin.sev.find("default");
-      if (cd != destin.sev.end()) {
-        lim = cd->second.limit;
-      }
-    }
-  }
-  if ( lim == NO_VALUE_SET ) {
-    if (dd != destination.end()) {
-      Destination & def_destin = dd->second;
-      std::map<std::string,Category>::iterator
-                      cdd = def_destin.sev.find("default");
-      if (cdd != def_destin.sev.end()) {
-        lim = cdd->second.limit;
-      }
-    }
-  }
-  return lim;
-} // sev_limit
 
-int
-MessageLoggerDefaults::
-sev_reportEvery(std::string const & dest, std::string const & cat)
-{
-  int re = NO_VALUE_SET;
-  std::map<std::string,Destination>::iterator d = destination.find(dest);
-  if (d != destination.end()) {
-    Destination & destin = d->second;
-    std::map<std::string,Category>::iterator c = destin.sev.find(cat);
-    if (c != destin.sev.end()) {
-      re = c->second.reportEvery;
-    }
-  }
-  std::map<std::string,Destination>::iterator dd = destination.find("default");
-  if ( re == NO_VALUE_SET ) {
-    if (dd != destination.end()) {
-      Destination & def_destin = dd->second;
-      std::map<std::string,Category>::iterator
-                      c = def_destin.sev.find(cat);
-      if (c != def_destin.sev.end()) {
-        re = c->second.reportEvery;
-      }
-    }
-  }
-  if ( re == NO_VALUE_SET ) {
-    if (d != destination.end()) {
-      Destination & destin = d->second;
-      std::map<std::string,Category>::iterator
-                      cd = destin.sev.find("default");
-      if (cd != destin.sev.end()) {
-        re = cd->second.reportEvery;
-      }
-    }
-  }
-  if ( re == NO_VALUE_SET ) {
-    if (dd != destination.end()) {
-      Destination & def_destin = dd->second;
-      std::map<std::string,Category>::iterator
-                      cdd = def_destin.sev.find("default");
-      if (cdd != def_destin.sev.end()) {
-        re = cdd->second.reportEvery;
-      }
-    }
-  }
-  return re;
-} // sev_reportEvery
-
-int
-MessageLoggerDefaults::
-sev_timespan(std::string const & dest, std::string const & cat)
-{
-  int tim = NO_VALUE_SET;
-  std::map<std::string,Destination>::iterator d = destination.find(dest);
-  if (d != destination.end()) {
-    Destination & destin = d->second;
-    std::map<std::string,Category>::iterator c = destin.sev.find(cat);
-    if (c != destin.sev.end()) {
-      tim = c->second.timespan;
-    }
-  }
-  std::map<std::string,Destination>::iterator dd = destination.find("default");
-  if ( tim == NO_VALUE_SET ) {
-    if (dd != destination.end()) {
-      Destination & def_destin = dd->second;
-      std::map<std::string,Category>::iterator
-                      c = def_destin.sev.find(cat);
-      if (c != def_destin.sev.end()) {
-        tim = c->second.timespan;
-      }
-    }
-  }
-  if ( tim == NO_VALUE_SET ) {
-    if (d != destination.end()) {
-      Destination & destin = d->second;
-      std::map<std::string,Category>::iterator
-                      cd = destin.sev.find("default");
-      if (cd != destin.sev.end()) {
-        tim = cd->second.timespan;
-      }
-    }
-  }
-  if ( tim == NO_VALUE_SET ) {
-    if (dd != destination.end()) {
-      Destination & def_destin = dd->second;
-      std::map<std::string,Category>::iterator
-                      cdd = def_destin.sev.find("default");
-      if (cdd != def_destin.sev.end()) {
-        tim = cdd->second.timespan;
-      }
-    }
-  }
-  return tim;
-} // sev_timespan
-
-
-
-
-} // end of namespace service
+  } // end of namespace service
 } // end of namespace mf
-
