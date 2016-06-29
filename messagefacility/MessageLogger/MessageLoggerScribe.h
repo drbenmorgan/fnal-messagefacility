@@ -50,9 +50,7 @@ namespace mf {
       void  configure_destinations();
 
       void  make_destinations(fhicl::ParameterSet const& dests,
-                              std::vector<std::string> const& dest_list,
-                              ELdestConfig::dest_config const config,
-                              bool const should_throw);
+                              ELdestConfig::dest_config const config);
 
       void  configure_dest(ELdestination& dest_ctrl,
                            fhicl::ParameterSet const& dest_pset);
@@ -82,9 +80,6 @@ namespace mf {
 
       cet::BasicPluginFactory pluginFactory_ {"mfPlugin"};
       cet::BasicPluginFactory pluginStatsFactory_ {"mfStatsPlugin"};
-
-      std::vector<std::string> fetch_ordinary_destinations   (fhicl::ParameterSet& pset);
-      std::vector<std::string> fetch_statistics_destinations (fhicl::ParameterSet& pset);
 
       std::string createId(std::set<std::string>& existing_ids,
                            std::string const& type,

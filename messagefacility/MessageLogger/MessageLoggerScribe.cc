@@ -15,6 +15,7 @@
 #include "messagefacility/MessageService/ThreadQueue.h"
 #include "messagefacility/Utilities/exception.h"
 
+#include <algorithm>
 #include <cassert>
 #include <iostream>
 
@@ -25,6 +26,47 @@ using vstring = std::vector<std::string>;
 namespace {
   bool constexpr throw_on_clean_slate {true};
   bool constexpr no_throw_on_clean_slate {false};
+
+  auto default_ordinary_destination()
+  {
+    std::string const dest {"cerr"};
+    std::string const config {
+      "type: file "
+        "filename: \"cerr.log\" "
+        "threshold: INFO\n"
+        "categories: { "
+        "  default: { "
+        "    limit: 10000000"
+        "  } "
+        "}"
+        };
+    fhicl::ParameterSet pset;
+    make_ParameterSet(config, pset);
+    fhicl::ParameterSet result;
+    result.put(dest, pset);
+    return result;
+  }
+
+  auto default_statistics_destination(fhicl::ParameterSet const& ordinaryDests)
+  {
+    // Provide default statistics destinations but only if there is
+    // also no list of ordinary destinations.  (If a configuration
+    // specifies destinations, and no statistics, assume that is
+    // what the user wants.)
+    fhicl::ParameterSet result;
+    if (ordinaryDests.is_empty()) {
+      fhicl::ParameterSet pset;
+      std::string const dest {"cerr_stats"};
+      std::string const config {
+        "type: file "
+          "filename: \"cerr.log\" "
+          "threshold: WARNING"
+          };
+      fhicl::make_ParameterSet(config, pset);
+      result.put(dest, pset);
+    }
+    return result;
+  }
 }
 
 namespace mf {
@@ -419,7 +461,7 @@ namespace mf {
       // use already-specified configuration if destination exists
       std::set<std::string> tmpIdSet;
       std::string const outputId = createId(tmpIdSet, "file", actual_filename);
-      if (duplicateDestination(outputId, ELdestConfig::FWKJOBREPORT, no_throw_on_clean_slate)) return;
+      if (duplicateDestination(outputId, ELdestConfig::FWKJOBREPORT, false)) return;
 
       ELdestination& dest = admin_->attach(outputId, make_unique<ELfwkJobReport>(actual_filename));
 
@@ -427,29 +469,32 @@ namespace mf {
     }
 
     //=============================================================================
-    void MessageLoggerScribe::configure_destinations()
+    void
+    MessageLoggerScribe::configure_destinations()
     {
-      auto dests_pset = jobConfig_->get<fhicl::ParameterSet>("destinations", {});
-      auto origDests_pset = dests_pset;
+      auto ordinaryDests = jobConfig_->get<fhicl::ParameterSet>("destinations",
+                                                                default_ordinary_destination());
+      ordinaryDests.erase("statistics");
 
-      vstring const& ordinaryDestinations = fetch_ordinary_destinations(dests_pset);
-      make_destinations(dests_pset, ordinaryDestinations , ELdestConfig::ORDINARY, no_throw_on_clean_slate);
+      // Dial down the early destination once the ordinary
+      // destinations are filled.
+      earlyDest_.setThreshold(ELhighestSeverity);
 
-      vstring const& statisticsDestinations = fetch_statistics_destinations(origDests_pset);
-      make_destinations(origDests_pset, statisticsDestinations, ELdestConfig::STATISTICS, no_throw_on_clean_slate);
+      auto statDests = jobConfig_->get<fhicl::ParameterSet>("destinations.statistics",
+                                                            default_statistics_destination(ordinaryDests));
+
+      make_destinations(ordinaryDests, ELdestConfig::ORDINARY);
+      make_destinations(statDests, ELdestConfig::STATISTICS);
     }
 
     //=============================================================================
     void
-    MessageLoggerScribe::
-    make_destinations(fhicl::ParameterSet const& dests,
-                      vstring const& dest_list,
-                      ELdestConfig::dest_config const configuration,
-                      bool const should_throw)
+    MessageLoggerScribe::make_destinations(fhicl::ParameterSet const& dests,
+                                           ELdestConfig::dest_config const configuration)
     {
       std::set<std::string> ids;
 
-      for(auto const& psetname : dest_list) {
+      for (auto const& psetname : dests.get_pset_names()) {
 
         // Retrieve the destination pset object
         auto const& dest_pset = dests.get<fhicl::ParameterSet>(psetname);
@@ -465,7 +510,7 @@ namespace mf {
         std::string const& outputId = createId(ids, dest_type, psetname, dest_pset, throw_on_duplicate_id);
 
         // Use previously defined configuration of duplicated destination
-        if (duplicateDestination(outputId, configuration, should_throw)) continue;
+        if (duplicateDestination(outputId, configuration, no_throw_on_clean_slate)) continue;
 
         std::string const& libspec = dest_type;
         auto& plugin_factory =
@@ -520,9 +565,9 @@ namespace mf {
           return;
         }
 
-        std::string::size_type j = s.find('|',i);
+        auto const j = s.find('|',i);
         std::string cat = trim(s.substr(i,j-i));
-        cats.push_back (cat);
+        cats.push_back(cat);
         i = j;
         while ( (i < npos) && (s[i] == '|') ) ++i;
         // the above handles cases of || and also | at end of string
@@ -542,76 +587,6 @@ namespace mf {
     }
 
     //=============================================================================
-    vstring
-    MessageLoggerScribe::
-    fetch_ordinary_destinations(fhicl::ParameterSet& dests) {
-
-      vstring const& keyList = dests.get_pset_names();
-
-      vstring destinations;
-      cet::copy_if_all(keyList,
-                       std::back_inserter(destinations),
-                       [](auto const& dest){
-                         return dest != "statistics";
-                       });
-
-      // Fill with default (and augment pset) if destinations is empty
-      if(destinations.empty()) {
-        std::string const dest {"cerr"};
-        destinations.push_back(dest);
-        std::string const config {
-          "type: file "
-            "filename: \"cerr.log\" "
-            "threshold: INFO\n"
-            "categories: { "
-            "  default: { "
-            "    limit: 10000000"
-            "  } "
-            "}"
-            };
-        fhicl::ParameterSet pset;
-        make_ParameterSet(config, pset);
-        dests.put(dest, pset);
-      }
-
-      // Dial down the early destination if other dest's are supplied:
-      earlyDest_.setThreshold(ELhighestSeverity);
-
-      return destinations;
-    }
-
-    //=============================================================================
-    vstring
-    MessageLoggerScribe::
-    fetch_statistics_destinations(fhicl::ParameterSet& dests){
-
-      auto ordinaryDests = dests;
-      dests = ordinaryDests.get<fhicl::ParameterSet>("statistics", {});
-      vstring statsDests = dests.get_pset_names();
-
-      // Read the list of statistics destinations from hardwired
-      // defaults, but only if there is also no list of ordinary
-      // destinations.  (If a FHiCL file specifies destinations, and
-      // no statistics, assume that is what the user wants.)
-      if (statsDests.empty() && ordinaryDests.get_pset_names().empty()) {
-        std::string const dest {"cerr_stats"};
-        statsDests.push_back(dest);
-        std::string const config {
-          "type: file "
-            "filename: \"cerr.log\" "
-            "threshold: WARNING"
-            };
-        fhicl::ParameterSet tmp;
-        tmp.put("type", "file");
-        tmp.put("filename", "cerr.log");
-        tmp.put("threshold", "WARNING");
-        dests.put(dest, tmp);
-      }
-
-      return statsDests;
-    }
-
-    //=============================================================================
     std::string
     MessageLoggerScribe::createId(std::set<std::string>& existing_ids,
                                   std::string const& type,
@@ -619,12 +594,9 @@ namespace mf {
                                   fhicl::ParameterSet const& pset,
                                   bool const should_throw )
     {
-      std::string output_id;
-      if (type == "cout" || type == "cerr" || type == "syslog") {
-        output_id = type;
-      }
-      else {
-        output_id = type+":"+pset.get<std::string>("filename", file_name);
+      std::string output_id {type};
+      if (!(type == "cout" || type == "cerr" || type == "syslog")) {
+        output_id += ":"+pset.get<std::string>("filename", file_name);
       }
 
       // Emplace and check that output_id doesn't already exist

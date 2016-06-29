@@ -24,7 +24,7 @@ endforeach()
 
 cet_test(messagefacility_statistics_duplicateDest_t HANDBUILT
   TEST_EXEC ELdestinationTester
-  TEST_ARGS -c fhicl-files/statistics_duplicateDest.fcl
+  TEST_ARGS -c statistics_duplicateDest.fcl
   DATAFILES
   fhicl-files/statistics_duplicateDest.fcl
   TEST_PROPERTIES WILL_FAIL TRUE
