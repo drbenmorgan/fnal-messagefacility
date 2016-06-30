@@ -14,6 +14,10 @@
 
 #include <memory>
 
+namespace fhiclcpp {
+  class ParameterSet;
+}
+
 namespace mf {
 
   // ----------------------------------------------------------------------
@@ -27,11 +31,8 @@ namespace mf {
     class ELfwkJobReport : public ELdestination {
     public:
 
-      ELfwkJobReport();
-      ELfwkJobReport(std::ostream& os, bool emitAtStart = true);
-      ELfwkJobReport(std::string const& fileName, bool emitAtStart = true);
-
-      virtual ~ELfwkJobReport();
+      ELfwkJobReport(std::string const& fileName,
+                     fhicl::ParameterSet const& pset);
 
       // Copy c'tor/assignment not allowed
       ELfwkJobReport(ELfwkJobReport const&) = delete;
@@ -43,8 +44,6 @@ namespace mf {
 
     protected:
 
-      void emit(std::string const& s, bool nl = false);
-
       void summarization (std::string const& fullTitle,
                           std::string const& sumLines,
                           ELcontextSupplier const&) override;
@@ -54,9 +53,8 @@ namespace mf {
       void flush(ELcontextSupplier const&) override;
       void finish() override;
 
-      std::unique_ptr<cet::ostream_handle> osh;
-      int charsOnLine;
-      ELextendedID xid;
+      std::unique_ptr<cet::ostream_handle> osh_;
+      ELextendedID xid_ {};
 
     };  // ELfwkJobReport
 

@@ -41,6 +41,7 @@ namespace mf {
         auto const& dest_type = pset.get<std::string>("type","file");
         ELdestConfig::checkType(dest_type, ELdestConfig::STATISTICS);
       }
+      configure(pset);
     }
 
     //=============================================================================
@@ -69,7 +70,7 @@ namespace mf {
       if (format.preambleMode) {
 
         //Accounts for newline @ the beginning of the std::string
-        if (first == '\n' || (charsOnLine + static_cast<int>(s.length())) > lineLength) {
+        if (first == '\n' || (charsOnLine + static_cast<int>(s.length())) > lineLength_) {
           charsOnLine = 0;
           if (second != ' ') {
             os << ' ';
@@ -384,29 +385,14 @@ namespace mf {
       stats.limits.setLimit(s, n);
     }
 
-    void ELdestination::setInterval(ELseverityLevel const sv, int const interval)
-    {
-      stats.limits.setInterval(sv, interval);
-    }
-
     void ELdestination::setInterval(std::string const& s, int const interval)
     {
       stats.limits.setInterval(s, interval);
     }
 
-    void ELdestination::setLimit(ELseverityLevel const sv, int const n)
-    {
-      stats.limits.setLimit(sv, n);
-    }
-
     void ELdestination::setTimespan(std::string const& s, int const n)
     {
       stats.limits.setTimespan(s, n);
-    }
-
-    void ELdestination::setTimespan(ELseverityLevel const sv, int const n)
-    {
-      stats.limits.setTimespan(sv, n);
     }
 
     void ELdestination::formatSuppress(flag_enum const FLAG)
@@ -451,19 +437,6 @@ namespace mf {
     }
 
     // ----------------------------------------------------------------------
-    // Output format options:
-    // ----------------------------------------------------------------------
-
-    int ELdestination::setLineLength (int const len)
-    {
-      int const temp = lineLength;
-      lineLength = len;
-      return temp;
-    }
-
-    int ELdestination::getLineLength () const { return lineLength; }
-
-    // ----------------------------------------------------------------------
     // Protected helper methods:
     // ----------------------------------------------------------------------
 
@@ -476,6 +449,92 @@ namespace mf {
       } else {
         return false;
       }
+    }
+
+    void
+    ELdestination::configure(fhicl::ParameterSet const& dest_pset)
+    {
+      // Defaults:
+      std::vector<std::string> const severities {"WARNING", "INFO", "ERROR", "DEBUG"};
+
+      // grab the pset for category list for this destination
+      auto const& cats_pset = dest_pset.get<fhicl::ParameterSet>("categories", {});
+
+      // grab list of categories
+      auto categories = cats_pset.get_pset_names();
+      auto erase_from = std::remove_if(categories.begin(), categories.end(),
+                                       [](auto const& category) {
+                                         return category == "default";
+                                       });
+      categories.erase(erase_from, categories.cend());
+
+      // default threshold for the destination grab this destination's
+      // default limit/interval/timespan:
+      auto const& default_category_pset = cats_pset.get<fhicl::ParameterSet>("default", {});
+
+      int constexpr two_billion {2000'000'000};
+      int constexpr NO_VALUE_SET {-45654};
+
+      int default_limit {NO_VALUE_SET};
+      if (default_category_pset.get_if_present<int>("limit", default_limit)) {
+        if (default_limit < 0) default_limit = two_billion;
+        setLimit("*", default_limit);
+      }
+
+      int default_interval {NO_VALUE_SET};
+      if (default_category_pset.get_if_present<int>("reportEvery", default_interval)) {
+        // interval <= 0 implies no reporting
+        setInterval("*", default_interval);
+      }
+
+      int default_timespan {NO_VALUE_SET};
+      if (default_category_pset.get_if_present<int>("timespan", default_timespan)) {
+        if (default_timespan < 0) default_timespan = two_billion;
+        setTimespan("*", default_timespan);
+      }
+
+      auto const& dest_threshold = dest_pset.get<std::string>("threshold", "INFO");
+      ELseverityLevel const threshold_sev {dest_threshold};
+      setThreshold(threshold_sev);
+
+      // establish this destination's limit/interval/timespan for each category:
+      for (auto const& category : categories) {
+        auto const& category_pset = cats_pset.get<fhicl::ParameterSet>(category, default_category_pset);
+
+        int limit    = category_pset.get<int>("limit"      , default_limit);
+        int interval = category_pset.get<int>("reportEvery", default_interval);
+        int timespan = category_pset.get<int>("timespan"   , default_timespan);
+
+        if (limit != NO_VALUE_SET)  {
+          if (limit < 0) limit = two_billion;
+          setLimit(category, limit);
+        }
+        if (interval != NO_VALUE_SET)  {
+          setInterval(category, interval);
+        }
+        if (timespan != NO_VALUE_SET)  {
+          if (timespan < 0) timespan = two_billion;
+          setTimespan(category, timespan);
+        }
+      }  // for
+
+      // establish this destination's linebreak policy:
+      if (dest_pset.get<bool>("noLineBreaks", false)) {
+        lineLength_ = 32000;
+      }
+      else {
+        int constexpr lenDef {80};
+        lineLength_ = dest_pset.get<int>("lineLength", lenDef);
+      }
+
+      if (dest_pset.get<bool>("noTimeStamps", false)) {
+        formatSuppress(TIMESTAMP);
+      }
+
+      if (dest_pset.get<bool>("useMilliseconds", false)) {
+        formatInclude(MILLISECOND);
+      }
+
     }
 
   } // end of namespace service

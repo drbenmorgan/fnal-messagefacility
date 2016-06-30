@@ -45,17 +45,12 @@ namespace mf {
       void triggerFJRmessageSummary(std::map<std::string, double> & sm);
 
       // --- handle details of configuring via a ParameterSet:
-      void  configure_errorlog();
-      void  configure_fwkJobReports();
-      void  configure_destinations();
+      void configure_errorlog();
+      void configure_fwkJobReports();
 
-      void  make_destinations(fhicl::ParameterSet const& dests,
-                              ELdestConfig::dest_config const config);
-
-      void  configure_dest(ELdestination& dest_ctrl,
-                           fhicl::ParameterSet const& dest_pset);
-
-      void  configure_default_fwkJobReport(ELdestination& dest_ctrl);
+      void fetchDestinations();
+      void makeDestinations(fhicl::ParameterSet const& dests,
+                            ELdestConfig::dest_config const config);
 
       // --- util function to trim leading and trailing whitespaces from a string
       std::string trim(std::string const& src);

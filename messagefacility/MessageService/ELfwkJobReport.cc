@@ -18,7 +18,7 @@
 //
 // ----------------------------------------------------------------------
 
-
+#include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageService/ELfwkJobReport.h"
 #include "messagefacility/Utilities/ErrorObj.h"
 
@@ -32,177 +32,113 @@ namespace mf {
     // Constructors:
     // ----------------------------------------------------------------------
 
-    ELfwkJobReport::ELfwkJobReport()
-      : ELdestination( )
-      , osh          ( std::make_unique<cet::ostream_observer>(std::cerr) )
-      , charsOnLine  (0)
-      , xid          ( )
+    ELfwkJobReport::ELfwkJobReport(std::string const& fileName,
+                                   fhicl::ParameterSet const& pset)
+      : ELdestination{pset}
+      , osh_{std::make_unique<cet::ostream_owner>(fileName, std::ios::app)}
     {
-
-      // Opening xml tag
-      emit( "<FrameworkJobReport>\n", true );
-
-    }  // ELfwkJobReport()
-
-
-    ELfwkJobReport::ELfwkJobReport( std::ostream & os_ , bool /*emitAtStart*/ )
-      : ELdestination       ( )
-      , osh                 ( std::make_unique<cet::ostream_observer>(os_) )
-      , charsOnLine         (0)
-      , xid                 ( )
-    {
-
-      // Opening xml tag
-      emit( "<FrameworkJobReport>\n\n", true );
-
-    }  // ELfwkJobReport()
-
-
-    ELfwkJobReport::ELfwkJobReport( const std::string & fileName, bool /*emitAtStart*/ )
-      : ELdestination       ( )
-      , osh                 ( std::make_unique<cet::ostream_owner>(fileName, std::ios::app) )
-      , charsOnLine         (0)
-      , xid                 ( )
-    {
-
-      if ( osh && osh->stream() )  {
-        // Opening xml tag
-        emit( "<FrameworkJobReport>\n");
+      if (osh_ && osh_->stream())  {
+        *osh_ << "<FrameworkJobReport>\n";
       } else  {
-        osh = std::make_unique<cet::ostream_observer>(std::cerr);
-        // Opening xml tag
-        emit( "<FrameworkJobReport>\n\n" );
+        osh_ = std::make_unique<cet::ostream_observer>(std::cerr);
+        *osh_ << "<FrameworkJobReport>\n\n";
       }
+    }
 
-    }  // ELfwkJobReport()
-
-
-    ELfwkJobReport::~ELfwkJobReport()  {}
 
     // ----------------------------------------------------------------------
     // Methods invoked by the ELadministrator:
     // ----------------------------------------------------------------------
 
-    void ELfwkJobReport::log( mf::ErrorObj & msg, ELcontextSupplier const&)
+    void ELfwkJobReport::log(mf::ErrorObj& msg, ELcontextSupplier const&)
     {
-      xid = msg.xid();
+      xid_ = msg.xid();
 
-      // Change log 1:  React ONLY to category FwkJob
-      if (xid.id != "FwkJob") return;
+      if (xid_.id != "FwkJob") return;
 
-      // See if this message is to be acted upon
-      // (this is redundant if we are reacting only to FwkJob)
-      // and add it to limits table if it was not already present:
-      //
+      // See if this message is to be acted upon (this is redundant if
+      // we are reacting only to FwkJob) and add it to limits table if
+      // it was not already present:
       if ( msg.xid().severity < threshold  )  return;
 
-      if ( (xid.id == "BeginningJob")        ||
-           (xid.id == "postBeginJob")        ||
-           (xid.id == "preEventProcessing")  ||
-           (xid.id == "preModule")           ||
-           (xid.id == "postModule")          ||
-           (xid.id == "postEventProcessing") ||
-           (xid.id == "postEndJob")         ) return;
-      if ( thisShouldBeIgnored(xid.module)  ) return;
+      if ( (xid_.id == "BeginningJob")        ||
+           (xid_.id == "postBeginJob")        ||
+           (xid_.id == "preEventProcessing")  ||
+           (xid_.id == "preModule")           ||
+           (xid_.id == "postModule")          ||
+           (xid_.id == "postEventProcessing") ||
+           (xid_.id == "postEndJob")         ) return;
+      if ( thisShouldBeIgnored(xid_.module)  ) return;
       if ( !stats.limits.add( msg.xid() ) ) return;
 
       // Output each item in the message:
-      //
       if (format.want(TEXT)) {
-        ELlist_string::const_iterator it;
-        for ( it = msg.items().begin();  it != msg.items().end();  ++it )  {
-          emit( *it);
-          emit( "\n" );
+        for (auto const& item : msg.items()) {
+          *osh_ << item << '\n';
         }
       }
 
-      msg.setReactedTo( true );
-
+      msg.setReactedTo(true);
     }  // log()
 
-    void ELfwkJobReport::finish()   {
-      // closing xml tag
-      *osh << "</FrameworkJobReport>\n";
+    void ELfwkJobReport::finish()
+    {
+      *osh_ << "</FrameworkJobReport>\n";
     }
-
-    // Remainder are from base class.
-
-
-    // ----------------------------------------------------------------------
-    // Output methods:
-    // ----------------------------------------------------------------------
-
-    void ELfwkJobReport::emit( const std::string & s, bool /*nl*/ )  {
-
-      if (s.empty()) return;
-
-      *osh << s;
-
-    }  // emit()
-
 
     // ----------------------------------------------------------------------
     // Summary output:
     // ----------------------------------------------------------------------
 
-    void ELfwkJobReport::summarization( const std::string & fullTitle,
-                                        const std::string & sumLines,
-                                        ELcontextSupplier const&) {
-      const int titleMaxLength( 40 );
+    void ELfwkJobReport::summarization(std::string const& fullTitle,
+                                       std::string const& sumLines,
+                                       ELcontextSupplier const&)
+    {
+      constexpr int titleMaxLength {40};
 
-      // title:
-      //
-      std::string title( fullTitle, 0, titleMaxLength );
-      int q = (lineLength - title.length() - 2) / 2;
-      std::string line(q, '=');
-      emit( "", true );
-      emit( line );
-      emit( " " );
-      emit( title );
-      emit( " " );
-      emit( line, true );
+      // header:
+      std::string const title(fullTitle, 0, titleMaxLength);
+      int q = (lineLength_ - title.length() - 2) / 2;
+      std::string const line(q, '=');
+      auto& os = *osh_;
+      os << '\n'
+         << line << ' '
+         << title << ' '
+         << line << '\n';
 
       // body:
-      //
-      *osh << sumLines;
+      os << sumLines;
 
       // finish:
-      //
-      emit( "", true );
-      emit( std::string(lineLength, '='), true );
-
-    }  // summarization()
-
+      os << '\n'
+         << std::string(lineLength_,'=')
+         << '\n';
+    }
 
     // ----------------------------------------------------------------------
     // Changing ostream:
     // ----------------------------------------------------------------------
 
-    void ELfwkJobReport::changeFile (std::ostream & os,
-                                     ELcontextSupplier const&)
+    void ELfwkJobReport::changeFile(std::ostream& os, ELcontextSupplier const&)
     {
-      osh = std::make_unique<cet::ostream_observer>(os);
-      emit("\n=======================================================", true);
-      emit("\nError Log changed to this stream\n" );
-      emit("\n=======================================================\n", true);
+      osh_ = std::make_unique<cet::ostream_observer>(os);
+      *osh_ << "\n=======================================================\n"
+        << "\nError Log changed to this stream\n"
+        << "\n=======================================================\n\n";
     }
 
-    void ELfwkJobReport::changeFile (std::string const& filename,
-                                     ELcontextSupplier const&)
+    void ELfwkJobReport::changeFile(std::string const& filename, ELcontextSupplier const&)
     {
-      osh = std::make_unique<cet::ostream_owner>(filename, std::ios::app);
-      emit("\n=======================================================", true);
-      emit("\nError Log changed to this file\n");
-      emit("\n=======================================================\n", true);
+      osh_ = std::make_unique<cet::ostream_owner>(filename, std::ios::app);
+      *osh_ << "\n=======================================================\n"
+           << "\nError Log changed to this file\n"
+           << "\n=======================================================\n\n";
     }
 
-    void ELfwkJobReport::flush(ELcontextSupplier const&)  {
-      osh->stream().flush();
+    void ELfwkJobReport::flush(ELcontextSupplier const&)
+    {
+      osh_->stream().flush();
     }
-
-
-    // ----------------------------------------------------------------------
-
 
   } // end of namespace service
 } // end of namespace mf

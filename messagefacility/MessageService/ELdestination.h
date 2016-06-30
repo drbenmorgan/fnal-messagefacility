@@ -63,23 +63,11 @@ namespace mf {
       virtual void noTerminationSummary(){}
 
       void setThreshold(ELseverityLevel sv);
-      void setLimit(ELseverityLevel sv, int n);
-      void setInterval(ELseverityLevel sv, int interval);
-      void setTimespan(ELseverityLevel sv, int n);
-
-      void setLimit(std::string const& s, int n);
-      void setInterval(std::string const& s, int interval);
-      void setTimespan(std::string const& s, int n);
-
-      int setLineLength(int len);
-
-      bool resetStats() const { return stats.reset; }
-      void setResetStats(bool const flag) { stats.reset = flag; }
-      void userWantsStats() { enableStats = true; }
-      virtual void wipe();
-
       void formatSuppress(flag_enum);
       void formatInclude(flag_enum);
+      void userWantsStats() { enableStats = true; }
+      bool resetStats() const { return stats.reset; }
+      virtual void wipe();
 
       virtual void summary(ELcontextSupplier const&);
 
@@ -112,18 +100,23 @@ namespace mf {
       virtual void changeFile(std::string const& filename, ELcontextSupplier const&);
       virtual void flush(ELcontextSupplier const&);
 
-    private:
-
-      virtual int getLineLength() const;
-
     protected:
 
+      // This block of protected data is icky.  Should find a way to
+      // make it private.
+      std::size_t lineLength_ {80ull};
       MsgStatistics stats;
       MsgFormatSettings format;
-
       ELseverityLevel threshold {ELzeroSeverity};
+
+    private:
+
+      void configure(fhicl::ParameterSet const&);
+      void setLimit(std::string const& s, int n);
+      void setInterval(std::string const& s, int interval);
+      void setTimespan(std::string const& s, int n);
+
       std::string indent {std::string(6,' ')};
-      std::size_t lineLength {80ull};
       std::size_t charsOnLine {};
       ELset_string respondToThese {};
       bool ignoreMostModules {false};

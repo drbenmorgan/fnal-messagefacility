@@ -67,7 +67,7 @@ namespace mf {
 
       // title:
       std::string const title( fullTitle, 0, titleMaxLength );
-      int const q = (lineLength - title.length() - 2) / 2;
+      int const q = (lineLength_ - title.length() - 2) / 2;
       std::string line(q, '=');
       emit(osh->stream(), "", true);
       emit(osh->stream(), line);
@@ -81,7 +81,7 @@ namespace mf {
 
       // finish:
       emit(osh->stream(), "", true );
-      emit(osh->stream(), std::string(lineLength, '='), true );
+      emit(osh->stream(), std::string(lineLength_, '='), true );
 
     }  // summarization()
 
