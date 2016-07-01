@@ -20,6 +20,7 @@
 #include <cassert>
 #include <iostream>
 
+using namespace std::string_literals;
 using std::make_unique;
 using std::string;
 using vstring = std::vector<std::string>;
@@ -28,23 +29,22 @@ namespace {
   bool constexpr throw_on_clean_slate {true};
   bool constexpr no_throw_on_clean_slate {false};
 
-  auto default_destination_config()
+  auto default_destinations_config()
   {
-    std::string const dest {"cerr"};
     std::string const config {
-      "type: file "
-        "filename: \"cerr.log\" "
-        "threshold: INFO\n"
-        "categories: { "
-        "  default: { "
-        "    limit: 10000000"
-        "  } "
+      "cerr: {"
+        "  type: file"
+        "  filename: \"cerr.log\""
+        "  categories: {"
+        "    default: {"
+        "      limit: 10000000"
+        "    }"
+        "  }"
         "}"
-        };
-    fhicl::ParameterSet pset;
-    make_ParameterSet(config, pset);
+    };
+
     fhicl::ParameterSet result;
-    result.put(dest, pset);
+    fhicl::make_ParameterSet(config, result);
     return result;
   }
 
@@ -54,17 +54,17 @@ namespace {
     // also no list of ordinary destinations.  (If a configuration
     // specifies destinations, and no statistics, assume that is
     // what the user wants.)
+
     fhicl::ParameterSet result;
     if (ordinaryDests.is_empty()) {
-      fhicl::ParameterSet pset;
-      std::string const dest {"cerr_stats"};
       std::string const config {
-        "type: file "
-          "filename: \"cerr.log\" "
-          "threshold: WARNING"
-          };
-      fhicl::make_ParameterSet(config, pset);
-      result.put(dest, pset);
+        "cerr_stats: {"
+          "  type: file"
+          "  filename: \"cerr.log\""
+          "  threshold: WARNING"
+          "}"
+      };
+      fhicl::make_ParameterSet(config, result);
     }
     return result;
   }
@@ -72,20 +72,21 @@ namespace {
   auto default_fwkJobReport_config()
   {
     std::string const config {
-      "categories: { "
-        "default: { "
-        "  limit: -1 "
-        "} "
-        "FwkJob: { "
-        "  limit: 10000000"
-        "} "
-        "} "
-        "lineLength: 32000 "
+      "categories: {"
+        "  default: {"
+        "    limit: -1"
+        "  }"
+        "  FwkJob: {"
+        "    limit: 10000000"
+        "  }"
+        "}"
+        "lineLength: 32000"
         "noTimeStamps: true"
         };
-    fhicl::ParameterSet pset;
-    fhicl::make_ParameterSet(config, pset);
-    return pset;
+
+    fhicl::ParameterSet result;
+    fhicl::make_ParameterSet(config, result);
+    return result;
   }
 
 }
@@ -382,16 +383,30 @@ namespace mf {
     void
     MessageLoggerScribe::fetchDestinations()
     {
-      auto ordinaryDests = jobConfig_->get<fhicl::ParameterSet>("destinations",
-                                                                default_destination_config());
+      // Below, we do not use the
+      //
+      //    auto ps = jobConfig_->get(key, default_config());
+      //
+      // construction because "default_config()" will be called
+      // everytime even if the 'key' exists.  The has the side effect
+      // of unnecessarily bloating the ParameterSetRegistry.  Instead,
+      // we use the ParameterSet::get_if_present function and only
+      // call default_config() if the key does not exist in the
+      // parameter set.
+
+      fhicl::ParameterSet ordinaryDests;
+      if (!jobConfig_->get_if_present("destinations", ordinaryDests))
+        ordinaryDests = default_destinations_config();
+
       ordinaryDests.erase("statistics");
 
       // Dial down the early destination once the ordinary
       // destinations are filled.
       earlyDest_.setThreshold(ELhighestSeverity);
 
-      auto statDests = jobConfig_->get<fhicl::ParameterSet>("destinations.statistics",
-                                                            default_statistics_config(ordinaryDests));
+      fhicl::ParameterSet statDests;
+      if (!jobConfig_->get_if_present("destinations.statistics", statDests))
+        statDests = default_statistics_config(ordinaryDests);
 
       makeDestinations(ordinaryDests, ELdestConfig::ORDINARY);
       makeDestinations(statDests, ELdestConfig::STATISTICS);
