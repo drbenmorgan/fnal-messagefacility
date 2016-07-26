@@ -1,3 +1,8 @@
+# - When user supplies "-DALT_CMAKE" use the non-CET/UPS system
+if(ALT_CMAKE)
+  include(altCMakeLists.cmake)
+else()
+
 cet_make_library(
   LIBRARY_NAME
   MF_Utilities
@@ -29,3 +34,5 @@ cet_make_library(
 # install files
 install_headers()
 install_source()
+
+endif() # ALT_CMAKE

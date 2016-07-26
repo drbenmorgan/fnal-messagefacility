@@ -1,3 +1,8 @@
+# - When user supplies "-DALT_CMAKE" use the non-CET/UPS system
+if(ALT_CMAKE)
+  include(altCMakeLists.cmake)
+else()
+
 cet_make_library(
   LIBRARY_NAME MF_MessageService
   SOURCE
@@ -24,3 +29,5 @@ add_subdirectory(plugins)
 
 install_headers()
 install_source()
+
+endif() # ALT_CMAKE

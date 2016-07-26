@@ -1,3 +1,8 @@
+# - When user supplies "-DALT_CMAKE" use the non-CET/UPS system
+if(ALT_CMAKE)
+  include(altCMakeLists.cmake)
+else()
+
 include(BasicPlugin)
 
 cet_make_library(
@@ -16,3 +21,5 @@ basic_plugin(syslog mfPlugin MF_MessageLogger)
 basic_plugin(cout mfStatsPlugin MF_MessageService)
 basic_plugin(cerr mfStatsPlugin MF_MessageService)
 basic_plugin(file mfStatsPlugin MF_FileFormat)
+
+endif() # ALT_CMAKE
