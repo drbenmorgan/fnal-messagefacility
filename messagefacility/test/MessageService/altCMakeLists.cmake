@@ -1,8 +1,3 @@
-# - When user supplies "-DALT_CMAKE" use the non-CET/UPS system
-if(ALT_CMAKE)
-  include(altCMakeLists.cmake)
-else()
-
 # ======================================================================
 #
 # Testing script
@@ -19,7 +14,7 @@ foreach (filename ${testConfigFiles})
   string(REGEX REPLACE "(.*/fhicl-files/)(.*)(.fcl)" "\\2" testname ${filename})
 
   cet_test(messagefacility_${testname}_t HANDBUILT
-    TEST_EXEC ELdestinationTester
+    TEST_EXEC $<TARGET_FILE:ELdestinationTester>
     TEST_ARGS -c ${filename}
     DATAFILES
     ${filename}
@@ -28,11 +23,9 @@ foreach (filename ${testConfigFiles})
 endforeach()
 
 cet_test(messagefacility_statistics_duplicateDest_t HANDBUILT
-  TEST_EXEC ELdestinationTester
+  TEST_EXEC $<TARGET_FILE:ELdestinationTester>
   TEST_ARGS -c statistics_duplicateDest.fcl
   DATAFILES
   fhicl-files/statistics_duplicateDest.fcl
   TEST_PROPERTIES WILL_FAIL TRUE
   )
-
-endif() # ALT_CMAKE
