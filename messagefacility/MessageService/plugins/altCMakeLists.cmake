@@ -14,3 +14,20 @@ basic_plugin(syslog mfPlugin MF_MessageLogger)
 basic_plugin(cout mfStatsPlugin MF_MessageService)
 basic_plugin(cerr mfStatsPlugin MF_MessageService)
 basic_plugin(file mfStatsPlugin MF_FileFormat)
+
+# Install plugins - messy because names are derived
+# Do NOT want install in basic_plugin because that couples it to
+# the install scheme, as well as requiring a workaround "NO_INSTALL"
+# option. KISS in action...
+# AT present, don't export plugins as don't expect to link to them?
+install(
+  TARGETS
+    messagefacility_MessageService_plugins_cerr_mfPlugin
+    messagefacility_MessageService_plugins_cerr_mfStatsPlugin
+    messagefacility_MessageService_plugins_cout_mfPlugin
+    messagefacility_MessageService_plugins_cout_mfStatsPlugin
+    messagefacility_MessageService_plugins_file_mfPlugin
+    messagefacility_MessageService_plugins_file_mfStatsPlugin
+    messagefacility_MessageService_plugins_syslog_mfPlugin
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  )
