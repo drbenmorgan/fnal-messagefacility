@@ -39,6 +39,7 @@ find_package(fhiclcpp 3.1.0 REQUIRED)
 find_package(cetlib 1.17 REQUIRED)
 find_package(SQLite 3.8.5.0 REQUIRED)
 find_package(Boost 1.50.0 REQUIRED thread program_options filesystem)
+find_package(Threads REQUIRED)
 
 # The environment has been established, now generate the Makefiles.
 
