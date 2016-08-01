@@ -4,8 +4,7 @@
 // ----------------------------------------------------------------------
 //
 // ELdestination   is a virtual class defining the interface to a
-//                 destination.  Concrete classes derived from this include
-//                 ELoutput and ELstatistics.  The ELadministrator owns
+//                 destination.  The ELadministrator owns
 //                 a list of ELdestination* as well as the objects those
 //                 list elements point to.
 //
@@ -36,10 +35,6 @@ namespace cet {
 namespace mf {
   namespace service {
 
-    // ----------------------------------------------------------------------
-    // ELdestination:
-    // ----------------------------------------------------------------------
-
     class ELdestination {
     public:
 
@@ -52,24 +47,19 @@ namespace mf {
 
       virtual ~ELdestination() noexcept = default;
 
-      virtual void log(mf::ErrorObj& msg, ELcontextSupplier const&);
 
+      virtual void finish();
+      virtual void log(mf::ErrorObj& msg, ELcontextSupplier const&);
+      virtual void noTerminationSummary(){}
       virtual void summarization(std::string const& title,
                                  std::string const& sumLines,
                                  ELcontextSupplier const&);
-
-      virtual void finish();
-
-      virtual void noTerminationSummary(){}
-
-      void setThreshold(ELseverityLevel sv);
-      void formatSuppress(flag_enum);
-      void formatInclude(flag_enum);
-      void userWantsStats() { enableStats = true; }
-      bool resetStats() const { return stats.reset; }
+      virtual void summary(ELcontextSupplier const&);
       virtual void wipe();
 
-      virtual void summary(ELcontextSupplier const&);
+      void setThreshold(ELseverityLevel sv);
+      void userWantsStats() { enableStats = true; }
+      bool resetStats() const { return stats.reset; }
 
     protected:
 
@@ -104,17 +94,14 @@ namespace mf {
 
       // This block of protected data is icky.  Should find a way to
       // make it private.
-      std::size_t lineLength_ {80ull};
       MsgStatistics stats;
       MsgFormatSettings format;
-      ELseverityLevel threshold {ELzeroSeverity};
+      ELseverityLevel threshold;
+      std::size_t lineLength_;
 
     private:
 
       void configure(fhicl::ParameterSet const&);
-      void setLimit(std::string const& s, int n);
-      void setInterval(std::string const& s, int interval);
-      void setTimespan(std::string const& s, int n);
 
       std::string indent {std::string(6,' ')};
       std::size_t charsOnLine {};
@@ -125,10 +112,10 @@ namespace mf {
 
       bool enableStats;
 
-    };  // ELdestination
+    }; // ELdestination
 
   } // end of namespace service
-}   // end of namespace mf
+} // end of namespace mf
 
 
 #endif /* messagefacility_MessageService_ELdestination_h */

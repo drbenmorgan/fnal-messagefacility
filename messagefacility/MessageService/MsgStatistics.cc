@@ -12,25 +12,8 @@
 namespace mf {
   namespace service {
 
-    // ----------------------------------------------------------------------
-    // Constructors
-    // ----------------------------------------------------------------------
-
-    MsgStatistics::MsgStatistics()
-      : MsgStatistics{fhicl::ParameterSet{}, -1}
-    {}
-
     MsgStatistics::MsgStatistics(fhicl::ParameterSet const& pset)
-      : MsgStatistics{pset, -1}
-    {}
-
-    MsgStatistics::MsgStatistics(int const spaceLimit)
-      : MsgStatistics{{}, spaceLimit}
-    {}
-
-    MsgStatistics::MsgStatistics(fhicl::ParameterSet const& pset, int const spaceLimit)
-      : tableLimit{spaceLimit}
-      , reset{pset.get<bool>("reset", false) || // for statistics dest.
+      : reset{pset.get<bool>("reset", false) || // for statistics dest.
               pset.get<bool>("resetStatistics", false)}  // for ordinary dest.
     {}
 
@@ -69,16 +52,11 @@ namespace mf {
         long n {}, t{};
       } p3[ELseverityLevel::nLevels];
 
-      auto gcEnd = groupedCategories.end();
       for (auto const& pr : statsMap) {
 
-        // If this is a grouped category, wait till later to output its stats
         auto const& xid = pr.first;
         auto const& count = pr.second;
         auto const& cat = xid.id;
-        if (groupedCategories.find(cat) != gcEnd) {
-          continue; // We will process these categories later
-        }
 
         // -----  Emit new process and part I header, if needed:
         //
@@ -91,21 +69,19 @@ namespace mf {
           s << " type     category        sev    module        "
             "subroutine        count    total\n"
             << " ---- -------------------- -- ---------------- "
-            "----------------  -----    -----\n"
-            ;
+            "----------------  -----    -----\n";
         }
         // -----  Emit detailed message information:
         //
 
-        s << right << std::setw( 5) << ++n                                     << ' '
+        s << right << std::setw( 5) << ++n                           << ' '
           << left  << std::setw(20) << cat.substr(0,20)              << ' '
-          << left  << std::setw( 2) << xid.severity.getSymbol()         << ' '
-          << left  << std::setw(16) << xid.module.substr(0,16)          << ' '
+          << left  << std::setw( 2) << xid.severity.getSymbol()      << ' '
+          << left  << std::setw(16) << xid.module.substr(0,16)       << ' '
           << left  << std::setw(16) << xid.subroutine.substr(0,16)
           << right << std::setw( 7) << count.n
           << left  << std::setw( 1) << ( count.ignoredFlag ? '*' : ' ' )
-          << right << std::setw( 8) << count.aggregateN                  << '\n'
-          ;
+          << right << std::setw( 8) << count.aggregateN             << '\n';
         ftnote = ftnote || count.ignoredFlag;
 
         // -----  Obtain information for Part III, below:
@@ -113,44 +89,6 @@ namespace mf {
         p3[xid.severity.getLevel()].n += count.n;
         p3[xid.severity.getLevel()].t += count.aggregateN;
       }  // for i
-
-      // ----- Part Ia:  The grouped categories
-      for (auto const& g : groupedCategories) {
-        int groupTotal = 0;
-        int groupAggregateN = 0;
-        ELseverityLevel severityLevel;
-        bool groupIgnored = true;
-        for (auto const& pr : statsMap) {
-          auto const& xid = pr.first;
-          auto const& count = pr.second;
-          if (xid.id == g) {
-            if (groupTotal==0) severityLevel = xid.severity;
-            groupIgnored &= count.ignoredFlag;
-            groupAggregateN += count.aggregateN;
-            ++groupTotal;
-          }
-        } // for i
-        if (groupTotal > 0) {
-          // -----  Emit detailed message information:
-          //
-          s << right << std::setw( 5) << ++n                        << ' '
-            << left  << std::setw(20) << g.substr(0,20)             << ' '
-            << left  << std::setw( 2) << severityLevel.getSymbol()  << ' '
-            << left  << std::setw(16) << "  <Any Module>  "         << ' '
-            << left  << std::setw(16) << "<Any Function>"
-            << right << std::setw( 7) << groupTotal
-            << left  << std::setw( 1) << ( groupIgnored ? '*' : ' ' )
-            << right << std::setw( 8) << groupAggregateN            << '\n'
-            ;
-          ftnote = ftnote || groupIgnored;
-
-          // -----  Obtain information for Part III, below:
-          //
-          int const lev = severityLevel.getLevel();
-          p3[lev].n += groupTotal;
-          p3[lev].t += groupAggregateN;
-        } // end if groupTotal>0
-      }  // for g
 
       // -----  Provide footnote to part I, if needed:
       //
@@ -166,24 +104,19 @@ namespace mf {
         auto const& xid = pr.first;
         auto const& count = pr.second;
         std::string const& cat = xid.id;
-        if (groupedCategories.find(cat) != gcEnd) {
-          continue; // We will process these categories later
-        }
         if (n == 0) {
           s << '\n'
             << " type    category    Examples: "
             "run/evt        run/evt          run/evt\n"
             << " ---- -------------------- ----"
-            "------------ ---------------- ----------------\n"
-            ;
+            "------------ ---------------- ----------------\n";
         }
         s << right << std::setw( 5) << ++n << ' '
           << left  << std::setw(20) << cat << ' '
           << left  << std::setw(16) << count.context1.c_str() << ' '
           << left  << std::setw(16) << count.context2.c_str() << ' '
-          << count.contextLast << '\n'
-          ;
-      }  // for
+          << count.contextLast << '\n';
+      }
 
       // -----  Summary part III:
       //
@@ -191,13 +124,12 @@ namespace mf {
         <<   "--------    -------------   -----------------\n";
       for (int k = 0; k < ELseverityLevel::nLevels; ++k) {
         if (p3[k].n != 0 || p3[k].t != 0) {
-          s << left  << std::setw( 8) << ELseverityLevel( ELseverityLevel::ELsev_(k) ).getName().c_str()
+          s << left  << std::setw( 8) << ELseverityLevel{ELseverityLevel::ELsev_(k)}.getName().c_str()
             << right << std::setw(17) << p3[k].n
             << right << std::setw(20) << p3[k].t
-            << '\n'
-            ;
+            << '\n';
         }
-      }  // for
+      }
 
       return s.str();
     }  // formSummary()
@@ -208,17 +140,10 @@ namespace mf {
         long n {}, t {};
       } p3[ELseverityLevel::nLevels];
 
-      auto gcEnd = groupedCategories.end();
-
       // ----- Part I:  The ungrouped categories
       for (auto const& pr : statsMap) {
         auto const& xid = pr.first;
         auto const& count = pr.second;
-        // If this is a grouped category, wait till later to output its stats
-        std::string const& cat = xid.id;
-        if (groupedCategories.find(cat) != gcEnd) {
-          continue; // We will process these categories later
-        }
 
         // -----  Emit detailed message information:
         //
@@ -239,44 +164,6 @@ namespace mf {
         p3[xid.severity.getLevel()].n += count.n;
         p3[xid.severity.getLevel()].t += count.aggregateN;
       }  // for i
-
-      // ----- Part Ia:  The grouped categories
-      for (auto g = groupedCategories.begin(); g != gcEnd; ++g)  {
-        int groupTotal = 0;
-        int groupAggregateN = 0;
-        ELseverityLevel severityLevel;
-        for (auto const& pr : statsMap) {
-          auto const& xid = pr.first;
-          auto const& count = pr.second;
-          if (xid.id == *g) {
-            if (groupTotal==0) severityLevel = xid.severity;
-            groupAggregateN += count.aggregateN;
-            ++groupTotal;
-          }
-        } // for i
-        if (groupTotal > 0) {
-          // -----  Emit detailed message information:
-          //
-          std::ostringstream s;
-          s << "Category_";
-          std::string sevSymbol = severityLevel.getSymbol();
-          if ( sevSymbol[0] == '-' ) sevSymbol = sevSymbol.substr(1);
-          s << sevSymbol << "_" << *g;
-          int const n = groupAggregateN;
-          std::string const catstr {s.str()};
-          if (sm.find(catstr) != sm.end()) {
-            sm[catstr] += n;
-          } else {
-            sm[catstr] = n;
-          }
-
-          // -----  Obtain information for Part III, below:
-          //
-          int const lev = severityLevel.getLevel();
-          p3[lev].n += groupTotal;
-          p3[lev].t += groupAggregateN;
-        } // end if groupTotal>0
-      }  // for g
 
       // part II (sample event numbers) does not exist for the job report.
 
@@ -304,13 +191,6 @@ namespace mf {
       if (s=="LogError")   return "LogError_LogProblem";
       if (s=="LogSystem")  return "LogSystem_LogAbsolute";
       return "UnusedSeverity";
-    }
-
-    std::set<std::string> MsgStatistics::groupedCategories {};
-
-    void MsgStatistics::noteGroupedCategory(std::string const& cat)
-    {
-      groupedCategories.insert(cat);
     }
 
   } // end of namespace service
