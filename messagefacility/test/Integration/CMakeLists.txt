@@ -4,12 +4,8 @@
 #
 # ======================================================================
 
-cet_test(SingleThreadMSPresence_init_t
-  LIBRARIES
-  MF_MessageLogger
-  fhiclcpp)
-
-cet_test(MultiThreadMSPresence_init_t
-  LIBRARIES
-  MF_MessageLogger
-  fhiclcpp)
+CONFIGURE_FILE (
+  ${CMAKE_CURRENT_SOURCE_DIR}/MessageFacilityTest.cfg
+  ${CMAKE_CURRENT_BINARY_DIR}/MessageFacility.cfg
+  COPYONLY
+  )

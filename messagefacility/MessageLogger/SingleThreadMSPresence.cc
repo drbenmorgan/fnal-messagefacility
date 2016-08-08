@@ -10,8 +10,10 @@ namespace mf {
   namespace service {
 
     SingleThreadMSPresence::SingleThreadMSPresence()
+      : m_queue {std::make_unique<ThreadQueue>()}
+      , m_queue_exempt {m_queue.get()}
     {
-      MessageLoggerQ::setMLscribe_ptr(std::make_unique<MessageLoggerScribe>(nullptr));
+      MessageLoggerQ::setMLscribe_ptr(std::make_unique<MessageLoggerScribe>(m_queue_exempt));
       MessageDrop::instance()->messageLoggerScribeIsRunning = MLSCRIBE_RUNNING_INDICATOR;
     }
 
