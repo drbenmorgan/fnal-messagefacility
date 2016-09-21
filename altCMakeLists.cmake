@@ -16,7 +16,7 @@
 #  make package (builds distribution tarfile)
 
 cmake_minimum_required(VERSION 3.3)
-project(messagefacility VERSION 1.16.28)
+project(messagefacility VERSION 1.17.2)
 
 # cetbuildtools contains our cmake modules
 # - Cetbuildtools, version2
@@ -26,7 +26,7 @@ include(CetInstallDirs)
 include(CetCMakeSettings)
 include(CetCompilerSettings)
 
-# C++ Standard Config
+# C++ Standard Config (14)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(messagefacility_COMPILE_FEATURES
   cxx_auto_type
@@ -35,7 +35,7 @@ set(messagefacility_COMPILE_FEATURES
 
 # these are minimum required versions, not the actual product versions
 # find_ups_product defines variables for external libraries and executables
-find_package(fhiclcpp 3.1.0 REQUIRED)
+find_package(fhiclcpp 4.1.0 REQUIRED)
 find_package(cetlib 1.17 REQUIRED)
 find_package(SQLite 3.8.5.0 REQUIRED)
 find_package(Boost 1.50.0 REQUIRED thread program_options filesystem)

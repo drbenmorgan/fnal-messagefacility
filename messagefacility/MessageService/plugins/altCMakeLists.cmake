@@ -9,6 +9,7 @@ basic_plugin(cout   mfPlugin MF_MessageService)
 basic_plugin(cerr   mfPlugin MF_MessageService)
 basic_plugin(file   mfPlugin MF_FileFormat)
 basic_plugin(syslog mfPlugin MF_MessageLogger)
+basic_plugin(sqlite mfPlugin MF_MessageLogger SQLite::SQLite)
 
 # statistics destination plugins
 basic_plugin(cout mfStatsPlugin MF_MessageService)
@@ -29,5 +30,6 @@ install(
     messagefacility_MessageService_plugins_file_mfPlugin
     messagefacility_MessageService_plugins_file_mfStatsPlugin
     messagefacility_MessageService_plugins_syslog_mfPlugin
+    messagefacility_MessageService_plugins_sqlite_mfPlugin
   DESTINATION ${CMAKE_INSTALL_LIBDIR}
   )

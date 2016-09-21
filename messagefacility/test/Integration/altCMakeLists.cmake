@@ -1,7 +1,3 @@
-# - When user supplies "-DALT_CMAKE" use the non-CET/UPS system
-if(ALT_CMAKE)
-  include(altCMakeLists.cmake)
-else()
 # ======================================================================
 #
 # Testing script
@@ -11,12 +7,9 @@ else()
 cet_test(SingleThreadMSPresence_init_t
   LIBRARIES
   MF_MessageLogger
-  fhiclcpp)
+  fhiclcpp::fhiclcpp)
 
 cet_test(MultiThreadMSPresence_init_t
   LIBRARIES
   MF_MessageLogger
-  fhiclcpp)
-
-endif() # ALT_CMAKE
-
+  fhiclcpp::fhiclcpp)
