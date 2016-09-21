@@ -25,6 +25,11 @@ namespace mf {
       std::string const noosMsg {"No ostream"};
       std::string const notELoutputMsg {"This destination is not an ELoutput"};
       std::string const preamble {"%MSG"};
+
+      auto length(fhicl::ParameterSet const& pset)
+      {
+        return pset.get<bool>("noLineBreaks", false) ? 32000ull : pset.get<std::size_t>("lineLength", 80ull);
+      }
     }
 
     //=============================================================================
@@ -35,6 +40,8 @@ namespace mf {
     ELdestination::ELdestination(fhicl::ParameterSet const& pset)
       : stats{pset}
       , format{pset.get<fhicl::ParameterSet>("format", {})}
+      , threshold{pset.get<std::string>("threshold", "INFO")}
+      , lineLength_{length(pset)}
       , enableStats{pset.get<bool>("outputStatistics", false)}
     {
       if (enableStats) {
@@ -45,11 +52,9 @@ namespace mf {
     }
 
     //=============================================================================
-    void ELdestination::emit(std::ostream& os,
-                             std::string const& s,
-                             bool const nl)
+    void ELdestination::emit(std::ostream& os, std::string const& s, bool const nl)
     {
-      if (s.length() == 0)  {
+      if (s.empty()) {
         if (nl)  {
           os << '\n';
           charsOnLine = 0;
@@ -57,15 +62,12 @@ namespace mf {
         return;
       }
 
-      char first = s[0];
-      char second,
-        last,
-        last2;
-      second = (s.length() < 2) ? '\0' : s[1];
-      last = (s.length() < 2) ? '\0' : s[s.length()-1];
-      last2 = (s.length() < 3) ? '\0' : s[s.length()-2];
-      //checking -2 because the very last char is sometimes a ' ' inserted
-      //by ErrorLog::operator<<
+      char const first = s[0];
+      char const second = (s.length() < 2) ? '\0' : s[1];
+      char const last = (s.length() < 2) ? '\0' : s[s.length()-1];
+      char const last2 = (s.length() < 3) ? '\0' : s[s.length()-2];
+      // checking -2 because the very last char is sometimes a ' '
+      // inserted by ErrorLog::operator<<
 
       if (format.preambleMode) {
 
@@ -132,14 +134,13 @@ namespace mf {
                                    mf::ErrorObj const& msg,
                                    ELcontextSupplier const& contextSupplier)
     {
-      // No prefix for verbatim messages
       if (msg.is_verbatim()) return;
 
       // Output the prologue:
       //
       format.preambleMode = true;
 
-      auto xid = msg.xid();      // Save the xid.
+      auto const& xid = msg.xid();
 
       charsOnLine = 0;
       emit(oss, preamble);
@@ -177,7 +178,7 @@ namespace mf {
         }
         emit(oss, xid.module + " ");
       }
-      if (format.want(SUBROUTINE) && (xid.subroutine.length() > 0) ) {
+      if (format.want(SUBROUTINE) && (xid.subroutine.length() > 0)) {
         if (needAspace) {
           emit(oss," ");
           needAspace = false;
@@ -203,7 +204,7 @@ namespace mf {
       //
       if (format.want(SOME_CONTEXT)) {
         if (needAspace) {
-          emit(oss, " ");
+          emit(oss," ");
           needAspace = false;
         }
         if (format.want(FULL_CONTEXT)) {
@@ -216,10 +217,8 @@ namespace mf {
     }
 
     //=============================================================================
-    void ELdestination::fillUsrMsg (std::ostringstream& oss,
-                                    mf::ErrorObj const& msg)
+    void ELdestination::fillUsrMsg(std::ostringstream& oss, mf::ErrorObj const& msg)
     {
-      // No user message if text is not wanted.
       if (!format.want(TEXT)) return;
 
       format.preambleMode = false;
@@ -227,7 +226,7 @@ namespace mf {
       auto it = msg.items().cbegin();
 
       // Determine if file and line should be included
-      if  (!msg.is_verbatim()) {
+      if (!msg.is_verbatim()) {
 
         // The first four items are { " ", "<FILENAME>", ":", "<LINE>" }
         while (it != usrMsgStart) {
@@ -247,7 +246,8 @@ namespace mf {
       }
 
       // For verbatim (and user-supplied) messages, just print the contents
-      for ( ;  it != msg.items().cend(); ++it ) {
+      auto const end = msg.items().cend();
+      for (; it != end; ++it) {
         emit(oss, *it);
       }
 
@@ -258,7 +258,7 @@ namespace mf {
                                    mf::ErrorObj const& msg)
     {
       if (!msg.is_verbatim() && !format.want(NO_LINE_BREAKS)) {
-        emit(oss, "\n%MSG");
+        emit(oss,"\n%MSG");
       }
       oss << '\n';
     }
@@ -380,31 +380,6 @@ namespace mf {
       threshold = sv;
     }
 
-    void ELdestination::setLimit(std::string const& s, int const n)
-    {
-      stats.limits.setLimit(s, n);
-    }
-
-    void ELdestination::setInterval(std::string const& s, int const interval)
-    {
-      stats.limits.setInterval(s, interval);
-    }
-
-    void ELdestination::setTimespan(std::string const& s, int const n)
-    {
-      stats.limits.setTimespan(s, n);
-    }
-
-    void ELdestination::formatSuppress(flag_enum const FLAG)
-    {
-      format.suppress(FLAG);
-    }
-
-    void ELdestination::formatInclude(flag_enum const FLAG)
-    {
-      format.include(FLAG);
-    }
-
     void ELdestination::summarization(std::string const& title,
                                       std::string const& /*sumfines*/,
                                       ELcontextSupplier const& contextSupplier)
@@ -452,13 +427,13 @@ namespace mf {
     }
 
     void
-    ELdestination::configure(fhicl::ParameterSet const& dest_pset)
+    ELdestination::configure(fhicl::ParameterSet const& pset)
     {
       // Defaults:
       std::vector<std::string> const severities {"WARNING", "INFO", "ERROR", "DEBUG"};
 
       // grab the pset for category list for this destination
-      auto const& cats_pset = dest_pset.get<fhicl::ParameterSet>("categories", {});
+      auto const& cats_pset = pset.get<fhicl::ParameterSet>("categories", {});
 
       // grab list of categories
       auto categories = cats_pset.get_pset_names();
@@ -478,24 +453,20 @@ namespace mf {
       int default_limit {NO_VALUE_SET};
       if (default_category_pset.get_if_present<int>("limit", default_limit)) {
         if (default_limit < 0) default_limit = two_billion;
-        setLimit("*", default_limit);
+        stats.limits.setLimit("*", default_limit);
       }
 
       int default_interval {NO_VALUE_SET};
       if (default_category_pset.get_if_present<int>("reportEvery", default_interval)) {
         // interval <= 0 implies no reporting
-        setInterval("*", default_interval);
+        stats.limits.setInterval("*", default_interval);
       }
 
       int default_timespan {NO_VALUE_SET};
       if (default_category_pset.get_if_present<int>("timespan", default_timespan)) {
         if (default_timespan < 0) default_timespan = two_billion;
-        setTimespan("*", default_timespan);
+        stats.limits.setTimespan("*", default_timespan);
       }
-
-      auto const& dest_threshold = dest_pset.get<std::string>("threshold", "INFO");
-      ELseverityLevel const threshold_sev {dest_threshold};
-      setThreshold(threshold_sev);
 
       // establish this destination's limit/interval/timespan for each category:
       for (auto const& category : categories) {
@@ -507,32 +478,23 @@ namespace mf {
 
         if (limit != NO_VALUE_SET)  {
           if (limit < 0) limit = two_billion;
-          setLimit(category, limit);
+          stats.limits.setLimit(category, limit);
         }
         if (interval != NO_VALUE_SET)  {
-          setInterval(category, interval);
+          stats.limits.setInterval(category, interval);
         }
         if (timespan != NO_VALUE_SET)  {
           if (timespan < 0) timespan = two_billion;
-          setTimespan(category, timespan);
+          stats.limits.setTimespan(category, timespan);
         }
       }  // for
 
-      // establish this destination's linebreak policy:
-      if (dest_pset.get<bool>("noLineBreaks", false)) {
-        lineLength_ = 32000;
-      }
-      else {
-        int constexpr lenDef {80};
-        lineLength_ = dest_pset.get<int>("lineLength", lenDef);
+      if (pset.get<bool>("noTimeStamps", false)) {
+        format.suppress(TIMESTAMP);
       }
 
-      if (dest_pset.get<bool>("noTimeStamps", false)) {
-        formatSuppress(TIMESTAMP);
-      }
-
-      if (dest_pset.get<bool>("useMilliseconds", false)) {
-        formatInclude(MILLISECOND);
+      if (pset.get<bool>("useMilliseconds", false)) {
+        format.include(MILLISECOND);
       }
 
     }

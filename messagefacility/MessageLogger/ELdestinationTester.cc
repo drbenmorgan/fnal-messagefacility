@@ -8,9 +8,7 @@
 #include "boost/program_options.hpp"
 #include "cetlib/filepath_maker.h"
 #include "fhiclcpp/ParameterSet.h"
-#include "fhiclcpp/ParameterSetRegistry.h"
 #include "fhiclcpp/make_ParameterSet.h"
-#include "fhiclcpp/parse.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "messagefacility/MessageLogger/ELdestinationTester.h"
 
@@ -27,7 +25,8 @@ namespace {
     return;
   }
 
-  void runModule( const std::string& modulename ) {
+  void runModule(std::string const& modulename)
+  {
     mf::SetModuleName(modulename);
 
     // Post begin job
@@ -41,7 +40,7 @@ namespace {
 
     // Post end job
     mf::SetContext("postEndJob");
-    mf::LogAbsolute("TimeReport")                            // Changelog 1
+    mf::LogAbsolute("TimeReport")
       << "TimeReport> Time report complete in "
       << 0.0402123 << " seconds\n"
       << " Time Summary: \n"
@@ -187,13 +186,11 @@ int main(int argc, char* argv[])
   mf::SetContext("pro-event");
 
   // Log Debugs
-  for(int i = 0; i != 5; ++i)
-  {
+  for(int i = 0; i != 5; ++i) {
     mf::LogError("catError")     << "Error information.";
     mf::LogWarning("catWarning") << "Warning information.";
     mf::LogInfo("catInfo")       << "Info information.";
     LOG_DEBUG("debug")           << "DEBUG information.";
-    //sleep(1);
   }
 
   // Test move operations

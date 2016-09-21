@@ -26,6 +26,7 @@ using std::string;
 using vstring = std::vector<std::string>;
 
 namespace {
+
   bool constexpr throw_on_clean_slate {true};
   bool constexpr no_throw_on_clean_slate {false};
 
@@ -41,7 +42,7 @@ namespace {
         "    }"
         "  }"
         "}"
-    };
+        };
 
     fhicl::ParameterSet result;
     fhicl::make_ParameterSet(config, result);
@@ -63,7 +64,7 @@ namespace {
           "  filename: \"cerr.log\""
           "  threshold: WARNING"
           "}"
-      };
+          };
       fhicl::make_ParameterSet(config, result);
     }
     return result;
@@ -278,11 +279,10 @@ namespace mf {
       auto const& preconfiguration_message = jobConfig_->get<std::string>("generate_preconfiguration_message", {});
 
       if (!preconfiguration_message.empty()) {
-        // To test a preconfiguration message without first going thru the
-        // configuration we are about to do, we issue the message (so it sits
-        // on the queue), then copy the processing that the LOG_A_MESSAGE case
-        // does.  We suppress the timestamp to allow for automated unit testing.
-        earlyDest_.formatSuppress(TIMESTAMP);
+        // To test a preconfiguration message without first going thru
+        // the configuration we are about to do, we issue the message
+        // (so it sits on the queue), then copy the processing that
+        // the LOG_A_MESSAGE case does.
         LogError("preconfiguration") << preconfiguration_message;
         if (!singleThread_) {
           OpCode opcode;
@@ -453,7 +453,7 @@ namespace mf {
         // Suppress the desire to do an extra termination summary just because
         // of end-of-job info message for statistics jobs
         if (configuration == ELdestConfig::STATISTICS)
-          dest.noTerminationSummary() ;
+          dest.noTerminationSummary();
       }
 
     } // make_destinations()
@@ -546,9 +546,11 @@ namespace mf {
                                               bool const should_throw)
     {
       std::string config_str;
-      if      (configuration == ELdestConfig::FWKJOBREPORT) config_str = "Framework Job Report";
-      else if (configuration == ELdestConfig::ORDINARY    ) config_str = "MessageLogger";
-      else if (configuration == ELdestConfig::STATISTICS  ) config_str = "MessageLogger Statistics";
+      switch (configuration) {
+      case ELdestConfig::FWKJOBREPORT: config_str = "Framework Job Report"; break;
+      case ELdestConfig::ORDINARY    : config_str = "MessageLogger"; break;
+      case ELdestConfig::STATISTICS  : config_str = "MessageLogger Statistics"; break;
+      }
 
       auto dest_pr = admin_->destinations().find(output_id);
       if (dest_pr == admin_->destinations().end()) return false;

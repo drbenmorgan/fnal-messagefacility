@@ -277,48 +277,42 @@ namespace mf {
   void StartMessageFacility(std::string const& mode,
                             fhicl::ParameterSet const& pset)
   {
-    MessageFacilityService& mfs = MessageFacilityService::instance();
-
+    auto& mfs = MessageFacilityService::instance();
     std::lock_guard<std::mutex> lock {mfs.m};
 
-    if(!mfs.MFServiceEnabled) {
+    if (mfs.MFServiceEnabled)
+      return;
 
-      /*
-       * qlu 03/10/10 The order of object initialization and destruction is
-       *              crucial in starting up and shutting down the Message
-       *              Facility service. In the d'tor of MessageServicePresence
-       *              it sends out a END message to the queue and waits for the
-       *              MLscribe thread to finish logging all remaining messages
-       *              in the queue. Therefore the ELadministrator singleton
-       *              (whose instance is handled by a local static variable)
-       *              and all attached destinations must be present during the
-       *              process. We must provide the secured method to guarantee
-       *              that the MessageServicePresence will be destroyed first,
-       *              and particularly *BEFORE* the destruction of ELadmin.
-       *              This is achieved by instantiating a static object, who
-       *              is responsible for killing the Presence at the *END* of
-       *              the start sequence. So this destroyer object will be killed
-       *              before everyone else.
-       */
+    // The order of object initialization and destruction is crucial
+    // in starting up and shutting down the Message Facility
+    // service. In the d'tor of MessageServicePresence it sends out an
+    // END message to the queue and waits for the MLscribe thread to
+    // finish logging all remaining messages in the queue. Therefore
+    // the ELadministrator singleton (whose instance is handled by a
+    // local static variable) and all attached destinations must be
+    // present during the process. We must provide the secured method
+    // to guarantee that the MessageServicePresence will be destroyed
+    // first, and particularly *BEFORE* the destruction of ELadmin.
+    // This is achieved by instantiating a static object, who is
+    // responsible for killing the Presence at the *END* of the start
+    // sequence. So this destroyer object will be killed before
+    // everyone else.
 
-      // MessageServicePresence
-      mfs.MFPresence = PresenceFactory::createInstance(mode);
+    // MessageServicePresence
+    mfs.MFPresence = PresenceFactory::createInstance(mode);
 
-      // The MessageLogger
-      mfs.theML = std::make_unique<MessageLoggerImpl>(pset);
+    // The MessageLogger
+    mfs.theML = std::make_unique<MessageLoggerImpl>(pset);
 
-      mfs.MFServiceEnabled = true;
+    mfs.MFServiceEnabled = true;
 
-      static MFSdestroyer destroyer;
-    }
+    static MFSdestroyer destroyer;
   }
 
-  // Set application name
   void SetApplicationName(std::string const& application)
   {
-    MessageFacilityService& mfs = MessageFacilityService::instance();
-
-    if(!mfs.MFServiceEnabled) return;
+    auto& mfs = MessageFacilityService::instance();
+    if (!mfs.MFServiceEnabled) return;
 
     std::lock_guard<std::mutex> lock {mfs.m};
 
@@ -329,17 +323,17 @@ namespace mf {
   // Set module name and debug settings
   void SetModuleName(std::string const& modulename)
   {
-    if(!MessageFacilityService::instance().MFServiceEnabled)
+    if (!MessageFacilityService::instance().MFServiceEnabled)
       return;
 
     MessageDrop* drop = MessageDrop::instance();
     drop->moduleName = modulename;
 
-    MessageFacilityService const& mfs = MessageFacilityService::instance();
+    auto const& mfs = MessageFacilityService::instance();
 
-    if(mfs.theML->everyDebugEnabled_)
+    if (mfs.theML->everyDebugEnabled_)
       drop->debugEnabled = true;
-    else if(mfs.theML->debugEnabledModules_.count(modulename))
+    else if (mfs.theML->debugEnabledModules_.count(modulename))
       drop->debugEnabled = true;
     else
       drop->debugEnabled = false;
@@ -348,7 +342,7 @@ namespace mf {
   // Set the run/event context
   void SetContext(std::string const& context)
   {
-    if(!MessageFacilityService::instance().MFServiceEnabled)
+    if (!MessageFacilityService::instance().MFServiceEnabled)
       return;
 
     MessageDrop::instance()->runEvent = context;

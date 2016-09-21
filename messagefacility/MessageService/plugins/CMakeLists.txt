@@ -16,6 +16,7 @@ basic_plugin(cout mfPlugin MF_MessageService)
 basic_plugin(cerr mfPlugin MF_MessageService)
 basic_plugin(file mfPlugin MF_FileFormat)
 basic_plugin(syslog mfPlugin MF_MessageLogger)
+basic_plugin(sqlite mfPlugin MF_MessageLogger ${SQLITE3})
 
 # statistics destination plugins
 basic_plugin(cout mfStatsPlugin MF_MessageService)

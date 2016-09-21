@@ -28,10 +28,7 @@ namespace mf {
       //       false};
       // };
 
-      MsgStatistics();
       MsgStatistics(fhicl::ParameterSet const& pset);
-      MsgStatistics(int spaceLimit);
-      MsgStatistics(fhicl::ParameterSet const& pset, int spaceLimit);
 
       // copy c'tor/assignment disabled
       MsgStatistics(MsgStatistics const&) = delete;
@@ -42,16 +39,11 @@ namespace mf {
       void log(mf::ErrorObj const& msg, ELcontextSupplier const&);
       std::string formSummary();
 
-      // ----- Methods invoked by the MessageLoggerScribe, bypassing destControl
-      //
-      static void noteGroupedCategory(std::string const& cat);
-
       void wipe();
       void noTerminationSummary();
 
       void summaryForJobReport (std::map<std::string, double>& sm);
 
-      int tableLimit;
       ELlimitsTable limits {};
       ELmap_stats statsMap {};
       bool updatedStats {false};
@@ -59,15 +51,13 @@ namespace mf {
       bool printAtTermination {true};
 
     private:
-      static std::set<std::string> groupedCategories;
+
       std::string dualLogName(std::string const& s);
 
     };  // MsgStatistics
 
-    // ----------------------------------------------------------------------
-
-  }      // end of namespace service
-}        // end of namespace mf
+  } // end of namespace service
+} // end of namespace mf
 
 
 #endif /* messagefacility_MessageService_MsgStatistics_h */
