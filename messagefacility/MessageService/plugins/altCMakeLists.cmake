@@ -23,6 +23,7 @@ basic_plugin(file mfStatsPlugin MF_FileFormat)
 # AT present, don't export plugins as don't expect to link to them?
 install(
   TARGETS
+    MF_FileFormat
     messagefacility_MessageService_plugins_cerr_mfPlugin
     messagefacility_MessageService_plugins_cerr_mfStatsPlugin
     messagefacility_MessageService_plugins_cout_mfPlugin
