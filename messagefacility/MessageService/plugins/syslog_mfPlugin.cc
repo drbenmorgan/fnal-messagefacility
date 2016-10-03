@@ -103,7 +103,7 @@ namespace mfplugins {
                               mf::service::ELcontextSupplier const&)
   {
     int const severity = syslogLevel(msg.xid().severity);
-    syslog(severity, oss.str().data());
+    syslog(severity, "%s", oss.str().data());
   }
 
   //======================================================================
