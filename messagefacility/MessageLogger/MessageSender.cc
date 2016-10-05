@@ -14,7 +14,7 @@ MessageSender::MessageSender(ELseverityLevel const sev,
   : errorobj_p{std::make_unique<ErrorObj>(sev,id,verbatim)}
 {}
 
-MessageSender::~MessageSender()
+MessageSender::~MessageSender() noexcept
 try
   {
     // surrender ownership of our ErrorObj, transferring ownership
