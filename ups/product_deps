@@ -1,5 +1,5 @@
 parent messagefacility v1_18_00
-defaultqual e10
+defaultqual e12
 #
 fcldir -
 perllib  product_dir
@@ -7,24 +7,19 @@ perllib  product_dir
 # define product/version pairs
 product		version
 fhiclcpp        v4_02_00
-cetbuildtools	v5_04_03	-	only_for_build
+cetbuildtools	v5_04_08	-	only_for_build
 end_product_list
 
 
 # Matrix of qualifiers versus dependent products
 qualifier	fhiclcpp	compiler	notes
+e12:debug	e12:debug	gcc
+e12:opt		e12:opt		gcc
+e12:prof	e12:prof	gcc
 e10:debug	e10:debug	gcc
 e10:opt		e10:opt		gcc
 e10:prof	e10:prof	gcc
-e9:debug	e9:debug	gcc
-e9:opt		e9:opt		gcc
-e9:prof		e9:prof		gcc
 end_qualifier_list
-
-##table_fragment_begin
- ##   # For cetskelgen modules.
- ##   envPrepend(PERL5LIB, ${${UPS_PROD_NAME_UC}_DIR}/perllib)
-##table_fragment_end
 
 # Local Variables:
 # tab-width: 8
