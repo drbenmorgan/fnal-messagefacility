@@ -17,6 +17,7 @@ cet_make_library(
   LIBRARIES
   MF_Utilities
   fhiclcpp
+  cetlib_except
   ${Boost_THREAD_LIBRARY}
   )
 
