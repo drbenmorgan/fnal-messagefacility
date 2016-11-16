@@ -170,8 +170,7 @@ namespace mf {
       if (destinations_.empty()) {
         std::cerr << "\nERROR LOGGED WITHOUT DESTINATION!\n"
                   << "Attaching destination \"cerr\" to ELadministrator by default\n\n";
-        std::unique_ptr<cet::ostream_handle> osh = std::make_unique<cet::ostream_observer>(std::cerr);
-        destinations_.emplace("cerr", std::make_unique<ELostreamOutput>(std::move(osh)));
+        destinations_.emplace("cerr", std::make_unique<ELostreamOutput>(cet::ostream_handle{std::cerr}));
       }
 
       for_all_destinations([this](auto& d){ d.log(msg_, *context_); });

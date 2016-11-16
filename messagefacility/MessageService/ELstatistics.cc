@@ -23,7 +23,7 @@ namespace mf {
 
     ELstatistics::ELstatistics(fhicl::ParameterSet const& pset, std::ostream& osp)
       : ELdestination{pset}
-      , termStream{std::make_unique<cet::ostream_observer>(osp)}
+      , termStream{osp}
     {}
 
     ELstatistics::ELstatistics(fhicl::ParameterSet const& pset)
@@ -34,7 +34,7 @@ namespace mf {
                                std::string const& fileName,
                                bool const append)
       : ELdestination{pset}
-      , termStream{std::make_unique<cet::ostream_owner>(fileName, append ? std::ios::app : std::ios::trunc )}
+      , termStream{fileName, append ? std::ios::app : std::ios::trunc}
     {}
 
     // ----------------------------------------------------------------------
@@ -55,9 +55,9 @@ namespace mf {
 
     void ELstatistics::summary(ELcontextSupplier const&)
     {
-      termStream->stream() << "\n=============================================\n\n"
-                           << "MessageLogger Summary\n"
-                           << stats.formSummary();
+      termStream << "\n=============================================\n\n"
+                 << "MessageLogger Summary\n"
+                 << stats.formSummary();
       stats.updatedStats = false;
     }
 

@@ -35,13 +35,13 @@ namespace mf {
     ELfwkJobReport::ELfwkJobReport(std::string const& fileName,
                                    fhicl::ParameterSet const& pset)
       : ELdestination{pset}
-      , osh_{std::make_unique<cet::ostream_owner>(fileName, std::ios::app)}
+      , osh_{fileName, std::ios::app}
     {
-      if (osh_ && osh_->stream())  {
-        *osh_ << "<FrameworkJobReport>\n";
+      if (osh_)  {
+        osh_ << "<FrameworkJobReport>\n";
       } else  {
-        osh_ = std::make_unique<cet::ostream_observer>(std::cerr);
-        *osh_ << "<FrameworkJobReport>\n\n";
+        osh_ = cet::ostream_handle{std::cerr};
+        osh_ << "<FrameworkJobReport>\n\n";
       }
     }
 
@@ -74,7 +74,7 @@ namespace mf {
       // Output each item in the message:
       if (format.want(TEXT)) {
         for (auto const& item : msg.items()) {
-          *osh_ << item << '\n';
+          osh_ << item << '\n';
         }
       }
 
@@ -83,7 +83,7 @@ namespace mf {
 
     void ELfwkJobReport::finish()
     {
-      *osh_ << "</FrameworkJobReport>\n";
+      osh_ << "</FrameworkJobReport>\n";
     }
 
     // ----------------------------------------------------------------------
@@ -100,7 +100,7 @@ namespace mf {
       std::string const title(fullTitle, 0, titleMaxLength);
       int q = (lineLength_ - title.length() - 2) / 2;
       std::string const line(q, '=');
-      auto& os = *osh_;
+      auto& os = osh_;
       os << '\n'
          << line << ' '
          << title << ' '
@@ -121,23 +121,23 @@ namespace mf {
 
     void ELfwkJobReport::changeFile(std::ostream& os, ELcontextSupplier const&)
     {
-      osh_ = std::make_unique<cet::ostream_observer>(os);
-      *osh_ << "\n=======================================================\n"
-        << "\nError Log changed to this stream\n"
-        << "\n=======================================================\n\n";
+      osh_ = cet::ostream_handle{os};
+      osh_ << "\n=======================================================\n"
+           << "\nError Log changed to this stream\n"
+           << "\n=======================================================\n\n";
     }
 
     void ELfwkJobReport::changeFile(std::string const& filename, ELcontextSupplier const&)
     {
-      osh_ = std::make_unique<cet::ostream_owner>(filename, std::ios::app);
-      *osh_ << "\n=======================================================\n"
+      osh_ = cet::ostream_handle{filename, std::ios::app};
+      osh_ << "\n=======================================================\n"
            << "\nError Log changed to this file\n"
            << "\n=======================================================\n\n";
     }
 
     void ELfwkJobReport::flush(ELcontextSupplier const&)
     {
-      osh_->stream().flush();
+      osh_.flush();
     }
 
   } // end of namespace service

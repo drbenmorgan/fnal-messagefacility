@@ -53,7 +53,7 @@ namespace mf {
       void flush(ELcontextSupplier const&) override;
       void finish() override;
 
-      std::unique_ptr<cet::ostream_handle> osh_;
+      cet::ostream_handle osh_;
       ELextendedID xid_ {};
 
     };  // ELfwkJobReport

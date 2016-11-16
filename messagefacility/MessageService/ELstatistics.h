@@ -44,7 +44,7 @@ namespace mf {
 
       void summaryForJobReport (std::map<std::string, double>& sm) override;
 
-      std::unique_ptr<cet::ostream_handle> termStream;
+      cet::ostream_handle termStream;
     };  // ELstatistics
 
   } // end of namespace service

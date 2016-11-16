@@ -96,7 +96,7 @@ namespace mf {
   namespace service {
 
     MessageLoggerScribe::MessageLoggerScribe(cet::exempt_ptr<ThreadQueue> queue)
-      : earlyDest_{admin_->attach("cerr_early", make_unique<ELostreamOutput>(make_unique<cet::ostream_observer>(std::cerr), false))}
+      : earlyDest_{admin_->attach("cerr_early", make_unique<ELostreamOutput>(cet::ostream_handle{std::cerr}, false))}
       , singleThread_{queue.get() == nullptr}
       , queue_{queue}
     {

@@ -27,10 +27,10 @@ namespace mf {
     public:
 
       ELostreamOutput(fhicl::ParameterSet const& psetFormat,
-                      std::unique_ptr<cet::ostream_handle>,
+                      cet::ostream_handle&&,
                       bool emitAtStart = false);
 
-      ELostreamOutput(std::unique_ptr<cet::ostream_handle>,
+      ELostreamOutput(cet::ostream_handle&&,
                       bool emitAtStart = false);
 
       // Disable copy c'tor/assignment
@@ -48,7 +48,7 @@ namespace mf {
       void changeFile(std::string const& filename, ELcontextSupplier const&) override;
       void flush(ELcontextSupplier const&) override;
 
-      std::unique_ptr<cet::ostream_handle> osh;
+      cet::ostream_handle osh;
       mf::ELextendedID xid {};
 
     };  // ELostreamOutput
