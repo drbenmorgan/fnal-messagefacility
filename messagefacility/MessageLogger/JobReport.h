@@ -35,10 +35,10 @@ Changes Log 1: 2009/01/14 10:29:00, Natalia Garcia Nebot
 #include <ostream>
 #include <set>
 #include <map>
+#include <memory>
 #include <vector>
 
 
-#include "boost/scoped_ptr.hpp"
 #include "messagefacility/Utilities/tinyxml.h"
 
 namespace mf {
@@ -442,11 +442,8 @@ namespace mf {
       /// debug/test util
       std::string dumpFiles(void);
 
-   protected:
-      boost::scoped_ptr<JobReportImpl>& impl() {return impl_;}
-
    private:
-      boost::scoped_ptr<JobReportImpl> impl_;
+      std::unique_ptr<JobReportImpl> impl_;
 
    };
 
