@@ -252,8 +252,7 @@ public:
 // ----------------------------------------------------------------------
 
 namespace mf {
-  void StartMessageFacility(std::string const& mode,
-                            fhicl::ParameterSet const& pset = MessageFacilityService::ConfigurationFile());
+  void StartMessageFacility(fhicl::ParameterSet const& pset = MessageFacilityService::ConfigurationFile());
 }
 
 // ======================================================================

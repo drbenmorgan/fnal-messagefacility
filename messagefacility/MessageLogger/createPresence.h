@@ -8,7 +8,7 @@
 namespace mf {
 
   struct PresenceFactory {
-    static std::unique_ptr<Presence> createInstance(std::string const& s);
+    static std::unique_ptr<Presence> createInstance();
   };
 
 }

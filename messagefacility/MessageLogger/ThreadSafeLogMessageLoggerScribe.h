@@ -12,27 +12,27 @@
 #include "messagefacility/MessageService/MessageLoggerQ.h"
 #include "messagefacility/MessageService/AbstractMLscribe.h"
 
+#include <atomic>
 #include <iosfwd>
 #include <vector>
 #include <map>
 #include <memory>
 
+#include "tbb/concurrent_queue.h"
+
 namespace mf {
   namespace service {
 
-    class ThreadQueue;
     class ErrorLog;
 
-    class MessageLoggerScribe : public AbstractMLscribe {
+    class ThreadSafeLogMessageLoggerScribe : public AbstractMLscribe {
     public:
 
-      ~MessageLoggerScribe();
+      ~ThreadSafeLogMessageLoggerScribe();
 
-      /// --- If queue is NULL, this sets singleThread true
-      explicit MessageLoggerScribe(cet::exempt_ptr<ThreadQueue> queue);
+      explicit ThreadSafeLogMessageLoggerScribe();
 
       // --- receive and act on messages:
-      void run();
       void runCommand(OpCode opcode, void* operand) override;
 
     private:
@@ -52,11 +52,8 @@ namespace mf {
       void makeDestinations(fhicl::ParameterSet const& dests,
                             ELdestConfig::dest_config const config);
 
-      // --- util function to trim leading and trailing whitespaces from a string
-      std::string trim(std::string const& src);
-
       // --- other helpers
-      void parseCategories(std::string const& s, std::vector<std::string>& cats);
+      std::vector<std::string> parseCategories(std::string const& s);
 
       // --- data:
       cet::exempt_ptr<ELadministrator> admin_ {ELadministrator::instance()};
@@ -67,11 +64,10 @@ namespace mf {
       std::string jobReportOption_ {};
       bool cleanSlateConfiguration_ {true};
       bool active_ {true};
-      bool singleThread_;
-      bool done_ {false};
-      bool purgeMode_ {false};
-      int  count_ {};
-      cet::exempt_ptr<ThreadQueue> queue_;
+      std::atomic<bool> purgeMode_ {false};
+      std::atomic<int> count_ {0};
+      std::atomic<bool> messageBeingSent_ {false};
+      tbb::concurrent_queue<ErrorObj*> waitingMessages_ {};
 
       cet::BasicPluginFactory pluginFactory_ {"mfPlugin"};
       cet::BasicPluginFactory pluginStatsFactory_ {"mfStatsPlugin"};
@@ -91,14 +87,14 @@ namespace mf {
                                                   std::string const& psetname,
                                                   fhicl::ParameterSet const& pset);
 
-    };  // MessageLoggerScribe
+    };  // ThreadSafeLogMessageLoggerScribe
 
 
   }   // end of namespace service
 }  // namespace mf
 
 
-#endif /* messagefacility_MessageLogger_MessageLoggerScribe_h */
+#endif /* messagefacility_MessageLogger_ThreadSafeLogMessageLoggerScribe_h */
 
 // Local Variables:
 // mode: c++

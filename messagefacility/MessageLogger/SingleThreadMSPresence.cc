@@ -1,8 +1,7 @@
 #include "messagefacility/MessageLogger/MessageDrop.h"
-#include "messagefacility/MessageLogger/MessageLoggerScribe.h"
+#include "messagefacility/MessageLogger/ThreadSafeLogMessageLoggerScribe.h"
 #include "messagefacility/MessageLogger/SingleThreadMSPresence.h"
 #include "messagefacility/MessageService/MessageLoggerQ.h"
-#include "messagefacility/MessageService/ThreadQueue.h"
 
 #include <memory>
 
@@ -11,7 +10,7 @@ namespace mf {
 
     SingleThreadMSPresence::SingleThreadMSPresence()
     {
-      MessageLoggerQ::setMLscribe_ptr(std::make_unique<MessageLoggerScribe>(nullptr));
+      MessageLoggerQ::setMLscribe_ptr(std::make_unique<ThreadSafeLogMessageLoggerScribe>());
       MessageDrop::instance()->messageLoggerScribeIsRunning = MLSCRIBE_RUNNING_INDICATOR;
     }
 

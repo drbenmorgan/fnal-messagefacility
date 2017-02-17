@@ -42,6 +42,7 @@ find_ups_product(cetlib v2_00_00)
 find_ups_product(fhiclcpp v2_17_00)
 find_ups_product(sqlite v3_08_05_00 )
 find_ups_boost(v1_50_0)
+find_ups_product(tbb)
 
 # The environment has been established, now generate the Makefiles.
 

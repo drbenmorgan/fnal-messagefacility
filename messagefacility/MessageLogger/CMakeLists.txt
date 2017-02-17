@@ -6,14 +6,14 @@ cet_make_library(
   MessageDrop.cc
   MessageLogger.cc
   MessageLoggerImpl.cc
-  MessageLoggerScribe.cc
   MessageSender.cc
-  MessageServicePresence.cc
   Presence.cc
   SingleThreadMSPresence.cc
+  ThreadSafeLogMessageLoggerScribe.cc
   createPresence.cc
   LIBRARIES
   MF_MessageService
+  ${TBB}
   MF_Utilities
   fhiclcpp
   ${Boost_THREAD_LIBRARY}

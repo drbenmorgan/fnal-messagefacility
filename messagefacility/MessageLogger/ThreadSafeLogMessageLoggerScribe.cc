@@ -5,10 +5,11 @@
 // ----------------------------------------------------------------------
 
 #include "cetlib/container_algorithms.h"
+#include "cetlib/trim.h"
 #include "fhiclcpp/make_ParameterSet.h"
 #include "messagefacility/Utilities/ErrorObj.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
-#include "messagefacility/MessageLogger/MessageLoggerScribe.h"
+#include "messagefacility/MessageLogger/ThreadSafeLogMessageLoggerScribe.h"
 #include "messagefacility/MessageService/ConfigurationHandshake.h"
 #include "messagefacility/MessageService/ELfwkJobReport.h"
 #include "messagefacility/MessageService/ELostreamOutput.h"
@@ -89,45 +90,37 @@ namespace {
     fhicl::make_ParameterSet(config, result);
     return result;
   }
-
 }
 
 namespace mf {
   namespace service {
 
-    MessageLoggerScribe::MessageLoggerScribe(cet::exempt_ptr<ThreadQueue> queue)
+    ThreadSafeLogMessageLoggerScribe::ThreadSafeLogMessageLoggerScribe()
       : earlyDest_{admin_->attach("cerr_early", make_unique<ELostreamOutput>(cet::ostream_handle{std::cerr}, false))}
-      , singleThread_{queue.get() == nullptr}
-      , queue_{queue}
     {
       admin_->setContextSupplier(msgContext_);
     }
 
     //=============================================================================
-    MessageLoggerScribe::~MessageLoggerScribe()
+    ThreadSafeLogMessageLoggerScribe::~ThreadSafeLogMessageLoggerScribe()
     {
+      // If there are any waiting message, finish them off
+      ErrorObj* errorobj_p=nullptr;
+      while(waitingMessages_.try_pop(errorobj_p)) {
+        if(not purgeMode_) {
+          for (auto const & cat : parseCategories(errorobj_p->xid().id)) {
+            errorobj_p->setID(cat);
+            (*errorLog_)( *errorobj_p );  // route the message text
+          }
+        }
+        delete errorobj_p;
+      }
       admin_->finish();
     }
 
     //=============================================================================
     void
-    MessageLoggerScribe::run()
-    {
-      OpCode opcode;
-      void* operand;
-
-      MessageDrop::instance()->messageLoggerScribeIsRunning = MLSCRIBE_RUNNING_INDICATOR;
-
-      do {
-        queue_->consume(opcode, operand);  // grab next work item from Q
-        runCommand(opcode, operand);
-      } while(!done_);
-
-    }
-
-    //=============================================================================
-    void
-    MessageLoggerScribe::runCommand(OpCode const opcode,
+    ThreadSafeLogMessageLoggerScribe::runCommand(OpCode const opcode,
                                     void* operand)
     {
       switch(opcode) {
@@ -136,19 +129,18 @@ namespace mf {
         break;
       }
       case END_THREAD: {
-        assert(operand == nullptr);
-        done_ = true;
-        MessageDrop::instance()->messageLoggerScribeIsRunning = (unsigned char) -1;
         break;
       }
       case LOG_A_MESSAGE: {
         ErrorObj* errorobj_p = static_cast<ErrorObj*>(operand);
         try {
-          if(active_ && !purgeMode_) log(errorobj_p);
+          if(active_ && !purgeMode_) {
+            log(errorobj_p);
+          }
         }
         catch(cet::exception const& e) {
           ++count_;
-          std::cerr << "MessageLoggerScribe caught " << count_
+          std::cerr << "ThreadSafeLogMessageLoggerScribe caught " << count_
                     << " cet::exceptions, text = \n"
                     << e.what() << "\n";
 
@@ -159,44 +151,17 @@ namespace mf {
           }
         }
         catch(...) {
-          std::cerr << "MessageLoggerScribe caught an unknown exception and "
+          std::cerr << "ThreadSafeLogMessageLoggerScribe caught an unknown exception and "
                     << "will no longer be processing "
                     << "messages. (entering purge mode)\n";
           purgeMode_ = true;
         }
-        delete errorobj_p;  // dispose of the message text
         break;
       }
       case CONFIGURE: {
-        if (singleThread_) {
-          jobConfig_.reset(static_cast<fhicl::ParameterSet*>(operand));
-          configure_errorlog();
-          break;
-        } else {
-          ConfigurationHandshake* h_p = static_cast<ConfigurationHandshake*>(operand);
-          jobConfig_.reset(static_cast<fhicl::ParameterSet*>(h_p->p));
-          ConfigurationHandshake::lock_guard sl {h_p->m};   // get lock
-          try {
-            configure_errorlog();
-          }
-          catch(mf::Exception& e) {
-            Place_for_passing_exception_ptr epp = h_p->epp;
-            if (!*epp) {
-              *epp = std::make_shared<mf::Exception>(e);
-            } else {
-              Pointer_to_new_exception_on_heap ep = *epp;
-              *ep << "\n and another exception: \n" << e.what();
-            }
-          }
-          // Note - since the configuring code has not made a new copy of the
-          // job parameter set, we must not delete jobConfig_ (in contrast to
-          // the case for errorobj_p).  On the other hand, if we instantiate
-          // a new mf::Exception pointed to by *epp, it is the responsibility
-          // of the MessageLoggerQ to delete it.
-          h_p->c.notify_all();  // Signal to MessageLoggerQ that we are done
-          // finally, release the scoped lock by letting it go out of scope
-          break;
-        }
+        jobConfig_.reset(static_cast<fhicl::ParameterSet*>(operand));
+        configure_errorlog();
+        break;
       }
       case SUMMARIZE: {
         assert(operand == nullptr);
@@ -204,12 +169,12 @@ namespace mf {
           triggerStatisticsSummaries();
         }
         catch(cet::exception const& e) {
-          std::cerr << "MessageLoggerScribe caught exception "
+          std::cerr << "ThreadSafeLogMessageLoggerScribe caught exception "
                     << "during summarize:\n"
                     << e.what() << "\n";
         }
         catch(...) {
-          std::cerr << "MessageLoggerScribe caught unkonwn exception type "
+          std::cerr << "ThreadSafeLogMessageLoggerScribe caught unkonwn exception type "
                     << "during summarize. (Ignored)\n";
         }
         break;
@@ -220,14 +185,14 @@ namespace mf {
           jobReportOption_ = *jobReportOption_p;
         }
         catch(cet::exception const& e) {
-          std::cerr << "MessageLoggerScribe caught a cet::exception "
+          std::cerr << "ThreadSafeLogMessageLoggerScribe caught a cet::exception "
                     << "during processing of --jobReport option:\n"
                     << e.what() << "\n"
                     << "This likely will affect or prevent the job report.\n"
                     << "However, the rest of the logger continues to run.\n";
         }
         catch(...) {
-          std::cerr << "MessageLoggerScribe caught unkonwn exception type\n"
+          std::cerr << "ThreadSafeLogMessageLoggerScribe caught unkonwn exception type\n"
                     << "during processing of --jobReport option.\n"
                     << "This likely will affect or prevent the job report.\n"
                     << "However, the rest of the logger continues to run.\n";
@@ -243,37 +208,46 @@ namespace mf {
         break;
       }
       case FLUSH_LOG_Q:  {
-        if (singleThread_) return;
-        ConfigurationHandshake* h_p = static_cast<ConfigurationHandshake*>(operand);
-        jobConfig_.reset(static_cast<fhicl::ParameterSet*>(h_p->p));
-        ConfigurationHandshake::lock_guard sl {h_p->m};   // get lock
-        h_p->c.notify_all();  // Signal to MessageLoggerQ that we are done
-        // finally, release the scoped lock by letting it go out of scope
         break;
       }
       }  // switch
 
-    }  // MessageLoggerScribe::runCommand(opcode, operand)
+    }  // ThreadSafeLogMessageLoggerScribe::runCommand(opcode, operand)
 
     //=============================================================================
-    void MessageLoggerScribe::log(ErrorObj* errorobj_p)
+    void ThreadSafeLogMessageLoggerScribe::log(ErrorObj* errorobj_p)
     {
-      ELcontextSupplier& cs = const_cast<ELcontextSupplier&>(admin_->getContextSupplier());
-      MsgContext& mc = dynamic_cast<MsgContext&>(cs);
-      mc.setContext(errorobj_p->context());
+      bool expected = false;
+      std::unique_ptr<ErrorObj> obj(errorobj_p);
+      if(messageBeingSent_.compare_exchange_strong(expected,true)) {
+        ELcontextSupplier& cs = const_cast<ELcontextSupplier&>(admin_->getContextSupplier());
+        MsgContext& mc = dynamic_cast<MsgContext&>(cs);
+        mc.setContext(errorobj_p->context());
 
-      vstring categories;
-      parseCategories(errorobj_p->xid().id, categories);
-
-      for (auto const& cat : categories) {
-        errorobj_p->setID(cat);
-        (*errorLog_)(*errorobj_p);  // route the message text
+        // Process the current message.
+        for (auto const& cat : parseCategories(errorobj_p->xid().id)) {
+          errorobj_p->setID(cat);
+          (*errorLog_)(*errorobj_p);  // route the message text
+        }
+        //process any waiting messages
+        errorobj_p = nullptr;
+        while (not purgeMode_ and waitingMessages_.try_pop(errorobj_p)) {
+          obj.reset(errorobj_p);
+          for (auto const& cat : parseCategories(errorobj_p->xid().id)) {
+            errorobj_p->setID(cat);
+            (*errorLog_)(*errorobj_p);  // route the message text
+          }
+        }
+        messageBeingSent_.store(false);
+      } else {
+        obj.release();
+        waitingMessages_.push(errorobj_p);
       }
     }
 
     //=============================================================================
     void
-    MessageLoggerScribe::configure_errorlog()
+    ThreadSafeLogMessageLoggerScribe::configure_errorlog()
     {
       // The following is present to test pre-configuration message handling:
       auto const& preconfiguration_message = jobConfig_->get<std::string>("generate_preconfiguration_message", {});
@@ -284,15 +258,6 @@ namespace mf {
         // (so it sits on the queue), then copy the processing that
         // the LOG_A_MESSAGE case does.
         LogError("preconfiguration") << preconfiguration_message;
-        if (!singleThread_) {
-          OpCode opcode;
-          void* operand;
-          queue_->consume(opcode, operand);  // grab next work item from Q
-          assert(opcode == LOG_A_MESSAGE);
-          ErrorObj* errorobj_p = static_cast<ErrorObj*>(operand);
-          log(errorobj_p);
-          delete errorobj_p; // dispose of the message text
-        }
       }
 
       if (admin_->destinations().size() > 1) {
@@ -303,12 +268,12 @@ namespace mf {
 
       configure_fwkJobReports();
       fetchDestinations();
-    }  // MessageLoggerScribe::configure_errorlog()
+    }  // ThreadSafeLogMessageLoggerScribe::configure_errorlog()
 
 
     //=============================================================================
     void
-    MessageLoggerScribe::configure_fwkJobReports()
+    ThreadSafeLogMessageLoggerScribe::configure_fwkJobReports()
     {
       if (jobReportOption_.empty() || jobReportOption_ == "~")
         return;
@@ -381,7 +346,7 @@ namespace mf {
 
     //=============================================================================
     void
-    MessageLoggerScribe::fetchDestinations()
+    ThreadSafeLogMessageLoggerScribe::fetchDestinations()
     {
       // Below, we do not use the
       //
@@ -414,7 +379,7 @@ namespace mf {
 
     //=============================================================================
     void
-    MessageLoggerScribe::makeDestinations(fhicl::ParameterSet const& dests,
+    ThreadSafeLogMessageLoggerScribe::makeDestinations(fhicl::ParameterSet const& dests,
                                           ELdestConfig::dest_config const configuration)
     {
       std::set<std::string> ids;
@@ -458,24 +423,12 @@ namespace mf {
 
     } // make_destinations()
 
-      //=============================================================================
-    std::string
-    MessageLoggerScribe::trim(std::string const& src)
-    {
-      auto const len = src.length();
-      decltype(src.length()) i {};
-      auto j = len-1;
-
-      while( (i < len) && (src[i] == ' ') ) ++i;
-      while( (j > 0  ) && (src[j] == ' ') ) --j;
-
-      return src.substr(i,j-i+1);
-    }
-
     //=============================================================================
-    void
-    MessageLoggerScribe::parseCategories(std::string const& s, vstring& cats)
+    vstring
+    ThreadSafeLogMessageLoggerScribe::parseCategories(std::string const& s)
     {
+      vstring cats;
+      using namespace std::string_literals;
       // Note:  This algorithm assigns, as desired, one null category if it
       //        encounters an empty categories string
 
@@ -486,21 +439,22 @@ namespace mf {
 
         if(i==npos) {
           cats.push_back(std::string());
-          return;
+          return cats;
         }
 
         auto const j = s.find('|',i);
-        std::string cat = trim(s.substr(i,j-i));
+        std::string cat = cet::trim_copy(s.substr(i,j-i), " \t\n"s);
         cats.push_back(cat);
         i = j;
         while ( (i < npos) && (s[i] == '|') ) ++i;
         // the above handles cases of || and also | at end of string
       }
+      return cats;
     }
 
     //=============================================================================
     void
-    MessageLoggerScribe::triggerStatisticsSummaries()
+    ThreadSafeLogMessageLoggerScribe::triggerStatisticsSummaries()
     {
       for (auto& idDestPair : admin_->destinations()) {
         auto& dest = *idDestPair.second;
@@ -512,7 +466,7 @@ namespace mf {
 
     //=============================================================================
     std::string
-    MessageLoggerScribe::createId(std::set<std::string>& existing_ids,
+    ThreadSafeLogMessageLoggerScribe::createId(std::set<std::string>& existing_ids,
                                   std::string const& type,
                                   std::string const& file_name,
                                   fhicl::ParameterSet const& pset,
@@ -541,7 +495,7 @@ namespace mf {
 
     //=============================================================================
     bool
-    MessageLoggerScribe::duplicateDestination(std::string const& output_id,
+    ThreadSafeLogMessageLoggerScribe::duplicateDestination(std::string const& output_id,
                                               ELdestConfig::dest_config const configuration,
                                               bool const should_throw)
     {
@@ -595,7 +549,7 @@ namespace mf {
 
     //=============================================================================
     std::unique_ptr<ELdestination>
-    MessageLoggerScribe::makePlugin_(cet::BasicPluginFactory& plugin_factory,
+    ThreadSafeLogMessageLoggerScribe::makePlugin_(cet::BasicPluginFactory& plugin_factory,
                                      std::string const& libspec,
                                      std::string const& psetname,
                                      fhicl::ParameterSet const& pset)
@@ -606,7 +560,7 @@ namespace mf {
         if (pluginType == cet::PluginTypeDeducer<ELdestination>::value) {
           result = plugin_factory.makePlugin<std::unique_ptr<ELdestination>>(libspec, psetname, pset);
         } else {
-          throw Exception(errors::Configuration, "MessageLoggerScribe: ")
+          throw Exception(errors::Configuration, "ThreadSafeLogMessageLoggerScribe: ")
             << "unrecognized plugin type "
             << pluginType
             << "for plugin "
@@ -614,7 +568,7 @@ namespace mf {
             << ".\n";
         }
       } catch (cet::exception & e) {
-        throw Exception(errors::Configuration, "MessageLoggerScribe: ", e)
+        throw Exception(errors::Configuration, "ThreadSafeLogMessageLoggerScribe: ", e)
           << "Exception caught while processing plugin spec.\n";
       }
 

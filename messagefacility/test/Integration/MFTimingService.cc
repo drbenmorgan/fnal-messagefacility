@@ -79,10 +79,7 @@ int main()
   }
 
   // Start MessageFacility Service
-  mf::StartMessageFacility(
-			   mf::MessageFacilityService::MultiThread,
-			   main_pset.get<fhicl::ParameterSet>("message")
-                           );
+  mf::StartMessageFacility(main_pset.get<fhicl::ParameterSet>("message"));
   
   // Set module name for the main thread
   mf::SetApplicationName("MessageFacility");

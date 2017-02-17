@@ -6,22 +6,20 @@ perllib  product_dir
 #
 # define product/version pairs
 product		version
+tbb		v2017_3c
 fhiclcpp        v4_03_02
 cetbuildtools	v5_06_06	-	only_for_build
 end_product_list
 
 
 # Matrix of qualifiers versus dependent products
-qualifier	fhiclcpp	compiler	notes
-e14:debug	e14:debug	gcc
-e14:opt		e14:opt		gcc
-e14:prof	e14:prof	gcc
-e12:debug	e12:debug	gcc
-e12:opt		e12:opt		gcc
-e12:prof	e12:prof	gcc
-e10:debug	e10:debug	gcc
-e10:opt		e10:opt		gcc
-e10:prof	e10:prof	gcc
+qualifier	fhiclcpp	tbb		compiler	notes
+e14:debug	e14:debug	e14:debug	gcc
+e14:prof	e14:prof	e14:prof	gcc
+e12:debug	e12:debug	e14:debug	gcc
+e12:prof	e12:prof	e14:prof	gcc
+e10:debug	e10:debug	e14:debug	gcc
+e10:prof	e10:prof	e14:prof	gcc
 end_qualifier_list
 
 # Local Variables:

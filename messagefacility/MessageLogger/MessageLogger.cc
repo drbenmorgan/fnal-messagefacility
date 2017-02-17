@@ -274,8 +274,7 @@ namespace mf {
   }
 
   // Start MessageFacility service
-  void StartMessageFacility(std::string const& mode,
-                            fhicl::ParameterSet const& pset)
+  void StartMessageFacility(fhicl::ParameterSet const& pset)
   {
     auto& mfs = MessageFacilityService::instance();
     std::lock_guard<std::mutex> lock {mfs.m};
@@ -299,7 +298,7 @@ namespace mf {
     // everyone else.
 
     // MessageServicePresence
-    mfs.MFPresence = PresenceFactory::createInstance(mode);
+    mfs.MFPresence = PresenceFactory::createInstance();
 
     // The MessageLogger
     mfs.theML = std::make_unique<MessageLoggerImpl>(pset);

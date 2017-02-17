@@ -4,5 +4,5 @@
 int main()
 {
   fhicl::ParameterSet ps {};
-  mf::StartMessageFacility(mf::MessageFacilityService::SingleThread, ps);
+  mf::StartMessageFacility(ps);
 }

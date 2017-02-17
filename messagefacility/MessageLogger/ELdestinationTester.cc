@@ -139,8 +139,7 @@ int main(int argc, char* argv[])
 
   // Start MessageFacility Service
   try {
-    mf::StartMessageFacility(mf::MessageFacilityService::MultiThread,
-                             main_pset.get<fhicl::ParameterSet>("message"));
+    mf::StartMessageFacility(main_pset.get<fhicl::ParameterSet>("message"));
   }
   catch (mf::Exception const& e) {
     std::cerr << e.what() << std::endl;
