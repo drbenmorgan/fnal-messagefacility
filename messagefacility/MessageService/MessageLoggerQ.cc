@@ -31,7 +31,7 @@ namespace {
   };
 
   void
-  StandAloneScribe::runCommand(OpCode const opcode, void* operand) {
+  StandAloneScribe::runCommand(OpCode const opcode, void* const operand) {
     //even though we don't print, have to clean up memory
     switch (opcode) {
     case LOG_A_MESSAGE: {
