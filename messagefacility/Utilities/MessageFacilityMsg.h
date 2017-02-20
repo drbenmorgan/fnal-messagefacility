@@ -1,5 +1,5 @@
-#ifndef messagefacility_Auxiliaries_MessageFacilityMsg_h
-#define messagefacility_Auxiliaries_MessageFacilityMsg_h
+#ifndef messagefacility_Utilities_MessageFacilityMsg_h
+#define messagefacility_Utilities_MessageFacilityMsg_h
 
 #include <memory>
 #include <string>
@@ -56,7 +56,7 @@ namespace mf {
 
 }
 
-#endif /* messagefacility_Auxiliaries_MessageFacilityMsg_h */
+#endif /* messagefacility_Utilities_MessageFacilityMsg_h */
 
 // Local Variables:
 // mode: c++

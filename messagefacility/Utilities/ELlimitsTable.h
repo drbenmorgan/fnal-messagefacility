@@ -1,5 +1,5 @@
-#ifndef messagefacility_Auxiliaries_ELlimitsTable_h
-#define messagefacility_Auxiliaries_ELlimitsTable_h
+#ifndef messagefacility_Utilities_ELlimitsTable_h
+#define messagefacility_Utilities_ELlimitsTable_h
 
 
 // ----------------------------------------------------------------------
@@ -95,7 +95,7 @@ namespace mf {
 }        // end of namespace mf
 
 
-#endif /* messagefacility_Auxiliaries_ELlimitsTable_h */
+#endif /* messagefacility_Utilities_ELlimitsTable_h */
 
 // Local Variables:
 // mode: c++

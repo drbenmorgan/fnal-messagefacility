@@ -21,7 +21,7 @@ namespace mf {
   }
 }
 
-#endif /* messagefacility_MessageService_MessageLoggerQ_h */
+#endif /* messagefacility_MessageService_OpCode_h */
 
 // Local Variables:
 // mode: c++

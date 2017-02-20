@@ -36,7 +36,7 @@ namespace mf {
 
 }
 
-#endif
+#endif /* messagefacility_Utilities_possiblyAbortOrExit_h */
 
 // Local variables:
 // mode: c++

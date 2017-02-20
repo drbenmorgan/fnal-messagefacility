@@ -1,5 +1,5 @@
-#ifndef messagefacility_MessageService_MessageDrop_h
-#define messagefacility_MessageService_MessageDrop_h
+#ifndef messagefacility_MessageLogger_MessageDrop_h
+#define messagefacility_MessageLogger_MessageDrop_h
 
 #include "messagefacility/Utilities/exception.h"
 
@@ -36,7 +36,7 @@ namespace mf {
 } // end of namespace mf
 
 
-#endif /* messagefacility_MessageService_MessageDrop_h */
+#endif /* messagefacility_MessageLogger_MessageDrop_h */
 
 // Local Variables:
 // mode: c++

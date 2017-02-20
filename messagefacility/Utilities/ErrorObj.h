@@ -1,5 +1,5 @@
-#ifndef messagefacility_Auxiliaries_ErrorObj_h
-#define messagefacility_Auxiliaries_ErrorObj_h
+#ifndef messagefacility_Utilities_ErrorObj_h
+#define messagefacility_Utilities_ErrorObj_h
 
 #include "messagefacility/Utilities/ELlist.h"
 #include "messagefacility/Utilities/ELextendedID.h"
@@ -130,7 +130,7 @@ namespace mf {
 #include "messagefacility/Utilities/ErrorObj.icc"
 #undef ERROROBJ_ICC
 
-#endif /* messagefacility_Auxiliaries_ErrorObj_h */
+#endif /* messagefacility_Utilities_ErrorObj_h */
 
 // Local variables:
 // mode: c++
