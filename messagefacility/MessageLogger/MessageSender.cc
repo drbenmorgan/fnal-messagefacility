@@ -27,9 +27,9 @@ try
       errorobj_p->setContext(drop->runEvent);
     }
 
-    if (errorSummaryIsBeingKept && errorobj_p->xid().severity >= ELwarning) {
+    if (errorSummaryIsBeingKept && errorobj_p->xid().severity() >= ELwarning) {
       ELextendedID const& xid = errorobj_p->xid();
-      ErrorSummaryMapKey const key {xid.id, xid.module, xid.severity};
+      ErrorSummaryMapKey const key {xid.id(), xid.module(), xid.severity()};
       auto i = errorSummaryMap.find(key);
       if (i != errorSummaryMap.end()) {
         ++(i->second);  // same as ++errorSummaryMap[key]

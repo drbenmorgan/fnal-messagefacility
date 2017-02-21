@@ -108,7 +108,7 @@ namespace mf {
       ErrorObj* errorobj_p=nullptr;
       while(waitingMessages_.try_pop(errorobj_p)) {
         if(not purgeMode_) {
-          for (auto const & cat : parseCategories(errorobj_p->xid().id)) {
+          for (auto const & cat : parseCategories(errorobj_p->xid().id())) {
             errorobj_p->setID(cat);
             (*errorLog_)( *errorobj_p );  // route the message text
           }
@@ -225,7 +225,7 @@ namespace mf {
         mc.setContext(errorobj_p->context());
 
         // Process the current message.
-        for (auto const& cat : parseCategories(errorobj_p->xid().id)) {
+        for (auto const& cat : parseCategories(errorobj_p->xid().id())) {
           errorobj_p->setID(cat);
           (*errorLog_)(*errorobj_p);  // route the message text
         }
@@ -233,7 +233,7 @@ namespace mf {
         errorobj_p = nullptr;
         while (not purgeMode_ and waitingMessages_.try_pop(errorobj_p)) {
           obj.reset(errorobj_p);
-          for (auto const& cat : parseCategories(errorobj_p->xid().id)) {
+          for (auto const& cat : parseCategories(errorobj_p->xid().id())) {
             errorobj_p->setID(cat);
             (*errorLog_)(*errorobj_p);  // route the message text
           }

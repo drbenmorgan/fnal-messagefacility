@@ -71,14 +71,14 @@ namespace mfplugins {
   {
     auto const& xid = msg.xid();
     oss << format.timestamp(msg.timestamp())+std::string("|")     // timestamp
-        << xid.hostname+std::string("|")                          // host name
-        << xid.hostaddr+std::string("|")                          // host address
-        << xid.severity.getName()+std::string("|")                // severity
-        << xid.id+std::string("|")                                // category
-        << xid.application+std::string("|")                       // application
-        << xid.pid<<std::string("|")                              // process id
+        << xid.hostname()+std::string("|")                          // host name
+        << xid.hostaddr()+std::string("|")                          // host address
+        << xid.severity().getName()+std::string("|")                // severity
+        << xid.id()+std::string("|")                                // category
+        << xid.application()+std::string("|")                       // application
+        << xid.pid()<<std::string("|")                              // process id
         << mf::MessageDrop::instance()->runEvent+std::string("|") // run/event no
-        << xid.module+std::string("|");                           // module name
+        << xid.module()+std::string("|");                           // module name
   }
 
   //======================================================================
@@ -102,7 +102,7 @@ namespace mfplugins {
                               ErrorObj const& msg,
                               mf::service::ELcontextSupplier const&)
   {
-    int const severity = syslogLevel(msg.xid().severity);
+    int const severity = syslogLevel(msg.xid().severity());
     syslog(severity, "%s", oss.str().data());
   }
 

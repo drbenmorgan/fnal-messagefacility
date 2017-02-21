@@ -56,15 +56,15 @@ namespace mf {
 
         auto const& xid = pr.first;
         auto const& count = pr.second;
-        auto const& cat = xid.id;
+        auto const& cat = xid.id();
 
         // -----  Emit new process and part I header, if needed:
         //
-        if (n == 0  || lastProcess != xid.process) {
+        if (n == 0  || lastProcess != xid.process()) {
           s << "\n";
-          lastProcess = xid.process;
+          lastProcess = xid.process();
           if ( lastProcess.size() > 0) {
-            s << "Process " << xid.process << '\n';
+            s << "Process " << xid.process() << '\n';
           }
           s << " type     category        sev    module        "
             "subroutine        count    total\n"
@@ -76,9 +76,9 @@ namespace mf {
 
         s << right << std::setw( 5) << ++n                           << ' '
           << left  << std::setw(20) << cat.substr(0,20)              << ' '
-          << left  << std::setw( 2) << xid.severity.getSymbol()      << ' '
-          << left  << std::setw(16) << xid.module.substr(0,16)       << ' '
-          << left  << std::setw(16) << xid.subroutine.substr(0,16)
+          << left  << std::setw( 2) << xid.severity().getSymbol()      << ' '
+          << left  << std::setw(16) << xid.module().substr(0,16)       << ' '
+          << left  << std::setw(16) << xid.subroutine().substr(0,16)
           << right << std::setw( 7) << count.n
           << left  << std::setw( 1) << ( count.ignoredFlag ? '*' : ' ' )
           << right << std::setw( 8) << count.aggregateN             << '\n';
@@ -86,8 +86,8 @@ namespace mf {
 
         // -----  Obtain information for Part III, below:
         //
-        p3[xid.severity.getLevel()].n += count.n;
-        p3[xid.severity.getLevel()].t += count.aggregateN;
+        p3[xid.severity().getLevel()].n += count.n;
+        p3[xid.severity().getLevel()].t += count.aggregateN;
       }  // for i
 
       // -----  Provide footnote to part I, if needed:
@@ -103,7 +103,7 @@ namespace mf {
       for (auto const& pr : statsMap) {
         auto const& xid = pr.first;
         auto const& count = pr.second;
-        std::string const& cat = xid.id;
+        std::string const& cat = xid.id();
         if (n == 0) {
           s << '\n'
             << " type    category    Examples: "
@@ -149,9 +149,9 @@ namespace mf {
         //
         std::ostringstream s;
         s << "Category_";
-        std::string sevSymbol = xid.severity.getSymbol();
+        std::string sevSymbol = xid.severity().getSymbol();
         if (sevSymbol[0] == '-') sevSymbol = sevSymbol.substr(1);
-        s << sevSymbol << "_" << xid.id;
+        s << sevSymbol << "_" << xid.id();
         int n = count.aggregateN;
         std::string catstr = s.str();
         if (sm.find(catstr) != sm.end()) {
@@ -161,8 +161,8 @@ namespace mf {
         }
         // -----  Obtain information for Part III, below:
         //
-        p3[xid.severity.getLevel()].n += count.n;
-        p3[xid.severity.getLevel()].t += count.aggregateN;
+        p3[xid.severity().getLevel()].n += count.n;
+        p3[xid.severity().getLevel()].t += count.aggregateN;
       }  // for i
 
       // part II (sample event numbers) does not exist for the job report.

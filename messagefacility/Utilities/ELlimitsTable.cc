@@ -18,34 +18,34 @@ namespace mf {
         int lim {};
         int ivl {};
         int ts {};
-        auto l = limits.find(xid.id);
+        auto l = limits.find(xid.id());
         if (l != limits.end()) { // use limits previously established for this id
           auto const& lat = l->second;
           lim = lat.limit;
           ivl = lat.interval;
           ts  = lat.timespan;
           if (lim < 0)  {
-            lim = severityLimits[xid.severity.getLevel()];
+            lim = severityLimits[xid.severity().getLevel()];
             if (lim < 0) {
               lim = wildcardLimit;
             }
           }
           if (ivl < 0) {
-            ivl = severityIntervals[xid.severity.getLevel()];
+            ivl = severityIntervals[xid.severity().getLevel()];
             if (ivl < 0) {
               ivl = wildcardInterval;
             }
           }
           if (ts < 0) {
-            ts = severityTimespans[xid.severity.getLevel()];
+            ts = severityTimespans[xid.severity().getLevel()];
             if (ts < 0) {
               ts = wildcardTimespan;
             }
           }
         } else { // establish and use limits new to this id
-          lim = severityLimits   [xid.severity.getLevel()];
-          ivl = severityIntervals[xid.severity.getLevel()];
-          ts  = severityTimespans[xid.severity.getLevel()];
+          lim = severityLimits   [xid.severity().getLevel()];
+          ivl = severityIntervals[xid.severity().getLevel()];
+          ts  = severityTimespans[xid.severity().getLevel()];
           if (lim < 0) {
             lim = wildcardLimit;
           }
@@ -57,7 +57,7 @@ namespace mf {
           }
         }
 
-        limits[xid.id] = LimitAndTimespan(lim, ts, ivl);
+        limits[xid.id()] = LimitAndTimespan(lim, ts, ivl);
         counts[xid] = CountAndLimit(lim, ts, ivl);
         c = counts.find(xid);
       }

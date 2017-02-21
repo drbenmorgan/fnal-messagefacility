@@ -2,41 +2,33 @@
 
 namespace mf {
 
-  bool
-  ELextendedID::operator<(ELextendedID const& xid) const
-  {
-    return
-      ( process    < xid.process    )  ?  true
-      : ( process    > xid.process    )  ?  false
+ bool
+ ELextendedID::operator<(ELextendedID const& xid) const
+ {
+   return
+     ( process_ < xid.process_ ) ? true
+     : ( process_ > xid.process_ ) ? false
 
-      : ( severity   < xid.severity   )  ?  true
-      : ( severity   > xid.severity   )  ?  false
+     : ( severity_ < xid.severity_ ) ? true
+     : ( severity_ > xid.severity_ ) ? false
 
-      : ( id         < xid.id         )  ?  true
-      : ( id         > xid.id         )  ?  false
+     : ( id_ < xid.id_ ) ? true
+     : ( id_ > xid.id_ ) ? false
 
-      : ( module     < xid.module     )  ?  true
-      : ( module     > xid.module     )  ?  false
+     : ( module_ < xid.module_ ) ? true
+     : ( module_ > xid.module_ ) ? false
 
-      : ( subroutine < xid.subroutine )  ?  true
-      : ( subroutine > xid.subroutine )  ?  false
+     : ( subroutine_ < xid.subroutine_ ) ? true
+     : ( subroutine_ > xid.subroutine_ ) ? false
 
-      :                                     false
-      ;
-  }
+     : false
+     ;
+ }
 
 
-  void ELextendedID::clear()
-  {
-    process    = "";
-    id         = "";
-    severity   = ELunspecified;
-    module     = "";
-    subroutine = "";
-    hostname   = "";
-    hostaddr   = "";
-    application= "";
-    pid        = 0;
-  }
+ void ELextendedID::clear()
+ {
+   *this = ELextendedID();
+ }
 
-} // end of namespace mf  */
+} // end of namespace mf */

@@ -66,13 +66,13 @@ namespace mf {
 
       // -----  will we need to poke/restore info into the message?
       //
-      bool const updateProcess    ( msg.xid().process   .length() == 0 );
-      bool const updateModule     ( msg.xid().module    .length() == 0 );
-      bool const updateSubroutine ( msg.xid().subroutine.length() == 0 );
-      bool const updateHostName   ( msg.xid().hostname  .length() == 0 );
-      bool const updateHostAddr   ( msg.xid().hostaddr  .length() == 0 );
-      bool const updateApplication( msg.xid().application.length()== 0 );
-      bool const updatePID        ( msg.xid().pid                 == 0 );
+      bool const updateProcess    ( msg.xid().process()   .length() == 0 );
+      bool const updateModule     ( msg.xid().module()    .length() == 0 );
+      bool const updateSubroutine ( msg.xid().subroutine().length() == 0 );
+      bool const updateHostName   ( msg.xid().hostname()  .length() == 0 );
+      bool const updateHostAddr   ( msg.xid().hostaddr()  .length() == 0 );
+      bool const updateApplication( msg.xid().application().length()== 0 );
+      bool const updatePID        ( msg.xid().pid()                 == 0 );
 
       // -----  poke, if needed:
       //
@@ -85,10 +85,10 @@ namespace mf {
       if ( updatePID        )  msg.setPID        ( a->pid()      );
 
       // severity level statistics keeping:
-      int const lev = msg.xid().severity.getLevel();
+      int const lev = msg.xid().severity().getLevel();
       a->incrementSeverityCount(lev);
       if (lev > a->highSeverity().getLevel())
-        a->setHighSeverity(msg.xid().severity);
+        a->setHighSeverity(msg.xid().severity());
 
       a->context().editErrorObj(msg);
 
@@ -103,7 +103,7 @@ namespace mf {
       auto const& context = a->getContextSupplier();
       cet::for_all(a->destinations(), [&msg,&context](auto const& d) { d.second->log(msg, context); });
 
-      possiblyAbortOrExit(msg.xid().severity, a->abortThreshold(), a->exitThreshold());
+      possiblyAbortOrExit(msg.xid().severity(), a->abortThreshold(), a->exitThreshold());
 
       // -----  restore, if we poked above:
       //

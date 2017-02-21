@@ -67,14 +67,14 @@ namespace {
     auto const& xid = msg.xid();
 
     string const& timestamp  = format.timestamp( msg.timestamp() );    // timestamp
-    string const& hostname   = xid.hostname;                           // host name
-    string const& hostaddr   = xid.hostaddr;                           // host address
-    string const& severity   = xid.severity.getName();                 // severity
-    string const& category   = xid.id;                                 // category
-    string const& app        = xid.application;                        // application
-    long   const& pid        = xid.pid;                                // process id
+    string const& hostname   = xid.hostname();                           // host name
+    string const& hostaddr   = xid.hostaddr();                           // host address
+    string const& severity   = xid.severity().getName();                 // severity
+    string const& category   = xid.id();                                 // category
+    string const& app        = xid.application();                        // application
+    long   const& pid        = xid.pid();                                // process id
     string const& runEventNo = mf::MessageDrop::instance()->runEvent;  // run/event no
-    string const& modname    = xid.module;                             // module name
+    string const& modname    = xid.module();                             // module name
     string const& usrMsg     =
       !oss.str().compare(0,1,"\n") ? oss.str().erase(0,1) : oss.str(); // user-supplied msg
                                                                        // (remove leading "\n" if present)

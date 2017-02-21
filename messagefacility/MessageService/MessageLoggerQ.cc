@@ -36,15 +36,15 @@ namespace {
     switch (opcode) {
     case LOG_A_MESSAGE: {
       mf::ErrorObj* errorobj_p = static_cast<mf::ErrorObj*>(operand);
-      if (MessageLoggerQ::ignore(errorobj_p->xid().severity, errorobj_p->xid().id)) {
+      if (MessageLoggerQ::ignore(errorobj_p->xid().severity(), errorobj_p->xid().id())) {
         delete errorobj_p;
         break;
       }
       if (errorobj_p->is_verbatim()) {
         std::cerr<< errorobj_p->fullText() << std::endl;
       } else {
-        std::cerr<< "%MSG" << errorobj_p->xid().severity.getSymbol()
-                 << " " << errorobj_p->xid().id << ": \n"
+        std::cerr<< "%MSG" << errorobj_p->xid().severity().getSymbol()
+                 << " " << errorobj_p->xid().id() << ": \n"
                  << errorobj_p->fullText() << "\n"
                  << "%MSG"
                  << std::endl;

@@ -110,8 +110,8 @@ namespace mf {
     bool ELdestination::passLogStatsThreshold(mf::ErrorObj const& msg) const
     {
       // See if this message is to be counted.
-      if (msg.xid().severity < threshold) return false;
-      if (thisShouldBeIgnored(msg.xid().module)) return false;
+      if (msg.xid().severity() < threshold) return false;
+      if (thisShouldBeIgnored(msg.xid().module())) return false;
 
       return true;
     }
@@ -123,9 +123,9 @@ namespace mf {
 
       // See if this message is to be acted upon, and add it to limits table
       // if it was not already present:
-      if (xid.severity < threshold)  return false;
-      if (xid.severity < ELsevere && thisShouldBeIgnored(xid.module)) return false;
-      if (xid.severity < ELsevere && !stats.limits.add(xid)) return false;
+      if (xid.severity() < threshold)  return false;
+      if (xid.severity() < ELsevere && thisShouldBeIgnored(xid.module())) return false;
+      if (xid.severity() < ELsevere && !stats.limits.add(xid)) return false;
 
       return true;
     }
@@ -144,9 +144,9 @@ namespace mf {
 
       charsOnLine = 0;
       emit(oss, preamble);
-      emit(oss, xid.severity.getSymbol());
+      emit(oss, xid.severity().getSymbol());
       emit(oss, " ");
-      emit(oss, xid.id);
+      emit(oss, xid.id());
       emit(oss, msg.idOverflow());
       emit(oss, ": ");
 
@@ -162,7 +162,7 @@ namespace mf {
       //
       bool needAspace = true;
       if (format.want(EPILOGUE_SEPARATE)) {
-        if (xid.module.length()+xid.subroutine.length() > 0) {
+        if (xid.module().length()+xid.subroutine().length() > 0) {
           emit(oss,"\n");
           needAspace = false;
         }
@@ -171,19 +171,19 @@ namespace mf {
           needAspace = false;
         }
       }
-      if (format.want(MODULE) && (xid.module.length() > 0)) {
+      if (format.want(MODULE) && (xid.module().length() > 0)) {
         if (needAspace) {
           emit(oss," ");
           needAspace = false;
         }
-        emit(oss, xid.module + " ");
+        emit(oss, xid.module() + " ");
       }
-      if (format.want(SUBROUTINE) && (xid.subroutine.length() > 0)) {
+      if (format.want(SUBROUTINE) && (xid.subroutine().length() > 0)) {
         if (needAspace) {
           emit(oss," ");
           needAspace = false;
         }
-        emit(oss, xid.subroutine + "() ");
+        emit(oss, xid.subroutine() + "() ");
       }
 
       // Provide time stamp:

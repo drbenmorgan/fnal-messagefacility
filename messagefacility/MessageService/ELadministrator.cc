@@ -159,7 +159,7 @@ namespace mf {
       if (!msgIsActive_)
         return;
 
-      auto const severity = msg_.xid().severity;
+      auto const severity = msg_.xid().severity();
       int const lev = severity.getLevel();
       ++severityCounts_[lev];
       if (severity > highSeverity_)

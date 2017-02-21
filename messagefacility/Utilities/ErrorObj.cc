@@ -63,22 +63,24 @@ namespace mf {
 
   void ErrorObj::setSeverity(ELseverityLevel const sev)
   {
-    myXid.severity = (sev <= ELzeroSeverity) ? (ELseverityLevel)ELincidental
-      : (sev >= ELhighestSeverity) ? (ELseverityLevel)ELfatal
-      :                              sev
-      ;
+    myXid.setSeverity((sev <= ELzeroSeverity) ?
+                      (ELseverityLevel)ELincidental :
+                      ((sev >= ELhighestSeverity) ?
+                       (ELseverityLevel)ELfatal :
+                       sev));
   }
 
   void ErrorObj::setID(std::string const& id)
   {
-    myXid.id = std::string(id, 0, maxIDlength);
-    if (id.length() > maxIDlength)
+    myXid.setID(std::string(id, 0, maxIDlength));
+    if (id.length() > maxIDlength) {
       myIdOverflow = std::string(id, maxIDlength, id.length()-maxIDlength);
+    }
   }
 
   void ErrorObj::setModule(std::string const& module)
   {
-    myXid.module = module;
+    myXid.setModule(module);
   }
 
   void ErrorObj::setContext(std::string const& c)
@@ -88,15 +90,15 @@ namespace mf {
 
   void ErrorObj::setSubroutine(std::string const& subroutine)
   {
-    myXid.subroutine = (subroutine[0] == ' ')
-      ? subroutine.substr(1)
-      : subroutine;
+    myXid.setSubroutine((subroutine[0] == ' ') ?
+                        subroutine.substr(1) :
+                        subroutine);
   }
 
 
   void ErrorObj::setProcess(std::string const& proc)
   {
-    myXid.process = proc;
+    myXid.setProcess(proc);
   }
 
   void ErrorObj::setReactedTo(bool const r)
@@ -106,22 +108,22 @@ namespace mf {
 
   void ErrorObj::setHostName(std::string const& hostname)
   {
-    myXid.hostname = hostname;
+    myXid.setHostname(hostname);
   }
 
   void ErrorObj::setHostAddr(std::string const& hostaddr)
   {
-    myXid.hostaddr = hostaddr;
+    myXid.setHostaddr(hostaddr);
   }
 
   void ErrorObj::setApplication(std::string const& application )
   {
-    myXid.application = application;
+    myXid.setApplication(application);
   }
 
   void ErrorObj::setPID(long const pid)
   {
-    myXid.pid = pid;
+    myXid.setPID(pid);
   }
 
   ErrorObj& ErrorObj::eo_emit(std::string const& s)

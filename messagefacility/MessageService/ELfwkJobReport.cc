@@ -54,21 +54,21 @@ namespace mf {
     {
       xid_ = msg.xid();
 
-      if (xid_.id != "FwkJob") return;
+      if (xid_.id() != "FwkJob") return;
 
       // See if this message is to be acted upon (this is redundant if
       // we are reacting only to FwkJob) and add it to limits table if
       // it was not already present:
-      if ( msg.xid().severity < threshold  )  return;
+      if ( xid_.severity() < threshold  )  return;
 
-      if ( (xid_.id == "BeginningJob")        ||
-           (xid_.id == "postBeginJob")        ||
-           (xid_.id == "preEventProcessing")  ||
-           (xid_.id == "preModule")           ||
-           (xid_.id == "postModule")          ||
-           (xid_.id == "postEventProcessing") ||
-           (xid_.id == "postEndJob")         ) return;
-      if ( thisShouldBeIgnored(xid_.module)  ) return;
+      if ( (xid_.id() == "BeginningJob")        ||
+           (xid_.id() == "postBeginJob")        ||
+           (xid_.id() == "preEventProcessing")  ||
+           (xid_.id() == "preModule")           ||
+           (xid_.id() == "postModule")          ||
+           (xid_.id() == "postEventProcessing") ||
+           (xid_.id() == "postEndJob")         ) return;
+      if ( thisShouldBeIgnored(xid_.module())  ) return;
       if ( !stats.limits.add( msg.xid() ) ) return;
 
       // Output each item in the message:
