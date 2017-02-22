@@ -57,7 +57,6 @@ namespace mf {
           }
         }
 
-        limits[xid.id()] = LimitAndTimespan(lim, ts, ivl);
         counts[xid] = CountAndLimit(lim, ts, ivl);
         c = counts.find(xid);
       }
