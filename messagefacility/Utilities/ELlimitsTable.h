@@ -43,7 +43,6 @@ namespace mf {
     // ----------------------------------------------------------------------
 
     class ELdestination;
-    class ELoutput;
     class ELfwkJobReport;
 
     // ----------------------------------------------------------------------
@@ -53,7 +52,6 @@ namespace mf {
     class ELlimitsTable  {
 
       friend class ELdestination;
-      friend class ELoutput;
       friend class ELfwkJobReport;
 
     public:
@@ -80,7 +78,6 @@ namespace mf {
       int wildcardLimit {-1};
       int wildcardInterval {-1};
       int wildcardTimespan {-1};
-      int tableLimit {-1};
 
       ELmap_limits limits {};
       ELmap_counts counts {};
