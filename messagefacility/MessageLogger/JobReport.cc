@@ -673,59 +673,6 @@ namespace mf
     }
   }
 
-  void
-  JobReport::reportTimingInfo(std::map<std::string, double> const& timingData){
-
-    if(impl_->ost_) {
-      std::ostream& msg=*(impl_->ost_);
-      msg << "<TimingService>\n";
-      std::map<std::string, double>::const_iterator pos;
-      for (pos = timingData.begin(); pos != timingData.end(); ++pos){
-        msg <<  "  <" << pos->first
-        <<  "  Value=\"" << pos->second  << "\" />"
-        <<  "\n";
-      }
-      msg << "</TimingService>\n";
-      //LogInfo("FwkJob") << msg.str();
-      msg << std::flush;
-    }
-  }
-
-  void
-  JobReport::reportMemoryInfo(std::map<std::string, double> const& memoryData, std::map<std::string, double> const& memoryProperties){
-
-    if(impl_->ost_) {
-      std::ostream& msg=*(impl_->ost_);
-      msg << "<MemoryService>\n";
-      std::map<std::string, double>::const_iterator pos;
-      for (pos = memoryData.begin(); pos != memoryData.end(); ++pos){
-        msg <<  "  <" << pos->first
-        <<  "  Value=\"" << pos->second  << "\" />"
-        <<  "\n";
-      }
-
-      reportMachineMemoryProperties(memoryProperties);
-      msg << "</MemoryService>\n";
-      msg << std::flush;
-    }
-  }
-
-  void
-  JobReport::reportMemoryInfo(std::vector<std::string> const& memoryData){
-
-    if(impl_->ost_) {
-      std::ostream& msg=*(impl_->ost_);
-      msg << "<MemoryService>\n";
-
-      std::vector<std::string>::const_iterator pos;
-      for (pos = memoryData.begin(); pos != memoryData.end(); ++pos){
-        msg << *pos << "\n";
-      }
-      msg << "</MemoryService>\n";
-      msg << std::flush;
-    }
-  }
-
   void JobReport::reportCPUInfo(std::map<std::string, std::map<std::string, std::string> > const& CPUData){
 
     if(impl_->ost_) {
@@ -779,18 +726,6 @@ namespace mf
     }
   }
 
-  void
-  JobReport::reportStorageStats(std::string const& data)
-  {
-    if(impl_->ost_) {
-      std::ostream& msg = *(impl_->ost_);
-      msg << "<StorageStatistics>\n"
-        << data << "\n"
-        <<  "</StorageStatistics>\n";
-      //LogInfo("FwkJob") << msg.str();
-      msg << std::flush;
-    }
-  }
   void
   JobReport::reportGeneratorInfo(std::string const&  name, std::string const&  value)
   {

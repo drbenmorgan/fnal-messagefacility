@@ -354,27 +354,6 @@ namespace mf {
 
       void reportAnalysisFile(std::string const& fileName,
                               std::map<std::string, std::string> const& fileData) ;
-      ///
-      /// Report Timing statistics
-      /// Invoked by the Timing service to send an end of job
-      /// summary about time taken for inclusion in the job report
-      ///
-      void reportTimingInfo(std::map<std::string, double> const & timingData);
-
-      ///
-      /// Report Memory statistics
-      /// Invoked by the Memory service to send an end of job
-      /// summary about memory usage for inclusion in the job report
-      ///
-      void reportMemoryInfo(std::map<std::string, double> const& memoryData, std::map<std::string, double> const& memoryProperties);
-
-      ///
-      /// Report Memory statistics
-      /// ALTERNATE FORM - USING THIS MAY NECESSITATE CHANGES IN PARSING XML!
-      /// Invoked by the Memory service to send an end of job
-      /// summary about memory usage for inclusion in the job report
-      ///
-      void reportMemoryInfo(std::vector<std::string> const& memoryData);
 
       ///
       /// Report CPU information from /proc/cpuinfo file in the system
@@ -398,9 +377,6 @@ namespace mf {
       /// for inclusion in the job report
       ///
       void reportMessageInfo(std::map<std::string, double> const & messageData);
-
-      /// Report Storage Statistics
-      void reportStorageStats(std::string const & data);
 
       /// Override the list of input files seen by an output file
       /// for use with EdmFastMerge
