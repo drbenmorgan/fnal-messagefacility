@@ -143,7 +143,7 @@ namespace mf {
       return *this;
     }
 
-    ErrorLog& ErrorLog::emit(std::string const& s)
+    ErrorLog& ErrorLog::emitToken(std::string const& s)
     {
       if (!a->msgIsActive()) {
         (*this)(ELunspecified, "...");
@@ -227,7 +227,7 @@ namespace mf {
       } else {
         if (e.spaceAfterInt) ost << " ";
       }
-      return e.emit(ost.str());
+      return e.emitToken(ost.str());
     }
 
     ErrorLog& operator<<(ErrorLog& e, unsigned int const n)
@@ -243,7 +243,7 @@ namespace mf {
       } else {
         if (e.spaceAfterInt) ost << " ";
       }
-      return e.emit(ost.str());
+      return e.emitToken(ost.str());
     }
 
     ErrorLog& operator<<(ErrorLog& e, long const n)
@@ -261,7 +261,7 @@ namespace mf {
       } else {
         if (e.spaceAfterInt) ost << " ";
       }
-      return  e.emit(ost.str());
+      return  e.emitToken(ost.str());
     }
 
     ErrorLog& operator<<(ErrorLog& e, unsigned long const n)
@@ -279,7 +279,7 @@ namespace mf {
       } else {
         if (e.spaceAfterInt) ost << " ";
       }
-      return  e.emit(ost.str());
+      return  e.emitToken(ost.str());
     }
 
     ErrorLog& operator<<(ErrorLog& e, short const n)
@@ -295,7 +295,7 @@ namespace mf {
       } else {
         if (e.spaceAfterInt) ost << " ";
       }
-      return  e.emit(ost.str());
+      return  e.emitToken(ost.str());
     }
 
     ErrorLog& operator<<(ErrorLog& e, unsigned short const n)
@@ -310,7 +310,7 @@ namespace mf {
       } else {
         if (e.spaceAfterInt) ost << " ";
       }
-      return  e.emit(ost.str());
+      return  e.emitToken(ost.str());
     }
 
     // ----------------------------------------------------------------------
@@ -325,7 +325,7 @@ namespace mf {
       if (e.discarding) return e;
       std::ostringstream  ost;
       ost << s << ' ';
-      return e.emit(ost.str());
+      return e.emitToken(ost.str());
     }
 
 

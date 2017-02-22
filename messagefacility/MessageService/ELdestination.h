@@ -63,7 +63,7 @@ namespace mf {
 
     protected:
 
-      void emit(std::ostream& os, std::string const& s, bool nl = false);
+      void emitToken(std::ostream& os, std::string const& s, bool nl = false);
 
       bool passLogMsgThreshold  (mf::ErrorObj const& msg);
       bool passLogStatsThreshold(mf::ErrorObj const& msg) const;

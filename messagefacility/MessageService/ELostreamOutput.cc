@@ -36,9 +36,9 @@ namespace mf {
       if (emitAtStart) {
         bool tprm = format.preambleMode;
         format.preambleMode = true;
-        emit(osh, "\n=================================================", true);
-        emit(osh, "\nMessage Log File written by MessageLogger service \n");
-        emit(osh, "\n=================================================\n", true);
+        emitToken(osh, "\n=================================================", true);
+        emitToken(osh, "\nMessage Log File written by MessageLogger service \n");
+        emitToken(osh, "\n=================================================\n", true);
         format.preambleMode = tprm;
       }
     }
@@ -69,19 +69,19 @@ namespace mf {
       std::string const title( fullTitle, 0, titleMaxLength );
       int const q = (lineLength_ - title.length() - 2) / 2;
       std::string line(q, '=');
-      emit(osh, "", true);
-      emit(osh, line);
-      emit(osh, " ");
-      emit(osh, title);
-      emit(osh, " ");
-      emit(osh, line, true);
+      emitToken(osh, "", true);
+      emitToken(osh, line);
+      emitToken(osh, " ");
+      emitToken(osh, title);
+      emitToken(osh, " ");
+      emitToken(osh, line, true);
 
       // body:
       osh << sumLines;
 
       // finish:
-      emit(osh, "", true );
-      emit(osh, std::string(lineLength_, '='), true );
+      emitToken(osh, "", true );
+      emitToken(osh, std::string(lineLength_, '='), true );
 
     }  // summarization()
 
@@ -95,10 +95,10 @@ namespace mf {
       osh = cet::ostream_handle{os};
       timeval tv;
       gettimeofday(&tv, 0);
-      emit(osh, "\n=======================================================", true);
-      emit(osh, "\nError Log changed to this stream\n" );
-      emit(osh, mf::timestamp::legacy(tv), true );
-      emit(osh, "\n=======================================================\n", true);
+      emitToken(osh, "\n=======================================================", true);
+      emitToken(osh, "\nError Log changed to this stream\n" );
+      emitToken(osh, mf::timestamp::legacy(tv), true );
+      emitToken(osh, "\n=======================================================\n", true);
     }
 
     void ELostreamOutput::changeFile(std::string const& filename,
@@ -106,10 +106,10 @@ namespace mf {
       osh = cet::ostream_handle{filename, std::ios::app};
       timeval tv;
       gettimeofday(&tv, 0);
-      emit(osh, "\n=======================================================", true);
-      emit(osh, "\nError Log changed to this file\n");
-      emit(osh, mf::timestamp::legacy(tv), true);
-      emit(osh, "\n=======================================================\n", true);
+      emitToken(osh, "\n=======================================================", true);
+      emitToken(osh, "\nError Log changed to this file\n");
+      emitToken(osh, mf::timestamp::legacy(tv), true);
+      emitToken(osh, "\n=======================================================\n", true);
     }
 
     void ELostreamOutput::flush(ELcontextSupplier const&)  {

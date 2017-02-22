@@ -29,7 +29,7 @@ ErrorLog & operator<<( ErrorLog & e, const T & t )  {
   std::ostringstream  ost;
   ost << t << ' ';
 
-  return  e.emit( ost.str() );
+  return  e.emitToken( ost.str() );
 
 }  // operator<< <T>()
 

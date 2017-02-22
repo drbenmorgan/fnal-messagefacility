@@ -52,7 +52,7 @@ namespace mf {
     }
 
     //=============================================================================
-    void ELdestination::emit(std::ostream& os, std::string const& s, bool const nl)
+    void ELdestination::emitToken(std::ostream& os, std::string const& s, bool const nl)
     {
       if (s.empty()) {
         if (nl)  {
@@ -104,7 +104,7 @@ namespace mf {
         os << s;
       }
 
-    }  // emit()
+    }  // emitToken()
 
     //=============================================================================
     bool ELdestination::passLogStatsThreshold(mf::ErrorObj const& msg) const
@@ -143,19 +143,19 @@ namespace mf {
       auto const& xid = msg.xid();
 
       charsOnLine = 0;
-      emit(oss, preamble);
-      emit(oss, xid.severity().getSymbol());
-      emit(oss, " ");
-      emit(oss, xid.id());
-      emit(oss, msg.idOverflow());
-      emit(oss, ": ");
+      emitToken(oss, preamble);
+      emitToken(oss, xid.severity().getSymbol());
+      emitToken(oss, " ");
+      emitToken(oss, xid.id());
+      emitToken(oss, msg.idOverflow());
+      emitToken(oss, ": ");
 
       // Output serial number of message:
       //
       if (format.want(SERIAL)) {
         std::ostringstream s;
         s << msg.serial();
-        emit(oss, "[serial #" + s.str() + "] ");
+        emitToken(oss, "[serial #" + s.str() + "] ");
       }
 
       // Provide further identification:
@@ -163,54 +163,54 @@ namespace mf {
       bool needAspace = true;
       if (format.want(EPILOGUE_SEPARATE)) {
         if (xid.module().length()+xid.subroutine().length() > 0) {
-          emit(oss,"\n");
+          emitToken(oss,"\n");
           needAspace = false;
         }
         else if (format.want(TIMESTAMP) && !format.want(TIME_SEPARATE)) {
-          emit(oss,"\n");
+          emitToken(oss,"\n");
           needAspace = false;
         }
       }
       if (format.want(MODULE) && (xid.module().length() > 0)) {
         if (needAspace) {
-          emit(oss," ");
+          emitToken(oss," ");
           needAspace = false;
         }
-        emit(oss, xid.module() + " ");
+        emitToken(oss, xid.module() + " ");
       }
       if (format.want(SUBROUTINE) && (xid.subroutine().length() > 0)) {
         if (needAspace) {
-          emit(oss," ");
+          emitToken(oss," ");
           needAspace = false;
         }
-        emit(oss, xid.subroutine() + "() ");
+        emitToken(oss, xid.subroutine() + "() ");
       }
 
       // Provide time stamp:
       //
       if (format.want(TIMESTAMP))  {
         if (format.want(TIME_SEPARATE))  {
-          emit(oss, "\n");
+          emitToken(oss, "\n");
           needAspace = false;
         }
         if (needAspace) {
-          emit(oss," ");
+          emitToken(oss," ");
           needAspace = false;
         }
-        emit(oss, format.timestamp(msg.timestamp()) + " ");
+        emitToken(oss, format.timestamp(msg.timestamp()) + " ");
       }
 
       // Provide the context information:
       //
       if (format.want(SOME_CONTEXT)) {
         if (needAspace) {
-          emit(oss," ");
+          emitToken(oss," ");
           needAspace = false;
         }
         if (format.want(FULL_CONTEXT)) {
-          emit(oss, contextSupplier.fullContext());
+          emitToken(oss, contextSupplier.fullContext());
         } else {
-          emit(oss, contextSupplier.context());
+          emitToken(oss, contextSupplier.context());
         }
       }
 
@@ -231,24 +231,24 @@ namespace mf {
         // The first four items are { " ", "<FILENAME>", ":", "<LINE>" }
         while (it != usrMsgStart) {
           if (!it->compare(" ") && !std::next(it)->compare("--")) {
-            // Do not emit if " --:0" is the match
+            // Do not emitToken if " --:0" is the match
             std::advance(it,4);
           }
           else {
             // Emit if <FILENAME> and <LINE> are meaningful
-            emit(oss, *it++);
+            emitToken(oss, *it++);
           }
         }
 
         // Check for user-requested line breaks
-        if (format.want(NO_LINE_BREAKS)) emit(oss, " ==> ");
-        else emit(oss, "", true);
+        if (format.want(NO_LINE_BREAKS)) emitToken(oss, " ==> ");
+        else emitToken(oss, "", true);
       }
 
       // For verbatim (and user-supplied) messages, just print the contents
       auto const end = msg.items().cend();
       for (; it != end; ++it) {
-        emit(oss, *it);
+        emitToken(oss, *it);
       }
 
     }
@@ -258,7 +258,7 @@ namespace mf {
                                    mf::ErrorObj const& msg)
     {
       if (!msg.is_verbatim() && !format.want(NO_LINE_BREAKS)) {
-        emit(oss,"\n%MSG");
+        emitToken(oss,"\n%MSG");
       }
       oss << '\n';
     }
