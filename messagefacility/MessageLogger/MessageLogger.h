@@ -220,18 +220,6 @@ class mf::MessageFacilityService {
 public:
   static MessageFacilityService& instance();
 
-  static fhicl::ParameterSet logArchive(std::string const& filename = "msgarchive", bool append = false);
-  static fhicl::ParameterSet logCF(std::string const& filename = "logfile", bool append = false);
-  static fhicl::ParameterSet logCFS(std::string const& filename = "logfile", bool append = false, int partition = 0);
-  static fhicl::ParameterSet logCS(int partition = 0);
-  static fhicl::ParameterSet logConsole();
-  static fhicl::ParameterSet logFS(std::string const& filename = "logfile", bool append = false, int partition = 0);
-  static fhicl::ParameterSet logFile(std::string const& filename = "logfile", bool append = false);
-  static fhicl::ParameterSet logServer(int partition = 0);
-
-  static fhicl::ParameterSet ConfigurationFile(std::string const& filename = "MessageFacility.cfg",
-                                               fhicl::ParameterSet const& def = logCF());
-
   static std::string SingleThread;
   static std::string MultiThread;
 
@@ -242,7 +230,6 @@ public:
 
 private:
   MessageFacilityService() = default;
-  static std::string commonPSet();
 };
 
 // ----------------------------------------------------------------------
@@ -255,7 +242,7 @@ public:
 // ----------------------------------------------------------------------
 
 namespace mf {
-  void StartMessageFacility(fhicl::ParameterSet const& pset = MessageFacilityService::ConfigurationFile());
+  void StartMessageFacility(fhicl::ParameterSet const& pset);
 }
 
 // ======================================================================
