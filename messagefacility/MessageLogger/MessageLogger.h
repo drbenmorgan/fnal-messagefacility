@@ -89,7 +89,6 @@ namespace mf  {
   void squelchStandAloneMessageCategory (std::string const& category);
 
   void SetApplicationName(std::string const& application);
-  void SetModuleName(std::string const& modulename);
   void SetContext(std::string const& context);
 
 }  // mf

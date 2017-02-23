@@ -123,19 +123,13 @@ namespace mf {
     return setContext(currentPhase, currentPhase);
   }
 
-  void
-  MessageLoggerImpl::setMinimalContext(std::string const &currentPhase)
-  {
-    MessageDrop::instance()->moduleName = currentPhase;
-  }
-
   MessageLoggerImpl::EnabledState
   MessageLoggerImpl::setContext(std::string const& currentProgramState,
                                 std::string const& levelsConfigLabel)
   {
     auto md = MessageDrop::instance();
     EnabledState const previousState {md->debugEnabled, md->infoEnabled, md->warningEnabled};
-    md->moduleName = currentProgramState;
+    md->setSinglet(currentProgramState);
 
     if (!anyDebugEnabled_) {
       md->debugEnabled = false;
@@ -161,7 +155,7 @@ namespace mf {
                                 EnabledState previousEnabledState)
   {
     auto md = MessageDrop::instance();
-    md->moduleName = currentPhase;
+    md->setSinglet(currentPhase);
     md->debugEnabled = previousEnabledState.debugEnabled();
     md->infoEnabled = previousEnabledState.infoEnabled();
     md->warningEnabled = previousEnabledState.warningEnabled();

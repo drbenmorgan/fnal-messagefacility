@@ -127,26 +127,7 @@ namespace mf {
     std::lock_guard<std::mutex> lock {mfs.m};
 
     service::ELadministrator::instance()->setApplication(application);
-    SetModuleName(application);
-  }
-
-  // Set module name and debug settings
-  void SetModuleName(std::string const& modulename)
-  {
-    if (!MessageFacilityService::instance().MFServiceEnabled)
-      return;
-
-    MessageDrop* drop = MessageDrop::instance();
-    drop->moduleName = modulename;
-
-    auto const& mfs = MessageFacilityService::instance();
-
-    if (mfs.theML->everyDebugEnabled_)
-      drop->debugEnabled = true;
-    else if (mfs.theML->debugEnabledModules_.count(modulename))
-      drop->debugEnabled = true;
-    else
-      drop->debugEnabled = false;
+    MessageDrop::instance()->setSinglet(application);
   }
 
   // Set the run/event context

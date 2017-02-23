@@ -9,15 +9,16 @@
 #include "cetlib/filepath_maker.h"
 #include "fhiclcpp/ParameterSet.h"
 #include "fhiclcpp/make_ParameterSet.h"
-#include "messagefacility/MessageLogger/MessageLogger.h"
 #include "messagefacility/MessageLogger/ELdestinationTester.h"
+#include "messagefacility/MessageLogger/MessageLogger.h"
+#include "messagefacility/MessageService/MessageDrop.h"
 
 namespace {
 
   void anotherLogger [[ gnu::unused ]] ()
   {
     // Set module name
-    mf::SetModuleName("anotherLogger");
+    mf::MessageDrop::instance()->setSinglet("anotherLogger");
 
     mf::LogWarning("warn1 | warn2") << "Followed by a WARNING message.";
     mf::LogDebug("debug")           << "The debug message in the other thread";
@@ -27,7 +28,7 @@ namespace {
 
   void runModule(std::string const& modulename)
   {
-    mf::SetModuleName(modulename);
+    mf::MessageDrop::instance()->setSinglet(modulename);
 
     // Post begin job
     mf::SetContext("postBeginJob");
@@ -152,7 +153,7 @@ int main(int argc, char* argv[])
 
   // Set module name for the main thread
   mf::SetApplicationName("MessageFacility");
-  mf::SetModuleName("MFTest");
+  mf::MessageDrop::instance()->setSinglet("MFTest");
   mf::SetContext("pre-event");
 
   // Start up another logger in a separate thread

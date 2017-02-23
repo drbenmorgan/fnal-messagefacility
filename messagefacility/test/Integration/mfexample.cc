@@ -1,3 +1,4 @@
+#include "fhiclcpp/make_ParameterSet.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 
 #include <iostream>
@@ -8,8 +9,7 @@ using namespace mf;
 
 void anotherLogger()
 {
-  // Set module name
-  SetModuleName("anotherLogger");
+  MessageDrop::instance()->setSinglet("anotherLogger");
 
   LogWarning("cat1 | cat2") << "Followed by a WARNING message.";
   LogDebug("cat")           << "The debug message in the other thread";
@@ -19,17 +19,30 @@ void anotherLogger()
 
 int main()
 {
+  fhicl::ParameterSet ps;
+  std::string const psString {
+    "debugModules:[\"*\"]"
+      "statistics:[\"stats\"] "
+      "destinations : { "
+      "  console : { type : \"cout\" threshold : \"DEBUG\" } "
+      "  file : { "
+      "    type : \"file\" threshold : \"DEBUG\" "
+      "    filename : \"mylog\" "
+      "    append : false"
+      "  } "
+      "} "
+  };
+
+  fhicl::make_ParameterSet(psString, ps);
 
   // Start MessageFacility Service
-  StartMessageFacility(MessageFacilityService::ConfigurationFile(
-                         "MessageFacility.cfg",
-                         MessageFacilityService::logCF("mylog")));
+  StartMessageFacility(ps);
 
   // Set application name (use process name by default)
   SetApplicationName("MF_Example");
 
   // Set module name and context for the main thread
-  SetModuleName("MF_main");
+  MessageDrop::instance()->setSinglet("MF_main");
   SetContext("pre-event");
 
   // Start up another logger in a separate thread

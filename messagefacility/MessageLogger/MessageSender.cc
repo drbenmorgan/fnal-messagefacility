@@ -23,7 +23,7 @@ try
     // and will then (b) dispose of the ErrorObj
 
     if (auto drop = MessageDrop::instance()) {
-      errorobj_p->setModule(drop->moduleName);
+      errorobj_p->setModule(drop->moduleContext());
       errorobj_p->setContext(drop->runEvent);
     }
 
