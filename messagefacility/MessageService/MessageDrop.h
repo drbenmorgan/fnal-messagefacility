@@ -20,6 +20,9 @@ namespace mf {
     bool debugEnabled {true};
     bool infoEnabled {true};
     bool warningEnabled {true};
+    static bool debugAlwaysSuppressed;
+    static bool infoAlwaysSuppressed;
+    static bool warningAlwaysSuppressed;
 
     static unsigned char messageLoggerScribeIsRunning;
     static mf::Exception* ex_p;

@@ -8,6 +8,8 @@
 #include "cetlib/trim.h"
 #include "fhiclcpp/make_ParameterSet.h"
 #include "messagefacility/Utilities/ErrorObj.h"
+#include "messagefacility/Utilities/ELseverityLevel.h"
+#include "messagefacility/MessageService/MessageDrop.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "messagefacility/MessageLogger/ThreadSafeLogMessageLoggerScribe.h"
 #include "messagefacility/MessageService/ConfigurationHandshake.h"
@@ -372,6 +374,11 @@ namespace mf {
       fhicl::ParameterSet statDests;
       if (!jobConfig_->get_if_present("destinations.statistics", statDests))
         statDests = default_statistics_config(ordinaryDests);
+
+      // Initialize unversal suppression variables
+      MessageDrop::debugAlwaysSuppressed = true;
+      MessageDrop::infoAlwaysSuppressed = true;
+      MessageDrop::warningAlwaysSuppressed = true;
 
       makeDestinations(ordinaryDests, ELdestConfig::ORDINARY);
       makeDestinations(statDests, ELdestConfig::STATISTICS);

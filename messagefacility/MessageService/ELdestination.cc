@@ -4,6 +4,7 @@
 //
 //======================================================================
 
+#include "messagefacility/MessageService/MessageDrop.h"
 #include "messagefacility/MessageService/ELdestConfigCheck.h"
 #include "messagefacility/MessageService/ELdestination.h"
 
@@ -48,6 +49,15 @@ namespace mf {
         auto const& dest_type = pset.get<std::string>("type","file");
         ELdestConfig::checkType(dest_type, ELdestConfig::STATISTICS);
       }
+
+      // Modify automatic suppression if necessary.
+      if (threshold <= ELseverityLevel::ELsev_success) 
+      { MessageDrop::debugAlwaysSuppressed = false; }
+      if (threshold <= ELseverityLevel::ELsev_info) 
+      { MessageDrop::infoAlwaysSuppressed = false; }
+      if (threshold <= ELseverityLevel::ELsev_warning) 
+      { MessageDrop::warningAlwaysSuppressed = false; }
+
       configure(pset);
     }
 

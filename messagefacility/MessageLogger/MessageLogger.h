@@ -13,7 +13,7 @@
 #include <string>
 
 #include "messagefacility/Utilities/ELseverityLevel.h"
-#include "messagefacility/MessageLogger/MessageDrop.h"
+#include "messagefacility/MessageService/MessageDrop.h"
 #include "messagefacility/MessageLogger/MessageSender.h"
 #include "messagefacility/MessageLogger/MessageLoggerImpl.h"
 #include "messagefacility/MessageLogger/createPresence.h"
@@ -39,19 +39,22 @@ namespace mf  {
     template<>
     inline bool enabled<ELsev_warning>()
     {
-      return MessageDrop::instance()->warningEnabled;
+      auto & md = *MessageDrop::instance();
+      return (!md.warningAlwaysSuppressed) && md.warningEnabled;
     }
 
     template<>
     inline bool enabled<ELsev_info>()
     {
-      return MessageDrop::instance()->infoEnabled;
+      auto & md = *MessageDrop::instance();
+      return (!md.infoAlwaysSuppressed) && md.infoEnabled;
     }
 
     template<>
     inline bool enabled<ELsev_success>()
     {
-      return MessageDrop::instance()->debugEnabled;
+      auto & md = *MessageDrop::instance();
+      return (!md.debugAlwaysSuppressed) && md.debugEnabled;
     }
 
     inline std::string stripLeadingDirectoryTree(std::string const& file)

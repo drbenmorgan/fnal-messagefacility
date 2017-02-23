@@ -8,6 +8,7 @@ cet_make_library(
   ELrecv.cc
   ELstatistics.cc
   ErrorLog.cc
+  MessageDrop.cc
   MessageLoggerQ.cc
   MsgContext.cc
   MsgFormatSettings.cc

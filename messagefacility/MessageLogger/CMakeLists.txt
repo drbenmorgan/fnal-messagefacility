@@ -3,7 +3,6 @@ cet_make_library(
   MF_MessageLogger
   SOURCE
   JobReport.cc
-  MessageDrop.cc
   MessageLogger.cc
   MessageLoggerImpl.cc
   MessageSender.cc

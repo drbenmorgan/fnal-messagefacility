@@ -40,17 +40,17 @@ namespace mf {
 
   bool isDebugEnabled()
   {
-    return MessageDrop::instance()->debugEnabled;
+    return detail::enabled<detail::ELsev_success>();
   }
 
   bool isInfoEnabled()
   {
-    return MessageDrop::instance()->infoEnabled;
+    return detail::enabled<detail::ELsev_info>();
   }
 
   bool isWarningEnabled()
   {
-    return MessageDrop::instance()->warningEnabled;
+    return detail::enabled<detail::ELsev_warning>();
   }
 
   void HaltMessageLogging()
