@@ -28,8 +28,10 @@ public:
       cache_.append(":");
       cache_.append(label_);
       nameLabelMap_[moduleID_] = cache_;
-      cache_.append("/");
-      cache_.append(phase_);
+      if (!phase_.empty()) {
+        cache_.append("@");
+        cache_.append(phase_);
+      }
     }
     return cache_;
   }
@@ -44,7 +46,7 @@ public:
     cache_.clear();
   }
 private:
-  std::string phase_ {"PhaseNotYetFilled"s};
+  std::string phase_ {"Early"s};
   std::string name_ {};
   std::string label_ {};
   const void * moduleID_ {};
@@ -54,11 +56,10 @@ private:
 
 class mf::MessageDrop::StringProducerPath : public StringProducer {
 public:
-  StringProducerPath() : type_("PathNotYetFilled") {}
   virtual std::string theContext() const override {
     if ( cache_.empty() ) {
       cache_.assign(type_);
-      cache_.append("@");
+      cache_.append(" ");
       cache_.append(path_);
     }
     return cache_;
@@ -69,20 +70,19 @@ public:
     cache_.clear();
   }
 private:
-  std::string type_;
-  std::string path_;
+  std::string type_  {"(NoPath)"};
+  std::string path_ {};
   mutable std::string cache_;
 };
 
 class mf::MessageDrop::StringProducerSinglet : public StringProducer {
 public:
-  StringProducerSinglet() : singlet_("") {}
   virtual std::string theContext() const override {
     return singlet_;
   }
   void set(std::string const & sing) {singlet_ = sing; }
 private:
-  std::string singlet_;
+  std::string singlet_ {"Early"};
 };
 
 mf::MessageDrop::MessageDrop()
