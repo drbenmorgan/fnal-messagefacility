@@ -22,7 +22,7 @@ namespace mf {
   public:
     static MessageDrop* instance();
 
-    std::string moduleContext();
+    std::string moduleContext() const;
     void setModuleWithPhase(std::string const & name,
                             std::string const & label,
                             void const * moduleID,
@@ -45,8 +45,13 @@ namespace mf {
 
 private:
 
+    class StringProducer {
+  public:
+      virtual ~StringProducer() noexcept = default;
+      virtual std::string theContext() const = 0;
+    };
+
     // These implementation details have state, but should be hidden.
-    class StringProducer;
     class StringProducerWithPhase;
     class StringProducerPath;
     class StringProducerSinglet;
@@ -61,6 +66,13 @@ private:
 
 } // end of namespace mf
 
+inline
+std::string
+mf::MessageDrop::
+moduleContext() const
+{
+  return moduleNameProducer_->theContext();
+}
 
 #endif /* messagefacility_MessageLogger_MessageDrop_h */
 

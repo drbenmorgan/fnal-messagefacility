@@ -9,14 +9,18 @@ bool MessageSender::freshError = false;
 std::map<ErrorSummaryMapKey, unsigned int> MessageSender::errorSummaryMap {};
 
 MessageSender::MessageSender(ELseverityLevel const sev,
-                             std::string const& id,
-                             bool const verbatim )
-  : errorobj_p{std::make_unique<ErrorObj>(sev,id,verbatim)}
+                             std::string const & id,
+                             bool const verbatim,
+                             bool suppressed)
+  : errorobj_p{suppressed ? nullptr : std::make_unique<ErrorObj>(sev,id,verbatim)}
 {}
 
 MessageSender::~MessageSender() noexcept
-try
-  {
+{
+  if (errorobj_p == nullptr) {
+    return;
+  }
+  try {
     // surrender ownership of our ErrorObj, transferring ownership
     // (via the intermediate MessageLoggerQ) to the MessageLoggerScribe
     // that will (a) route the message text to its destination(s)
@@ -49,3 +53,4 @@ try
      // and Next or Step so that the exception would be detected.
      // That test has been done 12/14/07.
    }
+}

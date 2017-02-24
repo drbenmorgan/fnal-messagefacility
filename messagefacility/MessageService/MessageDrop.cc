@@ -5,12 +5,6 @@
 
 using namespace std::string_literals;
 
-class mf::MessageDrop::StringProducer {
-public:
-  virtual ~StringProducer() noexcept = default;
-  virtual std::string theContext() const = 0;
-};
-
 class mf::MessageDrop::StringProducerWithPhase : public StringProducer {
   typedef std::map<const void*, std::string>::const_iterator NLMiter;
 public:
@@ -98,13 +92,6 @@ mf::MessageDrop::instance()
 {
   thread_local static MessageDrop s_drop;
   return &s_drop;
-}
-
-std::string
-mf::MessageDrop::
-moduleContext()
-{
-  return moduleNameProducer_->theContext();
 }
 
 void

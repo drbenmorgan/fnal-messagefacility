@@ -15,10 +15,11 @@ namespace mf {
 
   class MessageSender {
   public:
-
+    MessageSender() = default;
     MessageSender(ELseverityLevel const sev,
                   std::string const& id,
-                  bool verbatim = false);
+                  bool verbatim = false,
+                  bool suppressed = false);
     ~MessageSender() noexcept;
 
     // ---  stream out the next part of a message:
@@ -30,13 +31,18 @@ namespace mf {
       return *this;
     }
 
-    // no copying:
-    MessageSender(MessageSender const&) = delete;
-    MessageSender& operator=(MessageSender const&) = delete;
+    // Movable.
+    MessageSender(MessageSender &&) = default;
+
+    // No copying or move assignment.
+    MessageSender & operator = (MessageSender &&) = delete;
+    MessageSender(MessageSender const &) = delete;
+    MessageSender & operator = (MessageSender const &) = delete;
+
+    bool isValid() const { return errorobj_p != nullptr; }
 
   private:
-
-    std::unique_ptr<ErrorObj> errorobj_p;
+    std::unique_ptr<ErrorObj> errorobj_p {nullptr};
 
     static bool errorSummaryIsBeingKept;
     static bool freshError;

@@ -97,14 +97,14 @@ namespace mf  {
 //=======================================================================
 namespace mf {
 
-  template <int SEV, bool VERB, bool PREFIX, bool CONDITIONAL>
+  template <int SEV, bool VERB, bool PREFIX, bool IS_CONDITIONAL>
   class MaybeLogger_ {
-    std::unique_ptr<MessageSender> msgSender_p {nullptr};
+    MessageSender msgSender;
   public:
 
     MaybeLogger_() = default;
     MaybeLogger_(std::string const& id, std::string const& file = "--", int line = 0)
-      : msgSender_p{detail::enabled<SEV>() ? new MessageSender{ELseverityLevel::ELsev_(SEV), id, VERB} : nullptr}
+      : msgSender{ELseverityLevel::ELsev_(SEV), id, VERB, !detail::enabled<SEV>()}
     {
       if (PREFIX) {
         *this << " "
@@ -124,19 +124,25 @@ namespace mf {
     template< class T >
     decltype(auto) operator << (T const& t)
     {
-      if (!CONDITIONAL || msgSender_p.get()) *msgSender_p << t;
+      if (!IS_CONDITIONAL || msgSender.isValid()) {
+        msgSender << t;
+      }
       return std::forward<MaybeLogger_>(*this);
     }
 
     decltype(auto) operator << ( std::ostream&(*f)(std::ostream&) )
     {
-      if (!CONDITIONAL || msgSender_p.get()) *msgSender_p << f;
+      if (!IS_CONDITIONAL || msgSender.isValid()) {
+        msgSender << f;
+      }
       return std::forward<MaybeLogger_>(*this);
     }
 
     decltype(auto) operator << ( std::ios_base&(*f)(std::ios_base&) )
     {
-      if (!CONDITIONAL || msgSender_p.get()) *msgSender_p << f;
+      if (!IS_CONDITIONAL || msgSender.isValid()) {
+        msgSender << f;
+      }
       return std::forward<MaybeLogger_>(*this);
     }
 
