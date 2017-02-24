@@ -118,18 +118,10 @@ namespace mf {
   } // ctor
 
   MessageLoggerImpl::EnabledState
-  MessageLoggerImpl::setContext(std::string const &currentPhase)
-  {
-    return setContext(currentPhase, currentPhase);
-  }
-
-  MessageLoggerImpl::EnabledState
-  MessageLoggerImpl::setContext(std::string const& currentProgramState,
-                                std::string const& levelsConfigLabel)
+  MessageLoggerImpl::setEnabledState(std::string const& levelsConfigLabel)
   {
     auto md = MessageDrop::instance();
     EnabledState const previousState {md->debugEnabled, md->infoEnabled, md->warningEnabled};
-    md->setSinglet(currentProgramState);
 
     if (!anyDebugEnabled_) {
       md->debugEnabled = false;
@@ -151,11 +143,9 @@ namespace mf {
   }
 
   void
-  MessageLoggerImpl::setContext(std::string const &currentPhase,
-                                EnabledState previousEnabledState)
+  MessageLoggerImpl::restoreEnabledState(EnabledState previousEnabledState)
   {
     auto md = MessageDrop::instance();
-    md->setSinglet(currentPhase);
     md->debugEnabled = previousEnabledState.debugEnabled();
     md->infoEnabled = previousEnabledState.infoEnabled();
     md->warningEnabled = previousEnabledState.warningEnabled();

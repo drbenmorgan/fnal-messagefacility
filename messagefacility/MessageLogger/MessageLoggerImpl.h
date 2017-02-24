@@ -44,17 +44,18 @@ namespace mf  {
 
     void fillErrorObj(mf::ErrorObj& obj) const;
     bool debugEnabled() const { return debugEnabled_; }
-
     bool anyDebugEnabled() const { return anyDebugEnabled_; }
 
-    // Set the context for following messages.  Note that it is caller's
-    // responsibility to ensure that any saved EnableState is saved in a
-    // thread-safe way if appropriate.
-    EnabledState setContext(std::string const &currentPhase);
-    EnabledState setContext(std::string const &currentProgramState,
-                            std::string const &levelsConfigLabel);
-    void setContext(std::string const &currentPhase,
-                    EnabledState previousEnabledState);
+    // Set the state of the enabled flags for debug, info and warning
+    // messages appropriate for the given module label, returning
+    // previous state. User is responsible for being thread-safe with
+    // respect to same. Note that no setting of MessageDrop's context is
+    // done here: user is responsible for calling setSinglet(),
+    // setPath() or setModuleWithPhase() as appropriate.
+    EnabledState setEnabledState(std::string const & moduleLabel);
+
+    // Restore saved state.
+    void restoreEnabledState(EnabledState previousEnabledState);
 
   private:
     std::set<std::string> debugEnabledModules_;
