@@ -46,7 +46,6 @@ namespace mf {
     virtual void setModule    ( const std::string & module );
     virtual void setSubroutine( const std::string & subroutine );
     virtual void setContext   ( const std::string & context );
-    virtual void setProcess   ( const std::string & proc );
     virtual void setHostName  ( const std::string & hostname );
     virtual void setHostAddr  ( const std::string & hostaddr );
     virtual void setApplication(const std::string & application );

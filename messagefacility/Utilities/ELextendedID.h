@@ -8,8 +8,7 @@ namespace mf {
   class ELextendedID {
   public:
     ELextendedID() {}
-    ELextendedID(std::string const & process,
-                 std::string const & id,
+    ELextendedID(std::string const & id,
                  ELseverityLevel severity,
                  std::string const & module,
                  std::string const & subroutine,
@@ -17,7 +16,6 @@ namespace mf {
                  std::string const & hostaddr,
                  std::string const & application);
 
-    std::string const & process() const;
     std::string const & id() const;
     ELseverityLevel severity() const;
     std::string const & module() const;
@@ -27,7 +25,6 @@ namespace mf {
     std::string const & application() const;
     long pid() const;
 
-    void setProcess(std::string const & process);
     void setID(std::string const & id);
     void setSeverity(ELseverityLevel severity);
     void setModule(std::string const & module);
@@ -41,7 +38,6 @@ namespace mf {
     void clear();
 
 private:
-    std::string process_ {};
     std::string id_ {};
     ELseverityLevel severity_ {};
     std::string module_ {};
@@ -56,16 +52,14 @@ private:
 
 inline
 mf::ELextendedID::
-ELextendedID(std::string const & process,
-             std::string const & id,
+ELextendedID(std::string const & id,
              ELseverityLevel severity,
              std::string const & module,
              std::string const & subroutine,
              std::string const & hostname,
              std::string const & hostaddr,
              std::string const & application)
-  : process_(process)
-  , id_(id)
+  : id_(id)
   , severity_(severity)
   , module_(module)
   , subroutine_(subroutine)
@@ -73,13 +67,6 @@ ELextendedID(std::string const & process,
   , hostaddr_(hostaddr)
   , application_(application)
 {
-}
-
-inline
-std::string const &
-mf::ELextendedID::process() const
-{
-  return process_;
 }
 
 inline
@@ -137,13 +124,6 @@ long
 mf::ELextendedID::pid() const
 {
   return pid_;
-}
-
-inline
-void
-mf::ELextendedID::setProcess(std::string const & process)
-{
-  process_ = process;
 }
 
 inline

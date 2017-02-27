@@ -59,9 +59,7 @@ namespace mf {
 
       // ---  get/set fundamental properties:
       //
-      void setProcess(std::string const& process);
       void setApplication(std::string const& application);
-      std::string swapProcess(std::string const& process);
       void setContextSupplier(ELcontextSupplier const& supplier);
       void setHighSeverity(ELseverityLevel const sev) { highSeverity_ = sev; }
       ELcontextSupplier& swapContextSupplier(ELcontextSupplier& cs);
@@ -96,7 +94,6 @@ namespace mf {
       std::string const& hostname() const;
       std::string const& hostaddr() const;
       long pid() const;
-      std::string const& process() const;
       bool msgIsActive() const { return msgIsActive_; }
 
       void incrementSeverityCount(int const sev) { ++severityCounts_[sev]; }
@@ -126,7 +123,6 @@ namespace mf {
 
       static ELadministrator* instance_;
 
-      std::string process_ {};
       std::unique_ptr<ELcontextSupplier> context_;
       std::array<int, ELseverityLevel::nLevels> severityCounts_ {{0}}; // fill by aggregation
       ELseverityLevel abortThreshold_ {ELseverityLevel::ELsev_abort};

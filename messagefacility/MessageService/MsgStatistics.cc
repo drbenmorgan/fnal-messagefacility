@@ -45,7 +45,6 @@ namespace mf {
 
       // -----  Summary part I:
       //
-      std::string lastProcess;
       bool ftnote {false};
 
       struct part3  {
@@ -58,14 +57,10 @@ namespace mf {
         auto const& count = pr.second;
         auto const& cat = xid.id();
 
-        // -----  Emit new process and part I header, if needed:
+        // -----  Emit new part I header, if needed:
         //
-        if (n == 0  || lastProcess != xid.process()) {
+        if (n == 0) {
           s << "\n";
-          lastProcess = xid.process();
-          if ( lastProcess.size() > 0) {
-            s << "Process " << xid.process() << '\n';
-          }
           s << " type     category        sev    module        "
             "subroutine        count    total\n"
             << " ---- -------------------- -- ---------------- "

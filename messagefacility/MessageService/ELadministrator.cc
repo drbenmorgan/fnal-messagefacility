@@ -23,21 +23,9 @@ namespace mf {
     // ELadministrator functionality:
     // ----------------------------------------------------------------------
 
-    void ELadministrator::setProcess(std::string const& process)
-    {
-      process_ = process;
-    }
-
     void ELadministrator::setApplication(std::string const& application)
     {
       application_ = application;
-    }
-
-    std::string ELadministrator::swapProcess(std::string const& process)
-    {
-      std::string temp = process_;
-      process_ = process;
-      return temp;
     }
 
     void ELadministrator::setContextSupplier(ELcontextSupplier const& supplier)
@@ -125,8 +113,6 @@ namespace mf {
     std::string const& ELadministrator::application() const { return application_; }
 
     long ELadministrator::pid() const { return pid_;}
-
-    std::string const& ELadministrator::process() const  { return process_; }
 
     ELcontextSupplier& ELadministrator::context() const  { return *context_; }
 
@@ -300,8 +286,7 @@ namespace mf {
       size_t end = procinfo.find('\0');
       size_t start = procinfo.find_last_of('/',end);
 
-      process_ = procinfo.substr(start+1, end-start-1);
-      application_ = process_;
+      application_ = procinfo.substr(start+1, end-start-1);
 
     }  // ELadministrator()
 

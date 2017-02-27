@@ -55,7 +55,6 @@ void  ELrecv ( int nbytes, const char * data, std::string localModule )  {
   // Pull out the extended id.  Carefully look at ELcollected::emitXid to
   // make certain we take things out in the proper order.
 
-  std::string process;
   std::string module;
   std::string subroutine;
   std::string id;
@@ -63,9 +62,6 @@ void  ELrecv ( int nbytes, const char * data, std::string localModule )  {
   int      sevLevel;
 
   const char *  nextItem = data;
-
-  process = nextItem;
-  nextItem += strlen(nextItem) + 1;
 
   if (localModule == "*ELrecv*")  module = nextItem;
   else                            module = localModule + ":" + nextItem;
@@ -117,9 +113,8 @@ void  ELrecv ( int nbytes, const char * data, std::string localModule )  {
 
   ELcontextSupplier & oldCS = logger->swapContextSupplier(con);
 
-  // Set the module, subroutine, and process according to this xid.
+  // Set the module and subroutine according to this xid.
 
-  std::string  oldProcess = logger->swapProcess(process);
   errlog.setModule (module);
   errlog.setSubroutine(subroutine);
 
@@ -174,7 +169,6 @@ void  ELrecv ( int nbytes, const char * data, std::string localModule )  {
   // Reset the context supplier and process to the remembered value.
 
   logger->swapContextSupplier(oldCS);
-  logger->swapProcess(oldProcess);
 
 } // ELrecv()
 

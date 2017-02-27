@@ -51,12 +51,6 @@ namespace mf {
     empty_ = false;
   }
 
-  void MessageFacilityMsg::setProcess(std::string const& process)
-  {
-    ep->setProcess(process);
-    empty_ = false;
-  }
-
   void MessageFacilityMsg::setPid(long const pid)
   {
     ep->setPID(pid);
@@ -99,7 +93,6 @@ namespace mf {
   std::string MessageFacilityMsg::category()    const { return ep->xid().id(); }
   std::string MessageFacilityMsg::hostname()    const { return ep->xid().hostname(); }
   std::string MessageFacilityMsg::hostaddr()    const { return ep->xid().hostaddr(); }
-  std::string MessageFacilityMsg::process()     const { return ep->xid().process(); }
   long        MessageFacilityMsg::pid()         const { return ep->xid().pid(); }
   std::string MessageFacilityMsg::application() const { return ep->xid().application(); }
   std::string MessageFacilityMsg::module()      const { return ep->xid().module(); }

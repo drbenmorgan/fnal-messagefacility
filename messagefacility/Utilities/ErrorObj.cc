@@ -96,11 +96,6 @@ namespace mf {
   }
 
 
-  void ErrorObj::setProcess(std::string const& proc)
-  {
-    myXid.setProcess(proc);
-  }
-
   void ErrorObj::setReactedTo(bool const r)
   {
     myReactedTo = r;

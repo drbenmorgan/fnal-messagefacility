@@ -41,7 +41,6 @@ namespace mf {
       //
       a->setMsgIsActive(true);
       a->msg().set(sev, id);
-      a->msg().setProcess(a->process());
       a->msg().setModule(module);
       a->msg().setSubroutine(subroutine);
       a->msg().setReactedTo(false);
@@ -66,7 +65,6 @@ namespace mf {
 
       // -----  will we need to poke/restore info into the message?
       //
-      bool const updateProcess    ( msg.xid().process()   .length() == 0 );
       bool const updateModule     ( msg.xid().module()    .length() == 0 );
       bool const updateSubroutine ( msg.xid().subroutine().length() == 0 );
       bool const updateHostName   ( msg.xid().hostname()  .length() == 0 );
@@ -76,7 +74,6 @@ namespace mf {
 
       // -----  poke, if needed:
       //
-      if ( updateProcess    )  msg.setProcess    ( a->process()  );
       if ( updateModule     )  msg.setModule     ( module        );
       if ( updateSubroutine )  msg.setSubroutine ( subroutine    );
       if ( updateHostName   )  msg.setHostName   ( a->hostname() );
@@ -107,7 +104,6 @@ namespace mf {
 
       // -----  restore, if we poked above:
       //
-      if ( updateProcess    )  msg.setProcess    ( "" );
       if ( updateModule     )  msg.setModule     ( "" );
       if ( updateSubroutine )  msg.setSubroutine ( "" );
       if ( updateHostName   )  msg.setHostName   ( "" );

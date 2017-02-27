@@ -6,10 +6,7 @@ namespace mf {
  ELextendedID::operator<(ELextendedID const& xid) const
  {
    return
-     ( process_ < xid.process_ ) ? true
-     : ( process_ > xid.process_ ) ? false
-
-     : ( severity_ < xid.severity_ ) ? true
+     ( severity_ < xid.severity_ ) ? true
      : ( severity_ > xid.severity_ ) ? false
 
      : ( id_ < xid.id_ ) ? true
