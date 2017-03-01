@@ -11,7 +11,7 @@
 #include "messagefacility/Utilities/ELseverityLevel.h"
 #include "messagefacility/MessageService/MessageDrop.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
-#include "messagefacility/MessageLogger/ThreadSafeLogMessageLoggerScribe.h"
+#include "messagefacility/MessageLogger/MessageLoggerScribe.h"
 #include "messagefacility/MessageService/ConfigurationHandshake.h"
 #include "messagefacility/MessageService/ELfwkJobReport.h"
 #include "messagefacility/MessageService/ELostreamOutput.h"
@@ -97,14 +97,14 @@ namespace {
 namespace mf {
   namespace service {
 
-    ThreadSafeLogMessageLoggerScribe::ThreadSafeLogMessageLoggerScribe()
+    MessageLoggerScribe::MessageLoggerScribe()
       : admin_(new ELadministrator)
       , earlyDest_{admin_->attach("cerr_early", make_unique<ELostreamOutput>(cet::ostream_handle{std::cerr}, false))}
     {
     }
 
     //=============================================================================
-    ThreadSafeLogMessageLoggerScribe::~ThreadSafeLogMessageLoggerScribe()
+    MessageLoggerScribe::~MessageLoggerScribe()
     {
       // If there are any waiting message, finish them off
       ErrorObj* errorobj_p=nullptr;
@@ -122,7 +122,7 @@ namespace mf {
 
     //=============================================================================
     void
-    ThreadSafeLogMessageLoggerScribe::runCommand(OpCode const opcode,
+    MessageLoggerScribe::runCommand(OpCode const opcode,
                                     void* operand)
     {
       switch(opcode) {
@@ -142,7 +142,7 @@ namespace mf {
         }
         catch(cet::exception const& e) {
           ++count_;
-          std::cerr << "ThreadSafeLogMessageLoggerScribe caught " << count_
+          std::cerr << "MessageLoggerScribe caught " << count_
                     << " cet::exceptions, text = \n"
                     << e.what() << "\n";
 
@@ -153,7 +153,7 @@ namespace mf {
           }
         }
         catch(...) {
-          std::cerr << "ThreadSafeLogMessageLoggerScribe caught an unknown exception and "
+          std::cerr << "MessageLoggerScribe caught an unknown exception and "
                     << "will no longer be processing "
                     << "messages. (entering purge mode)\n";
           purgeMode_ = true;
@@ -171,12 +171,12 @@ namespace mf {
           triggerStatisticsSummaries();
         }
         catch(cet::exception const& e) {
-          std::cerr << "ThreadSafeLogMessageLoggerScribe caught exception "
+          std::cerr << "MessageLoggerScribe caught exception "
                     << "during summarize:\n"
                     << e.what() << "\n";
         }
         catch(...) {
-          std::cerr << "ThreadSafeLogMessageLoggerScribe caught unkonwn exception type "
+          std::cerr << "MessageLoggerScribe caught unkonwn exception type "
                     << "during summarize. (Ignored)\n";
         }
         break;
@@ -187,14 +187,14 @@ namespace mf {
           jobReportOption_ = *jobReportOption_p;
         }
         catch(cet::exception const& e) {
-          std::cerr << "ThreadSafeLogMessageLoggerScribe caught a cet::exception "
+          std::cerr << "MessageLoggerScribe caught a cet::exception "
                     << "during processing of --jobReport option:\n"
                     << e.what() << "\n"
                     << "This likely will affect or prevent the job report.\n"
                     << "However, the rest of the logger continues to run.\n";
         }
         catch(...) {
-          std::cerr << "ThreadSafeLogMessageLoggerScribe caught unkonwn exception type\n"
+          std::cerr << "MessageLoggerScribe caught unkonwn exception type\n"
                     << "during processing of --jobReport option.\n"
                     << "This likely will affect or prevent the job report.\n"
                     << "However, the rest of the logger continues to run.\n";
@@ -214,15 +214,15 @@ namespace mf {
       }
       }  // switch
 
-    }  // ThreadSafeLogMessageLoggerScribe::runCommand(opcode, operand)
+    }  // MessageLoggerScribe::runCommand(opcode, operand)
 
-    void ThreadSafeLogMessageLoggerScribe::setApplication(std::string const & application)
+    void MessageLoggerScribe::setApplication(std::string const & application)
     {
       admin_->setApplication(application);
     }
 
     //=============================================================================
-    void ThreadSafeLogMessageLoggerScribe::log(ErrorObj* errorobj_p)
+    void MessageLoggerScribe::log(ErrorObj* errorobj_p)
     {
       bool expected = false;
       std::unique_ptr<ErrorObj> obj(errorobj_p);
@@ -250,7 +250,7 @@ namespace mf {
 
     //=============================================================================
     void
-    ThreadSafeLogMessageLoggerScribe::configure_errorlog()
+    MessageLoggerScribe::configure_errorlog()
     {
       // The following is present to test pre-configuration message handling:
       auto const& preconfiguration_message = jobConfig_->get<std::string>("generate_preconfiguration_message", {});
@@ -271,12 +271,12 @@ namespace mf {
 
       configure_fwkJobReports();
       fetchDestinations();
-    }  // ThreadSafeLogMessageLoggerScribe::configure_errorlog()
+    }  // MessageLoggerScribe::configure_errorlog()
 
 
     //=============================================================================
     void
-    ThreadSafeLogMessageLoggerScribe::configure_fwkJobReports()
+    MessageLoggerScribe::configure_fwkJobReports()
     {
       if (jobReportOption_.empty() || jobReportOption_ == "~")
         return;
@@ -349,7 +349,7 @@ namespace mf {
 
     //=============================================================================
     void
-    ThreadSafeLogMessageLoggerScribe::fetchDestinations()
+    MessageLoggerScribe::fetchDestinations()
     {
       // Below, we do not use the
       //
@@ -387,7 +387,7 @@ namespace mf {
 
     //=============================================================================
     void
-    ThreadSafeLogMessageLoggerScribe::makeDestinations(fhicl::ParameterSet const& dests,
+    MessageLoggerScribe::makeDestinations(fhicl::ParameterSet const& dests,
                                           ELdestConfig::dest_config const configuration)
     {
       std::set<std::string> ids;
@@ -433,7 +433,7 @@ namespace mf {
 
     //=============================================================================
     vstring
-    ThreadSafeLogMessageLoggerScribe::parseCategories(std::string const& s)
+    MessageLoggerScribe::parseCategories(std::string const& s)
     {
       vstring cats;
       using namespace std::string_literals;
@@ -462,7 +462,7 @@ namespace mf {
 
     //=============================================================================
     void
-    ThreadSafeLogMessageLoggerScribe::triggerStatisticsSummaries()
+    MessageLoggerScribe::triggerStatisticsSummaries()
     {
       for (auto& idDestPair : admin_->destinations()) {
         auto& dest = *idDestPair.second;
@@ -474,7 +474,7 @@ namespace mf {
 
     //=============================================================================
     std::string
-    ThreadSafeLogMessageLoggerScribe::createId(std::set<std::string>& existing_ids,
+    MessageLoggerScribe::createId(std::set<std::string>& existing_ids,
                                   std::string const& type,
                                   std::string const& file_name,
                                   fhicl::ParameterSet const& pset,
@@ -503,7 +503,7 @@ namespace mf {
 
     //=============================================================================
     bool
-    ThreadSafeLogMessageLoggerScribe::duplicateDestination(std::string const& output_id,
+    MessageLoggerScribe::duplicateDestination(std::string const& output_id,
                                               ELdestConfig::dest_config const configuration,
                                               bool const should_throw)
     {
@@ -557,7 +557,7 @@ namespace mf {
 
     //=============================================================================
     std::unique_ptr<ELdestination>
-    ThreadSafeLogMessageLoggerScribe::makePlugin_(cet::BasicPluginFactory& plugin_factory,
+    MessageLoggerScribe::makePlugin_(cet::BasicPluginFactory& plugin_factory,
                                      std::string const& libspec,
                                      std::string const& psetname,
                                      fhicl::ParameterSet const& pset)
@@ -568,7 +568,7 @@ namespace mf {
         if (pluginType == cet::PluginTypeDeducer<ELdestination>::value) {
           result = plugin_factory.makePlugin<std::unique_ptr<ELdestination>>(libspec, psetname, pset);
         } else {
-          throw Exception(errors::Configuration, "ThreadSafeLogMessageLoggerScribe: ")
+          throw Exception(errors::Configuration, "MessageLoggerScribe: ")
             << "unrecognized plugin type "
             << pluginType
             << "for plugin "
@@ -576,7 +576,7 @@ namespace mf {
             << ".\n";
         }
       } catch (cet::exception & e) {
-        throw Exception(errors::Configuration, "ThreadSafeLogMessageLoggerScribe: ", e)
+        throw Exception(errors::Configuration, "MessageLoggerScribe: ", e)
           << "Exception caught while processing plugin spec.\n";
       }
 

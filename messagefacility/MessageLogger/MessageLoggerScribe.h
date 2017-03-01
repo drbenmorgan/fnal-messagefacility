@@ -21,14 +21,14 @@
 namespace mf {
   namespace service {
 
-    class ThreadSafeLogMessageLoggerScribe : public AbstractMLscribe {
+    class MessageLoggerScribe : public AbstractMLscribe {
     public:
-      ~ThreadSafeLogMessageLoggerScribe();
+      ~MessageLoggerScribe();
 
-      ThreadSafeLogMessageLoggerScribe();
+      MessageLoggerScribe();
 
-      ThreadSafeLogMessageLoggerScribe(ThreadSafeLogMessageLoggerScribe const &) = delete;
-      ThreadSafeLogMessageLoggerScribe & operator = (ThreadSafeLogMessageLoggerScribe const &) = delete;
+      MessageLoggerScribe(MessageLoggerScribe const &) = delete;
+      MessageLoggerScribe & operator = (MessageLoggerScribe const &) = delete;
                                  
       // --- receive and act on messages:
       void runCommand(OpCode opcode, void* operand) override;
@@ -86,14 +86,14 @@ namespace mf {
                                                   std::string const& psetname,
                                                   fhicl::ParameterSet const& pset);
 
-    };  // ThreadSafeLogMessageLoggerScribe
+    };  // MessageLoggerScribe
 
 
   }   // end of namespace service
 }  // namespace mf
 
 
-#endif /* messagefacility_MessageLogger_ThreadSafeLogMessageLoggerScribe_h */
+#endif /* messagefacility_MessageLogger_MessageLoggerScribe_h */
 
 // Local Variables:
 // mode: c++

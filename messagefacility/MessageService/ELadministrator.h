@@ -35,13 +35,13 @@
 
 namespace mf {
   namespace service {
-    class ThreadSafeLogMessageLoggerScribe;
+    class MessageLoggerScribe;
     // ----------------------------------------------------------------------
     // ELadministrator:
     // ----------------------------------------------------------------------
 
     class ELadministrator {
-      friend ::mf::service::ThreadSafeLogMessageLoggerScribe;
+      friend ::mf::service::MessageLoggerScribe;
 
     public:
       void log(ErrorObj & msg);
