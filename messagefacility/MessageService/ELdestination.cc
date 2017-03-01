@@ -141,8 +141,7 @@ namespace mf {
     }
 
     void ELdestination::fillPrefix(std::ostringstream& oss,
-                                   mf::ErrorObj const& msg,
-                                   ELcontextSupplier const& contextSupplier)
+                                   mf::ErrorObj const& msg)
     {
       if (msg.is_verbatim()) return;
 
@@ -217,13 +216,8 @@ namespace mf {
           emitToken(oss," ");
           needAspace = false;
         }
-        if (format.want(FULL_CONTEXT)) {
-          emitToken(oss, contextSupplier.fullContext());
-        } else {
-          emitToken(oss, contextSupplier.context());
-        }
+        emitToken(oss, msg.context());
       }
-
     }
 
     //=============================================================================
@@ -275,8 +269,7 @@ namespace mf {
 
     //=============================================================================
     void ELdestination::routePayload(std::ostringstream const&,
-                                     mf::ErrorObj const&,
-                                     ELcontextSupplier const&)
+                                     mf::ErrorObj const&)
     {}
 
     // ----------------------------------------------------------------------
@@ -284,21 +277,21 @@ namespace mf {
     // ----------------------------------------------------------------------
 
     //=============================================================================
-    void ELdestination::log(mf::ErrorObj& msgObj, ELcontextSupplier const& contextSupplier)
+    void ELdestination::log(mf::ErrorObj& msgObj)
     {
       if (!passLogMsgThreshold(msgObj)) return;
 
       std::ostringstream payload;
-      fillPrefix(payload, msgObj, contextSupplier);
+      fillPrefix(payload, msgObj);
       fillUsrMsg(payload, msgObj);
       fillSuffix(payload, msgObj);
 
-      routePayload(payload, msgObj, contextSupplier);
+      routePayload(payload, msgObj);
 
       msgObj.setReactedTo(true);
 
       if (enableStats && passLogStatsThreshold(msgObj))
-        stats.log(msgObj, contextSupplier);
+        stats.log(msgObj);
     }
 
     // Each of the functions below must be overridden by any
@@ -351,7 +344,7 @@ namespace mf {
       ignoreModule(moduleName);
     }
 
-    void ELdestination::summary(ELcontextSupplier const& contextSupplier)
+    void ELdestination::summary()
     {
       if (enableStats && stats.updatedStats && stats.printAtTermination)
         {
@@ -359,14 +352,14 @@ namespace mf {
           payload << "\n=============================================\n\n"
                   << "MessageLogger Summary\n"
                   << stats.formSummary();
-          routePayload(payload, mf::ErrorObj{ELzeroSeverity, noosMsg}, contextSupplier);
+          routePayload(payload, mf::ErrorObj{ELzeroSeverity, noosMsg});
         }
     }
 
     void ELdestination::summary(std::ostream& os, std::string const& title)
     {
       os << preamble
-         << ELwarning2.getSymbol() << " "
+         << ELwarning.getSymbol() << " "
          << noSummaryMsg << " "
          << hereMsg << '\n'
          << title << '\n';
@@ -391,34 +384,32 @@ namespace mf {
     }
 
     void ELdestination::summarization(std::string const& title,
-                                      std::string const& /*sumfines*/,
-                                      ELcontextSupplier const& contextSupplier)
+                                      std::string const& /*sumfines*/)
     {
-      mf::ErrorObj msg {ELwarning2, noSummarizationMsg};
+      mf::ErrorObj msg {ELwarning, noSummarizationMsg};
       msg << hereMsg << '\n' << title;
-      log(msg, contextSupplier);
+      log(msg);
     }
 
-    void ELdestination::changeFile(std::ostream&, ELcontextSupplier const& contextSupplier)
+    void ELdestination::changeFile(std::ostream&)
     {
-      mf::ErrorObj msg {ELwarning2, noosMsg};
+      mf::ErrorObj msg {ELwarning, noosMsg};
       msg << notELoutputMsg;
-      log(msg, contextSupplier);
+      log(msg);
     }
 
-    void ELdestination::changeFile(std::string const& filename,
-                                   ELcontextSupplier const& contextSupplier)
+    void ELdestination::changeFile(std::string const& filename)
     {
-      mf::ErrorObj msg {ELwarning2, noosMsg};
+      mf::ErrorObj msg {ELwarning, noosMsg};
       msg << notELoutputMsg << '\n' << "file requested is" << filename;
-      log(msg, contextSupplier);
+      log(msg);
     }
 
-    void ELdestination::flush(ELcontextSupplier const& contextSupplier)
+    void ELdestination::flush()
     {
-      mf::ErrorObj msg {ELwarning2, noosMsg};
+      mf::ErrorObj msg {ELwarning, noosMsg};
       msg << "cannot flush()";
-      log(msg, contextSupplier);
+      log(msg);
     }
 
     // ----------------------------------------------------------------------

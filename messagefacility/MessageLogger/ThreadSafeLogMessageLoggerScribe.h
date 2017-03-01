@@ -7,8 +7,6 @@
 #include "messagefacility/MessageService/ELadministrator.h"
 #include "messagefacility/MessageService/ELdestination.h"
 #include "messagefacility/MessageService/ELdestConfigCheck.h"
-#include "messagefacility/MessageService/ErrorLog.h"
-#include "messagefacility/MessageService/MsgContext.h"
 #include "messagefacility/MessageService/MessageLoggerQ.h"
 #include "messagefacility/MessageService/AbstractMLscribe.h"
 
@@ -22,8 +20,6 @@
 
 namespace mf {
   namespace service {
-
-    class ErrorLog;
 
     class ThreadSafeLogMessageLoggerScribe : public AbstractMLscribe {
     public:
@@ -58,9 +54,7 @@ namespace mf {
       // --- data:
       cet::exempt_ptr<ELadministrator> admin_ {ELadministrator::instance()};
       std::unique_ptr<fhicl::ParameterSet> jobConfig_ {nullptr};
-      std::unique_ptr<ErrorLog> errorLog_ {std::make_unique<ErrorLog>()};
       ELdestination& earlyDest_;
-      MsgContext msgContext_;
       std::string jobReportOption_ {};
       bool cleanSlateConfiguration_ {true};
       bool active_ {true};

@@ -71,19 +71,13 @@ namespace mf {
   {
     static ELmap m;
     setSeverity(m, ELzeroSeverity);
-    setSeverity(m, ELincidental);
     setSeverity(m, ELsuccess);
+    setSeverity(m, ELdebug);
     setSeverity(m, ELinfo);
     setSeverity(m, ELwarning);
-    setSeverity(m, ELwarning2);
     setSeverity(m, ELerror);
-    setSeverity(m, ELerror2);
-    setSeverity(m, ELnextEvent);
     setSeverity(m, ELunspecified);
     setSeverity(m, ELsevere);
-    setSeverity(m, ELsevere2);
-    setSeverity(m, ELabort);
-    setSeverity(m, ELfatal);
     setSeverity(m, ELhighestSeverity);
     return m;
   }
@@ -128,19 +122,12 @@ namespace mf {
     switch (myLevel)  {
     default                   :  result =  "0" ; break;
     case ELsev_zeroSeverity   :  result =  "--"; break;
-    case ELsev_incidental     :  result =  ".."; break;
     case ELsev_success        :  result =  "-d"; break;
     case ELsev_info           :  result =  "-i"; break;
     case ELsev_warning        :  result =  "-w"; break;
-    case ELsev_warning2       :  result =  "-W"; break;
     case ELsev_error          :  result =  "-e"; break;
-    case ELsev_error2         :  result =  "-E"; break;
-    case ELsev_next           :  result =  "-n"; break;
     case ELsev_unspecified    :  result =  "??"; break;
     case ELsev_severe         :  result =  "-s"; break;
-    case ELsev_severe2        :  result =  "-S"; break;
-    case ELsev_abort          :  result =  "-A"; break;
-    case ELsev_fatal          :  result =  "-F"; break;
     case ELsev_highestSeverity:  result =  "!!"; break;
     }
 
@@ -155,19 +142,12 @@ namespace mf {
     switch (myLevel)  {
     default                   :  result =  "?no value?"; break;
     case ELsev_zeroSeverity   :  result =  "--"        ; break;
-    case ELsev_incidental     :  result =  ".."        ; break;
     case ELsev_success        :  result =  "Debug"     ; break;
     case ELsev_info           :  result =  "Info"      ; break;
     case ELsev_warning        :  result =  "Warning"   ; break;
-    case ELsev_warning2       :  result =  "Warning!"  ; break;
     case ELsev_error          :  result =  "Error"     ; break;
-    case ELsev_error2         :  result =  "Error!"    ; break;
-    case ELsev_next           :  result =  "Next"      ; break;
     case ELsev_unspecified    :  result =  "??"        ; break;
     case ELsev_severe         :  result =  "System"    ; break;
-    case ELsev_severe2        :  result =  "Severe!"   ; break;
-    case ELsev_abort          :  result =  "Abort!"    ; break;
-    case ELsev_fatal          :  result =  "Fatal!"    ; break;
     case ELsev_highestSeverity:  result =  "!!"        ; break;
     }
 
@@ -183,19 +163,12 @@ namespace mf {
     switch (myLevel)  {
     default                   : result =  "?no value?" ; break;
     case ELsev_zeroSeverity   : result =  "ZERO"       ; break;
-    case ELsev_incidental     : result =  "INCIDENTAL" ; break;
     case ELsev_success        : result =  "DEBUG"      ; break;
     case ELsev_info           : result =  "INFO"       ; break;
     case ELsev_warning        : result =  "WARNING"    ; break;
-    case ELsev_warning2       : result =  "WARNING2"   ; break;
     case ELsev_error          : result =  "ERROR"      ; break;
-    case ELsev_error2         : result =  "ERROR2"     ; break;
-    case ELsev_next           : result =  "NEXT"       ; break;
     case ELsev_unspecified    : result =  "UNSPECIFIED"; break;
     case ELsev_severe         : result =  "SYSTEM"     ; break;
-    case ELsev_severe2        : result =  "SEVERE2"    ; break;
-    case ELsev_abort          : result =  "ABORT"      ; break;
-    case ELsev_fatal          : result =  "FATAL"      ; break;
     case ELsev_highestSeverity: result =  "HIGHEST"    ; break;
     }
 
@@ -211,19 +184,12 @@ namespace mf {
     switch (myLevel)  {
     default                   : result =  "?no value?       "; break;
     case ELsev_zeroSeverity   : result =  "ELzeroSeverity   "; break;
-    case ELsev_incidental     : result =  "ELincidental     "; break;
     case ELsev_success        : result =  "ELdebug          "; break;
     case ELsev_info           : result =  "ELinfo           "; break;
     case ELsev_warning        : result =  "ELwarning        "; break;
-    case ELsev_warning2       : result =  "ELwarning2       "; break;
     case ELsev_error          : result =  "ELerror          "; break;
-    case ELsev_error2         : result =  "ELerror2         "; break;
-    case ELsev_next           : result =  "ELnextEvent      "; break;
     case ELsev_unspecified    : result =  "ELunspecified    "; break;
     case ELsev_severe         : result =  "ELsystem         "; break;
-    case ELsev_severe2        : result =  "ELsevere2        "; break;
-    case ELsev_abort          : result =  "ELabort          "; break;
-    case ELsev_fatal          : result =  "ELfatal          "; break;
     case ELsev_highestSeverity: result =  "ELhighestSeverity"; break;
     }
 

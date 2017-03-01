@@ -64,9 +64,9 @@ namespace mf {
   void ErrorObj::setSeverity(ELseverityLevel const sev)
   {
     myXid.setSeverity((sev <= ELzeroSeverity) ?
-                      (ELseverityLevel)ELincidental :
+                      (ELseverityLevel)ELdebug :
                       ((sev >= ELhighestSeverity) ?
-                       (ELseverityLevel)ELfatal :
+                       (ELseverityLevel)ELsevere :
                        sev));
   }
 

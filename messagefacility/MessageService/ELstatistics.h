@@ -29,7 +29,7 @@ namespace mf {
       ELstatistics(fhicl::ParameterSet const& pset, std::ostream& osp);
       ELstatistics(fhicl::ParameterSet const& pset, std::string const& filename, bool const append);
 
-      void log(mf::ErrorObj& msg, ELcontextSupplier const&) override;
+      void log(mf::ErrorObj& msg) override;
 
       // copy c'tor/assignment disabled
       ELstatistics(ELstatistics const&) = delete;
@@ -39,7 +39,7 @@ namespace mf {
 
       void summary(std::ostream& os, std::string const& title="") override;
       void summary(std::string& s, std::string const& title="") override;
-      void summary(ELcontextSupplier const&) override;
+      void summary() override;
       void noTerminationSummary() override;
 
       void summaryForJobReport (std::map<std::string, double>& sm) override;

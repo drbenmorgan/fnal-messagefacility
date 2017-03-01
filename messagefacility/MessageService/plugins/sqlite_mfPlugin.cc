@@ -8,12 +8,6 @@
 #include <cstdint>
 #include <memory>
 
-namespace mf {
-  namespace service {
-    class ELcontextSupplier;
-  }
-}
-
 namespace {
 
   using std::string;
@@ -32,8 +26,7 @@ namespace {
   private:
 
     virtual void fillPrefix(std::ostringstream&,
-                            mf::ErrorObj const&,
-                            mf::service::ELcontextSupplier const&) override
+                            mf::ErrorObj const&) override
     {}
 
     virtual void fillSuffix(std::ostringstream&,
@@ -41,8 +34,7 @@ namespace {
     {}
 
     virtual void routePayload(std::ostringstream const&,
-                              mf::ErrorObj const&,
-                              mf::service::ELcontextSupplier const&) override;
+                              mf::ErrorObj const&) override;
 
     cet::sqlite::Connection db_;
     cet::Ntuple<string,string,string,string,string,string,unsigned,string,string> msgHeadersTable_;
@@ -61,8 +53,7 @@ namespace {
 
   //===============================================================================================================
   void sqlite3Plugin::routePayload(std::ostringstream const& oss,
-                                   mf::ErrorObj const& msg,
-                                   mf::service::ELcontextSupplier const&)
+                                   mf::ErrorObj const& msg)
   {
     auto const& xid = msg.xid();
 

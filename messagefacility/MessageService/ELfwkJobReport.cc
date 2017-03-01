@@ -50,7 +50,7 @@ namespace mf {
     // Methods invoked by the ELadministrator:
     // ----------------------------------------------------------------------
 
-    void ELfwkJobReport::log(mf::ErrorObj& msg, ELcontextSupplier const&)
+    void ELfwkJobReport::log(mf::ErrorObj& msg)
     {
       xid_ = msg.xid();
 
@@ -91,8 +91,7 @@ namespace mf {
     // ----------------------------------------------------------------------
 
     void ELfwkJobReport::summarization(std::string const& fullTitle,
-                                       std::string const& sumLines,
-                                       ELcontextSupplier const&)
+                                       std::string const& sumLines)
     {
       constexpr int titleMaxLength {40};
 
@@ -119,7 +118,7 @@ namespace mf {
     // Changing ostream:
     // ----------------------------------------------------------------------
 
-    void ELfwkJobReport::changeFile(std::ostream& os, ELcontextSupplier const&)
+    void ELfwkJobReport::changeFile(std::ostream& os)
     {
       osh_ = cet::ostream_handle{os};
       osh_ << "\n=======================================================\n"
@@ -127,7 +126,7 @@ namespace mf {
            << "\n=======================================================\n\n";
     }
 
-    void ELfwkJobReport::changeFile(std::string const& filename, ELcontextSupplier const&)
+    void ELfwkJobReport::changeFile(std::string const& filename)
     {
       osh_ = cet::ostream_handle{filename, std::ios::app};
       osh_ << "\n=======================================================\n"
@@ -135,7 +134,7 @@ namespace mf {
            << "\n=======================================================\n\n";
     }
 
-    void ELfwkJobReport::flush(ELcontextSupplier const&)
+    void ELfwkJobReport::flush()
     {
       osh_.flush();
     }

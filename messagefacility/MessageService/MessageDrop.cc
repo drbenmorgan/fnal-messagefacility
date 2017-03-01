@@ -1,5 +1,4 @@
 #include "messagefacility/MessageService/MessageDrop.h"
-#include "messagefacility/MessageService/ELadministrator.h"
 
 #include <map>
 
@@ -23,7 +22,6 @@ public:
       cache_.append(label_);
       nameLabelMap_[moduleID_] = cache_;
       if (!phase_.empty()) {
-        cache_.append("@");
         cache_.append(phase_);
       }
     }
@@ -36,11 +34,11 @@ public:
     name_ = name;
     label_ = label;
     moduleID_ = moduleID;
-    phase_ = phase;
+    phase_ = "@"s + phase;
     cache_.clear();
   }
 private:
-  std::string phase_ {"Early"s};
+  std::string phase_ {"@Early"s};
   std::string name_ {};
   std::string label_ {};
   const void * moduleID_ {};

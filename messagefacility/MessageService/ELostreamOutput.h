@@ -11,8 +11,6 @@
 #include "cetlib/ostream_handle.h"
 #include "messagefacility/Utilities/ELextendedID.h"
 #include "messagefacility/MessageService/ELdestination.h"
-#include "messagefacility/MessageService/ELcontextSupplier.h"
-#include "messagefacility/MessageService/MsgContext.h"
 
 #include <memory>
 
@@ -40,13 +38,12 @@ namespace mf {
     private:
 
       void routePayload(std::ostringstream const& oss,
-                        mf::ErrorObj const& msg,
-                        ELcontextSupplier const&) override;
-      void summarization(std::string const& fullTitle, std::string const& sumLines, ELcontextSupplier const& ) override;
+                        mf::ErrorObj const& msg) override;
+      void summarization(std::string const& fullTitle, std::string const& sumLines) override;
 
-      void changeFile(std::ostream& os, ELcontextSupplier const&) override;
-      void changeFile(std::string const& filename, ELcontextSupplier const&) override;
-      void flush(ELcontextSupplier const&) override;
+      void changeFile(std::ostream& os) override;
+      void changeFile(std::string const& filename) override;
+      void flush() override;
 
       cet::ostream_handle osh;
       mf::ELextendedID xid {};

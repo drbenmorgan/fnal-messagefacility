@@ -16,7 +16,6 @@
 #include "messagefacility/Utilities/ELextendedID.h"
 #include "messagefacility/Utilities/ELset.h"
 #include "messagefacility/Utilities/ErrorObj.h"
-#include "messagefacility/MessageService/ELcontextSupplier.h"
 #include "messagefacility/MessageService/MsgFormatSettings.h"
 #include "messagefacility/MessageService/MsgStatistics.h"
 
@@ -49,12 +48,11 @@ namespace mf {
 
 
       virtual void finish();
-      virtual void log(mf::ErrorObj& msg, ELcontextSupplier const&);
+      virtual void log(mf::ErrorObj& msg);
       virtual void noTerminationSummary(){}
       virtual void summarization(std::string const& title,
-                                 std::string const& sumLines,
-                                 ELcontextSupplier const&);
-      virtual void summary(ELcontextSupplier const&);
+                                 std::string const& sumLines);
+      virtual void summary();
       virtual void wipe();
 
       void setThreshold(ELseverityLevel sv);
@@ -68,13 +66,12 @@ namespace mf {
       bool passLogMsgThreshold  (mf::ErrorObj const& msg);
       bool passLogStatsThreshold(mf::ErrorObj const& msg) const;
 
-      virtual void fillPrefix(std::ostringstream& oss, mf::ErrorObj const& msg, ELcontextSupplier const&);
+      virtual void fillPrefix(std::ostringstream& oss, mf::ErrorObj const& msg);
       virtual void fillUsrMsg(std::ostringstream& oss, mf::ErrorObj const& msg);
       virtual void fillSuffix(std::ostringstream& oss, mf::ErrorObj const& msg);
 
       virtual void routePayload(std::ostringstream const& oss,
-                                mf::ErrorObj const& msg,
-                                ELcontextSupplier const&);
+                                mf::ErrorObj const& msg);
 
       virtual void filterModule(std::string const& moduleName);
       virtual void excludeModule(std::string const& moduleName);
@@ -86,9 +83,9 @@ namespace mf {
       virtual void summary(std::string& s, std::string const& title="");
       virtual void summaryForJobReport(std::map<std::string, double>& sm);
 
-      virtual void changeFile(std::ostream& os, ELcontextSupplier const&);
-      virtual void changeFile(std::string const& filename, ELcontextSupplier const&);
-      virtual void flush(ELcontextSupplier const&);
+      virtual void changeFile(std::ostream& os);
+      virtual void changeFile(std::string const& filename);
+      virtual void flush();
 
     protected:
 

@@ -100,7 +100,6 @@ namespace mf {
     ThreadSafeLogMessageLoggerScribe::ThreadSafeLogMessageLoggerScribe()
       : earlyDest_{admin_->attach("cerr_early", make_unique<ELostreamOutput>(cet::ostream_handle{std::cerr}, false))}
     {
-      admin_->setContextSupplier(msgContext_);
     }
 
     //=============================================================================
@@ -112,7 +111,7 @@ namespace mf {
         if(not purgeMode_) {
           for (auto const & cat : parseCategories(errorobj_p->xid().id())) {
             errorobj_p->setID(cat);
-            (*errorLog_)( *errorobj_p );  // route the message text
+            admin_->log( *errorobj_p );  // route the message text
           }
         }
         delete errorobj_p;
@@ -222,14 +221,10 @@ namespace mf {
       bool expected = false;
       std::unique_ptr<ErrorObj> obj(errorobj_p);
       if(messageBeingSent_.compare_exchange_strong(expected,true)) {
-        ELcontextSupplier& cs = const_cast<ELcontextSupplier&>(admin_->getContextSupplier());
-        MsgContext& mc = dynamic_cast<MsgContext&>(cs);
-        mc.setContext(errorobj_p->context());
-
         // Process the current message.
         for (auto const& cat : parseCategories(errorobj_p->xid().id())) {
           errorobj_p->setID(cat);
-          (*errorLog_)(*errorobj_p);  // route the message text
+          admin_->log(*errorobj_p);  // route the message text
         }
         //process any waiting messages
         errorobj_p = nullptr;
@@ -237,7 +232,7 @@ namespace mf {
           obj.reset(errorobj_p);
           for (auto const& cat : parseCategories(errorobj_p->xid().id())) {
             errorobj_p->setID(cat);
-            (*errorLog_)(*errorobj_p);  // route the message text
+            admin_->log(*errorobj_p);  // route the message text
           }
         }
         messageBeingSent_.store(false);
@@ -465,7 +460,7 @@ namespace mf {
     {
       for (auto& idDestPair : admin_->destinations()) {
         auto& dest = *idDestPair.second;
-        dest.summary(admin_->getContextSupplier());
+        dest.summary();
         if (dest.resetStats())
           dest.wipe();
       }

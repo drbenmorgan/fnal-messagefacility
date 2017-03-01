@@ -5,12 +5,9 @@ cet_make_library(
   ELdestination.cc
   ELfwkJobReport.cc
   ELostreamOutput.cc
-  ELrecv.cc
   ELstatistics.cc
-  ErrorLog.cc
   MessageDrop.cc
   MessageLoggerQ.cc
-  MsgContext.cc
   MsgFormatSettings.cc
   MsgStatistics.cc
   ThreadQueue.cc

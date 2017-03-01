@@ -161,12 +161,12 @@ MessageLoggerQ::MLqFLS()
   handshakedCommand(FLUSH_LOG_Q, nullptr, "FLS");
 }
 
-mf::ELseverityLevel MessageLoggerQ::threshold ("WARNING");
+mf::ELseverityLevel MessageLoggerQ::threshold (ELseverityLevel::ELsev_warning);
 std::set<std::string> MessageLoggerQ::squelchSet;
 
-void MessageLoggerQ::standAloneThreshold(std::string const& severity)
+void MessageLoggerQ::standAloneThreshold(ELseverityLevel const& severity)
 {
-  threshold = mf::ELseverityLevel(severity);
+  threshold = severity;
 }
 
 void MessageLoggerQ::squelch(std::string const& category)

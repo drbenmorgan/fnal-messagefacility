@@ -26,32 +26,28 @@ namespace mf  {
   // helpers
   namespace detail {
 
-    constexpr int ELsev_warning {ELseverityLevel::ELsev_warning};
-    constexpr int ELsev_info    {ELseverityLevel::ELsev_info};
-    constexpr int ELsev_success {ELseverityLevel::ELsev_success};
-
-    template <int SEV>
+    template <ELseverityLevel::ELsev_ SEV>
     inline bool enabled()
     {
       return true;
     }
 
     template<>
-    inline bool enabled<ELsev_warning>()
+    inline bool enabled<ELseverityLevel::ELsev_warning>()
     {
       auto & md = *MessageDrop::instance();
       return (!md.warningAlwaysSuppressed) && md.warningEnabled;
     }
 
     template<>
-    inline bool enabled<ELsev_info>()
+    inline bool enabled<ELseverityLevel::ELsev_info>()
     {
       auto & md = *MessageDrop::instance();
       return (!md.infoAlwaysSuppressed) && md.infoEnabled;
     }
 
     template<>
-    inline bool enabled<ELsev_success>()
+    inline bool enabled<ELseverityLevel::ELsev_success>()
     {
       auto & md = *MessageDrop::instance();
       return (!md.debugAlwaysSuppressed) && md.debugEnabled;
@@ -85,7 +81,7 @@ namespace mf  {
 
   // The following two methods have no effect except in stand-alone apps
   // that do not create a MessageServicePresence:
-  void setStandAloneMessageThreshold    (std::string const& severity);
+  void setStandAloneMessageThreshold    (mf::ELseverityLevel & severity);
   void squelchStandAloneMessageCategory (std::string const& category);
 
   void SetApplicationName(std::string const& application);
@@ -97,14 +93,14 @@ namespace mf  {
 //=======================================================================
 namespace mf {
 
-  template <int SEV, bool VERB, bool PREFIX, bool IS_CONDITIONAL>
+  template <ELseverityLevel::ELsev_ SEV, bool VERB, bool PREFIX, bool IS_CONDITIONAL>
   class MaybeLogger_ {
     MessageSender msgSender;
   public:
 
     MaybeLogger_() = default;
     MaybeLogger_(std::string const& id, std::string const& file = "--", int line = 0)
-      : msgSender{ELseverityLevel::ELsev_(SEV), id, VERB, !detail::enabled<SEV>()}
+      : msgSender{SEV, id, VERB, !detail::enabled<SEV>()}
     {
       if (PREFIX) {
         *this << " "

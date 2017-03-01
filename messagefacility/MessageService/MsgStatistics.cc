@@ -1,5 +1,4 @@
 #include "messagefacility/MessageService/MsgStatistics.h"
-#include "messagefacility/MessageService/ELcontextSupplier.h"
 
 #include "messagefacility/Utilities/ErrorObj.h"
 
@@ -8,6 +7,27 @@
 #include <sstream>
 #include <ios>
 #include <cassert>
+
+namespace {
+  static  std::string summarizeContext(const std::string& c)
+  {
+    if ( c.substr (0,4) != "Run:" ) return c;
+    std::istringstream is (c);
+    std::string runWord;
+    int run;
+    is >> runWord >> run;
+    if (!is) return c;
+    if (runWord != "Run:") return c;
+    std::string eventWord;
+    int event;
+    is >> eventWord >> event;
+    if (!is) return c;
+    if (eventWord != "Event:") return c;
+    std::ostringstream os;
+    os << run << "/" << event;
+    return os.str();
+  }
+}
 
 namespace mf {
   namespace service {
@@ -21,9 +41,9 @@ namespace mf {
     // Methods invoked by the ELadministrator
     // ----------------------------------------------------------------------
 
-    void MsgStatistics::log(mf::ErrorObj const& msg, ELcontextSupplier const& contextSupplier)
+    void MsgStatistics::log(mf::ErrorObj const& msg)
     {
-      statsMap[msg.xid()].add(contextSupplier.summaryContext(), msg.reactedTo());
+      statsMap[msg.xid()].add(summarizeContext(msg.context()), msg.reactedTo());
       updatedStats = true;
     }
 

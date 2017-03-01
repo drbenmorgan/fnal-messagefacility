@@ -7,7 +7,6 @@
 
 #include "messagefacility/MessageService/ELstatistics.h"
 #include "fhiclcpp/ParameterSet.h"
-#include "messagefacility/MessageService/ELcontextSupplier.h"
 #include "messagefacility/Utilities/ErrorObj.h"
 
 #include <fstream>
@@ -41,10 +40,10 @@ namespace mf {
     // Methods invoked by the ELadministrator
     // ----------------------------------------------------------------------
 
-    void ELstatistics::log(mf::ErrorObj& msg, ELcontextSupplier const& contextSupplier)
+    void ELstatistics::log(mf::ErrorObj& msg)
     {
       if (passLogStatsThreshold(msg))
-        stats.log(msg, contextSupplier);
+        stats.log(msg);
     }
 
     void ELstatistics::summary(std::ostream& os, std::string const& title)
@@ -53,7 +52,7 @@ namespace mf {
       stats.updatedStats = false;
     }
 
-    void ELstatistics::summary(ELcontextSupplier const&)
+    void ELstatistics::summary()
     {
       termStream << "\n=============================================\n\n"
                  << "MessageLogger Summary\n"

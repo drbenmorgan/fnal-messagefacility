@@ -1,8 +1,6 @@
 #include "messagefacility/MessageService/ELadministrator.h"
-#include "messagefacility/MessageService/ELcontextSupplier.h"
 #include "messagefacility/MessageService/ELostreamOutput.h"
 #include "messagefacility/Utilities/exception.h"
-#include "messagefacility/Utilities/possiblyAbortOrExit.h"
 
 #include <arpa/inet.h>
 #include <ifaddrs.h>
@@ -18,6 +16,22 @@ using std::cerr;
 
 namespace mf {
   namespace service {
+    void ELadministrator::log(ErrorObj & msg)
+    {
+      auto const severity = msg.xid().severity();
+      int const lev = severity.getLevel();
+      ++severityCounts_[lev];
+      if (severity > highSeverity_)
+        highSeverity_ = severity;
+
+      if (destinations_.empty()) {
+        std::cerr << "\nERROR LOGGED WITHOUT DESTINATION!\n"
+                  << "Attaching destination \"cerr\" to ELadministrator by default\n\n";
+        destinations_.emplace("cerr", std::make_unique<ELostreamOutput>(cet::ostream_handle{std::cerr}));
+      }
+
+      for_all_destinations([&msg](auto& d){ d.log(msg); });
+    }
 
     // ----------------------------------------------------------------------
     // ELadministrator functionality:
@@ -26,33 +40,6 @@ namespace mf {
     void ELadministrator::setApplication(std::string const& application)
     {
       application_ = application;
-    }
-
-    void ELadministrator::setContextSupplier(ELcontextSupplier const& supplier)
-    {
-      context_.reset(supplier.clone());
-    }
-
-    ELcontextSupplier const& ELadministrator::getContextSupplier() const
-    {
-      return *context_;
-    }
-
-    ELcontextSupplier& ELadministrator::swapContextSupplier(ELcontextSupplier& cs)
-    {
-      ELcontextSupplier& save = *context_;
-      context_.reset(&cs);
-      return save;
-    }
-
-    void ELadministrator::setAbortThreshold(ELseverityLevel const sev)
-    {
-      abortThreshold_ = sev;
-    }
-
-    void ELadministrator::setExitThreshold(ELseverityLevel const sev)
-    {
-      exitThreshold_ = sev;
     }
 
     bool ELadministrator::hasDestination(std::string const& name)
@@ -114,18 +101,6 @@ namespace mf {
 
     long ELadministrator::pid() const { return pid_;}
 
-    ELcontextSupplier& ELadministrator::context() const  { return *context_; }
-
-    ELseverityLevel ELadministrator::abortThreshold() const
-    {
-      return abortThreshold_;
-    }
-
-    ELseverityLevel ELadministrator::exitThreshold() const
-    {
-      return exitThreshold_;
-    }
-
     std::map<std::string, std::unique_ptr<ELdestination>> const&
     ELadministrator::destinations()
     {
@@ -137,42 +112,6 @@ namespace mf {
     }
 
     // ----------------------------------------------------------------------
-    // Message handling:
-    // ----------------------------------------------------------------------
-
-    void ELadministrator::finishMsg()
-    {
-      if (!msgIsActive_)
-        return;
-
-      auto const severity = msg_.xid().severity();
-      int const lev = severity.getLevel();
-      ++severityCounts_[lev];
-      if (severity > highSeverity_)
-        highSeverity_ = severity;
-
-      context_->editErrorObj(msg_);
-
-      if (destinations_.empty()) {
-        std::cerr << "\nERROR LOGGED WITHOUT DESTINATION!\n"
-                  << "Attaching destination \"cerr\" to ELadministrator by default\n\n";
-        destinations_.emplace("cerr", std::make_unique<ELostreamOutput>(cet::ostream_handle{std::cerr}));
-      }
-
-      for_all_destinations([this](auto& d){ d.log(msg_, *context_); });
-      msgIsActive_ = false;
-
-      possiblyAbortOrExit(severity, abortThreshold(), exitThreshold());
-    } // finishMsg()
-
-
-    void ELadministrator::clearMsg()
-    {
-      msgIsActive_ = false;
-      msg_.clear();
-    }
-
-    // ----------------------------------------------------------------------
     // The following do the indicated action to all attached destinations:
     // ----------------------------------------------------------------------
 
@@ -180,24 +119,6 @@ namespace mf {
     {
       for_all_destinations([](auto& d){ d.finish(); });
     }
-
-    // ----------------------------------------------------------------------
-    // ELemptyContextSupplier (dummy default ELcontextSupplier):
-    // ----------------------------------------------------------------------
-
-    class ELemptyContextSupplier : public ELcontextSupplier  {
-    public:
-
-      ELemptyContextSupplier* clone() const override
-      {
-        return new ELemptyContextSupplier(*this);
-      }
-      std::string context()        const override { return ""; }
-      std::string summaryContext() const override { return ""; }
-      std::string fullContext()    const override { return ""; }
-    };
-
-    static ELemptyContextSupplier emptyContext {};
 
     // ----------------------------------------------------------------------
     // The Destructable Singleton pattern
@@ -213,7 +134,6 @@ namespace mf {
     }
 
     ELadministrator::ELadministrator()
-      : context_{emptyContext.clone()}
     {
       // hostname
       char hostname[1024];
@@ -296,7 +216,6 @@ namespace mf {
 
     ELadministrator::~ELadministrator()
     {
-      finishMsg();
       destinations_.clear();
     }
 

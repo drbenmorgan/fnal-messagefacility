@@ -48,11 +48,10 @@ namespace mf {
     // ----------------------------------------------------------------------
 
     void ELostreamOutput::routePayload(std::ostringstream const& oss,
-                                       mf::ErrorObj const&,
-                                       ELcontextSupplier const& contextSupplier)
+                                       mf::ErrorObj const&)
     {
       osh << oss.str();
-      flush(contextSupplier);
+      flush();
     }
 
     // ----------------------------------------------------------------------
@@ -60,8 +59,7 @@ namespace mf {
     // ----------------------------------------------------------------------
 
     void ELostreamOutput::summarization( const std::string & fullTitle,
-                                         const std::string & sumLines,
-                                         ELcontextSupplier const&)
+                                         const std::string & sumLines)
     {
       constexpr int titleMaxLength {40};
 
@@ -90,8 +88,7 @@ namespace mf {
     // Changing ostream:
     // ----------------------------------------------------------------------
 
-    void ELostreamOutput::changeFile(std::ostream& os,
-                                     ELcontextSupplier const&) {
+    void ELostreamOutput::changeFile(std::ostream& os) {
       osh = cet::ostream_handle{os};
       timeval tv;
       gettimeofday(&tv, 0);
@@ -101,8 +98,7 @@ namespace mf {
       emitToken(osh, "\n=======================================================\n", true);
     }
 
-    void ELostreamOutput::changeFile(std::string const& filename,
-                                     ELcontextSupplier const&) {
+    void ELostreamOutput::changeFile(std::string const& filename) {
       osh = cet::ostream_handle{filename, std::ios::app};
       timeval tv;
       gettimeofday(&tv, 0);
@@ -112,7 +108,7 @@ namespace mf {
       emitToken(osh, "\n=======================================================\n", true);
     }
 
-    void ELostreamOutput::flush(ELcontextSupplier const&)  {
+    void ELostreamOutput::flush()  {
       osh.flush();
     }
 

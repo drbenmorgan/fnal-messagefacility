@@ -40,9 +40,9 @@ namespace mf {
     static void setMLscribe_ptr(std::unique_ptr<mf::service::AbstractMLscribe> m);
 
     // --- special control of standAlone logging behavior
-    static void standAloneThreshold(std::string const & severity);
+    static void standAloneThreshold(mf::ELseverityLevel const & severity);
     static void squelch(std::string const& category);
-    static bool ignore(mf::ELseverityLevel const& severity,
+    static bool ignore(mf::ELseverityLevel const & severity,
                        std::string const& category);
 
     // --- no copying:

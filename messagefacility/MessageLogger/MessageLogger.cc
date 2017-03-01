@@ -30,17 +30,17 @@ namespace mf {
 
   bool isDebugEnabled()
   {
-    return detail::enabled<detail::ELsev_success>();
+    return detail::enabled<ELseverityLevel::ELsev_success>();
   }
 
   bool isInfoEnabled()
   {
-    return detail::enabled<detail::ELsev_info>();
+    return detail::enabled<ELseverityLevel::ELsev_info>();
   }
 
   bool isWarningEnabled()
   {
-    return detail::enabled<detail::ELsev_warning>();
+    return detail::enabled<ELseverityLevel::ELsev_warning>();
   }
 
   void HaltMessageLogging()
@@ -59,7 +59,7 @@ namespace mf {
     return MessageDrop::instance()->messageLoggerScribeIsRunning == MLSCRIBE_RUNNING_INDICATOR;
   }
 
-  void setStandAloneMessageThreshold(std::string const& severity)
+  void setStandAloneMessageThreshold(mf::ELseverityLevel const& severity)
   {
     MessageLoggerQ::standAloneThreshold(severity);
   }

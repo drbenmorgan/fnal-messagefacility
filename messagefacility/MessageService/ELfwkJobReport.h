@@ -40,17 +40,16 @@ namespace mf {
 
     public:
 
-      void log(ErrorObj& msg, ELcontextSupplier const&) override;
+      void log(ErrorObj& msg) override;
 
     protected:
 
       void summarization (std::string const& fullTitle,
-                          std::string const& sumLines,
-                          ELcontextSupplier const&) override;
+                          std::string const& sumLines) override;
 
-      void changeFile (std::ostream& os, ELcontextSupplier const&) override;
-      void changeFile (std::string const& filename, ELcontextSupplier const&) override;
-      void flush(ELcontextSupplier const&) override;
+      void changeFile (std::ostream& os) override;
+      void changeFile (std::string const& filename) override;
+      void flush() override;
       void finish() override;
 
       cet::ostream_handle osh_;

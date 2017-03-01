@@ -15,8 +15,6 @@ namespace mf {
   class ErrorObj;
 
   namespace service {
-    class ELcontextSupplier;
-
     class MsgStatistics {
     public:
 
@@ -36,7 +34,7 @@ namespace mf {
 
       // -----  Methods invoked by the ELadministrator:
       //
-      void log(mf::ErrorObj const& msg, ELcontextSupplier const&);
+      void log(mf::ErrorObj const& msg);
       std::string formSummary();
 
       void wipe();

@@ -11,12 +11,6 @@
 #include <syslog.h>
 #include <memory>
 
-namespace mf {
-  namespace service {
-    class ELcontextSupplier;
-  }
-}
-
 namespace mfplugins {
 
   using mf::ELseverityLevel;
@@ -35,12 +29,11 @@ namespace mfplugins {
 
     ELsyslog(fhicl::ParameterSet const& pset);
 
-    virtual void fillPrefix(std::ostringstream&, ErrorObj const&, mf::service::ELcontextSupplier const&) override;
+    virtual void fillPrefix(std::ostringstream&, ErrorObj const&) override;
     virtual void fillUsrMsg(std::ostringstream&, ErrorObj const&) override;
     virtual void fillSuffix(std::ostringstream&, ErrorObj const&) override {}
     virtual void routePayload(std::ostringstream const&,
-                              ErrorObj const&,
-                              mf::service::ELcontextSupplier const&) override;
+                              ErrorObj const&) override;
 
   private:
     int syslogLevel(ELseverityLevel);
@@ -66,8 +59,7 @@ namespace mfplugins {
   // Message prefix filler ( overriddes ELdestination::fillPrefix )
   //======================================================================
   void ELsyslog::fillPrefix(std::ostringstream& oss,
-                            ErrorObj const& msg,
-                            mf::service::ELcontextSupplier const&)
+                            ErrorObj const& msg)
   {
     auto const& xid = msg.xid();
     oss << format.timestamp(msg.timestamp())+std::string("|")     // timestamp
@@ -99,8 +91,7 @@ namespace mfplugins {
   // Message router ( overriddes ELdestination::routePayload )
   //======================================================================
   void ELsyslog::routePayload(std::ostringstream const& oss,
-                              ErrorObj const& msg,
-                              mf::service::ELcontextSupplier const&)
+                              ErrorObj const& msg)
   {
     int const severity = syslogLevel(msg.xid().severity());
     syslog(severity, "%s", oss.str().data());
