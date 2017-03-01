@@ -7,15 +7,6 @@
 #include <cstring>
 #include <iostream>
 
-//////////////////////////////////////////////////////////////////////
-//
-// DO NOT replace the internal memcpy() calls by assignment or by
-// any other form of copying unless you first understand in depth
-// all of the alignment issues involved
-//
-//////////////////////////////////////////////////////////////////////
-
-
 using namespace mf;
 using namespace mf::service;
 
@@ -180,4 +171,9 @@ bool MessageLoggerQ::ignore (mf::ELseverityLevel const& severity,
   if (severity < threshold) return true;
   if (squelchSet.count(category) > 0) return true;
   return false;
+}
+
+void MessageLoggerQ::setApplication(std::string const & application)
+{
+  mlscribe_ptr->setApplication(application);
 }

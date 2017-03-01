@@ -120,19 +120,6 @@ namespace mf {
       for_all_destinations([](auto& d){ d.finish(); });
     }
 
-    // ----------------------------------------------------------------------
-    // The Destructable Singleton pattern
-    // (see "To Kill a Singleton," Vlissides, C++ Report):
-    // ----------------------------------------------------------------------
-
-    ELadministrator* ELadministrator::instance_ {nullptr};
-
-    ELadministrator* ELadministrator::instance()
-    {
-      static ELadministrator admin;
-      return &admin;
-    }
-
     ELadministrator::ELadministrator()
     {
       // hostname
@@ -209,15 +196,5 @@ namespace mf {
       application_ = procinfo.substr(start+1, end-start-1);
 
     }  // ELadministrator()
-
-    //-*****************************
-    // The ELadminstrator destructor
-    //-*****************************
-
-    ELadministrator::~ELadministrator()
-    {
-      destinations_.clear();
-    }
-
   } // end of namespace service
 } // end of namespace mf

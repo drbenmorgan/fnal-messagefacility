@@ -98,7 +98,8 @@ namespace mf {
   namespace service {
 
     ThreadSafeLogMessageLoggerScribe::ThreadSafeLogMessageLoggerScribe()
-      : earlyDest_{admin_->attach("cerr_early", make_unique<ELostreamOutput>(cet::ostream_handle{std::cerr}, false))}
+      : admin_(new ELadministrator)
+      , earlyDest_{admin_->attach("cerr_early", make_unique<ELostreamOutput>(cet::ostream_handle{std::cerr}, false))}
     {
     }
 
@@ -214,6 +215,11 @@ namespace mf {
       }  // switch
 
     }  // ThreadSafeLogMessageLoggerScribe::runCommand(opcode, operand)
+
+    void ThreadSafeLogMessageLoggerScribe::setApplication(std::string const & application)
+    {
+      admin_->setApplication(application);
+    }
 
     //=============================================================================
     void ThreadSafeLogMessageLoggerScribe::log(ErrorObj* errorobj_p)

@@ -126,7 +126,7 @@ namespace mf {
 
     std::lock_guard<std::mutex> lock {mfs.m};
 
-    service::ELadministrator::instance()->setApplication(application);
+    MessageLoggerQ::setApplication(application);
     MessageDrop::instance()->setSinglet(application);
   }
 

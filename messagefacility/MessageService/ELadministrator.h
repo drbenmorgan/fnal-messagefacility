@@ -35,16 +35,16 @@
 
 namespace mf {
   namespace service {
-
+    class ThreadSafeLogMessageLoggerScribe;
     // ----------------------------------------------------------------------
     // ELadministrator:
     // ----------------------------------------------------------------------
 
     class ELadministrator {
+      friend ::mf::service::ThreadSafeLogMessageLoggerScribe;
+
     public:
       void log(ErrorObj & msg);
-
-      static ELadministrator* instance();
 
       ELadministrator(ELadministrator const&) = delete;
       ELadministrator& operator=(ELadministrator const&) = delete;
@@ -83,8 +83,6 @@ namespace mf {
 
       void incrementSeverityCount(int const sev) { ++severityCounts_[sev]; }
 
-      virtual ~ELadministrator();
-
       // ---  furnish/recall destinations:
       //
       template <typename DEST>
@@ -100,8 +98,6 @@ namespace mf {
     private:
 
       ELadministrator();
-
-      static ELadministrator* instance_;
 
       std::array<int, ELseverityLevel::nLevels> severityCounts_ {{0}}; // fill by aggregation
       ELseverityLevel highSeverity_ {ELseverityLevel::ELsev_zeroSeverity};

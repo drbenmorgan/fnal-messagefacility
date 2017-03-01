@@ -45,6 +45,9 @@ namespace mf {
     static bool ignore(mf::ELseverityLevel const & severity,
                        std::string const& category);
 
+    // --- Allow the setting of the global application name.
+    static void setApplication(std::string const & application);
+
     // --- no copying:
     MessageLoggerQ(MessageLoggerQ const&) = delete;
     MessageLoggerQ& operator=(MessageLoggerQ const&) = delete;

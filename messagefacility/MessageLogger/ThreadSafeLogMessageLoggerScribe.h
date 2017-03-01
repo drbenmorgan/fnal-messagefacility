@@ -4,11 +4,11 @@
 #include "cetlib/BasicPluginFactory.h"
 #include "cetlib/exempt_ptr.h"
 #include "fhiclcpp/ParameterSet.h"
+#include "messagefacility/MessageService/AbstractMLscribe.h"
 #include "messagefacility/MessageService/ELadministrator.h"
 #include "messagefacility/MessageService/ELdestination.h"
 #include "messagefacility/MessageService/ELdestConfigCheck.h"
 #include "messagefacility/MessageService/MessageLoggerQ.h"
-#include "messagefacility/MessageService/AbstractMLscribe.h"
 
 #include <atomic>
 #include <iosfwd>
@@ -23,13 +23,18 @@ namespace mf {
 
     class ThreadSafeLogMessageLoggerScribe : public AbstractMLscribe {
     public:
-
       ~ThreadSafeLogMessageLoggerScribe();
 
-      explicit ThreadSafeLogMessageLoggerScribe();
+      ThreadSafeLogMessageLoggerScribe();
 
+      ThreadSafeLogMessageLoggerScribe(ThreadSafeLogMessageLoggerScribe const &) = delete;
+      ThreadSafeLogMessageLoggerScribe & operator = (ThreadSafeLogMessageLoggerScribe const &) = delete;
+                                 
       // --- receive and act on messages:
       void runCommand(OpCode opcode, void* operand) override;
+
+      // Set current application name
+      void setApplication(std::string const & application) override;
 
     private:
 
@@ -52,7 +57,7 @@ namespace mf {
       std::vector<std::string> parseCategories(std::string const& s);
 
       // --- data:
-      cet::exempt_ptr<ELadministrator> admin_ {ELadministrator::instance()};
+      std::unique_ptr<ELadministrator> admin_;
       std::unique_ptr<fhicl::ParameterSet> jobConfig_ {nullptr};
       ELdestination& earlyDest_;
       std::string jobReportOption_ {};
