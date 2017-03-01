@@ -69,10 +69,6 @@ namespace mf {
     MessageLoggerQ::squelch(category);
   }
 
-  // MessageFacilityService
-  std::string MessageFacilityService::SingleThread {"SingleThreadMSPresence"};
-  std::string MessageFacilityService::MultiThread {"MessageServicePresence"};
-
   MessageFacilityService& MessageFacilityService::instance()
   {
     static MessageFacilityService mfs;
@@ -109,7 +105,7 @@ namespace mf {
     // everyone else.
 
     // MessageServicePresence
-    mfs.MFPresence = PresenceFactory::createInstance();
+    mfs.MFPresence = std::make_unique<Presence>();
 
     // The MessageLogger
     mfs.theML = std::make_unique<MessageLoggerImpl>(pset);

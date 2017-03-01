@@ -7,9 +7,7 @@ cet_make_library(
   MessageLoggerImpl.cc
   MessageSender.cc
   Presence.cc
-  SingleThreadMSPresence.cc
   ThreadSafeLogMessageLoggerScribe.cc
-  createPresence.cc
   LIBRARIES
   MF_MessageService
   ${TBB}
