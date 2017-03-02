@@ -43,7 +43,6 @@ namespace mf {
     // ----------------------------------------------------------------------
 
     class ELdestination;
-    class ELfwkJobReport;
 
     // ----------------------------------------------------------------------
     // ELlimitsTable:
@@ -52,7 +51,6 @@ namespace mf {
     class ELlimitsTable  {
 
       friend class ELdestination;
-      friend class ELfwkJobReport;
 
     public:
 

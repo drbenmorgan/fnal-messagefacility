@@ -372,9 +372,6 @@ namespace mf {
       s = ss.str();
     }
 
-    void ELdestination::summaryForJobReport(std::map<std::string, double>&)
-    {}
-
     void ELdestination::finish()
     {}
 

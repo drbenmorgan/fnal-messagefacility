@@ -123,5 +123,3 @@ bool mf::MessageDrop::debugAlwaysSuppressed {false};
 bool mf::MessageDrop::infoAlwaysSuppressed {false};
 bool mf::MessageDrop::warningAlwaysSuppressed {false};
 unsigned char mf::MessageDrop::messageLoggerScribeIsRunning = 0;
-mf::Exception* mf::MessageDrop::ex_p = nullptr;
-

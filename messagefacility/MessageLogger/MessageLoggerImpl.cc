@@ -8,55 +8,8 @@
 //
 // Original Author:  W. Brown, M. Fischler
 //         Created:  Fri Nov 11 16:42:39 CST 2005
-//
-// Change log
-//
-// 1  mf  5/12/06       In ctor, MessageDrop::debugEnabled is set to a
-//                      sensible value in case action happens before modules
-//                      are entered.  If any modules enable debugs, such
-//                      LogDebug messages are not immediately discarded
-//                      (though they might be filtered at the server side).
-//
-// 2  mf  5/27/06       In preEventProcessing, change the syntax for
-//                      runEvent from 1/23 to Run: 1 Event: 23
-//
-// 3 mf   6/27/06       PreModuleConstruction and PreSourceConstruction get
-//                      correct module name
-//
-// 4 mf   6/27/06       Between events the run/event is previous one
-//
-// 5  mf  3/30/07       Support for --jobreport option
-//
-// 6 mf   6/6/07        Remove the catches for forgiveness of tracked
-//                      parameters
-//
-// 7 mf   6/19/07       Support for --jobreport option
-//
-// 8 wmtan 6/25/07      Enable suppression for sources, just as for modules
-//
-// 9 mf   7/25/07       Modify names of the MessageLoggerQ methods, eg MLqLOG
-//
-//10 mf   6/18/07       Insert into the PostEndJob a possible SummarizeInJobReport
-//
-//11 mf   3/18/09       Fix wrong-sense test establishing anyDebugEnabled_
-//
-//12 mf   5/19/09       MessageService PSet Validation
-//
-//13 mf   5/26/09       Get parameters without throwing since validation
-//                      will point out any problems and throw at that point
-//
-//14 mf   7/1/09        Establish module name and set up enables/suppresses
-//                      for all possible calls supplying module descriptor
-//
-//14 mf   7/1/09        Establish pseudo-module name and set up
-//                      enables/suppresses for other calls from framework
-//15 mf   9/8/09        Clean up erroneous assignments of some callbacks
-//                      for specific watch routines (eg PreXYZ called postXYZ)
-//16 mf   9/8/09        Eliminate caching by descrptor address during ctor
-//                      phases (since addresses are not yet permanent then)
 
 #include "fhiclcpp/ParameterSet.h"
-#include "messagefacility/MessageLogger/JobReport.h"
 #include "messagefacility/MessageLogger/MessageLoggerImpl.h"
 #include "messagefacility/MessageService/MessageLoggerQ.h"
 #include "messagefacility/MessageService/MessageDrop.h"
@@ -77,7 +30,6 @@ namespace mf {
     , messageServicePSetHasBeenValidated_{false}
     , messageServicePSetValidatationResults_{}
     , anyDebugEnabled_{false}
-    , fjrSummaryRequested_{pset.get<bool>("messageSummaryToJobReport", false)}
   {
     using modules_t = std::vector<std::string>;
     auto const& debugModules = pset.get<modules_t>("debugModules", {});
@@ -106,11 +58,6 @@ namespace mf {
       } else {
         debugEnabledModules_.insert(mod);
       }
-    }
-
-    std::string const& jr_name = mf::MessageDrop::instance()->jobreport_name;
-    if (!jr_name.empty()) {
-      MessageLoggerQ::MLqJOB(new std::string{jr_name});
     }
 
     MessageLoggerQ::MLqCFG(new fhicl::ParameterSet{pset});

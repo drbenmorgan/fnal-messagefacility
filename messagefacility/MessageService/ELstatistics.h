@@ -42,8 +42,6 @@ namespace mf {
       void summary() override;
       void noTerminationSummary() override;
 
-      void summaryForJobReport (std::map<std::string, double>& sm) override;
-
       cet::ostream_handle termStream;
     };  // ELstatistics
 

@@ -40,8 +40,6 @@ namespace mf {
       void wipe();
       void noTerminationSummary();
 
-      void summaryForJobReport (std::map<std::string, double>& sm);
-
       ELlimitsTable limits {};
       ELmap_stats statsMap {};
       bool updatedStats {false};

@@ -43,11 +43,6 @@ namespace {
       delete errorobj_p;
       break;
     }
-    case JOBREPORT: {
-      auto string_p = static_cast<std::string*>(operand);
-      delete string_p;
-      break;
-    }
     default:
       break;
     }
@@ -134,12 +129,6 @@ void
 MessageLoggerQ::MLqSUM()
 {
   simpleCommand(SUMMARIZE, nullptr);
-}
-
-void
-MessageLoggerQ::MLqJOB(std::string* j)
-{
-  simpleCommand(JOBREPORT, static_cast<void*>(j));
 }
 
 void

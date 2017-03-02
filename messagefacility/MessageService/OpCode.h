@@ -8,7 +8,6 @@ namespace mf {
         , LOG_A_MESSAGE  // LOG !
         , CONFIGURE      // CFG -- handshaked !
         , SUMMARIZE      // SUM !
-        , JOBREPORT      // JOB !
         , SHUT_UP        // SHT !
         , FLUSH_LOG_Q    // FLS -- handshaked !
       };  // OpCode

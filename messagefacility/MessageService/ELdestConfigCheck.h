@@ -12,7 +12,7 @@ namespace mf {
   namespace service {
     namespace ELdestConfig {
 
-      enum dest_config { ORDINARY, STATISTICS, FWKJOBREPORT };
+      enum dest_config { ORDINARY, STATISTICS };
 
       inline void checkType(std::string const& type, dest_config const configuration)
       {

@@ -81,7 +81,6 @@ namespace mf {
 
       virtual void summary(std::ostream& os, std::string const& title="");
       virtual void summary(std::string& s, std::string const& title="");
-      virtual void summaryForJobReport(std::map<std::string, double>& sm);
 
       virtual void changeFile(std::ostream& os);
       virtual void changeFile(std::string const& filename);

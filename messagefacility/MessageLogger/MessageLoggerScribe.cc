@@ -13,7 +13,6 @@
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "messagefacility/MessageLogger/MessageLoggerScribe.h"
 #include "messagefacility/MessageService/ConfigurationHandshake.h"
-#include "messagefacility/MessageService/ELfwkJobReport.h"
 #include "messagefacility/MessageService/ELostreamOutput.h"
 #include "messagefacility/MessageService/ELstatistics.h"
 #include "messagefacility/MessageService/ThreadQueue.h"
@@ -73,25 +72,6 @@ namespace {
     return result;
   }
 
-  auto default_fwkJobReport_config()
-  {
-    std::string const config {
-      "categories: {"
-        "  default: {"
-        "    limit: -1"
-        "  }"
-        "  FwkJob: {"
-        "    limit: 10000000"
-        "  }"
-        "}"
-        "lineLength: 32000"
-        "noTimeStamps: true"
-        };
-
-    fhicl::ParameterSet result;
-    fhicl::make_ParameterSet(config, result);
-    return result;
-  }
 }
 
 namespace mf {
@@ -181,29 +161,6 @@ namespace mf {
         }
         break;
       }
-      case JOBREPORT:  {
-        std::string* jobReportOption_p = static_cast<std::string*>(operand);
-        try {
-          jobReportOption_ = *jobReportOption_p;
-        }
-        catch(cet::exception const& e) {
-          std::cerr << "MessageLoggerScribe caught a cet::exception "
-                    << "during processing of --jobReport option:\n"
-                    << e.what() << "\n"
-                    << "This likely will affect or prevent the job report.\n"
-                    << "However, the rest of the logger continues to run.\n";
-        }
-        catch(...) {
-          std::cerr << "MessageLoggerScribe caught unkonwn exception type\n"
-                    << "during processing of --jobReport option.\n"
-                    << "This likely will affect or prevent the job report.\n"
-                    << "However, the rest of the logger continues to run.\n";
-        }
-        delete jobReportOption_p;  // dispose of the message text
-        // which will have been new-ed in MessageLogger.cc (service
-        // version)
-        break;
-      }
       case SHUT_UP:  {
         assert(operand == nullptr);
         active_ = false;
@@ -269,83 +226,9 @@ namespace mf {
         cleanSlateConfiguration_ = false;
       }
 
-      configure_fwkJobReports();
       fetchDestinations();
     }  // MessageLoggerScribe::configure_errorlog()
 
-
-    //=============================================================================
-    void
-    MessageLoggerScribe::configure_fwkJobReports()
-    {
-      if (jobReportOption_.empty() || jobReportOption_ == "~")
-        return;
-
-      if (jobReportOption_ != "*") {
-        if (jobReportOption_.find('.') == std::string::npos) {
-          jobReportOption_ += ".xml";
-        }
-      }
-
-      // grab list of fwkJobReports:
-      auto const& fwkJobReports = jobConfig_->get<vstring>("fwkJobReports", {});
-      std::set<std::string> existing_ids;
-      bool jobReportExists {false};
-
-      // establish each fwkJobReports destination:
-      for (auto const& name : fwkJobReports) {
-        string filename = name;
-        string psetname = filename;
-
-        // check that this destination is not just a placeholder
-        auto const& fjr_pset = jobConfig_->get<fhicl::ParameterSet>(psetname, {});
-        if (fjr_pset.get<bool>("placeholder", false)) continue;
-
-        // Modify the file name if extension or name is explicitly specified
-        string explicit_filename = fjr_pset.get<std::string>("filename", {});
-        if (!explicit_filename.empty()) filename = explicit_filename;
-        string explicit_extension = fjr_pset.get<std::string>("extension", {});
-        if (!explicit_extension.empty()) {
-          if (explicit_extension[0] == '.') {
-            filename += explicit_extension;
-          } else {
-            filename = filename + "." + explicit_extension;
-          }
-        }
-
-        // Attach a default extension of .xml if there is no extension on a file
-        std::string actual_filename = filename;
-        if (filename.find('.') == std::string::npos) {
-          actual_filename += ".xml";
-        }
-
-        // use already-specified configuration if destination exists
-        std::string const& outputId = createId(existing_ids, "file", actual_filename);
-        if (duplicateDestination(outputId, ELdestConfig::FWKJOBREPORT, throw_on_clean_slate)) continue;
-
-        jobReportExists = true;
-        if (actual_filename == jobReportOption_) jobReportOption_ = "";
-
-        admin_->attach(outputId,make_unique<ELfwkJobReport>(actual_filename, fjr_pset));
-      }  // for [it = fwkJobReports.begin() to end()]
-
-      // Now possibly add the file specified by --jobReport
-      if (jobReportOption_.empty()) return;
-      if (jobReportExists && (jobReportOption_ == "*")) return;
-      if (jobReportOption_ == "*") jobReportOption_ = "FrameworkJobReport.xml";
-
-      // Check that this report is not already on order -- here the duplicate
-      // name would not be a configuration error, but we shouldn't do it twice
-      std::string const& actual_filename {jobReportOption_};
-
-      // use already-specified configuration if destination exists
-      std::set<std::string> tmpIdSet;
-      std::string const& outputId = createId(tmpIdSet, "file", actual_filename);
-      if (duplicateDestination(outputId, ELdestConfig::FWKJOBREPORT, false)) return;
-
-      admin_->attach(outputId, make_unique<ELfwkJobReport>(actual_filename,
-                                                           default_fwkJobReport_config()));
-    }
 
     //=============================================================================
     void
@@ -493,7 +376,7 @@ namespace mf {
           throw mf::Exception{mf::errors::Configuration}
             << "\n"
             << " Output identifier: \"" << output_id << "\""
-            << " already specified within ordinary/statistics/fwkJobReport block in FHiCL file"
+            << " already specified within ordinary/statistics block in FHiCL file"
             << "\n";
         }
       }
@@ -509,7 +392,6 @@ namespace mf {
     {
       std::string config_str;
       switch (configuration) {
-      case ELdestConfig::FWKJOBREPORT: config_str = "Framework Job Report"; break;
       case ELdestConfig::ORDINARY    : config_str = "MessageLogger"; break;
       case ELdestConfig::STATISTICS  : config_str = "MessageLogger Statistics"; break;
       }

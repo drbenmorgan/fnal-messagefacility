@@ -31,7 +31,6 @@ namespace mf {
     void setSinglet(std::string const & sing);
 
     std::string runEvent {"MF-online"};
-    std::string jobreport_name {};
     std::string jobMode {};
     bool debugEnabled {true};
     bool infoEnabled {true};
@@ -41,7 +40,6 @@ namespace mf {
     static bool warningAlwaysSuppressed;
 
     static unsigned char messageLoggerScribeIsRunning;
-    static mf::Exception* ex_p;
 
 private:
 

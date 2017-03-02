@@ -32,7 +32,6 @@ namespace mf {
     static void MLqLOG(ErrorObj* p);
     static void MLqCFG(fhicl::ParameterSet* p);
     static void MLqSUM();
-    static void MLqJOB(std::string* j);
     static void MLqSHT();
     static void MLqFLS();
 

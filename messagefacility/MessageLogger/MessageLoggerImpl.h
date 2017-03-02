@@ -69,7 +69,6 @@ namespace mf  {
     std::string  messageServicePSetValidatationResults_;
 
     bool anyDebugEnabled_;
-    bool fjrSummaryRequested_;
 
   };  // MessageLoggerImpl
 

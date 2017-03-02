@@ -47,7 +47,6 @@ namespace mf {
 
       // --- handle details of configuring via a ParameterSet:
       void configure_errorlog();
-      void configure_fwkJobReports();
 
       void fetchDestinations();
       void makeDestinations(fhicl::ParameterSet const& dests,
@@ -60,7 +59,6 @@ namespace mf {
       std::unique_ptr<ELadministrator> admin_;
       std::unique_ptr<fhicl::ParameterSet> jobConfig_ {nullptr};
       ELdestination& earlyDest_;
-      std::string jobReportOption_ {};
       bool cleanSlateConfiguration_ {true};
       bool active_ {true};
       std::atomic<bool> purgeMode_ {false};

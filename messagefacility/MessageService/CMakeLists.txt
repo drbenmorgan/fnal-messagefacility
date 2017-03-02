@@ -3,7 +3,6 @@ cet_make_library(
   SOURCE
   ELadministrator.cc
   ELdestination.cc
-  ELfwkJobReport.cc
   ELostreamOutput.cc
   ELstatistics.cc
   MessageDrop.cc

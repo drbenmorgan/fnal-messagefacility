@@ -149,55 +149,6 @@ namespace mf {
       return s.str();
     }  // formSummary()
 
-    void MsgStatistics::summaryForJobReport (std::map<std::string, double>& sm)
-    {
-      struct part3 {
-        long n {}, t {};
-      } p3[ELseverityLevel::nLevels];
-
-      // ----- Part I:  The ungrouped categories
-      for (auto const& pr : statsMap) {
-        auto const& xid = pr.first;
-        auto const& count = pr.second;
-
-        // -----  Emit detailed message information:
-        //
-        std::ostringstream s;
-        s << "Category_";
-        std::string sevSymbol = xid.severity().getSymbol();
-        if (sevSymbol[0] == '-') sevSymbol = sevSymbol.substr(1);
-        s << sevSymbol << "_" << xid.id();
-        int n = count.aggregateN;
-        std::string catstr = s.str();
-        if (sm.find(catstr) != sm.end()) {
-          sm[catstr] += n;
-        } else {
-          sm[catstr] = n;
-        }
-        // -----  Obtain information for Part III, below:
-        //
-        p3[xid.severity().getLevel()].n += count.n;
-        p3[xid.severity().getLevel()].t += count.aggregateN;
-      }  // for i
-
-      // part II (sample event numbers) does not exist for the job report.
-
-      // -----  Summary part III:
-      //
-      for (int k = 0; k < ELseverityLevel::nLevels; ++k) {
-        std::string sevName;
-        sevName = ELseverityLevel( ELseverityLevel::ELsev_(k) ).getName();
-        if (sevName == "Severe")  sevName = "System";
-        if (sevName == "Success") sevName = "Debug";
-        sevName = std::string("Log")+sevName;
-        sevName = dualLogName(sevName);
-        if (sevName != "UnusedSeverity") {
-          sm[sevName] = p3[k].t;
-        }
-      }  // for k
-
-    } // summaryForJobReport()
-
     std::string MsgStatistics::dualLogName(std::string const& s)
     {
       if (s=="LogDebug")   return "LogDebug_LogTrace";

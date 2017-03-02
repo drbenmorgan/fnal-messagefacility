@@ -73,10 +73,5 @@ namespace mf {
       stats.printAtTermination = false;
     }
 
-    void ELstatistics::summaryForJobReport (std::map<std::string, double>& sm)
-    {
-      stats.summaryForJobReport(sm);
-    }
-
   } // end of namespace service
 } // end of namespace mf
