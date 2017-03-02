@@ -1,5 +1,5 @@
-#ifndef messagefacility_MessageLogger_MessageDrop_h
-#define messagefacility_MessageLogger_MessageDrop_h
+#ifndef messagefacility_MessageService_MessageDrop_h
+#define messagefacility_MessageService_MessageDrop_h
 
 #include "cetlib/exempt_ptr.h"
 #include "messagefacility/Utilities/exception.h"
@@ -10,28 +10,21 @@
 namespace mf {
 
   struct MessageDrop {
-  private:
-    MessageDrop(); // Singleton.
-
-    // Disable copy/move
-    MessageDrop ( const MessageDrop&  ) = delete;
-    MessageDrop (       MessageDrop&& ) = delete;
-    MessageDrop& operator = ( const MessageDrop&  ) = delete;
-    MessageDrop& operator = (       MessageDrop&& ) = delete;
-
   public:
     static MessageDrop* instance();
+
+    using module_id_t = unsigned int; // For caching.
 
     std::string moduleContext() const;
     void setModuleWithPhase(std::string const & name,
                             std::string const & label,
-                            void const * moduleID,
+                            module_id_t moduleID,
                             std::string const & phase);
     void setPath(std::string const & type, std::string const & path);
     void setSinglet(std::string const & sing);
+    void clear();
 
-    std::string runEvent {"MF-online"};
-    std::string jobMode {};
+    std::string runEvent {"pre-events"};
     bool debugEnabled {true};
     bool infoEnabled {true};
     bool warningEnabled {true};
@@ -39,9 +32,17 @@ namespace mf {
     static bool infoAlwaysSuppressed;
     static bool warningAlwaysSuppressed;
 
+    static std::string jobMode;
     static unsigned char messageLoggerScribeIsRunning;
 
-private:
+  private:
+    MessageDrop(); // Singleton.
+
+    // Disable copy/move
+    MessageDrop (const MessageDrop &) = delete;
+    MessageDrop (MessageDrop &&) = delete;
+    MessageDrop& operator = (const MessageDrop &) = delete;
+    MessageDrop& operator = (MessageDrop &&) = delete;
 
     class StringProducer {
   public:
@@ -72,7 +73,7 @@ moduleContext() const
   return moduleNameProducer_->theContext();
 }
 
-#endif /* messagefacility_MessageLogger_MessageDrop_h */
+#endif /* messagefacility_MessageService_MessageDrop_h */
 
 // Local Variables:
 // mode: c++

@@ -109,11 +109,11 @@ namespace mfplugins {
 
     switch ( severity.getLevel() ) {
       //    Used by:
-    case ELseverityLevel::ELsev_severe  : level = LOG_CRIT   ; break; //2    LogAbsolute, LogSystem
-    case ELseverityLevel::ELsev_error   : level = LOG_ERR    ; break; //3    LogError,    LogImportant, LogProblem
-    case ELseverityLevel::ELsev_warning : level = LOG_WARNING; break; //4    LogPrint,    LogWarning
-    case ELseverityLevel::ELsev_info    : level = LOG_INFO   ; break; //6    LogInfo,     LogVerbatim
-    case ELseverityLevel::ELsev_success : level = LOG_DEBUG  ; break; //7    LogDebug,    LogTrace
+    case ELseverityLevel::ELsev_severe  : level = LOG_CRIT   ; break; // LogAbsolute, LogSystem
+    case ELseverityLevel::ELsev_error   : level = LOG_ERR    ; break; // LogError, LogProblem
+    case ELseverityLevel::ELsev_warning : level = LOG_WARNING; break; // LogPrint, LogWarning
+    case ELseverityLevel::ELsev_info    : level = LOG_INFO   ; break; // LogInfo, LogVerbatim
+    case ELseverityLevel::ELsev_success : level = LOG_DEBUG  ; break; // LogDebug, LogTrace
     default : {
       throw mf::Exception ( mf::errors::LogicError )
         <<"ELseverityLevel: " << severity

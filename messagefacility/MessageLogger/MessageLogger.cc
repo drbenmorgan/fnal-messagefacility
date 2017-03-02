@@ -4,135 +4,142 @@
 //
 // ======================================================================
 
-#include "cetlib/filepath_maker.h"
-
 #include "messagefacility/MessageLogger/MessageLogger.h"
+#include "messagefacility/MessageLogger/MessageLoggerImpl.h"
+#include "messagefacility/MessageLogger/Presence.h"
 #include "messagefacility/MessageService/MessageLoggerQ.h"
-#include "messagefacility/MessageService/ELadministrator.h"
-#include "messagefacility/Utilities/exception.h"
 
-#include "fhiclcpp/make_ParameterSet.h"
-
-#include <iostream>
-#include <sstream>
+#include <mutex>
 
 namespace mf {
+  class MessageFacilityService;
+}
 
-  void LogStatistics()
-  {
-    MessageLoggerQ::MLqSUM(); // trigger summary info
-  }
+void mf::LogStatistics()
+{
+  MessageLoggerQ::MLqSUM(); // trigger summary info
+}
 
-  void LogErrorObj(ErrorObj* eo_p)
-  {
-    MessageLoggerQ::MLqLOG(eo_p);
-  }
+void mf::LogErrorObj(ErrorObj* eo_p)
+{
+  MessageLoggerQ::MLqLOG(eo_p);
+}
 
-  bool isDebugEnabled()
-  {
-    return detail::enabled<ELseverityLevel::ELsev_success>();
-  }
+bool mf::isDebugEnabled()
+{
+  return detail::enabled<ELseverityLevel::ELsev_success>();
+}
 
-  bool isInfoEnabled()
-  {
-    return detail::enabled<ELseverityLevel::ELsev_info>();
-  }
+bool mf::isInfoEnabled()
+{
+  return detail::enabled<ELseverityLevel::ELsev_info>();
+}
 
-  bool isWarningEnabled()
-  {
-    return detail::enabled<ELseverityLevel::ELsev_warning>();
-  }
+bool mf::isWarningEnabled()
+{
+  return detail::enabled<ELseverityLevel::ELsev_warning>();
+}
 
-  void HaltMessageLogging()
-  {
-    MessageLoggerQ::MLqSHT(); // Shut the logger up
-  }
+void mf::HaltMessageLogging()
+{
+  MessageLoggerQ::MLqSHT(); // Shut the logger up
+}
 
-  void FlushMessageLog()
-  {
-    if (MessageDrop::instance()->messageLoggerScribeIsRunning != MLSCRIBE_RUNNING_INDICATOR) return;
-    MessageLoggerQ::MLqFLS(); // Flush the message log queue
-  }
+void mf::FlushMessageLog()
+{
+  if (MessageDrop::instance()->messageLoggerScribeIsRunning != MLSCRIBE_RUNNING_INDICATOR) return;
+  MessageLoggerQ::MLqFLS(); // Flush the message log queue
+}
 
-  bool isMessageProcessingSetUp()
-  {
-    return MessageDrop::instance()->messageLoggerScribeIsRunning == MLSCRIBE_RUNNING_INDICATOR;
-  }
+bool mf::isMessageProcessingSetUp()
+{
+  return MessageDrop::instance()->messageLoggerScribeIsRunning == MLSCRIBE_RUNNING_INDICATOR;
+}
 
-  void setStandAloneMessageThreshold(mf::ELseverityLevel const& severity)
-  {
-    MessageLoggerQ::standAloneThreshold(severity);
-  }
+void mf::setStandAloneMessageThreshold(ELseverityLevel const & severity)
+{
+  MessageLoggerQ::standAloneThreshold(severity);
+}
 
-  void squelchStandAloneMessageCategory(std::string const& category)
-  {
-    MessageLoggerQ::squelch(category);
-  }
+void mf::squelchStandAloneMessageCategory(std::string const & category)
+{
+  MessageLoggerQ::squelch(category);
+}
 
-  MessageFacilityService& MessageFacilityService::instance()
-  {
-    static MessageFacilityService mfs;
-    return mfs;
-  }
+class mf::MessageFacilityService {
+public:
+  static MessageFacilityService& instance();
 
-  MFSdestroyer::~MFSdestroyer()
-  {
-    MessageFacilityService::instance().MFPresence.reset();
-  }
+  std::unique_ptr<Presence> MFPresence {nullptr};
+  std::unique_ptr<MessageLoggerImpl> theML {nullptr};
+  std::mutex m {};
+  bool MFServiceEnabled {false};
 
-  // Start MessageFacility service
-  void StartMessageFacility(fhicl::ParameterSet const& pset)
-  {
-    auto& mfs = MessageFacilityService::instance();
-    std::lock_guard<std::mutex> lock {mfs.m};
+  MessageFacilityService() = default;
+};
 
-    if (mfs.MFServiceEnabled)
-      return;
+mf::MessageFacilityService & mf::MessageFacilityService::instance()
+{
+  static MessageFacilityService mfs;
+  return mfs;
+}
 
-    // The order of object initialization and destruction is crucial
-    // in starting up and shutting down the Message Facility
-    // service. In the d'tor of MessageServicePresence it sends out an
-    // END message to the queue and waits for the MLscribe thread to
-    // finish logging all remaining messages in the queue. Therefore
-    // the ELadministrator singleton (whose instance is handled by a
-    // local static variable) and all attached destinations must be
-    // present during the process. We must provide the secured method
-    // to guarantee that the MessageServicePresence will be destroyed
-    // first, and particularly *BEFORE* the destruction of ELadmin.
-    // This is achieved by instantiating a static object, who is
-    // responsible for killing the Presence at the *END* of the start
-    // sequence. So this destroyer object will be killed before
-    // everyone else.
+// Start MessageFacility service
+void mf::StartMessageFacility(fhicl::ParameterSet const& pset)
+{
+  auto& mfs = MessageFacilityService::instance();
+  std::lock_guard<std::mutex> lock {mfs.m};
 
-    // MessageServicePresence
-    mfs.MFPresence = std::make_unique<Presence>();
+  if (mfs.MFServiceEnabled)
+    return;
 
-    // The MessageLogger
-    mfs.theML = std::make_unique<MessageLoggerImpl>(pset);
+  // MessageServicePresence
+  mfs.MFPresence = std::make_unique<Presence>();
 
-    mfs.MFServiceEnabled = true;
+  // The MessageLogger
+  mfs.theML = std::make_unique<MessageLoggerImpl>(pset);
 
-    static MFSdestroyer destroyer;
-  }
+  mfs.MFServiceEnabled = true;
+}
 
-  void SetApplicationName(std::string const& application)
-  {
-    auto& mfs = MessageFacilityService::instance();
-    if (!mfs.MFServiceEnabled) return;
+void mf::EndMessageFacility()
+{
+  MessageFacilityService::instance().MFPresence.reset();
+}
 
-    std::lock_guard<std::mutex> lock {mfs.m};
+void mf::SetApplicationName(std::string const& application)
+{
+  auto& mfs = MessageFacilityService::instance();
+  if (!mfs.MFServiceEnabled) return;
 
-    MessageLoggerQ::setApplication(application);
-    MessageDrop::instance()->setSinglet(application);
-  }
+  std::lock_guard<std::mutex> lock {mfs.m};
 
-  // Set the run/event context
-  void SetContext(std::string const& context)
-  {
-    if (!MessageFacilityService::instance().MFServiceEnabled)
-      return;
+  MessageLoggerQ::setApplication(application);
+  MessageDrop::instance()->setSinglet(application);
+}
 
-    MessageDrop::instance()->runEvent = context;
-  }
+// Set the run/event context
+void mf::SetContext(std::string const& context)
+{
+  if (!MessageFacilityService::instance().MFServiceEnabled)
+    return;
 
-}  // namespace mf
+  MessageDrop::instance()->runEvent = context;
+}
+
+mf::EnabledState
+mf::setEnabledState(std::string const & moduleLabel)
+{
+  return MessageFacilityService::instance().theML->setEnabledState(moduleLabel);
+}
+
+void
+mf::restoreEnabledState(EnabledState previousEnabledState)
+{
+  MessageFacilityService::instance().theML->restoreEnabledState(previousEnabledState);
+}
+
+void mf::ClearMessageLogger()
+{
+  MessageDrop::instance()->clear();
+}

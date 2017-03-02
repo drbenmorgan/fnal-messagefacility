@@ -26,8 +26,7 @@ namespace mf {
   // constructors and destructor
   //
   mf::MessageLoggerImpl::MessageLoggerImpl(fhicl::ParameterSet const& pset)
-    : debugEnabled_{false}
-    , messageServicePSetHasBeenValidated_{false}
+    : messageServicePSetHasBeenValidated_{false}
     , messageServicePSetValidatationResults_{}
     , anyDebugEnabled_{false}
   {
@@ -64,7 +63,7 @@ namespace mf {
 
   } // ctor
 
-  MessageLoggerImpl::EnabledState
+  mf::EnabledState
   MessageLoggerImpl::setEnabledState(std::string const& levelsConfigLabel)
   {
     auto md = MessageDrop::instance();

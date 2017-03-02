@@ -1,17 +1,18 @@
 #include "messagefacility/MessageService/MessageDrop.h"
 
+#include <limits>
 #include <map>
 
 using namespace std::string_literals;
 
 class mf::MessageDrop::StringProducerWithPhase : public StringProducer {
-  typedef std::map<const void*, std::string>::const_iterator NLMiter;
+  using id_label_map_t = std::map<module_id_t, std::string>;
 public:
   virtual std::string theContext() const override {
     if (cache_.empty()) {
-      if (moduleID_ != 0) {
-        NLMiter nameLableIter = nameLabelMap_.find(moduleID_);
-        if  (nameLableIter != nameLabelMap_.end()) {
+      if (moduleID_ != std::numeric_limits<module_id_t>::max()) {
+        auto nameLableIter = idLabelMap_.find(moduleID_);
+        if  (nameLableIter != idLabelMap_.end()) {
           cache_.assign(nameLableIter->second);
           cache_.append(phase_);
           return cache_;
@@ -20,7 +21,7 @@ public:
       cache_.assign(name_);
       cache_.append(":");
       cache_.append(label_);
-      nameLabelMap_[moduleID_] = cache_;
+      idLabelMap_[moduleID_] = cache_;
       if (!phase_.empty()) {
         cache_.append(phase_);
       }
@@ -29,7 +30,7 @@ public:
   }
   void set(std::string const & name,
            std::string const & label,
-           const void * moduleID,
+           module_id_t moduleID,
            std::string const & phase)  {
     name_ = name;
     label_ = label;
@@ -41,9 +42,9 @@ private:
   std::string phase_ {"@Early"s};
   std::string name_ {};
   std::string label_ {};
-  const void * moduleID_ {};
+  module_id_t moduleID_ {};
   mutable std::string cache_ {};
-  mutable std::map<const void*, std::string> nameLabelMap_ {};
+  mutable id_label_map_t idLabelMap_ {};
 };
 
 class mf::MessageDrop::StringProducerPath : public StringProducer {
@@ -96,7 +97,7 @@ void
 mf::MessageDrop::
 setModuleWithPhase(std::string const & name,
                    std::string const & label,
-                   void const * moduleID,
+                   module_id_t moduleID,
                    std::string const & phase)
 {
   spWithPhase_->set(name, label, moduleID, phase);
@@ -119,7 +120,15 @@ setSinglet(std::string const & sing)
   moduleNameProducer_ = spSinglet_.get();
 }
 
+void
+mf::MessageDrop::
+clear()
+{
+  setSinglet(""s);
+}
+
 bool mf::MessageDrop::debugAlwaysSuppressed {false};
 bool mf::MessageDrop::infoAlwaysSuppressed {false};
 bool mf::MessageDrop::warningAlwaysSuppressed {false};
+std::string mf::MessageDrop::jobMode {};
 unsigned char mf::MessageDrop::messageLoggerScribeIsRunning = 0;
