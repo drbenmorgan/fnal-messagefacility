@@ -3,15 +3,11 @@
 
 #include "messagefacility/Utilities/ELseverityLevel.h"
 #include "messagefacility/Utilities/ErrorObj.h"
-#include "messagefacility/MessageLogger/ErrorSummaryEntry.h"
 
 #include <map>
 #include <memory>
 
 namespace mf {
-
-  using ErrorSummaryMapKey = ErrorSummaryEntry;
-  using ErrorSummaryMapIterator = std::map<ErrorSummaryMapKey, unsigned int>::iterator;
 
   class MessageSender {
   public:
@@ -43,10 +39,6 @@ namespace mf {
 
   private:
     std::unique_ptr<ErrorObj> errorobj_p {nullptr};
-
-    static bool errorSummaryIsBeingKept;
-    static bool freshError;
-    static std::map<ErrorSummaryMapKey, unsigned int> errorSummaryMap;
 
   };  // MessageSender
 

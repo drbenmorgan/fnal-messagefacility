@@ -4,10 +4,6 @@
 
 using namespace mf;
 
-bool MessageSender::errorSummaryIsBeingKept = false;
-bool MessageSender::freshError = false;
-std::map<ErrorSummaryMapKey, unsigned int> MessageSender::errorSummaryMap {};
-
 MessageSender::MessageSender(ELseverityLevel const sev,
                              std::string const & id,
                              bool const verbatim,
@@ -31,17 +27,6 @@ MessageSender::~MessageSender() noexcept
       errorobj_p->setContext(drop->runEvent);
     }
 
-    if (errorSummaryIsBeingKept && errorobj_p->xid().severity() >= ELwarning) {
-      ELextendedID const& xid = errorobj_p->xid();
-      ErrorSummaryMapKey const key {xid.id(), xid.module(), xid.severity()};
-      auto i = errorSummaryMap.find(key);
-      if (i != errorSummaryMap.end()) {
-        ++(i->second);  // same as ++errorSummaryMap[key]
-      } else {
-        errorSummaryMap[key] = 1;
-      }
-      freshError = true;
-    }
     MessageLoggerQ::MLqLOG(errorobj_p.release());
   }
  catch (...)
