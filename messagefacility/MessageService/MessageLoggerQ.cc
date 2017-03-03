@@ -1,6 +1,5 @@
 #include "messagefacility/MessageService/MessageLoggerQ.h"
 #include "messagefacility/MessageService/AbstractMLscribe.h"
-#include "messagefacility/MessageService/ConfigurationHandshake.h"
 #include "messagefacility/Utilities/exception.h"
 #include "messagefacility/Utilities/ErrorObj.h"
 
@@ -134,10 +133,6 @@ MessageLoggerQ::MLqSUM()
 void
 MessageLoggerQ::MLqFLS()
 {
-  // The ConfigurationHandshake, developed for synchronous CFG, contains a
-  // place to convey exception information.  FLS does not need this, nor does
-  // it need the parameter set, but we are reusing ConfigurationHandshake
-  // rather than reinventing the mechanism.
   handshakedCommand(FLUSH_LOG_Q, nullptr, "FLS");
 }
 

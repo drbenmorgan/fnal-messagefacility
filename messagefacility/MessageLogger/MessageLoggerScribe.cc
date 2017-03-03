@@ -12,7 +12,6 @@
 #include "messagefacility/MessageService/MessageDrop.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "messagefacility/MessageLogger/MessageLoggerScribe.h"
-#include "messagefacility/MessageService/ConfigurationHandshake.h"
 #include "messagefacility/MessageService/ELostreamOutput.h"
 #include "messagefacility/MessageService/ELstatistics.h"
 #include "messagefacility/MessageService/ThreadQueue.h"
