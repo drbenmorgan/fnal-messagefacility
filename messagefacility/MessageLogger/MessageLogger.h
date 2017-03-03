@@ -77,7 +77,7 @@ namespace mf {
 
   // The following two methods have no effect except in stand-alone apps
   // that do not create a MessageServicePresence:
-  void setStandAloneMessageThreshold(ELseverityLevel const & severity);
+  void setStandAloneMessageThreshold(ELseverityLevel severity);
   void squelchStandAloneMessageCategory(std::string const & category);
 
   // Expert use:

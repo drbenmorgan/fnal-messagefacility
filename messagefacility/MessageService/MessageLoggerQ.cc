@@ -144,7 +144,7 @@ MessageLoggerQ::MLqFLS()
 mf::ELseverityLevel MessageLoggerQ::threshold (ELseverityLevel::ELsev_warning);
 std::set<std::string> MessageLoggerQ::squelchSet;
 
-void MessageLoggerQ::standAloneThreshold(ELseverityLevel const& severity)
+void MessageLoggerQ::standAloneThreshold(ELseverityLevel const severity)
 {
   threshold = severity;
 }
@@ -154,7 +154,7 @@ void MessageLoggerQ::squelch(std::string const& category)
   squelchSet.insert(category);
 }
 
-bool MessageLoggerQ::ignore (mf::ELseverityLevel const& severity,
+bool MessageLoggerQ::ignore (mf::ELseverityLevel const severity,
                              std::string const& category)
 {
   if (severity < threshold) return true;

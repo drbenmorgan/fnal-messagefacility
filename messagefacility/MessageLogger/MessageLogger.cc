@@ -56,7 +56,7 @@ bool mf::isMessageProcessingSetUp()
   return MessageDrop::instance()->messageLoggerScribeIsRunning == MLSCRIBE_RUNNING_INDICATOR;
 }
 
-void mf::setStandAloneMessageThreshold(ELseverityLevel const & severity)
+void mf::setStandAloneMessageThreshold(ELseverityLevel const severity)
 {
   MessageLoggerQ::standAloneThreshold(severity);
 }
