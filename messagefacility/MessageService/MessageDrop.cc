@@ -79,7 +79,8 @@ private:
 };
 
 mf::MessageDrop::MessageDrop()
-  : spWithPhase_(new mf::MessageDrop::StringProducerWithPhase)
+  : messageStreamID(std::numeric_limits<unsigned int>::max())
+  , spWithPhase_(new mf::MessageDrop::StringProducerWithPhase)
   , spPath_(new mf::MessageDrop::StringProducerPath)
   , spSinglet_(new mf::MessageDrop::StringProducerSinglet)
   , moduleNameProducer_(spSinglet_.get())

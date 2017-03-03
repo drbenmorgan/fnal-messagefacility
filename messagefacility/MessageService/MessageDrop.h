@@ -24,6 +24,9 @@ namespace mf {
     void setSinglet(std::string const & sing);
     void clear();
 
+    // Group messages share a common context.
+    unsigned int messageStreamID;
+
     std::string runEvent {"pre-events"};
     bool debugEnabled {true};
     bool infoEnabled {true};
