@@ -31,15 +31,15 @@ namespace mf {
     ErrorObj(ErrorObj const&); // this should go away as soon as we can use moveable streams!
     virtual ~ErrorObj() = default;
 
-    int                  serial() const;
-    ELextendedID const&  xid() const;
-    std::string const&   idOverflow() const;
-    timeval              timestamp() const;
+    int serial() const;
+    ELextendedID const& xid() const;
+    std::string const& idOverflow() const;
+    timeval timestamp() const;
     ELlist_string const& items() const;
-    bool                 reactedTo() const;
-    std::string          fullText() const;
-    std::string const&   context() const;
-    bool                 is_verbatim() const;
+    bool reactedTo() const;
+    std::string fullText() const;
+    std::string const& context() const;
+    bool is_verbatim() const;
 
     virtual void setSeverity  ( const ELseverityLevel sev );
     virtual void setID        ( const std::string & ID );
@@ -74,10 +74,6 @@ namespace mf {
   private:
 
     ErrorObj() = default;
-
-    // ---  class-wide serial number stamper:
-    //
-    static int ourSerial;
 
     // ---  data members:
     //
