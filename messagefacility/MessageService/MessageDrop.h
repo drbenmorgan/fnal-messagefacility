@@ -2,6 +2,7 @@
 #define messagefacility_MessageService_MessageDrop_h
 
 #include "cetlib/exempt_ptr.h"
+#include "cetlib/propagate_const.h"
 #include "messagefacility/Utilities/exception.h"
 
 #include <memory>
@@ -58,9 +59,9 @@ namespace mf {
     class StringProducerPath;
     class StringProducerSinglet;
 
-    std::unique_ptr<StringProducerWithPhase> spWithPhase_;
-    std::unique_ptr<StringProducerPath> spPath_;
-    std::unique_ptr<StringProducerSinglet> spSinglet_;
+    cet::propagate_const<std::unique_ptr<StringProducerWithPhase> > spWithPhase_;
+    cet::propagate_const<std::unique_ptr<StringProducerPath> > spPath_;
+    cet::propagate_const<std::unique_ptr<StringProducerSinglet> > spSinglet_;
     cet::exempt_ptr<StringProducer> moduleNameProducer_;
   };
 

@@ -140,7 +140,7 @@ namespace mf {
         break;
       }
       case CONFIGURE: {
-        jobConfig_.reset(static_cast<fhicl::ParameterSet*>(operand));
+        jobConfig_ = std::unique_ptr<fhicl::ParameterSet>(static_cast<fhicl::ParameterSet*>(operand));
         configure_errorlog();
         break;
       }

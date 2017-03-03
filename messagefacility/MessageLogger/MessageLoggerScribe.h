@@ -3,6 +3,7 @@
 
 #include "cetlib/BasicPluginFactory.h"
 #include "cetlib/exempt_ptr.h"
+#include "cetlib/propagate_const.h"
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageService/AbstractMLscribe.h"
 #include "messagefacility/MessageService/ELadministrator.h"
@@ -56,8 +57,8 @@ namespace mf {
       std::vector<std::string> parseCategories(std::string const& s);
 
       // --- data:
-      std::unique_ptr<ELadministrator> admin_;
-      std::unique_ptr<fhicl::ParameterSet> jobConfig_ {nullptr};
+      cet::propagate_const<std::unique_ptr<ELadministrator> > admin_;
+      cet::propagate_const<std::unique_ptr<fhicl::ParameterSet> > jobConfig_ {nullptr};
       ELdestination& earlyDest_;
       bool cleanSlateConfiguration_ {true};
       bool active_ {true};
