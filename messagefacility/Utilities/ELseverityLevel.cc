@@ -9,33 +9,6 @@
 //      might use is to check the relative level of two severities
 //      using operator<() or the like.
 //
-// 29-Jun-1998 mf       Created file.
-// 26-Aug-1998 WEB      Made ELseverityLevel object less weighty.
-// 16-Jun-1999 mf       Added constructor from string, plus two lists
-//                      of names to match.  Also added default constructor,
-//                      more streamlined than default lev on original.
-// 23-Jun-1999 mf       Modifications to properly handle pre-main order
-//                      of initialization issues:
-//                              Instantiation ofthe 14 const ELseverity &'s
-//                              Instantiation of objectsInitialized as false
-//                              Constructor of ELinitializeGlobalSeverityObjects
-//                              Removed guarantor function in favor of the
-//                              constructor.
-// 30-Jun-1999 mf       Modifications to eliminate propblems with order of
-//                      globals initializations:
-//                              Constructor from lev calls translate()
-//                              Constructor from string uses translate()
-//                              translate() method
-//                              List of strings for names in side getname() etc.
-//                              Immediate initilization of ELsevLevGlobals
-//                              Mods involving ELinitializeGlobalSeverityObjects
-// 12-Jun-2000 web      Final fix to global static initialization problem
-// 27-Jun-2000 web      Fix order-of-static-destruction problem
-// 24-Aug-2000 web      Fix defective C++ switch generation
-// 13-Jun-2007 mf       Change (requested by CMS) the name Severe to System
-//                      (since that his how MessageLogger uses that level)
-// 21-Apr-2009 mf       Change the symbol for ELsev_success (which is used
-//                      by CMS for LogDebug) from -! to -d.
 // ----------------------------------------------------------------------
 
 #include <ostream>
