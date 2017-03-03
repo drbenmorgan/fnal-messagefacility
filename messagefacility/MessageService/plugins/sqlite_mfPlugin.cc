@@ -2,8 +2,8 @@
 #include "messagefacility/MessageLogger/MessageDrop.h"
 #include "messagefacility/MessageService/ELdestination.h"
 
-#include "cetlib/Ntuple/Ntuple.h"
-#include "cetlib/Ntuple/sqlite_DBmanager.h"
+#include "cetlib/Ntuple.h"
+#include "cetlib/sqlite/Connection.h"
 
 #include <cstdint>
 #include <memory>
@@ -14,11 +14,11 @@ namespace mf {
   }
 }
 
-namespace sqlite {
+namespace {
 
   using std::string;
   using std::uint32_t;
-  using ntuple::Ntuple;
+  using cet::Ntuple;
 
   //==========================================================
   // sqlite plugin declaration
@@ -44,18 +44,18 @@ namespace sqlite {
                               mf::ErrorObj const&,
                               mf::service::ELcontextSupplier const&) override;
 
-    DBmanager dbMgr_;
-    Ntuple<string,string,string,string,string,string,unsigned,string,string> msgHeadersTable_;
-    Ntuple<sqlite_int64,string> usrMessagesTable_;
+    cet::sqlite::Connection db_;
+    cet::Ntuple<string,string,string,string,string,string,unsigned,string,string> msgHeadersTable_;
+    cet::Ntuple<sqlite_int64,string> usrMessagesTable_;
   };
 
   // Implementation
   //===============================================================================================================
   sqlite3Plugin::sqlite3Plugin(fhicl::ParameterSet const& pset)
     : ELdestination{pset}
-    , dbMgr_{pset.get<std::string>("filename")}
-    , msgHeadersTable_{dbMgr_, "MessageHeaders", {"Timestamp","Hostname","Hostaddress","Severity","Category","AppName","ProcessId","RunEventNo","ModuleName"}}
-    , usrMessagesTable_{dbMgr_, "UserMessages", {"HeaderId","Message"}}
+    , db_{pset.get<std::string>("filename")}
+    , msgHeadersTable_{db_, "MessageHeaders", {"Timestamp","Hostname","Hostaddress","Severity","Category","AppName","ProcessId","RunEventNo","ModuleName"}}
+    , usrMessagesTable_{db_, "UserMessages", {"HeaderId","Message"}}
   {}
 
 
@@ -103,7 +103,7 @@ extern "C" {
 
   auto makePlugin(std::string const&, fhicl::ParameterSet const& pset)
   {
-    return std::make_unique<sqlite::sqlite3Plugin>(pset);
+    return std::make_unique<sqlite3Plugin>(pset);
   }
 
 }
