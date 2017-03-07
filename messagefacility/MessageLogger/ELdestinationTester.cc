@@ -31,7 +31,7 @@ namespace {
     mf::MessageDrop::instance()->setSinglet(modulename);
 
     // Post begin job
-    mf::SetContext("postBeginJob");
+    mf::SetContextIteration("postBeginJob");
     mf::LogAbsolute("TimeReport")
       << "TimeReport> Report activated\n"
       "TimeReport> Report columns headings for events: "
@@ -40,7 +40,7 @@ namespace {
       "eventnum runnum modulelabel modulename timetaken";
 
     // Post end job
-    mf::SetContext("postEndJob");
+    mf::SetContextIteration("postEndJob");
     mf::LogAbsolute("TimeReport")
       << "TimeReport> Time report complete in "
       << 0.0402123 << " seconds\n"
@@ -50,13 +50,13 @@ namespace {
       << " Avg: " << 4000 << "\n";
 
     // Post event processing
-    mf::SetContext("postEventProcessing");
+    mf::SetContextIteration("postEventProcessing");
     mf::LogAbsolute("TimeEvent")
       << "TimeEvent> "
       << "run: 1   subRun: 2    event: 456 " << .0440404;
 
     // Post Module
-    mf::SetContext("postModule");
+    mf::SetContextIteration("postModule");
     mf::LogAbsolute("TimeModule")
       << "TimeModule> "
       << "run: 1   subRun: 2    event: 456 "
@@ -154,7 +154,7 @@ int main(int argc, char* argv[])
   // Set module name for the main thread
   mf::SetApplicationName("MessageFacility");
   mf::MessageDrop::instance()->setSinglet("MFTest");
-  mf::SetContext("pre-event");
+  mf::SetContextIteration("pre-event");
 
   // Start up another logger in a separate thread
   //boost::thread loggerThread(anotherLogger);
@@ -183,7 +183,7 @@ int main(int argc, char* argv[])
   mf::LogWarning("warning") << "Followed by a WARNING message.";
 
   // Switch context
-  mf::SetContext("pro-event");
+  mf::SetContextIteration("pro-event");
 
   // Log Debugs
   for(int i = 0; i != 5; ++i) {

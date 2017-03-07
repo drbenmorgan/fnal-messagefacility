@@ -62,7 +62,15 @@ namespace mf {
 
   // Basic setup.
   void SetApplicationName(std::string const& application);
-  void SetContext(std::string const& context);
+
+  // Context setting. Note that the context is thread-local.
+  void SetContextIteration(std::string const & iteration);
+  void SetContextSinglet(std::string const & singlet);
+  void SetContextPath(std::string const & path, std::string const & phase);
+  void SetContextModule(std::string const & name,
+                        std::string const & label,
+                        MessageDrop::module_id_t moduleID,
+                        std::string const & phase);
 
   // Context management. The EnabledState object is entirely and only
   // for passing between these functions for state storage and retrieval
@@ -127,6 +135,10 @@ namespace mf {
 #define LOG_TRACE(id) !mf::MessageDrop::instance()->debugEnabled ? mf::LogTrace{} : mf::LogTrace{id, __FILE__, __LINE__}
 #endif
 #undef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
+
+#define MF_MESSAGELOGGER_ICC
+#include "messagefacility/MessageLogger/MessageLogger.icc"
+#undef MF_MESSAGELOGGER_ICC
 
 #endif /* messagefacility_MessageLogger_MessageLogger_h */
 

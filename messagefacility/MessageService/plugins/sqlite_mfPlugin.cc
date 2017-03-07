@@ -64,7 +64,7 @@ namespace {
     string const& category   = xid.id();                                 // category
     string const& app        = xid.application();                        // application
     long   const& pid        = xid.pid();                                // process id
-    string const& runEventNo = mf::MessageDrop::instance()->runEvent;  // run/event no
+    string const& iterationNo = mf::MessageDrop::instance()->iteration;  // run/event no
     string const& modname    = xid.module();                             // module name
     string const& usrMsg     =
       !oss.str().compare(0,1,"\n") ? oss.str().erase(0,1) : oss.str(); // user-supplied msg
@@ -76,7 +76,7 @@ namespace {
                             category,
                             app,
                             pid,
-                            runEventNo,
+                            iterationNo,
                             modname);
 
     usrMessagesTable_.insert(msgHeadersTable_.lastRowid(), usrMsg);

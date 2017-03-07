@@ -21,14 +21,14 @@ namespace mf {
                             std::string const & label,
                             module_id_t moduleID,
                             std::string const & phase);
-    void setPath(std::string const & type, std::string const & path);
-    void setSinglet(std::string const & sing);
+    void setPath(std::string const & path, std::string const & phase);
+    void setSinglet(std::string const & singlet);
     void clear();
 
     // Group messages share a common context.
     unsigned int messageStreamID;
 
-    std::string runEvent {"pre-events"};
+    std::string iteration {"pre-events"};
     bool debugEnabled {true};
     bool infoEnabled {true};
     bool warningEnabled {true};

@@ -24,7 +24,7 @@ MessageSender::~MessageSender() noexcept
 
     if (auto drop = MessageDrop::instance()) {
       errorobj_p->setModule(drop->moduleContext());
-      errorobj_p->setContext(drop->runEvent);
+      errorobj_p->setContext(drop->iteration);
     }
 
     MessageLoggerQ::MLqLOG(errorobj_p.release());

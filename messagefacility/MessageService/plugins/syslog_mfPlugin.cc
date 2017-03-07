@@ -69,7 +69,7 @@ namespace mfplugins {
         << xid.id()+std::string("|")                                // category
         << xid.application()+std::string("|")                       // application
         << xid.pid()<<std::string("|")                              // process id
-        << mf::MessageDrop::instance()->runEvent+std::string("|") // run/event no
+        << mf::MessageDrop::instance()->iteration+std::string("|") // run/event no
         << xid.module()+std::string("|");                           // module name
   }
 

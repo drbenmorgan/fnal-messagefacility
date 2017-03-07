@@ -51,19 +51,19 @@ class mf::MessageDrop::StringProducerPath : public StringProducer {
 public:
   virtual std::string theContext() const override {
     if ( cache_.empty() ) {
-      cache_.assign(type_);
+      cache_.assign(phase_);
       cache_.append(" ");
       cache_.append(path_);
     }
     return cache_;
   }
-  void set(std::string const & type, std::string const & path) {
-    type_ = type;
+  void set(std::string const & phase, std::string const & path) {
+    phase_ = phase;
     path_ = path;
     cache_.clear();
   }
 private:
-  std::string type_  {"(NoPath)"};
+  std::string phase_  {"(NoPath)"};
   std::string path_ {};
   mutable std::string cache_;
 };
@@ -107,17 +107,17 @@ setModuleWithPhase(std::string const & name,
 
 void
 mf::MessageDrop::
-setPath(std::string const & type, std::string const & path)
+setPath(std::string const & phase, std::string const & path)
 {
-  spPath_->set(type, path);
+  spPath_->set(phase, path);
   moduleNameProducer_ = spPath_.get();
 }
 
 void
 mf::MessageDrop::
-setSinglet(std::string const & sing)
+setSinglet(std::string const & singlet)
 {
-  spSinglet_->set(sing);
+  spSinglet_->set(singlet);
   moduleNameProducer_ = spSinglet_.get();
 }
 

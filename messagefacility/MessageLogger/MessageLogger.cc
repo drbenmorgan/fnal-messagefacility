@@ -118,15 +118,6 @@ void mf::SetApplicationName(std::string const& application)
   MessageDrop::instance()->setSinglet(application);
 }
 
-// Set the run/event context
-void mf::SetContext(std::string const& context)
-{
-  if (!MessageFacilityService::instance().MFServiceEnabled)
-    return;
-
-  MessageDrop::instance()->runEvent = context;
-}
-
 mf::EnabledState
 mf::setEnabledState(std::string const & moduleLabel)
 {

@@ -44,7 +44,7 @@ int main()
 
   // Set module name and context for the main thread
   MessageDrop::instance()->setSinglet("MF_main");
-  SetContext("pre-event");
+  SetContextIteration("pre-event");
 
   // Start up another logger in a separate thread
   std::thread loggerThread(anotherLogger);
@@ -54,7 +54,7 @@ int main()
   LogWarning("catwarn") << "Followed by a WARNING message.";
 
   // Switch context
-  SetContext("pro-event");
+  SetContextIteration("pro-event");
 
   // Logs
   LogError("catError")     << "Error information.";
