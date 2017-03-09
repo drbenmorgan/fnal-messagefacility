@@ -2,7 +2,7 @@
 #include "messagefacility/MessageService/MessageDrop.h"
 #include "messagefacility/MessageService/ELdestination.h"
 
-#include "cetlib/Ntuple.h"
+#include "cetlib/sqlite/Ntuple.h"
 #include "cetlib/sqlite/Connection.h"
 
 #include <cstdint>
@@ -12,7 +12,7 @@ namespace {
 
   using std::string;
   using std::uint32_t;
-  using cet::Ntuple;
+  using namespace cet::sqlite;
 
   //==========================================================
   // sqlite plugin declaration
@@ -36,9 +36,8 @@ namespace {
     virtual void routePayload(std::ostringstream const&,
                               mf::ErrorObj const&) override;
 
-    cet::sqlite::Connection db_;
-    cet::Ntuple<string,string,string,string,string,string,unsigned,string,string> msgHeadersTable_;
-    cet::Ntuple<sqlite_int64,string> usrMessagesTable_;
+    Connection db_;
+    Ntuple<string,string,string,string,string,string,unsigned,string,string,string> msgTable_;
   };
 
   // Implementation
@@ -46,8 +45,7 @@ namespace {
   sqlite3Plugin::sqlite3Plugin(fhicl::ParameterSet const& pset)
     : ELdestination{pset}
     , db_{pset.get<std::string>("filename")}
-    , msgHeadersTable_{db_, "MessageHeaders", {"Timestamp","Hostname","Hostaddress","Severity","Category","AppName","ProcessId","RunEventNo","ModuleName"}}
-    , usrMessagesTable_{db_, "UserMessages", {"HeaderId","Message"}}
+    , msgTable_{db_, "Messages", {"Timestamp","Hostname","Hostaddress","Severity","Category","AppName","ProcessId","RunEventNo","ModuleName","Message"}}
   {}
 
 
@@ -69,17 +67,16 @@ namespace {
     string const& usrMsg     =
       !oss.str().compare(0,1,"\n") ? oss.str().erase(0,1) : oss.str(); // user-supplied msg
                                                                        // (remove leading "\n" if present)
-    msgHeadersTable_.insert(timestamp,
-                            hostname,
-                            hostaddr,
-                            severity,
-                            category,
-                            app,
-                            pid,
-                            iterationNo,
-                            modname);
-
-    usrMessagesTable_.insert(msgHeadersTable_.lastRowid(), usrMsg);
+    msgTable_.insert(timestamp,
+                     hostname,
+                     hostaddr,
+                     severity,
+                     category,
+                     app,
+                     pid,
+                     iterationNo,
+                     modname,
+                     usrMsg);
   }
 
 }
