@@ -12,6 +12,5 @@ cet_test(Presence_init_t
 cet_make_exec(mfexample
   LIBRARIES
   MF_MessageLogger
-  MF_MessageService
   fhiclcpp
   )

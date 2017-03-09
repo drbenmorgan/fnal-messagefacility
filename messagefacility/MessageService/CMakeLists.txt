@@ -1,23 +1,2 @@
-cet_make_library(
-  LIBRARY_NAME MF_MessageService
-  SOURCE
-  ELadministrator.cc
-  ELdestination.cc
-  ELostreamOutput.cc
-  ELstatistics.cc
-  MessageDrop.cc
-  MessageLoggerQ.cc
-  MsgFormatSettings.cc
-  MsgStatistics.cc
-  ThreadQueue.cc
-  LIBRARIES
-  MF_Utilities
-  fhiclcpp
-  cetlib_except
-  ${Boost_THREAD_LIBRARY}
-  )
-
-add_subdirectory(plugins)
-
 install_headers()
 install_source()
