@@ -2,8 +2,8 @@
 #include "messagefacility/MessageService/MessageDrop.h"
 #include "messagefacility/MessageService/ELdestination.h"
 
+#include "cetlib/sqlite/ConnectionFactory.h"
 #include "cetlib/sqlite/Ntuple.h"
-#include "cetlib/sqlite/Connection.h"
 
 #include <cstdint>
 #include <memory>
@@ -21,7 +21,7 @@ namespace {
   class sqlite3Plugin : public mf::service::ELdestination {
   public:
 
-    sqlite3Plugin(fhicl::ParameterSet const&);
+    sqlite3Plugin(fhicl::ParameterSet const&, ConnectionFactory& cf);
 
   private:
 
@@ -36,16 +36,16 @@ namespace {
     virtual void routePayload(std::ostringstream const&,
                               mf::ErrorObj const&) override;
 
-    Connection db_;
+    Connection connection_;
     Ntuple<string,string,string,string,string,string,unsigned,string,string,string> msgTable_;
   };
 
   // Implementation
   //===============================================================================================================
-  sqlite3Plugin::sqlite3Plugin(fhicl::ParameterSet const& pset)
+  sqlite3Plugin::sqlite3Plugin(fhicl::ParameterSet const& pset, ConnectionFactory& cf)
     : ELdestination{pset}
-    , db_{pset.get<std::string>("filename")}
-    , msgTable_{db_, "Messages", {"Timestamp","Hostname","Hostaddress","Severity","Category","AppName","ProcessId","RunEventNo","ModuleName","Message"}}
+    , connection_{cf.make(pset.get<std::string>("filename"))}
+    , msgTable_{connection_, "Messages", {"Timestamp","Hostname","Hostaddress","Severity","Category","AppName","ProcessId","RunEventNo","ModuleName","Message"}}
   {}
 
 
@@ -89,9 +89,9 @@ namespace {
 
 extern "C" {
 
-  auto makePlugin(std::string const&, fhicl::ParameterSet const& pset)
+  auto makePlugin(std::string const&, fhicl::ParameterSet const& pset, ConnectionFactory& cf)
   {
-    return std::make_unique<sqlite3Plugin>(pset);
+    return std::make_unique<sqlite3Plugin>(pset, cf);
   }
 
 }
