@@ -9,15 +9,16 @@
 #include "cetlib/filepath_maker.h"
 #include "fhiclcpp/ParameterSet.h"
 #include "fhiclcpp/make_ParameterSet.h"
-#include "messagefacility/MessageLogger/MessageLogger.h"
 #include "messagefacility/MessageLogger/ELdestinationTester.h"
+#include "messagefacility/MessageLogger/MessageLogger.h"
+#include "messagefacility/MessageService/MessageDrop.h"
 
 namespace {
 
   void anotherLogger [[ gnu::unused ]] ()
   {
     // Set module name
-    mf::SetModuleName("anotherLogger");
+    mf::MessageDrop::instance()->setSinglet("anotherLogger");
 
     mf::LogWarning("warn1 | warn2") << "Followed by a WARNING message.";
     mf::LogDebug("debug")           << "The debug message in the other thread";
@@ -27,10 +28,10 @@ namespace {
 
   void runModule(std::string const& modulename)
   {
-    mf::SetModuleName(modulename);
+    mf::MessageDrop::instance()->setSinglet(modulename);
 
     // Post begin job
-    mf::SetContext("postBeginJob");
+    mf::SetContextIteration("postBeginJob");
     mf::LogAbsolute("TimeReport")
       << "TimeReport> Report activated\n"
       "TimeReport> Report columns headings for events: "
@@ -39,7 +40,7 @@ namespace {
       "eventnum runnum modulelabel modulename timetaken";
 
     // Post end job
-    mf::SetContext("postEndJob");
+    mf::SetContextIteration("postEndJob");
     mf::LogAbsolute("TimeReport")
       << "TimeReport> Time report complete in "
       << 0.0402123 << " seconds\n"
@@ -49,13 +50,13 @@ namespace {
       << " Avg: " << 4000 << "\n";
 
     // Post event processing
-    mf::SetContext("postEventProcessing");
+    mf::SetContextIteration("postEventProcessing");
     mf::LogAbsolute("TimeEvent")
       << "TimeEvent> "
       << "run: 1   subRun: 2    event: 456 " << .0440404;
 
     // Post Module
-    mf::SetContext("postModule");
+    mf::SetContextIteration("postModule");
     mf::LogAbsolute("TimeModule")
       << "TimeModule> "
       << "run: 1   subRun: 2    event: 456 "
@@ -139,8 +140,7 @@ int main(int argc, char* argv[])
 
   // Start MessageFacility Service
   try {
-    mf::StartMessageFacility(mf::MessageFacilityService::MultiThread,
-                             main_pset.get<fhicl::ParameterSet>("message"));
+    mf::StartMessageFacility(main_pset.get<fhicl::ParameterSet>("message"));
   }
   catch (mf::Exception const& e) {
     std::cerr << e.what() << std::endl;
@@ -153,8 +153,8 @@ int main(int argc, char* argv[])
 
   // Set module name for the main thread
   mf::SetApplicationName("MessageFacility");
-  mf::SetModuleName("MFTest");
-  mf::SetContext("pre-event");
+  mf::MessageDrop::instance()->setSinglet("MFTest");
+  mf::SetContextIteration("pre-event");
 
   // Start up another logger in a separate thread
   //boost::thread loggerThread(anotherLogger);
@@ -183,7 +183,7 @@ int main(int argc, char* argv[])
   mf::LogWarning("warning") << "Followed by a WARNING message.";
 
   // Switch context
-  mf::SetContext("pro-event");
+  mf::SetContextIteration("pro-event");
 
   // Log Debugs
   for(int i = 0; i != 5; ++i) {

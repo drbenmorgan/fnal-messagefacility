@@ -7,7 +7,6 @@
 
 #include "messagefacility/MessageService/ELstatistics.h"
 #include "fhiclcpp/ParameterSet.h"
-#include "messagefacility/MessageService/ELcontextSupplier.h"
 #include "messagefacility/Utilities/ErrorObj.h"
 
 #include <fstream>
@@ -23,7 +22,7 @@ namespace mf {
 
     ELstatistics::ELstatistics(fhicl::ParameterSet const& pset, std::ostream& osp)
       : ELdestination{pset}
-      , termStream{std::make_unique<cet::ostream_observer>(osp)}
+      , termStream{osp}
     {}
 
     ELstatistics::ELstatistics(fhicl::ParameterSet const& pset)
@@ -34,17 +33,17 @@ namespace mf {
                                std::string const& fileName,
                                bool const append)
       : ELdestination{pset}
-      , termStream{std::make_unique<cet::ostream_owner>(fileName, append ? std::ios::app : std::ios::trunc )}
+      , termStream{fileName, append ? std::ios::app : std::ios::trunc}
     {}
 
     // ----------------------------------------------------------------------
     // Methods invoked by the ELadministrator
     // ----------------------------------------------------------------------
 
-    void ELstatistics::log(mf::ErrorObj& msg, ELcontextSupplier const& contextSupplier)
+    void ELstatistics::log(mf::ErrorObj& msg)
     {
       if (passLogStatsThreshold(msg))
-        stats.log(msg, contextSupplier);
+        stats.log(msg);
     }
 
     void ELstatistics::summary(std::ostream& os, std::string const& title)
@@ -53,11 +52,11 @@ namespace mf {
       stats.updatedStats = false;
     }
 
-    void ELstatistics::summary(ELcontextSupplier const&)
+    void ELstatistics::summary()
     {
-      termStream->stream() << "\n=============================================\n\n"
-                           << "MessageLogger Summary\n"
-                           << stats.formSummary();
+      termStream << "\n=============================================\n\n"
+                 << "MessageLogger Summary\n"
+                 << stats.formSummary();
       stats.updatedStats = false;
     }
 
@@ -72,11 +71,6 @@ namespace mf {
     void ELstatistics::noTerminationSummary()
     {
       stats.printAtTermination = false;
-    }
-
-    void ELstatistics::summaryForJobReport (std::map<std::string, double>& sm)
-    {
-      stats.summaryForJobReport(sm);
     }
 
   } // end of namespace service

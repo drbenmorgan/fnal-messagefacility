@@ -62,35 +62,11 @@ EOF
 sub optionalEntries {
   return
     {
-     changeFileELstring => 'void changeFile (mf::ELstring const & filename) override',
-     changeFileOS => 'void changeFile (std::ostream & os) override',
-     clearSummary => 'void clearSummary() override',
-     excludeModule => 'void excludeModule(mf::ELstring const & moduleName) override',
-     fillPrefix => 'void fillPrefix(std::ostringstream& oss, const mf::ErrorObj& msg) override',
-     fillSuffix => 'void fillSuffix(std::ostringstream& oss, const mf::ErrorObj& msg) override',
-     fillUsrMsg => 'void fillUsrMsg(std::ostringstream& oss, const mf::ErrorObj& msg) override',
-     filterModule => 'void filterModule(mf::ELstring const & moduleName) override',
      finish => 'void finish() override',
-     flush => 'void flush() override',
-     getLineLength => 'int getLineLength() const override',
-     getNewline => 'mf::ELstring getNewline() const override',
-     ignoreModule => 'void ignoreModule(mf::ELstring const & moduleName) override',
      log => 'void log(mf::ErrorObj & msg) override',
-     noTerminationSummary => 'void noTerminationSummary() override',
-     respondToModule => 'void respondToModule(mf::ELstring const & moduleName) override',
-     routePayload => 'void routePayload(const std::ostringstream& oss, const mf::ErrorObj& msg) override',
-     setLineLength => 'int setLineLength(int len) override',
-     setTableLimit => 'void setTableLimit(int n) override',
-     statisticsMap => 'std::map<mf::ELextendedID, mf::StatsCount> statisticsMap() const override',
      summarization => 'void summarization(mf::ELstring const & title, mf::ELstring const & sumLines) override',
      summary => 'void summary() override',
-     summaryElstring => 'void summary(mf::ELstring & s, mf::ELstring const & title=) override',
-     summaryForJobReport => 'void summaryForJobReport(std::map<std::string, double> & sm) override',
-     summaryOS => 'void summary(std::ostream & os, mf::ELstring const & title=) override',
-     switchChannel => 'bool switchChannel(mf::ELstring const & channelName) override',
-     thisShouldBeIgnored => 'bool thisShouldBeIgnored(mf:ELstring const & s) const override',
      wipe => 'void wipe() override',
-     zero => 'void zero() override'
     };
 }
 

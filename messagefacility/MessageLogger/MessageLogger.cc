@@ -4,348 +4,133 @@
 //
 // ======================================================================
 
-#include "cetlib/filepath_maker.h"
-
 #include "messagefacility/MessageLogger/MessageLogger.h"
+#include "messagefacility/MessageLogger/MessageLoggerImpl.h"
+#include "messagefacility/MessageLogger/Presence.h"
 #include "messagefacility/MessageService/MessageLoggerQ.h"
-#include "messagefacility/MessageService/ELadministrator.h"
-#include "messagefacility/Utilities/exception.h"
 
-#include "fhiclcpp/make_ParameterSet.h"
-
-#include <iostream>
-#include <sstream>
-
-namespace {
-  auto pset_from_oss(std::ostringstream const& ss)
-  {
-    fhicl::ParameterSet pset;
-    std::string const pstr {ss.str()};
-    fhicl::make_ParameterSet(pstr, pset);
-    return pset;
-  }
-}
+#include <mutex>
 
 namespace mf {
+  class MessageFacilityService;
+}
 
-  void LogStatistics()
-  {
-    MessageLoggerQ::MLqSUM(); // trigger summary info
-  }
+void mf::LogStatistics()
+{
+  MessageLoggerQ::MLqSUM(); // trigger summary info
+}
 
-  void LogErrorObj(ErrorObj* eo_p)
-  {
-    MessageLoggerQ::MLqLOG(eo_p);
-  }
+void mf::LogErrorObj(ErrorObj* eo_p)
+{
+  MessageLoggerQ::MLqLOG(eo_p);
+}
 
-  bool isDebugEnabled()
-  {
-    return MessageDrop::instance()->debugEnabled;
-  }
+bool mf::isDebugEnabled()
+{
+  return detail::enabled<ELseverityLevel::ELsev_success>();
+}
 
-  bool isInfoEnabled()
-  {
-    return MessageDrop::instance()->infoEnabled;
-  }
+bool mf::isInfoEnabled()
+{
+  return detail::enabled<ELseverityLevel::ELsev_info>();
+}
 
-  bool isWarningEnabled()
-  {
-    return MessageDrop::instance()->warningEnabled;
-  }
+bool mf::isWarningEnabled()
+{
+  return detail::enabled<ELseverityLevel::ELsev_warning>();
+}
 
-  void HaltMessageLogging()
-  {
-    MessageLoggerQ::MLqSHT(); // Shut the logger up
-  }
+void mf::HaltMessageLogging()
+{
+  MessageLoggerQ::MLqSHT(); // Shut the logger up
+}
 
-  void FlushMessageLog()
-  {
-    if (MessageDrop::instance()->messageLoggerScribeIsRunning != MLSCRIBE_RUNNING_INDICATOR) return;
-    MessageLoggerQ::MLqFLS(); // Flush the message log queue
-  }
+void mf::FlushMessageLog()
+{
+  if (MessageDrop::instance()->messageLoggerScribeIsRunning != MLSCRIBE_RUNNING_INDICATOR) return;
+  MessageLoggerQ::MLqFLS(); // Flush the message log queue
+}
 
-  bool isMessageProcessingSetUp()
-  {
-    return MessageDrop::instance()->messageLoggerScribeIsRunning == MLSCRIBE_RUNNING_INDICATOR;
-  }
+bool mf::isMessageProcessingSetUp()
+{
+  return MessageDrop::instance()->messageLoggerScribeIsRunning == MLSCRIBE_RUNNING_INDICATOR;
+}
 
-  void setStandAloneMessageThreshold(std::string const& severity)
-  {
-    MessageLoggerQ::standAloneThreshold(severity);
-  }
+void mf::setStandAloneMessageThreshold(ELseverityLevel const severity)
+{
+  MessageLoggerQ::standAloneThreshold(severity);
+}
 
-  void squelchStandAloneMessageCategory(std::string const& category)
-  {
-    MessageLoggerQ::squelch(category);
-  }
+void mf::squelchStandAloneMessageCategory(std::string const & category)
+{
+  MessageLoggerQ::squelch(category);
+}
 
-  // MessageFacilityService
-  std::string MessageFacilityService::SingleThread {"SingleThreadMSPresence"};
-  std::string MessageFacilityService::MultiThread {"MessageServicePresence"};
+class mf::MessageFacilityService {
+public:
+  static MessageFacilityService& instance();
 
-  MessageFacilityService& MessageFacilityService::instance()
-  {
-    static MessageFacilityService mfs;
-    return mfs;
-  }
+  std::unique_ptr<Presence> MFPresence {nullptr};
+  std::unique_ptr<MessageLoggerImpl> theML {nullptr};
+  std::mutex m {};
+  bool MFServiceEnabled {false};
 
-  // Read configurations from MessageFacility.cfg file
-  fhicl::ParameterSet
-  MessageFacilityService::ConfigurationFile(std::string const& filename,
-                                            fhicl::ParameterSet const& def)
-  {
-    size_t const sub_start = filename.find("${");
-    size_t const sub_end   = filename.find("}");
+  MessageFacilityService() = default;
+};
 
-    size_t const npos {std::string::npos};
+mf::MessageFacilityService & mf::MessageFacilityService::instance()
+{
+  static MessageFacilityService mfs;
+  return mfs;
+}
 
-    if( (sub_start==npos && sub_end!=npos)
-        || (sub_start!=npos && sub_end==npos)
-        || (sub_start > sub_end)
-        || (sub_start!=0 && sub_start!=npos) )
-      {
-        std::cout << "Unrecognized configuration file. "
-                  << "Use default configuration instead.\n";
-        return def;
-      }
+// Start MessageFacility service
+void mf::StartMessageFacility(fhicl::ParameterSet const& pset)
+{
+  auto& mfs = MessageFacilityService::instance();
+  std::lock_guard<std::mutex> lock {mfs.m};
 
-    std::string fname;
-    auto policy_ptr = std::make_unique<cet::filepath_maker>();
+  if (mfs.MFServiceEnabled)
+    return;
 
-    if (sub_start==0)  // env embedded in the filename
-      {
-        std::string const env = filename.substr(2, sub_end-2);
-        fname = filename.substr(sub_end+1);
-        policy_ptr = std::make_unique<cet::filepath_lookup>(env);
-      }
-    else if (filename.find('/')==0)  // absolute path
-      {
-        fname = filename;
-        policy_ptr = std::make_unique<cet::filepath_maker>();
-      }
-    else                             // non-absolute path
-      {
-        std::string const env {"FHICL_FILE_PATH"};
-        fname = filename;
-        policy_ptr = std::make_unique<cet::filepath_lookup_after1>(env);
-      }
+  // MessageServicePresence
+  mfs.MFPresence = std::make_unique<Presence>();
 
-    fhicl::ParameterSet pset;
-    try {
-      fhicl::make_ParameterSet(fname, *policy_ptr, pset);
-      return pset;
-    }
-    catch (cet::exception &e) {
-      std::cerr << "Configuration file \"" << fname << "\" "
-                << "parsing failed with exception " << e.what()
-                << ".\n"
-                << "Default configuration will be used instead.\n";
-    }
-    return def;
-  }
+  // The MessageLogger
+  mfs.theML = std::make_unique<MessageLoggerImpl>(pset);
 
+  mfs.MFServiceEnabled = true;
+}
 
-  std::string MessageFacilityService::commonPSet()
-  {
-    std::string pset = "debugModules:[\"*\"]  statistics:[\"stats\"] ";
-    return pset;
-  }
+void mf::EndMessageFacility()
+{
+  MessageFacilityService::instance().MFPresence.reset();
+}
 
-  fhicl::ParameterSet MessageFacilityService::logConsole()
-  {
-    std::ostringstream ss;
-    ss << commonPSet()
-       << "  destinations : { "
-       << "    console : { type : \"cout\" threshold : \"DEBUG\" } "
-       << "  } " ;
-    return pset_from_oss(ss);
-  }
+void mf::SetApplicationName(std::string const& application)
+{
+  auto& mfs = MessageFacilityService::instance();
+  if (!mfs.MFServiceEnabled) return;
 
-  fhicl::ParameterSet MessageFacilityService::logServer(int const partition)
-  {
-    std::ostringstream ss;
-    ss << commonPSet()
-       << "  destinations : { "
-       << "    server : { "
-       << "      type : \"dds\" threshold : \"DEBUG\" "
-       << "      partition : " << partition << " "
-       << "    } "
-       << "  } " ;
-    return pset_from_oss(ss);
-  }
+  std::lock_guard<std::mutex> lock {mfs.m};
 
-  fhicl::ParameterSet MessageFacilityService::logFile(std::string const& filename, bool const append)
-  {
-    std::ostringstream ss;
-    ss << commonPSet()
-       << "  destinations : { "
-       << "    file : { "
-       << "      type : \"file\" threshold : \"DEBUG\" "
-       << "      filename : \"" << filename << "\" "
-       << "      append : " << (append ? "true" : "false")
-       << "    } "
-       << "  } " ;
-    return pset_from_oss(ss);
-  }
+  MessageLoggerQ::setApplication(application);
+  MessageDrop::instance()->setSinglet(application);
+}
 
-  fhicl::ParameterSet MessageFacilityService::logCS(int const partition)
-  {
-    std::ostringstream ss;
-    ss << commonPSet()
-       << "  destinations : { "
-       << "    console : { type : \"cout\" threshold : \"DEBUG\" } "
-       << "    server : { "
-       << "      type : \"dds\" threshold : \"DEBUG\" "
-       << "      partition : " << partition << " "
-       << "    } "
-       << "  } " ;
-    return pset_from_oss(ss);
-  }
+mf::EnabledState
+mf::setEnabledState(std::string const & moduleLabel)
+{
+  return MessageFacilityService::instance().theML->setEnabledState(moduleLabel);
+}
 
-  fhicl::ParameterSet MessageFacilityService::logCF(std::string const& filename, bool const append)
-  {
-    std::ostringstream ss;
-    ss << commonPSet()
-       << "  destinations : { "
-       << "    console : { type : \"cout\" threshold : \"DEBUG\" } "
-       << "    file : { "
-       << "      type : \"file\" threshold : \"DEBUG\" "
-       << "      filename : \"" << filename << "\" "
-       << "      append : " << (append ? "true" : "false")
-       << "    } "
-       << "  } ";
-    return pset_from_oss(ss);
-  }
+void
+mf::restoreEnabledState(EnabledState previousEnabledState)
+{
+  MessageFacilityService::instance().theML->restoreEnabledState(previousEnabledState);
+}
 
-  fhicl::ParameterSet MessageFacilityService::logFS(std::string const& filename, bool const append, int const partition)
-  {
-    std::ostringstream ss;
-    ss << commonPSet()
-       << "  destinations : { "
-       << "    file : { "
-       << "      type : \"file\" threshold : \"DEBUG\" "
-       << "      filename : \"" << filename << "\" "
-       << "      append : " << (append ? "true" : "false")
-       << "    } "
-       << "    server : { "
-       << "      type : \"dds\" threshold : \"DEBUG\" "
-       << "      partition : " << partition << " "
-       << "    } "
-       << "  } " ;
-    return pset_from_oss(ss);
-  }
-
-  fhicl::ParameterSet MessageFacilityService::logCFS(std::string const& filename, bool const append, int const partition)
-  {
-    std::ostringstream ss;
-    ss << commonPSet()
-       << "  destinations : { "
-       << "    console : { type : \"cout\" threshold : \"DEBUG\" } "
-       << "    file : { "
-       << "      type : \"file\" threshold : \"DEBUG\" "
-       << "      filename : \"" << filename << "\" "
-       << "      append : " << (append ? "true" : "false")
-       << "    } "
-       << "    server : { "
-       << "      type : \"dds\" threshold : \"DEBUG\" "
-       << "      partition : " << partition << " "
-       << "    } "
-       << "  } " ;
-    return pset_from_oss(ss);
-  }
-
-  fhicl::ParameterSet MessageFacilityService::logArchive(std::string const& filename, bool const append)
-  {
-    std::ostringstream ss;
-    ss << commonPSet()
-       << "  destinations : { "
-       << "    archive : { "
-       << "      type : \"archive\" threshold : \"DEBUG\" "
-       << "      filename : \"" << filename << "\" "
-       << "      append : " << (append ? "true" : "false")
-       << "    } "
-       << "  } " ;
-    return pset_from_oss(ss);
-  }
-
-  MFSdestroyer::~MFSdestroyer()
-  {
-    MessageFacilityService::instance().MFPresence.reset();
-  }
-
-  // Start MessageFacility service
-  void StartMessageFacility(std::string const& mode,
-                            fhicl::ParameterSet const& pset)
-  {
-    auto& mfs = MessageFacilityService::instance();
-    std::lock_guard<std::mutex> lock {mfs.m};
-
-    if (mfs.MFServiceEnabled)
-      return;
-
-    // The order of object initialization and destruction is crucial
-    // in starting up and shutting down the Message Facility
-    // service. In the d'tor of MessageServicePresence it sends out an
-    // END message to the queue and waits for the MLscribe thread to
-    // finish logging all remaining messages in the queue. Therefore
-    // the ELadministrator singleton (whose instance is handled by a
-    // local static variable) and all attached destinations must be
-    // present during the process. We must provide the secured method
-    // to guarantee that the MessageServicePresence will be destroyed
-    // first, and particularly *BEFORE* the destruction of ELadmin.
-    // This is achieved by instantiating a static object, who is
-    // responsible for killing the Presence at the *END* of the start
-    // sequence. So this destroyer object will be killed before
-    // everyone else.
-
-    // MessageServicePresence
-    mfs.MFPresence = PresenceFactory::createInstance(mode);
-
-    // The MessageLogger
-    mfs.theML = std::make_unique<MessageLoggerImpl>(pset);
-
-    mfs.MFServiceEnabled = true;
-
-    static MFSdestroyer destroyer;
-  }
-
-  void SetApplicationName(std::string const& application)
-  {
-    auto& mfs = MessageFacilityService::instance();
-    if (!mfs.MFServiceEnabled) return;
-
-    std::lock_guard<std::mutex> lock {mfs.m};
-
-    service::ELadministrator::instance()->setApplication(application);
-    SetModuleName(application);
-  }
-
-  // Set module name and debug settings
-  void SetModuleName(std::string const& modulename)
-  {
-    if (!MessageFacilityService::instance().MFServiceEnabled)
-      return;
-
-    MessageDrop* drop = MessageDrop::instance();
-    drop->moduleName = modulename;
-
-    auto const& mfs = MessageFacilityService::instance();
-
-    if (mfs.theML->everyDebugEnabled_)
-      drop->debugEnabled = true;
-    else if (mfs.theML->debugEnabledModules_.count(modulename))
-      drop->debugEnabled = true;
-    else
-      drop->debugEnabled = false;
-  }
-
-  // Set the run/event context
-  void SetContext(std::string const& context)
-  {
-    if (!MessageFacilityService::instance().MFServiceEnabled)
-      return;
-
-    MessageDrop::instance()->runEvent = context;
-  }
-
-}  // namespace mf
+void mf::ClearMessageLogger()
+{
+  MessageDrop::instance()->clear();
+}

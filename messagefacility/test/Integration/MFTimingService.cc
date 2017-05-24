@@ -14,10 +14,10 @@
 #include "messagefacility/MessageLogger/MessageLogger.h"
 
 void runModule( const std::string& modulename ) {
-  mf::SetModuleName(modulename);
+  mf::SetContextSinglet(modulename);
   
   // Post begin job
-  mf::SetContext("postBeginJob");
+  mf::SetContextIteration("postBeginJob");
   mf::LogAbsolute("TimeReport")
     << "TimeReport> Report activated\n"
     "TimeReport> Report columns headings for events: "
@@ -26,7 +26,7 @@ void runModule( const std::string& modulename ) {
     "eventnum runnum modulelabel modulename timetaken";
   
   // Post end job 
-  mf::SetContext("postEndJob");
+  mf::SetContextIteration("postEndJob");
   mf::LogAbsolute("TimeReport")                            // Changelog 1
     << "TimeReport> Time report complete in "
     << 0.0402123 << " seconds\n"
@@ -36,13 +36,13 @@ void runModule( const std::string& modulename ) {
     << " Avg: " << 4000 << "\n";
 
   // Post event processing
-  mf::SetContext("postEventProcessing");
+  mf::SetContextIteration("postEventProcessing");
   mf::LogAbsolute("TimeEvent")
     << "TimeEvent> "
     << "run: 1   subRun: 2    event: 456 " << .0440404;
 
   // Post Module
-  mf::SetContext("postModule");
+  mf::SetContextIteration("postModule");
   mf::LogAbsolute("TimeModule")
     << "TimeModule> "
     << "run: 1   subRun: 2    event: 456 " 
@@ -79,10 +79,7 @@ int main()
   }
 
   // Start MessageFacility Service
-  mf::StartMessageFacility(
-			   mf::MessageFacilityService::MultiThread,
-			   main_pset.get<fhicl::ParameterSet>("message")
-                           );
+  mf::StartMessageFacility(main_pset.get<fhicl::ParameterSet>("message"));
   
   // Set module name for the main thread
   mf::SetApplicationName("MessageFacility");

@@ -1,43 +1,32 @@
 #include "messagefacility/MessageLogger/MessageSender.h"
 #include "messagefacility/MessageService/MessageLoggerQ.h"
-#include "messagefacility/MessageLogger/MessageDrop.h"
+#include "messagefacility/MessageService/MessageDrop.h"
 
 using namespace mf;
 
-bool MessageSender::errorSummaryIsBeingKept = false;
-bool MessageSender::freshError = false;
-std::map<ErrorSummaryMapKey, unsigned int> MessageSender::errorSummaryMap {};
-
 MessageSender::MessageSender(ELseverityLevel const sev,
-                             std::string const& id,
-                             bool const verbatim )
-  : errorobj_p{std::make_unique<ErrorObj>(sev,id,verbatim)}
+                             std::string const & id,
+                             bool const verbatim,
+                             bool suppressed)
+  : errorobj_p{suppressed ? nullptr : std::make_unique<ErrorObj>(sev,id,verbatim)}
 {}
 
-MessageSender::~MessageSender()
-try
-  {
+MessageSender::~MessageSender() noexcept
+{
+  if (errorobj_p == nullptr) {
+    return;
+  }
+  try {
     // surrender ownership of our ErrorObj, transferring ownership
     // (via the intermediate MessageLoggerQ) to the MessageLoggerScribe
     // that will (a) route the message text to its destination(s)
     // and will then (b) dispose of the ErrorObj
 
     if (auto drop = MessageDrop::instance()) {
-      errorobj_p->setModule(drop->moduleName);
-      errorobj_p->setContext(drop->runEvent);
+      errorobj_p->setModule(drop->moduleContext());
+      errorobj_p->setContext(drop->iteration);
     }
 
-    if (errorSummaryIsBeingKept && errorobj_p->xid().severity >= ELwarning) {
-      ELextendedID const& xid = errorobj_p->xid();
-      ErrorSummaryMapKey const key {xid.id, xid.module, xid.severity};
-      auto i = errorSummaryMap.find(key);
-      if (i != errorSummaryMap.end()) {
-        ++(i->second);  // same as ++errorSummaryMap[key]
-      } else {
-        errorSummaryMap[key] = 1;
-      }
-      freshError = true;
-    }
     MessageLoggerQ::MLqLOG(errorobj_p.release());
   }
  catch (...)
@@ -49,3 +38,4 @@ try
      // and Next or Step so that the exception would be detected.
      // That test has been done 12/14/07.
    }
+}

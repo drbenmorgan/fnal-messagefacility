@@ -8,7 +8,6 @@ namespace mf {
         , LOG_A_MESSAGE  // LOG !
         , CONFIGURE      // CFG -- handshaked !
         , SUMMARIZE      // SUM !
-        , JOBREPORT      // JOB !
         , SHUT_UP        // SHT !
         , FLUSH_LOG_Q    // FLS -- handshaked !
       };  // OpCode
@@ -21,7 +20,7 @@ namespace mf {
   }
 }
 
-#endif /* messagefacility_MessageService_MessageLoggerQ_h */
+#endif /* messagefacility_MessageService_OpCode_h */
 
 // Local Variables:
 // mode: c++

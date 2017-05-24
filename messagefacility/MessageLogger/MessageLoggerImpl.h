@@ -2,6 +2,7 @@
 #define messagefacility_MessageLogger_MessageLoggerImpl_h
 
 #include "messagefacility/Utilities/ELseverityLevel.h"
+#include "messagefacility/Utilities/EnabledState.h"
 #include "messagefacility/Utilities/ErrorObj.h"
 
 #include <memory>
@@ -19,58 +20,28 @@ namespace mf  {
   public:
     MessageLoggerImpl(fhicl::ParameterSet const&);
 
-    class EnabledState {
-    public:
-      EnabledState() = default;
-      EnabledState(bool const d, bool const i, bool const w)
-        : debugEnabled_{d}
-        , infoEnabled_{i}
-        , warningEnabled_{w}
-        , isValid_{true}
-      {}
+    // Set the state of the enabled flags for debug, info and warning
+    // messages appropriate for the given module label, returning
+    // previous state. User is responsible for being thread-safe with
+    // respect to same. Note that no setting of MessageDrop's context is
+    // done here: user is responsible for calling setSinglet(),
+    // setPath() or setModuleWithPhase() as appropriate.
+    EnabledState setEnabledState(std::string const & moduleLabel);
 
-      void reset() { isValid_ = false; }
+    // Restore saved state.
+    void restoreEnabledState(EnabledState previousEnabledState);
 
-      bool isValid() const { return isValid_; }
-      bool debugEnabled() const { return debugEnabled_; }
-      bool infoEnabled() const { return infoEnabled_; }
-      bool warningEnabled() const { return warningEnabled_; }
-    private:
-      bool debugEnabled_ {false};
-      bool infoEnabled_ {false};
-      bool warningEnabled_ {false};
-      bool isValid_ {false};
-    };
-
-    void fillErrorObj(mf::ErrorObj& obj) const;
-    bool debugEnabled() const { return debugEnabled_; }
-
-    bool anyDebugEnabled() const { return anyDebugEnabled_; }
-
-    // Set the context for following messages.  Note that it is caller's
-    // responsibility to ensure that any saved EnableState is saved in a
-    // thread-safe way if appropriate.
-    EnabledState setContext(std::string const &currentPhase);
-    void setMinimalContext(std::string const &currentPhase);
-    EnabledState setContext(std::string const &currentProgramState,
-                            std::string const &levelsConfigLabel);
-    void setContext(std::string const &currentPhase,
-                    EnabledState previousEnabledState);
-
-  public:
+  private:
     std::set<std::string> debugEnabledModules_;
     bool everyDebugEnabled_ {false};
 
-  private:
     // put an ErrorLog object here, and maybe more
     using s_map_t = std::map<std::string,ELseverityLevel>;
     s_map_t suppression_levels_;
-    bool debugEnabled_;
     bool messageServicePSetHasBeenValidated_;
     std::string  messageServicePSetValidatationResults_;
 
     bool anyDebugEnabled_;
-    bool fjrSummaryRequested_;
 
   };  // MessageLoggerImpl
 

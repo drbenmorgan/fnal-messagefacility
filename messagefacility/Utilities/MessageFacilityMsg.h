@@ -1,5 +1,5 @@
-#ifndef messagefacility_Auxiliaries_MessageFacilityMsg_h
-#define messagefacility_Auxiliaries_MessageFacilityMsg_h
+#ifndef messagefacility_Utilities_MessageFacilityMsg_h
+#define messagefacility_Utilities_MessageFacilityMsg_h
 
 #include <memory>
 #include <string>
@@ -21,7 +21,6 @@ namespace mf {
     void setCategory    (std::string const& category);
     void setHostname    (std::string const& hostname);
     void setHostaddr    (std::string const& hostaddr);
-    void setProcess     (std::string const& process);
     void setPid         (long pid);
     void setApplication (std::string const& app);
     void setModule      (std::string const& module);
@@ -40,7 +39,6 @@ namespace mf {
     std::string category()    const;
     std::string hostname()    const;
     std::string hostaddr()    const;
-    std::string process()     const;
     long        pid()         const;
     std::string application() const;
     std::string module()      const;
@@ -56,7 +54,7 @@ namespace mf {
 
 }
 
-#endif /* messagefacility_Auxiliaries_MessageFacilityMsg_h */
+#endif /* messagefacility_Utilities_MessageFacilityMsg_h */
 
 // Local Variables:
 // mode: c++

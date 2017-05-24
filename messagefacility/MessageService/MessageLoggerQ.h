@@ -32,7 +32,6 @@ namespace mf {
     static void MLqLOG(ErrorObj* p);
     static void MLqCFG(fhicl::ParameterSet* p);
     static void MLqSUM();
-    static void MLqJOB(std::string* j);
     static void MLqSHT();
     static void MLqFLS();
 
@@ -40,10 +39,13 @@ namespace mf {
     static void setMLscribe_ptr(std::unique_ptr<mf::service::AbstractMLscribe> m);
 
     // --- special control of standAlone logging behavior
-    static void standAloneThreshold(std::string const & severity);
+    static void standAloneThreshold(mf::ELseverityLevel severity);
     static void squelch(std::string const& category);
-    static bool ignore(mf::ELseverityLevel const& severity,
+    static bool ignore(mf::ELseverityLevel severity,
                        std::string const& category);
+
+    // --- Allow the setting of the global application name.
+    static void setApplication(std::string const & application);
 
     // --- no copying:
     MessageLoggerQ(MessageLoggerQ const&) = delete;

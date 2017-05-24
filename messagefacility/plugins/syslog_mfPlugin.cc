@@ -2,7 +2,7 @@
 #include "fhiclcpp/ParameterSet.h"
 
 #include "messagefacility/MessageService/ELdestination.h"
-#include "messagefacility/MessageLogger/MessageDrop.h"
+#include "messagefacility/MessageService/MessageDrop.h"
 #include "messagefacility/Utilities/ELseverityLevel.h"
 #include "messagefacility/Utilities/exception.h"
 
@@ -10,12 +10,6 @@
 #include <iostream>
 #include <syslog.h>
 #include <memory>
-
-namespace mf {
-  namespace service {
-    class ELcontextSupplier;
-  }
-}
 
 namespace mfplugins {
 
@@ -35,12 +29,11 @@ namespace mfplugins {
 
     ELsyslog(fhicl::ParameterSet const& pset);
 
-    virtual void fillPrefix(std::ostringstream&, ErrorObj const&, mf::service::ELcontextSupplier const&) override;
+    virtual void fillPrefix(std::ostringstream&, ErrorObj const&) override;
     virtual void fillUsrMsg(std::ostringstream&, ErrorObj const&) override;
     virtual void fillSuffix(std::ostringstream&, ErrorObj const&) override {}
     virtual void routePayload(std::ostringstream const&,
-                              ErrorObj const&,
-                              mf::service::ELcontextSupplier const&) override;
+                              ErrorObj const&) override;
 
   private:
     int syslogLevel(ELseverityLevel);
@@ -66,19 +59,18 @@ namespace mfplugins {
   // Message prefix filler ( overriddes ELdestination::fillPrefix )
   //======================================================================
   void ELsyslog::fillPrefix(std::ostringstream& oss,
-                            ErrorObj const& msg,
-                            mf::service::ELcontextSupplier const&)
+                            ErrorObj const& msg)
   {
     auto const& xid = msg.xid();
     oss << format.timestamp(msg.timestamp())+std::string("|")     // timestamp
-        << xid.hostname+std::string("|")                          // host name
-        << xid.hostaddr+std::string("|")                          // host address
-        << xid.severity.getName()+std::string("|")                // severity
-        << xid.id+std::string("|")                                // category
-        << xid.application+std::string("|")                       // application
-        << xid.pid<<std::string("|")                              // process id
-        << mf::MessageDrop::instance()->runEvent+std::string("|") // run/event no
-        << xid.module+std::string("|");                           // module name
+        << xid.hostname()+std::string("|")                          // host name
+        << xid.hostaddr()+std::string("|")                          // host address
+        << xid.severity().getName()+std::string("|")                // severity
+        << xid.id()+std::string("|")                                // category
+        << xid.application()+std::string("|")                       // application
+        << xid.pid()<<std::string("|")                              // process id
+        << mf::MessageDrop::instance()->iteration+std::string("|") // run/event no
+        << xid.module()+std::string("|");                           // module name
   }
 
   //======================================================================
@@ -99,11 +91,10 @@ namespace mfplugins {
   // Message router ( overriddes ELdestination::routePayload )
   //======================================================================
   void ELsyslog::routePayload(std::ostringstream const& oss,
-                              ErrorObj const& msg,
-                              mf::service::ELcontextSupplier const&)
+                              ErrorObj const& msg)
   {
-    int const severity = syslogLevel(msg.xid().severity);
-    syslog(severity, oss.str().data());
+    int const severity = syslogLevel(msg.xid().severity());
+    syslog(severity, "%s", oss.str().data());
   }
 
   //======================================================================
@@ -118,11 +109,11 @@ namespace mfplugins {
 
     switch ( severity.getLevel() ) {
       //    Used by:
-    case ELseverityLevel::ELsev_severe  : level = LOG_CRIT   ; break; //2    LogAbsolute, LogSystem
-    case ELseverityLevel::ELsev_error   : level = LOG_ERR    ; break; //3    LogError,    LogImportant, LogProblem
-    case ELseverityLevel::ELsev_warning : level = LOG_WARNING; break; //4    LogPrint,    LogWarning
-    case ELseverityLevel::ELsev_info    : level = LOG_INFO   ; break; //6    LogInfo,     LogVerbatim
-    case ELseverityLevel::ELsev_success : level = LOG_DEBUG  ; break; //7    LogDebug,    LogTrace
+    case ELseverityLevel::ELsev_severe  : level = LOG_CRIT   ; break; // LogAbsolute, LogSystem
+    case ELseverityLevel::ELsev_error   : level = LOG_ERR    ; break; // LogError, LogProblem
+    case ELseverityLevel::ELsev_warning : level = LOG_WARNING; break; // LogPrint, LogWarning
+    case ELseverityLevel::ELsev_info    : level = LOG_INFO   ; break; // LogInfo, LogVerbatim
+    case ELseverityLevel::ELsev_success : level = LOG_DEBUG  ; break; // LogDebug, LogTrace
     default : {
       throw mf::Exception ( mf::errors::LogicError )
         <<"ELseverityLevel: " << severity

@@ -22,6 +22,7 @@
 // ----------------------------------------------------------------------
 
 #include "cetlib/exempt_ptr.h"
+#include "cetlib/propagate_const.h"
 #include "messagefacility/MessageService/ELdestination.h"
 #include "messagefacility/Utilities/ELlist.h"
 #include "messagefacility/Utilities/ELseverityLevel.h"
@@ -35,126 +36,140 @@
 
 namespace mf {
   namespace service {
+    class MessageLoggerScribe;
 
-    // ----------------------------------------------------------------------
-    // Prerequisite classes:
-    // ----------------------------------------------------------------------
+    class ELadministrator;
+  }
+}
 
-    class ELcontextSupplier;
+class mf::service::ELadministrator {
+  friend ::mf::service::MessageLoggerScribe;
+public:
+  using destination_collection_t =
+    std::map<std::string,
+             cet::propagate_const<std::unique_ptr<ELdestination> > >;
 
-    // ----------------------------------------------------------------------
-    // ELadministrator:
-    // ----------------------------------------------------------------------
+  void log(ErrorObj & msg);
 
-    class ELadministrator {
-    public:
+  ELadministrator(ELadministrator const&) = delete;
+  ELadministrator& operator=(ELadministrator const&) = delete;
 
-      static ELadministrator* instance();
+  ELadministrator(ELadministrator&&) = delete;
+  ELadministrator& operator=(ELadministrator&&) = delete;
 
-      ELadministrator(ELadministrator const&) = delete;
-      ELadministrator& operator=(ELadministrator const&) = delete;
+  // ---  get/set fundamental properties:
+  //
+  void setApplication(std::string const& application);
+  void setHighSeverity(ELseverityLevel const sev) { highSeverity_ = sev; }
 
-      ELadministrator(ELadministrator&&) = delete;
-      ELadministrator& operator=(ELadministrator&&) = delete;
+  destination_collection_t const & destinations() const;
+  destination_collection_t & destinations();
 
-      // ---  get/set fundamental properties:
-      //
-      void setProcess(std::string const& process);
-      void setApplication(std::string const& application);
-      std::string swapProcess(std::string const& process);
-      void setContextSupplier(ELcontextSupplier const& supplier);
-      void setHighSeverity(ELseverityLevel const sev) { highSeverity_ = sev; }
-      ELcontextSupplier& swapContextSupplier(ELcontextSupplier& cs);
-      void setAbortThreshold(ELseverityLevel sev);
-      void setExitThreshold (ELseverityLevel sev);
-      void setMsgIsActive(bool const flag) { msgIsActive_ = flag; }
+  bool hasDestination(std::string const&) const;
 
-      ELcontextSupplier const& getContextSupplier() const;
-      ELcontextSupplier& context() const;
-      ErrorObj& msg() { return msg_; }
+  // ---  handle severity information:
+  //
+  ELseverityLevel checkSeverity();
+  int severityCount(ELseverityLevel sev) const;
+  int severityCount(ELseverityLevel from, ELseverityLevel to) const;
+  void resetSeverityCount(ELseverityLevel sev);
+  void resetSeverityCount(ELseverityLevel from, ELseverityLevel to);
+  void resetSeverityCount(); // reset all
 
-      std::map<std::string, std::unique_ptr<ELdestination>> const& destinations();
-      bool hasDestination(std::string const&);
+  // ---  apply the following actions to all attached destinations:
+  //
+  void finish();
 
-      // ---  handle severity information:
-      //
-      ELseverityLevel checkSeverity();
-      int severityCount(ELseverityLevel sev) const;
-      int severityCount(ELseverityLevel from, ELseverityLevel to) const;
-      void resetSeverityCount(ELseverityLevel sev);
-      void resetSeverityCount(ELseverityLevel from, ELseverityLevel to);
-      void resetSeverityCount(); // reset all
+  std::string const& application() const;
+  ELseverityLevel abortThreshold() const;
+  ELseverityLevel exitThreshold() const;
+  ELseverityLevel highSeverity() const;
+  std::string const& hostname() const;
+  std::string const& hostaddr() const;
+  long pid() const;
 
-      // ---  apply the following actions to all attached destinations:
-      //
-      void finish();
+  void incrementSeverityCount(int const sev) { ++severityCounts_[sev]; }
 
-      std::string const& application() const;
-      ELseverityLevel abortThreshold() const;
-      ELseverityLevel exitThreshold() const;
-      ELseverityLevel highSeverity() const;
-      std::string const& hostname() const;
-      std::string const& hostaddr() const;
-      long pid() const;
-      std::string const& process() const;
-      bool msgIsActive() const { return msgIsActive_; }
+  // ---  furnish/recall destinations:
+  //
+  template <typename DEST>
+  std::enable_if_t<std::is_base_of<ELdestination,DEST>::value, ELdestination&>
+  attach(std::string const& outputId,
+         std::unique_ptr<DEST>&& dest)
+    {
+      return *(destinations_[outputId] = std::move(dest));
+      // If you don't like the above, an alternative is something equivalent to:
+      //   return *destinations_.emplace(outputId, std::move(dest)).first->second;
+    }
 
-      void incrementSeverityCount(int const sev) { ++severityCounts_[sev]; }
+private:
 
-      virtual ~ELadministrator();
+  ELadministrator();
 
-      // ---  actions on messages:
-      //
-      void finishMsg();
-      void clearMsg();
+  std::array<int, ELseverityLevel::nLevels> severityCounts_ {{0}}; // fill by aggregation
+  ELseverityLevel highSeverity_ {ELseverityLevel::ELsev_zeroSeverity};
 
-      // ---  furnish/recall destinations:
-      //
-      template <typename DEST>
-      std::enable_if_t<std::is_base_of<ELdestination,DEST>::value, ELdestination&>
-      attach(std::string const& outputId,
-             std::unique_ptr<DEST>&& dest)
-      {
-        return *(destinations_[outputId] = std::move(dest));
-        // If you don't like the above, an alternative is something equivalent to:
-        //   return *destinations_.emplace(outputId, std::move(dest)).first->second;
-      }
+  std::string hostname_ {};
+  std::string hostaddr_ {};
+  std::string application_ {};
+  long pid_ {};
 
-    private:
+  destination_collection_t destinations_ {};
 
-      ELadministrator();
+  template <typename F>
+  void for_all_destinations(F f)
+    {
+      for (auto& pr : destinations_)
+        f(*pr.second);
+    }
 
-      static ELadministrator* instance_;
+};  // ELadministrator
 
-      std::string process_ {};
-      std::unique_ptr<ELcontextSupplier> context_;
-      std::array<int, ELseverityLevel::nLevels> severityCounts_ {{0}}; // fill by aggregation
-      ELseverityLevel abortThreshold_ {ELseverityLevel::ELsev_abort};
-      ELseverityLevel exitThreshold_ {ELseverityLevel::ELsev_highestSeverity};
-      ELseverityLevel highSeverity_ {ELseverityLevel::ELsev_zeroSeverity};
+inline
+auto
+mf::service::ELadministrator::destinations() const
+    -> destination_collection_t const &
+{
+  return destinations_;
+}
 
-      ErrorObj msg_ {ELseverityLevel::ELsev_unspecified, ""};
-      bool msgIsActive_ {false};
+inline
+auto
+mf::service::ELadministrator::destinations()
+    -> destination_collection_t &
+{
+  return destinations_;
+}
 
-      std::string hostname_ {};
-      std::string hostaddr_ {};
-      std::string application_ {};
-      long pid_ {};
+inline
+std::string const &
+mf::service::ELadministrator::hostname() const { return hostname_; }
 
-      std::map<std::string, std::unique_ptr<ELdestination>> destinations_;
+inline
+std::string const &
+mf::service::ELadministrator::hostaddr() const { return hostaddr_; }
 
-      template <typename F>
-      void for_all_destinations(F f)
-      {
-        for (auto& pr : destinations_)
-          f(*pr.second);
-      }
+inline
+std::string const &
+mf::service::ELadministrator::application() const { return application_; }
 
-    };  // ELadministrator
+inline
+long
+mf::service::ELadministrator::pid() const { return pid_;}
 
-  } // end of namespace service
-} // end of namespace mf
+inline
+mf::ELseverityLevel
+mf::service::ELadministrator::highSeverity() const  {
+  return highSeverity_;
+}
 
+inline
+void
+mf::service::ELadministrator::
+finish()
+{
+  for_all_destinations([](auto& d){ d.finish(); });
+}
 
 #endif /* messagefacility_MessageService_ELadministrator_h */
 

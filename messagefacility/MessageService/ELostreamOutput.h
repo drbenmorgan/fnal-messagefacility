@@ -11,8 +11,6 @@
 #include "cetlib/ostream_handle.h"
 #include "messagefacility/Utilities/ELextendedID.h"
 #include "messagefacility/MessageService/ELdestination.h"
-#include "messagefacility/MessageService/ELcontextSupplier.h"
-#include "messagefacility/MessageService/MsgContext.h"
 
 #include <memory>
 
@@ -27,10 +25,10 @@ namespace mf {
     public:
 
       ELostreamOutput(fhicl::ParameterSet const& psetFormat,
-                      std::unique_ptr<cet::ostream_handle>,
+                      cet::ostream_handle&&,
                       bool emitAtStart = false);
 
-      ELostreamOutput(std::unique_ptr<cet::ostream_handle>,
+      ELostreamOutput(cet::ostream_handle&&,
                       bool emitAtStart = false);
 
       // Disable copy c'tor/assignment
@@ -40,15 +38,14 @@ namespace mf {
     private:
 
       void routePayload(std::ostringstream const& oss,
-                        mf::ErrorObj const& msg,
-                        ELcontextSupplier const&) override;
-      void summarization(std::string const& fullTitle, std::string const& sumLines, ELcontextSupplier const& ) override;
+                        mf::ErrorObj const& msg) override;
+      void summarization(std::string const& fullTitle, std::string const& sumLines) override;
 
-      void changeFile(std::ostream& os, ELcontextSupplier const&) override;
-      void changeFile(std::string const& filename, ELcontextSupplier const&) override;
-      void flush(ELcontextSupplier const&) override;
+      void changeFile(std::ostream& os) override;
+      void changeFile(std::string const& filename) override;
+      void flush() override;
 
-      std::unique_ptr<cet::ostream_handle> osh;
+      cet::ostream_handle osh;
       mf::ELextendedID xid {};
 
     };  // ELostreamOutput

@@ -1,5 +1,5 @@
-#ifndef messagefacility_Auxiliaries_ELlimitsTable_h
-#define messagefacility_Auxiliaries_ELlimitsTable_h
+#ifndef messagefacility_Utilities_ELlimitsTable_h
+#define messagefacility_Utilities_ELlimitsTable_h
 
 
 // ----------------------------------------------------------------------
@@ -43,8 +43,6 @@ namespace mf {
     // ----------------------------------------------------------------------
 
     class ELdestination;
-    class ELoutput;
-    class ELfwkJobReport;
 
     // ----------------------------------------------------------------------
     // ELlimitsTable:
@@ -53,8 +51,6 @@ namespace mf {
     class ELlimitsTable  {
 
       friend class ELdestination;
-      friend class ELoutput;
-      friend class ELfwkJobReport;
 
     public:
 
@@ -80,7 +76,6 @@ namespace mf {
       int wildcardLimit {-1};
       int wildcardInterval {-1};
       int wildcardTimespan {-1};
-      int tableLimit {-1};
 
       ELmap_limits limits {};
       ELmap_counts counts {};
@@ -95,7 +90,7 @@ namespace mf {
 }        // end of namespace mf
 
 
-#endif /* messagefacility_Auxiliaries_ELlimitsTable_h */
+#endif /* messagefacility_Utilities_ELlimitsTable_h */
 
 // Local Variables:
 // mode: c++

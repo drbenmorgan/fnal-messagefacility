@@ -1,4 +1,4 @@
-#include "messagefacility/MessageService/plugins/formatFilename.h"
+#include "messagefacility/plugins/formatFilename.h"
 
 #include "fhiclcpp/ParameterSet.h"
 

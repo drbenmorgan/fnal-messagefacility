@@ -23,23 +23,26 @@ namespace mf {
 
     std::string legacy( timeval const & t )
     {
+      struct tm timebuf;
       char ts[SIZE];
-      strftime( ts, sizeof(ts), "%d-%b-%Y %H:%M:%S %Z", localtime(&t.tv_sec) );
+      strftime( ts, sizeof(ts), "%d-%b-%Y %H:%M:%S %Z", localtime_r(&t.tv_sec, &timebuf) );
       return std::string(ts);
     }
 
     std::string legacy_ms( timeval const & t )
     {
+      struct tm timebuf;
       char tmpts[SIZE], ts[SIZE];
-      strftime( tmpts, sizeof(tmpts), "%d-%b-%Y %H:%M:%S.%%03u %Z", localtime(&t.tv_sec) );
+      strftime( tmpts, sizeof(tmpts), "%d-%b-%Y %H:%M:%S.%%03u %Z", localtime_r(&t.tv_sec, &timebuf) );
       snprintf( ts   , sizeof(ts)   , tmpts,(unsigned)(t.tv_usec/1000) );
       return std::string(ts);
     }
 
     std::string user( timeval const & t, std::string const& user_supplied_format )
     {
+      struct tm timebuf;
       char ts[SIZE];
-      strftime( ts, sizeof(ts), user_supplied_format.data() , localtime(&t.tv_sec) );
+      strftime( ts, sizeof(ts), user_supplied_format.data() , localtime_r(&t.tv_sec, &timebuf) );
       return std::string(ts);
     }
 

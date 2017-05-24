@@ -1,20 +1,10 @@
 #include "messagefacility/MessageService/MessageLoggerQ.h"
 #include "messagefacility/MessageService/AbstractMLscribe.h"
-#include "messagefacility/MessageService/ConfigurationHandshake.h"
 #include "messagefacility/Utilities/exception.h"
 #include "messagefacility/Utilities/ErrorObj.h"
 
 #include <cstring>
 #include <iostream>
-
-//////////////////////////////////////////////////////////////////////
-//
-// DO NOT replace the internal memcpy() calls by assignment or by
-// any other form of copying unless you first understand in depth
-// all of the alignment issues involved
-//
-//////////////////////////////////////////////////////////////////////
-
 
 using namespace mf;
 using namespace mf::service;
@@ -31,30 +21,25 @@ namespace {
   };
 
   void
-  StandAloneScribe::runCommand(OpCode const opcode, void* operand) {
+  StandAloneScribe::runCommand(OpCode const opcode, void* const operand) {
     //even though we don't print, have to clean up memory
     switch (opcode) {
     case LOG_A_MESSAGE: {
       mf::ErrorObj* errorobj_p = static_cast<mf::ErrorObj*>(operand);
-      if (MessageLoggerQ::ignore(errorobj_p->xid().severity, errorobj_p->xid().id)) {
+      if (MessageLoggerQ::ignore(errorobj_p->xid().severity(), errorobj_p->xid().id())) {
         delete errorobj_p;
         break;
       }
       if (errorobj_p->is_verbatim()) {
         std::cerr<< errorobj_p->fullText() << std::endl;
       } else {
-        std::cerr<< "%MSG" << errorobj_p->xid().severity.getSymbol()
-                 << " " << errorobj_p->xid().id << ": \n"
+        std::cerr<< "%MSG" << errorobj_p->xid().severity().getSymbol()
+                 << " " << errorobj_p->xid().id() << ": \n"
                  << errorobj_p->fullText() << "\n"
                  << "%MSG"
                  << std::endl;
       }
       delete errorobj_p;
-      break;
-    }
-    case JOBREPORT: {
-      auto string_p = static_cast<std::string*>(operand);
-      delete string_p;
       break;
     }
     default:
@@ -146,27 +131,17 @@ MessageLoggerQ::MLqSUM()
 }
 
 void
-MessageLoggerQ::MLqJOB(std::string* j)
-{
-  simpleCommand(JOBREPORT, static_cast<void*>(j));
-}
-
-void
 MessageLoggerQ::MLqFLS()
 {
-  // The ConfigurationHandshake, developed for synchronous CFG, contains a
-  // place to convey exception information.  FLS does not need this, nor does
-  // it need the parameter set, but we are reusing ConfigurationHandshake
-  // rather than reinventing the mechanism.
   handshakedCommand(FLUSH_LOG_Q, nullptr, "FLS");
 }
 
-mf::ELseverityLevel MessageLoggerQ::threshold ("WARNING");
+mf::ELseverityLevel MessageLoggerQ::threshold (ELseverityLevel::ELsev_warning);
 std::set<std::string> MessageLoggerQ::squelchSet;
 
-void MessageLoggerQ::standAloneThreshold(std::string const& severity)
+void MessageLoggerQ::standAloneThreshold(ELseverityLevel const severity)
 {
-  threshold = mf::ELseverityLevel(severity);
+  threshold = severity;
 }
 
 void MessageLoggerQ::squelch(std::string const& category)
@@ -174,10 +149,15 @@ void MessageLoggerQ::squelch(std::string const& category)
   squelchSet.insert(category);
 }
 
-bool MessageLoggerQ::ignore (mf::ELseverityLevel const& severity,
+bool MessageLoggerQ::ignore (mf::ELseverityLevel const severity,
                              std::string const& category)
 {
   if (severity < threshold) return true;
   if (squelchSet.count(category) > 0) return true;
   return false;
+}
+
+void MessageLoggerQ::setApplication(std::string const & application)
+{
+  mlscribe_ptr->setApplication(application);
 }

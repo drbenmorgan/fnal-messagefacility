@@ -1,9 +1,8 @@
 #include "cetlib/PluginTypeDeducer.h"
 #include "fhiclcpp/ParameterSet.h"
-
 #include "messagefacility/MessageService/ELdestination.h"
 #include "messagefacility/MessageService/ELstatistics.h"
-#include "messagefacility/MessageService/plugins/formatFilename.h"
+#include "messagefacility/plugins/formatFilename.h"
 
 #include <fstream>
 #include <iostream>

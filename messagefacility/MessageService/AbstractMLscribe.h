@@ -17,7 +17,10 @@ namespace mf  {
       AbstractMLscribe & operator = (AbstractMLscribe const &) = delete;
 
       // ---  methods needed for logging
-      virtual void  runCommand(OpCode opcode, void * operand) = 0;
+      virtual void runCommand(OpCode opcode, void * operand) = 0;
+
+      // Optional function to set application name.
+      virtual void setApplication(std::string const & application [[gnu::unused]]) { }
     };  // AbstractMLscribe
 
   }   // end of namespace service

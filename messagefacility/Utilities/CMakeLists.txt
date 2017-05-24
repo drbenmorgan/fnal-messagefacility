@@ -18,9 +18,6 @@ cet_make_library(
   formatTime.cc
   MessageFacilityMsg.cc
   SingleConsumerQ.cc
-  tinyxml.cc
-  tinyxmlerror.cc
-  tinyxmlparser.cc
   UnixSignalHandlers.cc
   LIBRARIES
   cetlib

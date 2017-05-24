@@ -3,37 +3,40 @@
 
 #include "cetlib/BasicPluginFactory.h"
 #include "cetlib/exempt_ptr.h"
+#include "cetlib/propagate_const.h"
+#include "cetlib/sqlite/ConnectionFactory.h"
 #include "fhiclcpp/ParameterSet.h"
+#include "messagefacility/MessageService/AbstractMLscribe.h"
 #include "messagefacility/MessageService/ELadministrator.h"
 #include "messagefacility/MessageService/ELdestination.h"
 #include "messagefacility/MessageService/ELdestConfigCheck.h"
-#include "messagefacility/MessageService/ErrorLog.h"
-#include "messagefacility/MessageService/MsgContext.h"
 #include "messagefacility/MessageService/MessageLoggerQ.h"
-#include "messagefacility/MessageService/AbstractMLscribe.h"
 
+#include <atomic>
 #include <iosfwd>
 #include <vector>
 #include <map>
 #include <memory>
 
+#include "tbb/concurrent_queue.h"
+
 namespace mf {
   namespace service {
 
-    class ThreadQueue;
-    class ErrorLog;
-
     class MessageLoggerScribe : public AbstractMLscribe {
     public:
-
       ~MessageLoggerScribe();
 
-      /// --- If queue is NULL, this sets singleThread true
-      explicit MessageLoggerScribe(cet::exempt_ptr<ThreadQueue> queue);
+      MessageLoggerScribe();
+
+      MessageLoggerScribe(MessageLoggerScribe const &) = delete;
+      MessageLoggerScribe & operator = (MessageLoggerScribe const &) = delete;
 
       // --- receive and act on messages:
-      void run();
       void runCommand(OpCode opcode, void* operand) override;
+
+      // Set current application name
+      void setApplication(std::string const & application) override;
 
     private:
 
@@ -46,32 +49,25 @@ namespace mf {
 
       // --- handle details of configuring via a ParameterSet:
       void configure_errorlog();
-      void configure_fwkJobReports();
 
       void fetchDestinations();
       void makeDestinations(fhicl::ParameterSet const& dests,
                             ELdestConfig::dest_config const config);
 
-      // --- util function to trim leading and trailing whitespaces from a string
-      std::string trim(std::string const& src);
-
       // --- other helpers
-      void parseCategories(std::string const& s, std::vector<std::string>& cats);
+      std::vector<std::string> parseCategories(std::string const& s);
 
       // --- data:
-      cet::exempt_ptr<ELadministrator> admin_ {ELadministrator::instance()};
-      std::unique_ptr<fhicl::ParameterSet> jobConfig_ {nullptr};
-      std::unique_ptr<ErrorLog> errorLog_ {std::make_unique<ErrorLog>()};
+      cet::sqlite::ConnectionFactory dbConnectionFactory_ {};
+      cet::propagate_const<std::unique_ptr<ELadministrator>> admin_;
+      cet::propagate_const<std::unique_ptr<fhicl::ParameterSet>> jobConfig_ {nullptr};
       ELdestination& earlyDest_;
-      MsgContext msgContext_;
-      std::string jobReportOption_ {};
       bool cleanSlateConfiguration_ {true};
       bool active_ {true};
-      bool singleThread_;
-      bool done_ {false};
-      bool purgeMode_ {false};
-      int  count_ {};
-      cet::exempt_ptr<ThreadQueue> queue_;
+      std::atomic<bool> purgeMode_ {false};
+      std::atomic<int> count_ {0};
+      std::atomic<bool> messageBeingSent_ {false};
+      tbb::concurrent_queue<ErrorObj*> waitingMessages_ {};
 
       cet::BasicPluginFactory pluginFactory_ {"mfPlugin"};
       cet::BasicPluginFactory pluginStatsFactory_ {"mfStatsPlugin"};
@@ -86,10 +82,10 @@ namespace mf {
                                 ELdestConfig::dest_config const config,
                                 bool const should_throw);
 
-      std::unique_ptr<ELdestination>  makePlugin_(cet::BasicPluginFactory& pluginFactory,
-                                                  std::string const& libspec,
-                                                  std::string const& psetname,
-                                                  fhicl::ParameterSet const& pset);
+      std::unique_ptr<ELdestination> makePlugin_(cet::BasicPluginFactory& pluginFactory,
+                                                 std::string const& libspec,
+                                                 std::string const& psetname,
+                                                 fhicl::ParameterSet const& pset);
 
     };  // MessageLoggerScribe
 

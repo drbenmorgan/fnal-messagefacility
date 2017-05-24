@@ -4,6 +4,7 @@
 //
 //======================================================================
 
+#include "messagefacility/MessageService/MessageDrop.h"
 #include "messagefacility/MessageService/ELdestConfigCheck.h"
 #include "messagefacility/MessageService/ELdestination.h"
 
@@ -48,11 +49,20 @@ namespace mf {
         auto const& dest_type = pset.get<std::string>("type","file");
         ELdestConfig::checkType(dest_type, ELdestConfig::STATISTICS);
       }
+
+      // Modify automatic suppression if necessary.
+      if (threshold <= ELseverityLevel::ELsev_success) 
+      { MessageDrop::debugAlwaysSuppressed = false; }
+      if (threshold <= ELseverityLevel::ELsev_info) 
+      { MessageDrop::infoAlwaysSuppressed = false; }
+      if (threshold <= ELseverityLevel::ELsev_warning) 
+      { MessageDrop::warningAlwaysSuppressed = false; }
+
       configure(pset);
     }
 
     //=============================================================================
-    void ELdestination::emit(std::ostream& os, std::string const& s, bool const nl)
+    void ELdestination::emitToken(std::ostream& os, std::string const& s, bool const nl)
     {
       if (s.empty()) {
         if (nl)  {
@@ -104,14 +114,14 @@ namespace mf {
         os << s;
       }
 
-    }  // emit()
+    }  // emitToken()
 
     //=============================================================================
     bool ELdestination::passLogStatsThreshold(mf::ErrorObj const& msg) const
     {
       // See if this message is to be counted.
-      if (msg.xid().severity < threshold) return false;
-      if (thisShouldBeIgnored(msg.xid().module)) return false;
+      if (msg.xid().severity() < threshold) return false;
+      if (thisShouldBeIgnored(msg.xid().module())) return false;
 
       return true;
     }
@@ -123,16 +133,15 @@ namespace mf {
 
       // See if this message is to be acted upon, and add it to limits table
       // if it was not already present:
-      if (xid.severity < threshold)  return false;
-      if (xid.severity < ELsevere && thisShouldBeIgnored(xid.module)) return false;
-      if (xid.severity < ELsevere && !stats.limits.add(xid)) return false;
+      if (xid.severity() < threshold)  return false;
+      if (xid.severity() < ELsevere && thisShouldBeIgnored(xid.module())) return false;
+      if (xid.severity() < ELsevere && !stats.limits.add(xid)) return false;
 
       return true;
     }
 
     void ELdestination::fillPrefix(std::ostringstream& oss,
-                                   mf::ErrorObj const& msg,
-                                   ELcontextSupplier const& contextSupplier)
+                                   mf::ErrorObj const& msg)
     {
       if (msg.is_verbatim()) return;
 
@@ -143,77 +152,72 @@ namespace mf {
       auto const& xid = msg.xid();
 
       charsOnLine = 0;
-      emit(oss, preamble);
-      emit(oss, xid.severity.getSymbol());
-      emit(oss, " ");
-      emit(oss, xid.id);
-      emit(oss, msg.idOverflow());
-      emit(oss, ": ");
+      emitToken(oss, preamble);
+      emitToken(oss, xid.severity().getSymbol());
+      emitToken(oss, " ");
+      emitToken(oss, xid.id());
+      emitToken(oss, msg.idOverflow());
+      emitToken(oss, ": ");
 
       // Output serial number of message:
       //
       if (format.want(SERIAL)) {
         std::ostringstream s;
         s << msg.serial();
-        emit(oss, "[serial #" + s.str() + "] ");
+        emitToken(oss, "[serial #" + s.str() + "] ");
       }
 
       // Provide further identification:
       //
       bool needAspace = true;
       if (format.want(EPILOGUE_SEPARATE)) {
-        if (xid.module.length()+xid.subroutine.length() > 0) {
-          emit(oss,"\n");
+        if (xid.module().length()+xid.subroutine().length() > 0) {
+          emitToken(oss,"\n");
           needAspace = false;
         }
         else if (format.want(TIMESTAMP) && !format.want(TIME_SEPARATE)) {
-          emit(oss,"\n");
+          emitToken(oss,"\n");
           needAspace = false;
         }
       }
-      if (format.want(MODULE) && (xid.module.length() > 0)) {
+      if (format.want(MODULE) && (xid.module().length() > 0)) {
         if (needAspace) {
-          emit(oss," ");
+          emitToken(oss," ");
           needAspace = false;
         }
-        emit(oss, xid.module + " ");
+        emitToken(oss, xid.module() + " ");
       }
-      if (format.want(SUBROUTINE) && (xid.subroutine.length() > 0)) {
+      if (format.want(SUBROUTINE) && (xid.subroutine().length() > 0)) {
         if (needAspace) {
-          emit(oss," ");
+          emitToken(oss," ");
           needAspace = false;
         }
-        emit(oss, xid.subroutine + "() ");
+        emitToken(oss, xid.subroutine() + "() ");
       }
 
       // Provide time stamp:
       //
       if (format.want(TIMESTAMP))  {
         if (format.want(TIME_SEPARATE))  {
-          emit(oss, "\n");
+          emitToken(oss, "\n");
           needAspace = false;
         }
         if (needAspace) {
-          emit(oss," ");
+          emitToken(oss," ");
           needAspace = false;
         }
-        emit(oss, format.timestamp(msg.timestamp()) + " ");
+        emitToken(oss, format.timestamp(msg.timestamp()) + " ");
       }
 
       // Provide the context information:
       //
       if (format.want(SOME_CONTEXT)) {
         if (needAspace) {
-          emit(oss," ");
+          emitToken(oss," ");
           needAspace = false;
         }
-        if (format.want(FULL_CONTEXT)) {
-          emit(oss, contextSupplier.fullContext());
-        } else {
-          emit(oss, contextSupplier.context());
-        }
+        emitToken(oss, msg.context());
       }
-
     }
 
     //=============================================================================
@@ -231,24 +235,24 @@ namespace mf {
         // The first four items are { " ", "<FILENAME>", ":", "<LINE>" }
         while (it != usrMsgStart) {
           if (!it->compare(" ") && !std::next(it)->compare("--")) {
-            // Do not emit if " --:0" is the match
+            // Do not emitToken if " --:0" is the match
             std::advance(it,4);
           }
           else {
             // Emit if <FILENAME> and <LINE> are meaningful
-            emit(oss, *it++);
+            emitToken(oss, *it++);
           }
         }
 
         // Check for user-requested line breaks
-        if (format.want(NO_LINE_BREAKS)) emit(oss, " ==> ");
-        else emit(oss, "", true);
+        if (format.want(NO_LINE_BREAKS)) emitToken(oss, " ==> ");
+        else emitToken(oss, "", true);
       }
 
       // For verbatim (and user-supplied) messages, just print the contents
       auto const end = msg.items().cend();
       for (; it != end; ++it) {
-        emit(oss, *it);
+        emitToken(oss, *it);
       }
 
     }
@@ -258,15 +262,14 @@ namespace mf {
                                    mf::ErrorObj const& msg)
     {
       if (!msg.is_verbatim() && !format.want(NO_LINE_BREAKS)) {
-        emit(oss,"\n%MSG");
+        emitToken(oss,"\n%MSG");
       }
       oss << '\n';
     }
 
     //=============================================================================
     void ELdestination::routePayload(std::ostringstream const&,
-                                     mf::ErrorObj const&,
-                                     ELcontextSupplier const&)
+                                     mf::ErrorObj const&)
     {}
 
     // ----------------------------------------------------------------------
@@ -274,21 +277,21 @@ namespace mf {
     // ----------------------------------------------------------------------
 
     //=============================================================================
-    void ELdestination::log(mf::ErrorObj& msgObj, ELcontextSupplier const& contextSupplier)
+    void ELdestination::log(mf::ErrorObj& msgObj)
     {
       if (!passLogMsgThreshold(msgObj)) return;
 
       std::ostringstream payload;
-      fillPrefix(payload, msgObj, contextSupplier);
+      fillPrefix(payload, msgObj);
       fillUsrMsg(payload, msgObj);
       fillSuffix(payload, msgObj);
 
-      routePayload(payload, msgObj, contextSupplier);
+      routePayload(payload, msgObj);
 
       msgObj.setReactedTo(true);
 
       if (enableStats && passLogStatsThreshold(msgObj))
-        stats.log(msgObj, contextSupplier);
+        stats.log(msgObj);
     }
 
     // Each of the functions below must be overridden by any
@@ -341,7 +344,7 @@ namespace mf {
       ignoreModule(moduleName);
     }
 
-    void ELdestination::summary(ELcontextSupplier const& contextSupplier)
+    void ELdestination::summary()
     {
       if (enableStats && stats.updatedStats && stats.printAtTermination)
         {
@@ -349,14 +352,14 @@ namespace mf {
           payload << "\n=============================================\n\n"
                   << "MessageLogger Summary\n"
                   << stats.formSummary();
-          routePayload(payload, mf::ErrorObj{ELzeroSeverity, noosMsg}, contextSupplier);
+          routePayload(payload, mf::ErrorObj{ELzeroSeverity, noosMsg});
         }
     }
 
     void ELdestination::summary(std::ostream& os, std::string const& title)
     {
       os << preamble
-         << ELwarning2.getSymbol() << " "
+         << ELwarning.getSymbol() << " "
          << noSummaryMsg << " "
          << hereMsg << '\n'
          << title << '\n';
@@ -369,9 +372,6 @@ namespace mf {
       s = ss.str();
     }
 
-    void ELdestination::summaryForJobReport(std::map<std::string, double>&)
-    {}
-
     void ELdestination::finish()
     {}
 
@@ -381,34 +381,32 @@ namespace mf {
     }
 
     void ELdestination::summarization(std::string const& title,
-                                      std::string const& /*sumfines*/,
-                                      ELcontextSupplier const& contextSupplier)
+                                      std::string const& /*sumfines*/)
     {
-      mf::ErrorObj msg {ELwarning2, noSummarizationMsg};
+      mf::ErrorObj msg {ELwarning, noSummarizationMsg};
       msg << hereMsg << '\n' << title;
-      log(msg, contextSupplier);
+      log(msg);
     }
 
-    void ELdestination::changeFile(std::ostream&, ELcontextSupplier const& contextSupplier)
+    void ELdestination::changeFile(std::ostream&)
     {
-      mf::ErrorObj msg {ELwarning2, noosMsg};
+      mf::ErrorObj msg {ELwarning, noosMsg};
       msg << notELoutputMsg;
-      log(msg, contextSupplier);
+      log(msg);
     }
 
-    void ELdestination::changeFile(std::string const& filename,
-                                   ELcontextSupplier const& contextSupplier)
+    void ELdestination::changeFile(std::string const& filename)
     {
-      mf::ErrorObj msg {ELwarning2, noosMsg};
+      mf::ErrorObj msg {ELwarning, noosMsg};
       msg << notELoutputMsg << '\n' << "file requested is" << filename;
-      log(msg, contextSupplier);
+      log(msg);
     }
 
-    void ELdestination::flush(ELcontextSupplier const& contextSupplier)
+    void ELdestination::flush()
     {
-      mf::ErrorObj msg {ELwarning2, noosMsg};
+      mf::ErrorObj msg {ELwarning, noosMsg};
       msg << "cannot flush()";
-      log(msg, contextSupplier);
+      log(msg);
     }
 
     // ----------------------------------------------------------------------

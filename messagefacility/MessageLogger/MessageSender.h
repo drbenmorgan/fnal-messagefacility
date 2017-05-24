@@ -3,22 +3,19 @@
 
 #include "messagefacility/Utilities/ELseverityLevel.h"
 #include "messagefacility/Utilities/ErrorObj.h"
-#include "messagefacility/MessageLogger/ErrorSummaryEntry.h"
 
 #include <map>
 #include <memory>
 
 namespace mf {
 
-  using ErrorSummaryMapKey = ErrorSummaryEntry;
-  using ErrorSummaryMapIterator = std::map<ErrorSummaryMapKey, unsigned int>::iterator;
-
   class MessageSender {
   public:
-
+    MessageSender() = default;
     MessageSender(ELseverityLevel const sev,
                   std::string const& id,
-                  bool verbatim = false);
+                  bool verbatim = false,
+                  bool suppressed = false);
     ~MessageSender() noexcept;
 
     // ---  stream out the next part of a message:
@@ -30,17 +27,18 @@ namespace mf {
       return *this;
     }
 
-    // no copying:
-    MessageSender(MessageSender const&) = delete;
-    MessageSender& operator=(MessageSender const&) = delete;
+    // Movable.
+    MessageSender(MessageSender &&) = default;
+
+    // No copying or move assignment.
+    MessageSender & operator = (MessageSender &&) = delete;
+    MessageSender(MessageSender const &) = delete;
+    MessageSender & operator = (MessageSender const &) = delete;
+
+    bool isValid() const { return errorobj_p != nullptr; }
 
   private:
-
-    std::unique_ptr<ErrorObj> errorobj_p;
-
-    static bool errorSummaryIsBeingKept;
-    static bool freshError;
-    static std::map<ErrorSummaryMapKey, unsigned int> errorSummaryMap;
+    std::unique_ptr<ErrorObj> errorobj_p {nullptr};
 
   };  // MessageSender
 

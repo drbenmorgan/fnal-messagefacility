@@ -1,5 +1,5 @@
-#ifndef messagefacility_Auxiliaries_ErrorObj_h
-#define messagefacility_Auxiliaries_ErrorObj_h
+#ifndef messagefacility_Utilities_ErrorObj_h
+#define messagefacility_Utilities_ErrorObj_h
 
 #include "messagefacility/Utilities/ELlist.h"
 #include "messagefacility/Utilities/ELextendedID.h"
@@ -31,22 +31,21 @@ namespace mf {
     ErrorObj(ErrorObj const&); // this should go away as soon as we can use moveable streams!
     virtual ~ErrorObj() = default;
 
-    int                  serial() const;
-    ELextendedID const&  xid() const;
-    std::string const&   idOverflow() const;
-    timeval              timestamp() const;
+    int serial() const;
+    ELextendedID const& xid() const;
+    std::string const& idOverflow() const;
+    timeval timestamp() const;
     ELlist_string const& items() const;
-    bool                 reactedTo() const;
-    std::string          fullText() const;
-    std::string const&   context() const;
-    bool                 is_verbatim() const;
+    bool reactedTo() const;
+    std::string fullText() const;
+    std::string const& context() const;
+    bool is_verbatim() const;
 
     virtual void setSeverity  ( const ELseverityLevel sev );
     virtual void setID        ( const std::string & ID );
     virtual void setModule    ( const std::string & module );
     virtual void setSubroutine( const std::string & subroutine );
     virtual void setContext   ( const std::string & context );
-    virtual void setProcess   ( const std::string & proc );
     virtual void setHostName  ( const std::string & hostname );
     virtual void setHostAddr  ( const std::string & hostaddr );
     virtual void setApplication(const std::string & application );
@@ -75,10 +74,6 @@ namespace mf {
   private:
 
     ErrorObj() = default;
-
-    // ---  class-wide serial number stamper:
-    //
-    static int ourSerial;
 
     // ---  data members:
     //
@@ -111,12 +106,6 @@ namespace mf {
     return e.opltlt(s);
   }
 
-  // ----------------------------------------------------------------------
-  // Global functions:
-  // ----------------------------------------------------------------------
-
-  void endmsg(ErrorLog&);
-
 } // end of namespace mf
 
 
@@ -130,7 +119,7 @@ namespace mf {
 #include "messagefacility/Utilities/ErrorObj.icc"
 #undef ERROROBJ_ICC
 
-#endif /* messagefacility_Auxiliaries_ErrorObj_h */
+#endif /* messagefacility_Utilities_ErrorObj_h */
 
 // Local variables:
 // mode: c++
