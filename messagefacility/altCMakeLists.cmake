@@ -69,17 +69,20 @@ if(BUILD_TESTING)
   add_subdirectory(test)
 endif()
 
-# Handle installation of headers and support files here, as the current
-# structure of MF is awkward (and appears to only be so for legacy reasons)
-# - Awkwardnesses are:
-#   - Utilities built seperately, but no need to do so
-#   - MF_MessageLogger built in MessageLogger, but uses sources from
-#     MessageService
-#   - EldestinationTester in MessageService, but not part of Library
+#-----------------------------------------------------------------------
+# Installation
+#
+install(TARGETS MF_MessageLogger
+  EXPORT ${PROJECT_NAME}Targets
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  )
 
+# Handle installation of headers and support files here, as the current
 # Install directory for headers - do this way and here as we don't have
 # optional headers so no filtering/selection required, except
-# that we need to exclude several cruft directories
+# that we need to exclude the ELdestinationTester header and several cruft directories
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
   FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp" PATTERN "*.icc"
