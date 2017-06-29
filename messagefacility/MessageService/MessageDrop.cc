@@ -1,18 +1,56 @@
 #include "messagefacility/MessageService/MessageDrop.h"
+// vim: set sw=2 expandtab :
+
+#include "cetlib/exempt_ptr.h"
+#include "cetlib/propagate_const.h"
+#include "messagefacility/Utilities/exception.h"
 
 #include <limits>
 #include <map>
+#include <memory>
+#include <string>
 
+using namespace std;
 using namespace std::string_literals;
 
-class mf::MessageDrop::StringProducerWithPhase : public StringProducer {
-  using id_label_map_t = std::map<module_id_t, std::string>;
+namespace mf {
+
+bool
+MessageDrop::
+debugAlwaysSuppressed{false};
+
+bool
+MessageDrop::
+infoAlwaysSuppressed{false};
+
+bool
+MessageDrop::
+warningAlwaysSuppressed{false};
+
+string
+MessageDrop::
+jobMode{};
+
+unsigned char
+MessageDrop::
+messageLoggerScribeIsRunning = 0;
+
+class MessageDrop::StringProducerWithPhase : public StringProducer {
+
+private: // TYPES
+
+  using id_label_map_t = map<module_id_t, string>;
+
 public:
-  virtual std::string theContext() const override {
+
+  virtual
+  string
+  theContext() const override
+  {
     if (cache_.empty()) {
-      if (moduleID_ != std::numeric_limits<module_id_t>::max()) {
+      if (moduleID_ != numeric_limits<module_id_t>::max()) {
         auto nameLableIter = idLabelMap_.find(moduleID_);
-        if  (nameLableIter != idLabelMap_.end()) {
+        if (nameLableIter != idLabelMap_.end()) {
           cache_.assign(nameLableIter->second);
           cache_.append(phase_);
           return cache_;
@@ -28,108 +66,163 @@ public:
     }
     return cache_;
   }
-  void set(std::string const & name,
-           std::string const & label,
-           module_id_t moduleID,
-           std::string const & phase)  {
+
+  void
+  set(string const& name, string const& label, module_id_t moduleID, string const& phase)
+  {
     name_ = name;
     label_ = label;
     moduleID_ = moduleID;
     phase_ = "@"s + phase;
     cache_.clear();
   }
+
 private:
-  std::string phase_ {"@Early"s};
-  std::string name_ {};
-  std::string label_ {};
-  module_id_t moduleID_ {};
-  mutable std::string cache_ {};
-  mutable id_label_map_t idLabelMap_ {};
+
+  string
+  phase_{"@Early"s};
+
+  string
+  name_{};
+
+  string
+  label_{};
+
+  module_id_t
+  moduleID_{};
+
+  mutable
+  string
+  cache_{};
+
+  mutable
+  id_label_map_t
+  idLabelMap_{};
+
 };
 
-class mf::MessageDrop::StringProducerPath : public StringProducer {
+class MessageDrop::StringProducerPath : public StringProducer {
+
 public:
-  virtual std::string theContext() const override {
-    if ( cache_.empty() ) {
+
+  virtual
+  string
+  theContext() const override
+  {
+    if (cache_.empty()) {
       cache_.assign(phase_);
       cache_.append(" ");
       cache_.append(path_);
     }
     return cache_;
   }
-  void set(std::string const & phase, std::string const & path) {
+
+  void
+  set(string const& phase, string const& path)
+  {
     phase_ = phase;
     path_ = path;
     cache_.clear();
   }
+
 private:
-  std::string phase_  {"(NoPath)"};
-  std::string path_ {};
-  mutable std::string cache_;
+
+  string
+  phase_{"(NoPath)"};
+
+  string
+  path_{};
+
+  mutable
+  string
+  cache_;
+
 };
 
-class mf::MessageDrop::StringProducerSinglet : public StringProducer {
+class MessageDrop::StringProducerSinglet : public StringProducer {
+
 public:
-  virtual std::string theContext() const override {
+
+  virtual
+  string
+  theContext() const override
+  {
     return singlet_;
   }
-  void set(std::string const & sing) {singlet_ = sing; }
+
+  void
+  set(string const& singlet)
+  {
+    singlet_ = singlet;
+  }
+
 private:
-  std::string singlet_ {"Early"};
+
+  string
+  singlet_{"Early"};
+
 };
 
-mf::MessageDrop::MessageDrop()
-  : messageStreamID(std::numeric_limits<unsigned int>::max())
-  , spWithPhase_(new mf::MessageDrop::StringProducerWithPhase)
-  , spPath_(new mf::MessageDrop::StringProducerPath)
-  , spSinglet_(new mf::MessageDrop::StringProducerSinglet)
+MessageDrop::
+~MessageDrop()
+{
+}
+
+MessageDrop::
+MessageDrop()
+  : messageStreamID(numeric_limits<unsigned int>::max())
+  , spWithPhase_(new MessageDrop::StringProducerWithPhase)
+  , spPath_(new MessageDrop::StringProducerPath)
+  , spSinglet_(new MessageDrop::StringProducerSinglet)
   , moduleNameProducer_(spSinglet_.get())
 {
 }
 
-mf::MessageDrop *
-mf::MessageDrop::instance()
+MessageDrop*
+MessageDrop::
+instance()
 {
   thread_local static MessageDrop s_drop;
   return &s_drop;
 }
 
 void
-mf::MessageDrop::
-setModuleWithPhase(std::string const & name,
-                   std::string const & label,
-                   module_id_t moduleID,
-                   std::string const & phase)
+MessageDrop::
+setModuleWithPhase(string const& name, string const& label, module_id_t moduleID, string const& phase)
 {
   spWithPhase_->set(name, label, moduleID, phase);
   moduleNameProducer_ = spWithPhase_.get();
 }
 
 void
-mf::MessageDrop::
-setPath(std::string const & phase, std::string const & path)
+MessageDrop::
+setPath(string const& phase, string const& path)
 {
   spPath_->set(phase, path);
   moduleNameProducer_ = spPath_.get();
 }
 
 void
-mf::MessageDrop::
-setSinglet(std::string const & singlet)
+MessageDrop::
+setSinglet(string const& singlet)
 {
   spSinglet_->set(singlet);
   moduleNameProducer_ = spSinglet_.get();
 }
 
+string
+MessageDrop::
+moduleContext() const
+{
+  return moduleNameProducer_->theContext();
+}
+
 void
-mf::MessageDrop::
+MessageDrop::
 clear()
 {
   setSinglet(""s);
 }
 
-bool mf::MessageDrop::debugAlwaysSuppressed {false};
-bool mf::MessageDrop::infoAlwaysSuppressed {false};
-bool mf::MessageDrop::warningAlwaysSuppressed {false};
-std::string mf::MessageDrop::jobMode {};
-unsigned char mf::MessageDrop::messageLoggerScribeIsRunning = 0;
+} // namespace mf
+
