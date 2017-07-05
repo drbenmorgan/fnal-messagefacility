@@ -16,10 +16,6 @@ cet_make_library(
   UnixSignalHandlers.cc
   LIBRARIES
   cetlib
-  ${Boost_FILESYSTEM_LIBRARY}
-  ${Boost_REGEX_LIBRARY}
-  ${Boost_SYSTEM_LIBRARY}
-  ${Boost_THREAD_LIBRARY}
   -lpthread
   )
 
