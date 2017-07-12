@@ -28,7 +28,14 @@ namespace mf {
                       cet::ostream_handle&&,
                       bool emitAtStart = false);
 
+      ELostreamOutput(fhicl::ParameterSet const& psetFormat,
+                      std::ostream &,
+                      bool emitAtStart = false);
+
       ELostreamOutput(cet::ostream_handle&&,
+                      bool emitAtStart = false);
+
+      ELostreamOutput(std::ostream &,
                       bool emitAtStart = false);
 
       // Disable copy c'tor/assignment

@@ -26,6 +26,15 @@ namespace mf {
       : ELostreamOutput(fhicl::ParameterSet{}, std::move(osh), emitAtStart)
     {}
 
+    ELostreamOutput::ELostreamOutput(std::ostream& os, bool const emitAtStart)
+      : ELostreamOutput(fhicl::ParameterSet{}, cet::ostream_handle(os), emitAtStart)
+    {}
+
+    ELostreamOutput::ELostreamOutput(fhicl::ParameterSet const& pset,
+                                     std::ostream& os, bool const emitAtStart)
+      : ELostreamOutput(pset, cet::ostream_handle(os), emitAtStart)
+    {}
+
 
     ELostreamOutput::ELostreamOutput(fhicl::ParameterSet const& pset,
                                      cet::ostream_handle&& h,
