@@ -1,7 +1,5 @@
 // ----------------------------------------------------------------------
-//
 // MessageLoggerScribe.cc
-//
 // ----------------------------------------------------------------------
 
 #include "cetlib/container_algorithms.h"
@@ -78,8 +76,9 @@ namespace mf {
   namespace service {
 
     MessageLoggerScribe::MessageLoggerScribe()
-      : admin_(new ELadministrator)
-      , earlyDest_{admin_->attach("cerr_early", make_unique<ELostreamOutput>(cet::ostream_handle{std::cerr}, false))}
+      : earlyDest_{admin_.attach("cerr_early", make_unique<ELostreamOutput>(default_destinations_config(),
+                                                                            cet::ostream_handle{std::cerr},
+                                                                            false))}
     {}
 
     //=============================================================================
@@ -87,16 +86,16 @@ namespace mf {
     {
       // If there are any waiting message, finish them off
       ErrorObj* errorobj_p=nullptr;
-      while(waitingMessages_.try_pop(errorobj_p)) {
-        if(not purgeMode_) {
+      while (waitingMessages_.try_pop(errorobj_p)) {
+        if (!purgeMode_) {
           for (auto const & cat : parseCategories(errorobj_p->xid().id())) {
             errorobj_p->setID(cat);
-            admin_->log( *errorobj_p );  // route the message text
+            admin_.log( *errorobj_p );  // route the message text
           }
         }
         delete errorobj_p;
       }
-      admin_->finish();
+      admin_.finish();
     }
 
     //=============================================================================
@@ -115,7 +114,7 @@ namespace mf {
       case LOG_A_MESSAGE: {
         ErrorObj* errorobj_p = static_cast<ErrorObj*>(operand);
         try {
-          if(active_ && !purgeMode_) {
+          if (active_ && !purgeMode_) {
             log(errorobj_p);
           }
         }
@@ -125,7 +124,7 @@ namespace mf {
                     << " cet::exceptions, text = \n"
                     << e.what() << "\n";
 
-          if(count_ > 25) {
+          if (count_ > 25) {
             std::cerr << "MessageLogger will no longer be processing "
                       << "messages due to errors (entering purge mode).\n";
             purgeMode_ = true;
@@ -174,7 +173,7 @@ namespace mf {
 
     void MessageLoggerScribe::setApplication(std::string const & application)
     {
-      admin_->setApplication(application);
+      admin_.setApplication(application);
     }
 
     //=============================================================================
@@ -182,19 +181,19 @@ namespace mf {
     {
       bool expected = false;
       std::unique_ptr<ErrorObj> obj(errorobj_p);
-      if(messageBeingSent_.compare_exchange_strong(expected,true)) {
+      if (messageBeingSent_.compare_exchange_strong(expected,true)) {
         // Process the current message.
         for (auto const& cat : parseCategories(errorobj_p->xid().id())) {
           errorobj_p->setID(cat);
-          admin_->log(*errorobj_p);  // route the message text
+          admin_.log(*errorobj_p);  // route the message text
         }
         //process any waiting messages
         errorobj_p = nullptr;
-        while (not purgeMode_ and waitingMessages_.try_pop(errorobj_p)) {
+        while (!purgeMode_ && waitingMessages_.try_pop(errorobj_p)) {
           obj.reset(errorobj_p);
           for (auto const& cat : parseCategories(errorobj_p->xid().id())) {
             errorobj_p->setID(cat);
-            admin_->log(*errorobj_p);  // route the message text
+            admin_.log(*errorobj_p);  // route the message text
           }
         }
         messageBeingSent_.store(false);
@@ -219,7 +218,7 @@ namespace mf {
         LogError("preconfiguration") << preconfiguration_message;
       }
 
-      if (admin_->destinations().size() > 1) {
+      if (admin_.destinations().size() > 1) {
         LogWarning ("multiLogConfig")
           << "The message logger has been configured multiple times";
         cleanSlateConfiguration_ = false;
@@ -258,7 +257,7 @@ namespace mf {
       if (!jobConfig_->get_if_present("destinations.statistics", statDests))
         statDests = default_statistics_config(ordinaryDests);
 
-      // Initialize unversal suppression variables
+      // Initialize universal suppression variables
       MessageDrop::debugAlwaysSuppressed = true;
       MessageDrop::infoAlwaysSuppressed = true;
       MessageDrop::warningAlwaysSuppressed = true;
@@ -299,11 +298,11 @@ namespace mf {
           pluginFactory_;
 
         // attach the current destination, keeping a control handle to it:
-        ELdestination& dest = admin_->attach(outputId,
-                                             makePlugin_(plugin_factory,
-                                                         libspec,
-                                                         psetname,
-                                                         dest_pset));
+        ELdestination& dest = admin_.attach(outputId,
+                                            makePlugin_(plugin_factory,
+                                                        libspec,
+                                                        psetname,
+                                                        dest_pset));
 
         // Suppress the desire to do an extra termination summary just because
         // of end-of-job info message for statistics jobs
@@ -327,7 +326,7 @@ namespace mf {
 
       while (i <= npos) {
 
-        if(i==npos) {
+        if (i==npos) {
           cats.push_back(std::string());
           return cats;
         }
@@ -346,7 +345,7 @@ namespace mf {
     void
     MessageLoggerScribe::triggerStatisticsSummaries()
     {
-      for (auto& idDestPair : admin_->destinations()) {
+      for (auto& idDestPair : admin_.destinations()) {
         auto& dest = *idDestPair.second;
         dest.summary();
         if (dest.resetStats())
@@ -373,10 +372,10 @@ namespace mf {
         // destinations, but to throw for statistics destinations.
         if (should_throw) {
           throw mf::Exception{mf::errors::Configuration}
-            << "\n"
-            << " Output identifier: \"" << output_id << "\""
-            << " already specified within ordinary/statistics block in FHiCL file"
-            << "\n";
+          << "\n"
+               << " Output identifier: \"" << output_id << "\""
+               << " already specified within ordinary/statistics block in FHiCL file"
+               << "\n";
         }
       }
 
@@ -395,8 +394,8 @@ namespace mf {
       case ELdestConfig::STATISTICS  : config_str = "MessageLogger Statistics"; break;
       }
 
-      auto dest_pr = admin_->destinations().find(output_id);
-      if (dest_pr == admin_->destinations().end()) return false;
+      auto dest_pr = admin_.destinations().find(output_id);
+      if (dest_pr == admin_.destinations().end()) return false;
 
       // For duplicate destinations
       std::string const hrule {"\n============================================================================ \n"};

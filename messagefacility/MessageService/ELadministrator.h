@@ -1,25 +1,12 @@
 #ifndef messagefacility_MessageService_ELadministrator_h
 #define messagefacility_MessageService_ELadministrator_h
 
-// ----------------------------------------------------------------------
-//
-// ELadminstrator.h  provides the singleton class that the framework uses to
-//                   control logger behavior including attaching destinations.
-//              Includes the methods used by ErrorLog to evoke the logging
-//              behavior in the destinations owned by the ELadminstrator.
-//
-// ----------------------------------------------------------------------
-//
-// ELadministrator   The singleton logger class.  One does not instantiate
-//                   an ELadministrator.  Instead, do
-//                      ELadministrator * logger = ELadministrator::instance();
-//                   to get a pointer to the (unique) ELadministrator.
-//
-//      Only the framework should use ELadministrator directly.
-//      Physicist users get at it indirectly through using an ErrorLog
-//      set up in their Module class.
-//
-// ----------------------------------------------------------------------
+// ======================================================================
+// ELadminstrator provides the utilities the framework uses to control
+// logger behavior including attaching destinations.  Includes the
+// methods used by ErrorLog to evoke the logging behavior in the
+// destinations owned by the ELadminstrator.
+// ======================================================================
 
 #include "cetlib/exempt_ptr.h"
 #include "cetlib/propagate_const.h"
@@ -49,7 +36,7 @@ public:
     std::map<std::string,
              cet::propagate_const<std::unique_ptr<ELdestination> > >;
 
-  void log(ErrorObj & msg);
+  void log(ErrorObj& msg);
 
   ELadministrator(ELadministrator const&) = delete;
   ELadministrator& operator=(ELadministrator const&) = delete;
@@ -62,8 +49,8 @@ public:
   void setApplication(std::string const& application);
   void setHighSeverity(ELseverityLevel const sev) { highSeverity_ = sev; }
 
-  destination_collection_t const & destinations() const;
-  destination_collection_t & destinations();
+  destination_collection_t const& destinations() const;
+  destination_collection_t& destinations();
 
   bool hasDestination(std::string const&) const;
 
@@ -128,7 +115,7 @@ private:
 inline
 auto
 mf::service::ELadministrator::destinations() const
-    -> destination_collection_t const &
+    -> destination_collection_t const&
 {
   return destinations_;
 }
@@ -136,21 +123,21 @@ mf::service::ELadministrator::destinations() const
 inline
 auto
 mf::service::ELadministrator::destinations()
-    -> destination_collection_t &
+  -> destination_collection_t&
 {
   return destinations_;
 }
 
 inline
-std::string const &
+std::string const&
 mf::service::ELadministrator::hostname() const { return hostname_; }
 
 inline
-std::string const &
+std::string const&
 mf::service::ELadministrator::hostaddr() const { return hostaddr_; }
 
 inline
-std::string const &
+std::string const&
 mf::service::ELadministrator::application() const { return application_; }
 
 inline
@@ -159,14 +146,13 @@ mf::service::ELadministrator::pid() const { return pid_;}
 
 inline
 mf::ELseverityLevel
-mf::service::ELadministrator::highSeverity() const  {
+mf::service::ELadministrator::highSeverity() const {
   return highSeverity_;
 }
 
 inline
 void
-mf::service::ELadministrator::
-finish()
+mf::service::ELadministrator::finish()
 {
   for_all_destinations([](auto& d){ d.finish(); });
 }

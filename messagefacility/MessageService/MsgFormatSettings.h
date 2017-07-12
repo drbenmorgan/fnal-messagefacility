@@ -3,6 +3,7 @@
 
 #include "fhiclcpp/types/OptionalAtom.h"
 #include "fhiclcpp/types/Table.h"
+#include "messagefacility/Utilities/ConfigurationTable.h"
 #include "messagefacility/Utilities/formatTime.h"
 #include <bitset>
 #include <functional>
@@ -47,21 +48,7 @@ namespace mf {
 
       MsgFormatSettings();
 
-      template <typename T>
-      class Table {
-      public:
-        Table(fhicl::ParameterSet const& pset)
-          : config{pset, std::set<std::string>{}}
-        {}
-
-        auto operator()() const { return config(); }
-
-      private:
-        fhicl::Table<T> config;
-      };
-
-      using Parameters = Table<Config>;
-      MsgFormatSettings(Parameters const& pset);
+      MsgFormatSettings(Config const& config);
 
       bool want(flag_enum FLAG) const
       {

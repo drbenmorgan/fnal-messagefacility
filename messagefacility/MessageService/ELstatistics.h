@@ -10,8 +10,10 @@
 
 #include "cetlib/ostream_handle.h"
 #include "messagefacility/MessageService/ELdestination.h"
+#include "messagefacility/Utilities/ConfigurationTable.h"
 #include "messagefacility/Utilities/ELextendedID.h"
 #include "messagefacility/Utilities/ELmap.h"
+#include "fhiclcpp/types/TableFragment.h"
 
 #include <memory>
 #include <set>
@@ -25,9 +27,14 @@ namespace mf {
     class ELstatistics : public ELdestination {
     public:
 
-      ELstatistics(fhicl::ParameterSet const& pset);
-      ELstatistics(fhicl::ParameterSet const& pset, std::ostream& osp);
-      ELstatistics(fhicl::ParameterSet const& pset, std::string const& filename, bool const append);
+      struct Config {
+        fhicl::TableFragment<ELdestination::Config> elDestConfig;
+      };
+
+      using Parameters = WrappedTable<Config>;
+      ELstatistics(Parameters const& pset);
+      ELstatistics(Parameters const& pset, std::ostream& osp);
+      ELstatistics(Parameters const& pset, std::string const& filename, bool const append);
 
       void log(mf::ErrorObj& msg) override;
 
@@ -37,8 +44,8 @@ namespace mf {
 
     private:
 
-      void summary(std::ostream& os, std::string const& title="") override;
-      void summary(std::string& s, std::string const& title="") override;
+      void summary(std::ostream& os, std::string const& title = {}) override;
+      void summary(std::string& s, std::string const& title = {}) override;
       void summary() override;
       void noTerminationSummary() override;
 

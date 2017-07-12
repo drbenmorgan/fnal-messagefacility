@@ -26,39 +26,41 @@ namespace mf {
       std::string const noosMsg {"No ostream"};
       std::string const notELoutputMsg {"This destination is not an ELoutput"};
       std::string const preamble {"%MSG"};
-
-      auto length(fhicl::ParameterSet const& pset)
-      {
-        return pset.get<bool>("noLineBreaks", false) ? 32000ull : pset.get<std::size_t>("lineLength", 80ull);
-      }
     }
 
     //=============================================================================
-    ELdestination::ELdestination()
-      : ELdestination{fhicl::ParameterSet{}}
-    {}
+    // ELdestination::ELdestination()
+    //   : ELdestination{fhicl::ParameterSet{}}
+    // {}
 
-    ELdestination::ELdestination(fhicl::ParameterSet const& pset)
-      : stats{pset}
-      , format{pset.get<fhicl::ParameterSet>("format", {})}
-      , threshold{pset.get<std::string>("threshold", "INFO")}
-      , lineLength_{length(pset)}
-      , enableStats{pset.get<bool>("outputStatistics", false)}
+    ELdestination::ELdestination(Config const& pset)
+      : stats{pset.msgStatistics()}
+      , format{pset.format()}
+      , threshold{pset.threshold()}
+      , lineLength_{pset.noLineBreaks() ? 32000ull : pset.lineLength()}
+      , enableStats{pset.outputStatistics()}
     {
       if (enableStats) {
-        auto const& dest_type = pset.get<std::string>("type","file");
-        ELdestConfig::checkType(dest_type, ELdestConfig::STATISTICS);
+        ELdestConfig::checkType(pset.dest_type(), ELdestConfig::STATISTICS);
       }
 
       // Modify automatic suppression if necessary.
-      if (threshold <= ELseverityLevel::ELsev_success) 
+      if (threshold <= ELseverityLevel::ELsev_success)
       { MessageDrop::debugAlwaysSuppressed = false; }
-      if (threshold <= ELseverityLevel::ELsev_info) 
+      if (threshold <= ELseverityLevel::ELsev_info)
       { MessageDrop::infoAlwaysSuppressed = false; }
-      if (threshold <= ELseverityLevel::ELsev_warning) 
+      if (threshold <= ELseverityLevel::ELsev_warning)
       { MessageDrop::warningAlwaysSuppressed = false; }
 
-      configure(pset);
+      if (pset.noTimeStamps()) {
+        format.suppress(TIMESTAMP);
+      }
+
+      if (pset.useMilliseconds()) {
+        format.include(MILLISECOND);
+      }
+
+      configure(pset.categories);
     }
 
     //=============================================================================
@@ -425,13 +427,14 @@ namespace mf {
     }
 
     void
-    ELdestination::configure(fhicl::ParameterSet const& pset)
+    ELdestination::configure(fhicl::OptionalDelegatedParameter const& pset)
     {
       // Defaults:
       std::vector<std::string> const severities {"WARNING", "INFO", "ERROR", "DEBUG"};
 
       // grab the pset for category list for this destination
-      auto const& cats_pset = pset.get<fhicl::ParameterSet>("categories", {});
+      fhicl::ParameterSet cats_pset{};
+      pset.get_if_present<fhicl::ParameterSet>(cats_pset);
 
       // grab list of categories
       auto categories = cats_pset.get_pset_names();
@@ -486,14 +489,6 @@ namespace mf {
           stats.limits.setTimespan(category, timespan);
         }
       }  // for
-
-      if (pset.get<bool>("noTimeStamps", false)) {
-        format.suppress(TIMESTAMP);
-      }
-
-      if (pset.get<bool>("useMilliseconds", false)) {
-        format.include(MILLISECOND);
-      }
 
     }
 

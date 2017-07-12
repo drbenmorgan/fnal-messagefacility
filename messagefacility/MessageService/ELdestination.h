@@ -13,6 +13,8 @@
 #include "cetlib/PluginTypeDeducer.h"
 #include "fhiclcpp/ParameterSet.h"
 #include "fhiclcpp/types/Table.h"
+#include "fhiclcpp/types/TableFragment.h"
+#include "fhiclcpp/types/OptionalDelegatedParameter.h"
 #include "messagefacility/Utilities/ELextendedID.h"
 #include "messagefacility/Utilities/ELset.h"
 #include "messagefacility/Utilities/ErrorObj.h"
@@ -37,8 +39,26 @@ namespace mf {
     class ELdestination {
     public:
 
-      ELdestination();
-      ELdestination(fhicl::ParameterSet const& pset);
+      struct Config {
+        fhicl::Table<MsgFormatSettings::Config> format{fhicl::Name{"format"}};
+        fhicl::OptionalDelegatedParameter categories{fhicl::Name{"categories"}};
+        fhicl::Atom<std::string> threshold {fhicl::Name{"threshold"}, "INFO"};
+        fhicl::Atom<bool> noTimeStamps{fhicl::Name{"noTimeStamps"}, false};
+        fhicl::Atom<bool> noLineBreaks{fhicl::Name{"noLineBreaks"}, false};
+        fhicl::Atom<bool> useMilliseconds{fhicl::Name{"useMilliseconds"}, false};
+        fhicl::Atom<bool> outputStatistics{fhicl::Name{"outputStatistics"}, false};
+
+        fhicl::Atom<std::string> dest_type{fhicl::Name{"type"},
+            fhicl::Comment{"The following parameter is necessary only if 'outputStatistics' has been set to 'true'."},
+              [this]{ return outputStatistics(); }, "file"};
+        fhicl::Atom<unsigned long long> lineLength{fhicl::Name{"lineLength"},
+            fhicl::Comment{"The following parameter is necessary only if 'noLineBreaks' has been set to 'true'."},
+              [this]{ return outputStatistics(); }, 80ull};
+        fhicl::TableFragment<MsgStatistics::Config> msgStatistics;
+      };
+
+      //      ELdestination();
+      ELdestination(Config const& pset);
 
       // Suppress copy operations
       ELdestination(ELdestination const& orig) = delete;
@@ -79,8 +99,8 @@ namespace mf {
       virtual void respondToModule(std::string const& moduleName);
       virtual bool thisShouldBeIgnored(std::string const& s) const;
 
-      virtual void summary(std::ostream& os, std::string const& title="");
-      virtual void summary(std::string& s, std::string const& title="");
+      virtual void summary(std::ostream& os, std::string const& title = {});
+      virtual void summary(std::string& s, std::string const& title = {});
 
       virtual void changeFile(std::ostream& os);
       virtual void changeFile(std::string const& filename);
@@ -97,7 +117,7 @@ namespace mf {
 
     private:
 
-      void configure(fhicl::ParameterSet const&);
+      void configure(fhicl::OptionalDelegatedParameter const&);
 
       std::string indent {std::string(6,' ')};
       std::size_t charsOnLine {};

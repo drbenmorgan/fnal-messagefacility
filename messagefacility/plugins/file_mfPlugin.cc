@@ -3,6 +3,7 @@
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageService/ELdestination.h"
 #include "messagefacility/MessageService/ELostreamOutput.h"
+#include "messagefacility/Utilities/BasicHelperMacros.h"
 #include "messagefacility/plugins/formatFilename.h"
 
 #include <fstream>
@@ -24,4 +25,6 @@ extern "C" {
 
 }
 
+PROVIDE_FILE_PATH()
+PROVIDE_ALLOWED_CONFIGURATION(ELostreamOutput)
 DEFINE_BASIC_PLUGINTYPE_FUNC(ELdestination)

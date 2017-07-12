@@ -20,19 +20,19 @@ namespace mf {
     // Constructors
     //======================================================================
 
-    ELstatistics::ELstatistics(fhicl::ParameterSet const& pset, std::ostream& osp)
-      : ELdestination{pset}
+    ELstatistics::ELstatistics(Parameters const& pset, std::ostream& osp)
+      : ELdestination{pset().elDestConfig()}
       , termStream{osp}
     {}
 
-    ELstatistics::ELstatistics(fhicl::ParameterSet const& pset)
+    ELstatistics::ELstatistics(Parameters const& pset)
       : ELstatistics{pset, std::cerr}
     {}
 
-    ELstatistics::ELstatistics(fhicl::ParameterSet const& pset,
+    ELstatistics::ELstatistics(Parameters const& pset,
                                std::string const& fileName,
                                bool const append)
-      : ELdestination{pset}
+      : ELdestination{pset().elDestConfig()}
       , termStream{fileName, append ? std::ios::app : std::ios::trunc}
     {}
 

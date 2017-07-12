@@ -22,31 +22,24 @@ namespace mf {
     // Constructors:
     // ----------------------------------------------------------------------
 
-    ELostreamOutput::ELostreamOutput(cet::ostream_handle&& osh, bool const emitAtStart)
-      : ELostreamOutput(fhicl::ParameterSet{}, std::move(osh), emitAtStart)
-    {}
-
-    ELostreamOutput::ELostreamOutput(std::ostream& os, bool const emitAtStart)
-      : ELostreamOutput(fhicl::ParameterSet{}, cet::ostream_handle(os), emitAtStart)
-    {}
-
-    ELostreamOutput::ELostreamOutput(fhicl::ParameterSet const& pset,
-                                     std::ostream& os, bool const emitAtStart)
+    ELostreamOutput::ELostreamOutput(Parameters const& pset,
+                                     std::ostream& os,
+                                     bool const emitAtStart)
       : ELostreamOutput(pset, cet::ostream_handle(os), emitAtStart)
     {}
 
 
-    ELostreamOutput::ELostreamOutput(fhicl::ParameterSet const& pset,
+    ELostreamOutput::ELostreamOutput(Parameters const& pset,
                                      cet::ostream_handle&& h,
                                      bool const emitAtStart)
-      : ELdestination{pset}
+      : ELdestination{pset().elDestConfig()}
       , osh{std::move(h)}
     {
       if (emitAtStart) {
-        bool tprm = format.preambleMode;
+        bool const tprm = format.preambleMode;
         format.preambleMode = true;
         emitToken(osh, "\n=================================================", true);
-        emitToken(osh, "\nMessage Log File written by MessageLogger service \n");
+        emitToken(osh, "\nMessage Log File written by MessageLogger service\n");
         emitToken(osh, "\n=================================================\n", true);
         format.preambleMode = tprm;
       }
@@ -67,13 +60,13 @@ namespace mf {
     // Summary output:
     // ----------------------------------------------------------------------
 
-    void ELostreamOutput::summarization( const std::string & fullTitle,
-                                         const std::string & sumLines)
+    void ELostreamOutput::summarization(std::string const& fullTitle,
+                                        std::string const& sumLines)
     {
       constexpr int titleMaxLength {40};
 
       // title:
-      std::string const title( fullTitle, 0, titleMaxLength );
+      std::string const title(fullTitle, 0, titleMaxLength);
       int const q = (lineLength_ - title.length() - 2) / 2;
       std::string line(q, '=');
       emitToken(osh, "", true);
@@ -87,8 +80,8 @@ namespace mf {
       osh << sumLines;
 
       // finish:
-      emitToken(osh, "", true );
-      emitToken(osh, std::string(lineLength_, '='), true );
+      emitToken(osh, "", true);
+      emitToken(osh, std::string(lineLength_, '='), true);
 
     }  // summarization()
 
@@ -102,8 +95,8 @@ namespace mf {
       timeval tv;
       gettimeofday(&tv, 0);
       emitToken(osh, "\n=======================================================", true);
-      emitToken(osh, "\nError Log changed to this stream\n" );
-      emitToken(osh, mf::timestamp::legacy(tv), true );
+      emitToken(osh, "\nError Log changed to this stream\n");
+      emitToken(osh, mf::timestamp::legacy(tv), true);
       emitToken(osh, "\n=======================================================\n", true);
     }
 
@@ -117,13 +110,9 @@ namespace mf {
       emitToken(osh, "\n=======================================================\n", true);
     }
 
-    void ELostreamOutput::flush()  {
+    void ELostreamOutput::flush() {
       osh.flush();
     }
-
-
-    // ----------------------------------------------------------------------
-
 
   } // end of namespace service
 } // end of namespace mf

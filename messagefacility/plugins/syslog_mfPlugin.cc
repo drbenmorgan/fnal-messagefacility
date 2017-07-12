@@ -3,6 +3,8 @@
 
 #include "messagefacility/MessageService/ELdestination.h"
 #include "messagefacility/MessageService/MessageDrop.h"
+#include "messagefacility/Utilities/BasicHelperMacros.h"
+#include "messagefacility/Utilities/ConfigurationTable.h"
 #include "messagefacility/Utilities/ELseverityLevel.h"
 #include "messagefacility/Utilities/exception.h"
 
@@ -27,13 +29,16 @@ namespace mfplugins {
   class ELsyslog : public ELdestination {
   public:
 
-    ELsyslog(fhicl::ParameterSet const& pset);
+    struct Config {
+      fhicl::TableFragment<ELdestination::Config> elDestConfig;
+    };
+    using Parameters = mf::WrappedTable<Config>;
+    ELsyslog(Parameters const& pset);
 
-    virtual void fillPrefix(std::ostringstream&, ErrorObj const&) override;
-    virtual void fillUsrMsg(std::ostringstream&, ErrorObj const&) override;
-    virtual void fillSuffix(std::ostringstream&, ErrorObj const&) override {}
-    virtual void routePayload(std::ostringstream const&,
-                              ErrorObj const&) override;
+    void fillPrefix(std::ostringstream&, ErrorObj const&) override;
+    void fillUsrMsg(std::ostringstream&, ErrorObj const&) override;
+    void fillSuffix(std::ostringstream&, ErrorObj const&) override {}
+    void routePayload(std::ostringstream const&, ErrorObj const&) override;
 
   private:
     int syslogLevel(ELseverityLevel);
@@ -49,8 +54,8 @@ namespace mfplugins {
   // ELsyslog c'tor
   //======================================================================
 
-  ELsyslog::ELsyslog(fhicl::ParameterSet const& pset)
-    : ELdestination{pset}
+  ELsyslog::ELsyslog(Parameters const& pset)
+    : ELdestination{pset().elDestConfig()}
   {
     openlog("MF",0,LOG_LOCAL0);
   }
@@ -134,12 +139,12 @@ namespace mfplugins {
 
 extern "C" {
 
-  auto makePlugin( const std::string&,
-                   const fhicl::ParameterSet& pset) {
-
-    return std::make_unique<mfplugins::ELsyslog>( pset );
-
+  auto makePlugin(std::string const&,
+                  fhicl::ParameterSet const& pset) {
+    return std::make_unique<mfplugins::ELsyslog>(pset);
   }
+  PROVIDE_FILE_PATH()
+  PROVIDE_ALLOWED_CONFIGURATION(mfplugins::ELsyslog)
 
 }
 DEFINE_BASIC_PLUGINTYPE_FUNC(mf::service::ELdestination)

@@ -59,7 +59,7 @@ namespace mf {
 
       // --- data:
       cet::sqlite::ConnectionFactory dbConnectionFactory_ {};
-      cet::propagate_const<std::unique_ptr<ELadministrator>> admin_;
+      ELadministrator admin_{};
       cet::propagate_const<std::unique_ptr<fhicl::ParameterSet>> jobConfig_ {nullptr};
       ELdestination& earlyDest_;
       bool cleanSlateConfiguration_ {true};
@@ -69,8 +69,8 @@ namespace mf {
       std::atomic<bool> messageBeingSent_ {false};
       tbb::concurrent_queue<ErrorObj*> waitingMessages_ {};
 
-      cet::BasicPluginFactory pluginFactory_ {"mfPlugin"};
-      cet::BasicPluginFactory pluginStatsFactory_ {"mfStatsPlugin"};
+      cet::BasicPluginFactory pluginFactory_{"mfPlugin"};
+      cet::BasicPluginFactory pluginStatsFactory_{"mfStatsPlugin"};
 
       std::string createId(std::set<std::string>& existing_ids,
                            std::string const& type,

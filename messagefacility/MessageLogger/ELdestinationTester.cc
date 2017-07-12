@@ -15,17 +15,6 @@
 
 namespace {
 
-  void anotherLogger [[ gnu::unused ]] ()
-  {
-    // Set module name
-    mf::MessageDrop::instance()->setSinglet("anotherLogger");
-
-    mf::LogWarning("warn1 | warn2") << "Followed by a WARNING message.";
-    mf::LogDebug("debug")           << "The debug message in the other thread";
-
-    return;
-  }
-
   void runModule(std::string const& modulename)
   {
     mf::MessageDrop::instance()->setSinglet(modulename);
@@ -156,9 +145,6 @@ int main(int argc, char* argv[])
   mf::MessageDrop::instance()->setSinglet("MFTest");
   mf::SetContextIteration("pre-event");
 
-  // Start up another logger in a separate thread
-  //boost::thread loggerThread(anotherLogger);
-
   // Memory Check output
   mf::LogWarning("MemoryCheck") << "MemoryCheck: module G4:g4run VSIZE 1030.34 0 RSS 357.043 0.628906";
   mf::LogWarning("MemoryCheck") << "MemoryCheck: module G4:g4run VSIZE 1030.34 0 RSS 357.25 0.199219";
@@ -167,7 +153,7 @@ int main(int argc, char* argv[])
   mf::LogInfo linfo("info");
   linfo << " vint contains: ";
 
-  std::vector<int> vint { 1, 2, 5, 89, 3 };
+  std::vector<int> vint {1, 2, 5, 89, 3};
 
   auto i = std::begin(vint);
   auto const e = std::end(vint);

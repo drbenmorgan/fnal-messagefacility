@@ -11,6 +11,7 @@
 #include "cetlib/ostream_handle.h"
 #include "messagefacility/Utilities/ELextendedID.h"
 #include "messagefacility/MessageService/ELdestination.h"
+#include "fhiclcpp/types/TableFragment.h"
 
 #include <memory>
 
@@ -24,18 +25,17 @@ namespace mf {
     class ELostreamOutput : public ELdestination  {
     public:
 
-      ELostreamOutput(fhicl::ParameterSet const& psetFormat,
+      struct Config {
+        fhicl::TableFragment<ELdestination::Config> elDestConfig;
+      };
+
+      using Parameters = WrappedTable<Config>;
+      ELostreamOutput(Parameters const& ps,
                       cet::ostream_handle&&,
                       bool emitAtStart = false);
 
-      ELostreamOutput(fhicl::ParameterSet const& psetFormat,
-                      std::ostream &,
-                      bool emitAtStart = false);
-
-      ELostreamOutput(cet::ostream_handle&&,
-                      bool emitAtStart = false);
-
-      ELostreamOutput(std::ostream &,
+      ELostreamOutput(Parameters const& ps,
+                      std::ostream&,
                       bool emitAtStart = false);
 
       // Disable copy c'tor/assignment

@@ -1,5 +1,6 @@
 #include "messagefacility/MessageService/ELadministrator.h"
 #include "messagefacility/MessageService/ELostreamOutput.h"
+#include "messagefacility/MessageService/default_destinations_config.h"
 #include "messagefacility/Utilities/exception.h"
 
 #include <arpa/inet.h>
@@ -15,7 +16,7 @@
 using std::cerr;
 
 void
-mf::service::ELadministrator::log(ErrorObj & msg)
+mf::service::ELadministrator::log(ErrorObj& msg)
 {
   auto const severity = msg.xid().severity();
   int const lev = severity.getLevel();
@@ -26,7 +27,7 @@ mf::service::ELadministrator::log(ErrorObj & msg)
   if (destinations_.empty()) {
     std::cerr << "\nERROR LOGGED WITHOUT DESTINATION!\n"
               << "Attaching destination \"cerr\" to ELadministrator by default\n\n";
-    destinations_.emplace("cerr", std::make_unique<ELostreamOutput>(cet::ostream_handle{std::cerr}));
+    destinations_.emplace("cerr", std::make_unique<ELostreamOutput>(default_destinations_config(), cet::ostream_handle{std::cerr}));
   }
 
   for_all_destinations([&msg](auto& d){ d.log(msg); });
