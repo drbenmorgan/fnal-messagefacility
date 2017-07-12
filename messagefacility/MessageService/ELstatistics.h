@@ -13,6 +13,7 @@
 #include "messagefacility/Utilities/ConfigurationTable.h"
 #include "messagefacility/Utilities/ELextendedID.h"
 #include "messagefacility/Utilities/ELmap.h"
+#include "fhiclcpp/types/Atom.h"
 #include "fhiclcpp/types/TableFragment.h"
 
 #include <memory>
@@ -29,6 +30,14 @@ namespace mf {
 
       struct Config {
         fhicl::TableFragment<ELdestination::Config> elDestConfig;
+
+        // The following is just crying out for templatizing ELostreamOutput.
+        fhicl::Atom<std::string> filename {fhicl::Name{"filename"},
+            fhicl::Comment{"The 'filename' parameter is required if the destination type is 'file'."},
+              [this]{ return elDestConfig().dest_type() == "file"; }};
+        fhicl::OptionalAtom<std::string> extension {fhicl::Name{"extension"},
+            fhicl::Comment{"The 'extension' parameter is allowed if the destination type is 'file'."},
+              [this]{ return elDestConfig().dest_type() == "file"; }};
       };
 
       using Parameters = WrappedTable<Config>;

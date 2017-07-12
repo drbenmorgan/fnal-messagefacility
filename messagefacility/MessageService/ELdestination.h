@@ -40,24 +40,20 @@ namespace mf {
     public:
 
       struct Config {
+        fhicl::Atom<std::string> dest_type{fhicl::Name{"type"}};
         fhicl::Table<MsgFormatSettings::Config> format{fhicl::Name{"format"}};
         fhicl::OptionalDelegatedParameter categories{fhicl::Name{"categories"}};
         fhicl::Atom<std::string> threshold {fhicl::Name{"threshold"}, "INFO"};
         fhicl::Atom<bool> noTimeStamps{fhicl::Name{"noTimeStamps"}, false};
         fhicl::Atom<bool> noLineBreaks{fhicl::Name{"noLineBreaks"}, false};
+        fhicl::Atom<unsigned long long> lineLength{fhicl::Name{"lineLength"},
+                                                   fhicl::Comment{"The following parameter is allowed only if 'noLineBreaks' has been set to 'false'."},
+                                                   [this]{ return !noLineBreaks(); }, 80ull};
         fhicl::Atom<bool> useMilliseconds{fhicl::Name{"useMilliseconds"}, false};
         fhicl::Atom<bool> outputStatistics{fhicl::Name{"outputStatistics"}, false};
-
-        fhicl::Atom<std::string> dest_type{fhicl::Name{"type"},
-            fhicl::Comment{"The following parameter is necessary only if 'outputStatistics' has been set to 'true'."},
-              [this]{ return outputStatistics(); }, "file"};
-        fhicl::Atom<unsigned long long> lineLength{fhicl::Name{"lineLength"},
-            fhicl::Comment{"The following parameter is necessary only if 'noLineBreaks' has been set to 'true'."},
-              [this]{ return outputStatistics(); }, 80ull};
         fhicl::TableFragment<MsgStatistics::Config> msgStatistics;
       };
 
-      //      ELdestination();
       ELdestination(Config const& pset);
 
       // Suppress copy operations

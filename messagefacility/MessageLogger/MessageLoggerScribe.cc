@@ -6,6 +6,7 @@
 #include "cetlib/sqlite/ConnectionFactory.h"
 #include "cetlib/trim.h"
 #include "fhiclcpp/make_ParameterSet.h"
+#include "fhiclcpp/types/detail/validationException.h"
 #include "messagefacility/Utilities/ErrorObj.h"
 #include "messagefacility/Utilities/ELseverityLevel.h"
 #include "messagefacility/MessageService/MessageDrop.h"
@@ -14,6 +15,7 @@
 #include "messagefacility/MessageService/ELostreamOutput.h"
 #include "messagefacility/MessageService/ELstatistics.h"
 #include "messagefacility/MessageService/ThreadQueue.h"
+#include "messagefacility/MessageService/default_destinations_config.h"
 #include "messagefacility/Utilities/exception.h"
 
 #include <algorithm>
@@ -29,25 +31,6 @@ namespace {
 
   bool constexpr throw_on_clean_slate {true};
   bool constexpr no_throw_on_clean_slate {false};
-
-  auto default_destinations_config()
-  {
-    std::string const config {
-      "cerr: {"
-        "  type: file"
-        "  filename: \"cerr.log\""
-        "  categories: {"
-        "    default: {"
-        "      limit: 10000000"
-        "    }"
-        "  }"
-        "}"
-        };
-
-    fhicl::ParameterSet result;
-    fhicl::make_ParameterSet(config, result);
-    return result;
-  }
 
   auto default_statistics_config(fhicl::ParameterSet const& ordinaryDests)
   {
@@ -76,7 +59,7 @@ namespace mf {
   namespace service {
 
     MessageLoggerScribe::MessageLoggerScribe()
-      : earlyDest_{admin_.attach("cerr_early", make_unique<ELostreamOutput>(default_destinations_config(),
+      : earlyDest_{admin_.attach("cerr_early", make_unique<ELostreamOutput>(default_destination_config(),
                                                                             cet::ostream_handle{std::cerr},
                                                                             false))}
     {}
@@ -273,16 +256,23 @@ namespace mf {
     {
       std::set<std::string> ids;
 
+      std::vector<std::string> config_errors;
       for (auto const& psetname : dests.get_pset_names()) {
 
-        // Retrieve the destination pset object
-        auto const& dest_pset = dests.get<fhicl::ParameterSet>(psetname);
+        // Retrieve the destination pset object.
+        auto dest_pset = dests.get<fhicl::ParameterSet>(psetname);
 
-        // check that this destination is not just a placeholder
+        // Check that this destination is not just a placeholder.
         if (dest_pset.get<bool>("placeholder", false)) continue;
 
-        // grab the destination type and filename
-        string const dest_type = dest_pset.get<std::string>("type","file");
+        // If the provided parameter set is empty, replace its
+        // configuration with the default one.
+        if (dest_pset.is_empty()) {
+          dest_pset = default_destination_config();
+        }
+
+        // Grab the destination type and filename.
+        auto const& dest_type = dest_pset.get<std::string>("type");
         ELdestConfig::checkType(dest_type, configuration);
 
         bool const throw_on_duplicate_id = (configuration == ELdestConfig::STATISTICS);
@@ -298,18 +288,30 @@ namespace mf {
           pluginFactory_;
 
         // attach the current destination, keeping a control handle to it:
-        ELdestination& dest = admin_.attach(outputId,
-                                            makePlugin_(plugin_factory,
-                                                        libspec,
-                                                        psetname,
-                                                        dest_pset));
+        try {
+          ELdestination& dest = admin_.attach(outputId,
+                                              makePlugin_(plugin_factory,
+                                                          libspec,
+                                                          psetname,
+                                                          dest_pset));
 
-        // Suppress the desire to do an extra termination summary just because
-        // of end-of-job info message for statistics jobs
-        if (configuration == ELdestConfig::STATISTICS)
-          dest.noTerminationSummary();
+          // Suppress the desire to do an extra termination summary just because
+          // of end-of-job info message for statistics jobs
+          if (configuration == ELdestConfig::STATISTICS)
+            dest.noTerminationSummary();
+        }
+        catch (fhicl::detail::validationException const& e) {
+          config_errors.push_back(e.what());
+        }
       }
 
+      if (!config_errors.empty()) {
+        std::string msg;
+        for (auto const& error : config_errors) {
+          msg += error;
+        }
+        throw Exception(errors::Configuration) << msg;
+      }
     } // make_destinations()
 
     //=============================================================================
@@ -455,11 +457,11 @@ namespace mf {
             << libspec
             << ".\n";
         }
-      } catch (cet::exception & e) {
+      }
+      catch (cet::exception const& e) {
         throw Exception(errors::Configuration, "MessageLoggerScribe: ", e)
           << "Exception caught while processing plugin spec.\n";
       }
-
       return std::move(result);
     } //
 

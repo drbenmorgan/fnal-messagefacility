@@ -28,7 +28,6 @@ namespace mf {
       : ELostreamOutput(pset, cet::ostream_handle(os), emitAtStart)
     {}
 
-
     ELostreamOutput::ELostreamOutput(Parameters const& pset,
                                      cet::ostream_handle&& h,
                                      bool const emitAtStart)

@@ -10,7 +10,7 @@ message : {
 
       dest1 : {
 
-         type       : file // or cerr, cout, syslog, sqlite (eventually)   ### TEST DEVELOPED ###   
+         type       : file // or cerr, cout, syslog, sqlite (eventually)   ### TEST DEVELOPED ###
          output     : "someDefaultFileName"                                ### TEST DEVELOPED ###
          filename   : "somefile.txt"                                       ### TEST DEVELOPED ###
          extension  : ".someextension"                                     ### TEST DEVELOPED ###
@@ -40,13 +40,10 @@ message : {
       statistics : {                                 ### TEST DEVELOPED ###
 
          dest1 : {                                   ### TEST DEVELOPED ###
-
-            type      : cerr  // or cout, or file    ### TEST DEVELOPED ###
+            type      : file                         ### TEST DEVELOPED ###
             filename  : "statistics.txt"             ### TEST DEVELOPED ###
             extension : ".something"                 ### TEST DEVELOPED ###
-
             reset     : true                         ### TEST DEVELOPED ###
-
          }
       }
    }
@@ -62,4 +59,3 @@ message : {
    }                                                      ### TEST DEVELOPED ###
 
 }
-

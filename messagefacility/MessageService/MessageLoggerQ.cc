@@ -88,16 +88,11 @@ MessageLoggerQ::handshakedCommand(OpCode const opcode,
   try {
     mlscribe_ptr->runCommand(opcode, operand);
   }
-  catch(mf::Exception& ex)
-    {
-      ex << "\n The preceding exception was thrown in MessageLoggerScribe\n";
-      ex << "and forwarded to the main thread from the Messages thread.";
-      std::cerr << "exception from MessageLoggerQ::"
-                << commandMnemonic << " - exception what() is \n"
-                << ex.what();
-      // TODO - get the above text into the what itself
-      throw ex;
-    } // handshakedCommand
+  catch(mf::Exception const& ex) {
+    throw Exception(errors::OtherError,
+                    "Exception from MessageLoggerQ::"+commandMnemonic,
+                    ex);
+  } // handshakedCommand
 
 void
 MessageLoggerQ::MLqEND()

@@ -9,6 +9,7 @@
 #include "cetlib/filepath_maker.h"
 #include "fhiclcpp/ParameterSet.h"
 #include "fhiclcpp/make_ParameterSet.h"
+#include "fhiclcpp/types/detail/validationException.h"
 #include "messagefacility/MessageLogger/ELdestinationTester.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "messagefacility/MessageService/MessageDrop.h"
@@ -134,6 +135,10 @@ int main(int argc, char* argv[])
   catch (mf::Exception const& e) {
     std::cerr << e.what() << std::endl;
     return 4;
+  }
+  catch (fhicl::detail::validationException const& e) {
+    std::cerr << e.what() << std::endl;
+    return 6;
   }
   catch (...) {
     std::cerr << "Caught unknown exception from mf::StartMessageFacility" << std::endl;

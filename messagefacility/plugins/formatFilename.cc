@@ -4,14 +4,14 @@
 
 namespace mfplugins {
 
+  // FIXME: This should be moved somewhere else so that the
+  // configuration does not need to be inspected before it is
+  // validated!  This may argue for an ELostreamOutput template that
+  // can support more flexible/encapsulated configuration.
   std::string formatFilename(std::string const& psetname,
                              fhicl::ParameterSet const& pset)
   {
-    // Determine the destination file name to use if no explicit filename is
-    // supplied in the .fcl file.
-    auto const& filename_default = pset.get<std::string>("output", psetname);
-
-    auto filename = pset.get<std::string>("filename", filename_default);
+    auto filename = pset.get<std::string>("filename", psetname);
     auto const& explicit_extension = pset.get<std::string>("extension", {});
 
     if (!explicit_extension.empty()) {

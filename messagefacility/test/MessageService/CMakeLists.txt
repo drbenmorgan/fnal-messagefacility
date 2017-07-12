@@ -8,7 +8,7 @@
 file(GLOB testConfigFiles fhicl-files/*.fcl )
 list(REMOVE_ITEM testConfigFiles ${CMAKE_CURRENT_SOURCE_DIR}/fhicl-files/statistics_duplicateDest.fcl)
 
-foreach (filename ${testConfigFiles})
+foreach(filename ${testConfigFiles})
 
   # trim directory prefixes and .fcl suffix
   string(REGEX REPLACE "(.*/fhicl-files/)(.*)(.fcl)" "\\2" testname ${filename})

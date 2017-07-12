@@ -40,10 +40,6 @@ namespace mf {
       , lineLength_{pset.noLineBreaks() ? 32000ull : pset.lineLength()}
       , enableStats{pset.outputStatistics()}
     {
-      if (enableStats) {
-        ELdestConfig::checkType(pset.dest_type(), ELdestConfig::STATISTICS);
-      }
-
       // Modify automatic suppression if necessary.
       if (threshold <= ELseverityLevel::ELsev_success)
       { MessageDrop::debugAlwaysSuppressed = false; }
