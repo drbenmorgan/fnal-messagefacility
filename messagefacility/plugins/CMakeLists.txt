@@ -18,3 +18,6 @@ basic_plugin(stringstream mfPlugin MF_MessageLogger)
 basic_plugin(cout mfStatsPlugin MF_MessageLogger)
 basic_plugin(cerr mfStatsPlugin MF_MessageLogger)
 basic_plugin(file mfStatsPlugin MF_FileFormat)
+
+install_headers()
+install_source()
