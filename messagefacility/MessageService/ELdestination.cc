@@ -444,44 +444,41 @@ namespace mf {
       // default limit/interval/timespan:
       auto const& default_category_pset = cats_pset.get<fhicl::ParameterSet>("default", {});
 
-      int constexpr two_billion {2000'000'000};
       int constexpr NO_VALUE_SET {-45654};
 
-      int default_limit {NO_VALUE_SET};
-      if (default_category_pset.get_if_present<int>("limit", default_limit)) {
-        if (default_limit < 0) default_limit = two_billion;
-        stats.limits.setLimit("*", default_limit);
-      }
+      struct Spec {
+        int limit;
+        int interval;
+        int timespan;
+      };
 
-      int default_interval {NO_VALUE_SET};
-      if (default_category_pset.get_if_present<int>("reportEvery", default_interval)) {
-        // interval <= 0 implies no reporting
-        stats.limits.setInterval("*", default_interval);
-      }
+      auto setCategoryFields = [this](fhicl::ParameterSet const& pset, Spec& defaults) {
+        pset.get_if_present<int>("limit", defaults.limit);
+        pset.get_if_present<int>("reportEvery", defaults.interval);
+        pset.get_if_present<int>("timespan", defaults.timespan);
+      };
 
-      int default_timespan {NO_VALUE_SET};
-      if (default_category_pset.get_if_present<int>("timespan", default_timespan)) {
-        if (default_timespan < 0) default_timespan = two_billion;
-        stats.limits.setTimespan("*", default_timespan);
-      }
+      Spec defaults{NO_VALUE_SET, NO_VALUE_SET, NO_VALUE_SET};
+      setCategoryFields(default_category_pset, defaults);
+      // Reset limit table according to specified default category configuration.
+      // FIXME: This is the place where we will pass in a ParameterSet
+      stats.limits = ELlimitsTable{defaults.limit, defaults.interval, defaults.timespan};
 
       // establish this destination's limit/interval/timespan for each category:
       for (auto const& category : categories) {
         auto const& category_pset = cats_pset.get<fhicl::ParameterSet>(category, default_category_pset);
 
-        int limit    = category_pset.get<int>("limit"      , default_limit);
-        int interval = category_pset.get<int>("reportEvery", default_interval);
-        int timespan = category_pset.get<int>("timespan"   , default_timespan);
+        int limit    = category_pset.get<int>("limit"      , defaults.limit);
+        int interval = category_pset.get<int>("reportEvery", defaults.interval);
+        int timespan = category_pset.get<int>("timespan"   , defaults.timespan);
 
         if (limit != NO_VALUE_SET)  {
-          if (limit < 0) limit = two_billion;
           stats.limits.setLimit(category, limit);
         }
         if (interval != NO_VALUE_SET)  {
           stats.limits.setInterval(category, interval);
         }
         if (timespan != NO_VALUE_SET)  {
-          if (timespan < 0) timespan = two_billion;
           stats.limits.setTimespan(category, timespan);
         }
       }  // for

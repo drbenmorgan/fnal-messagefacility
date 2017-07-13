@@ -1,15 +1,11 @@
 process_name: TestFileDest
 
 message : {
-   destinations : { 
-      dest1 : { 
-
-         type     : file
-         filename : "dest1.log"
-
-      }
-      
-   } 
+  destinations : {
+    dest1 : {
+      type     : file
+      filename : "dest1.log"
+      append   : false
+    }
+  }
 }
-
-

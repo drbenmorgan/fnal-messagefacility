@@ -14,13 +14,14 @@ using namespace mf::service;
 
 extern "C" {
 
-  auto makePlugin(std::string const& psetname,
+  auto makePlugin(std::string const&,
                   fhicl::ParameterSet const& pset)
   {
-    std::string const& filename = mfplugins::formatFilename(psetname, pset);
-    bool const append = pset.get<bool>("append", false);
-    cet::ostream_handle osh {filename, append ? std::ios::app : std::ios::trunc};
-    return std::make_unique<ELostreamOutput>(pset, std::move(osh));
+    ELostreamOutput::Parameters const ps{pset};
+    std::string const& filename = mfplugins::formatFilename(ps().filename(),
+                                                            ps().extension());
+    cet::ostream_handle osh {filename, ps().append() ? std::ios::app : std::ios::trunc};
+    return std::make_unique<ELostreamOutput>(ps, std::move(osh));
   }
 
 }

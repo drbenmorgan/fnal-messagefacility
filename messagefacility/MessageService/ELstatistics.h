@@ -35,9 +35,14 @@ namespace mf {
         fhicl::Atom<std::string> filename {fhicl::Name{"filename"},
             fhicl::Comment{"The 'filename' parameter is required if the destination type is 'file'."},
               [this]{ return elDestConfig().dest_type() == "file"; }};
-        fhicl::OptionalAtom<std::string> extension {fhicl::Name{"extension"},
+        fhicl::Atom<std::string> extension {fhicl::Name{"extension"},
             fhicl::Comment{"The 'extension' parameter is allowed if the destination type is 'file'."},
-              [this]{ return elDestConfig().dest_type() == "file"; }};
+              [this]{ return elDestConfig().dest_type() == "file"; },
+                {}};
+        fhicl::Atom<bool> append {fhicl::Name{"append"},
+            fhicl::Comment{"The 'append' parameter is allowed if the destination type is 'file'."},
+              [this]{ return elDestConfig().dest_type() == "file"; },
+                false};
       };
 
       using Parameters = WrappedTable<Config>;

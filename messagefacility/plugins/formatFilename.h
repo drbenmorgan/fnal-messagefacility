@@ -6,10 +6,8 @@
 namespace fhicl { class ParameterSet; }
 
 namespace mfplugins {
-
-  std::string formatFilename( const std::string& psetname,
-                              const fhicl::ParameterSet& pset );
-
+  std::string formatFilename(std::string filename,
+                             std::string const& extension);
 }
 
 #endif /* messagefacility_MessageService_plugins_formatFilename_h */

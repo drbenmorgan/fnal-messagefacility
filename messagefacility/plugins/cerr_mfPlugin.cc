@@ -11,7 +11,6 @@
 using mf::service::ELostreamOutput;
 
 extern "C" {
-
   auto makePlugin(std::string const&,
                   fhicl::ParameterSet const& pset)
   {

@@ -8,7 +8,6 @@
 #include "messagefacility/Utilities/ELseverityLevel.h"
 #include "messagefacility/Utilities/exception.h"
 
-// C/C++ includes
 #include <iostream>
 #include <syslog.h>
 #include <memory>
