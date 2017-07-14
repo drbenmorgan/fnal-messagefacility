@@ -1,11 +1,9 @@
-process_name: TestStatistics
-
 message : {
    destinations : {
 
-      statistics : { 
-         dest1 : { 
-            type  : cerr 
+      statistics : {
+         dest1 : {
+            type  : cerr
             reset : true
          }
 
@@ -18,4 +16,3 @@ message : {
 
    }
 }
-

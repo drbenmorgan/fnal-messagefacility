@@ -1,7 +1,3 @@
-# Configuration file for messageFacility test
-
-process_name: messageFacility
-
 message : {
 
   destinations :  {
@@ -18,7 +14,7 @@ message : {
       categories : {
 
         default : {
-          limit1      : 10 // some int
+          limit       : 10 // some int
           reportEvery : 10 // some int
           timespan    : 10 // some int
         }
@@ -32,6 +28,9 @@ message : {
 
     }
 
+    dest2: {
+      type: cout
+    }
     statistics : {                               ### TEST DEVELOPED ###
 
 

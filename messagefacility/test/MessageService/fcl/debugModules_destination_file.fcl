@@ -1,11 +1,9 @@
-process_name: TestDebugModules
-
 message : {
 
    debugModules : ["MFTest","module5"]
 
-   destinations : { 
-      dest1 : { 
+   destinations : {
+      dest1 : {
 
          type         : file
          filename     : "dest1.log"
@@ -13,18 +11,16 @@ message : {
 
       }
 
-     dest2 : { 
+     dest2 : {
 
          type         : file
          filename     : "dest2.log"
          threshold    : "ZERO"
-         format : { 
+         format : {
             noLineBreaks : true
          }
 
       }
-      
-   } 
+
+   }
 }
-
-

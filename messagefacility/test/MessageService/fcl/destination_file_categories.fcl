@@ -1,8 +1,6 @@
-process_name: TestFileDest_Categories
-
 message : {
-   destinations : { 
-      dest1 : { 
+   destinations : {
+      dest1 : {
 
          type     : file
          filename : "file_categories.log"
@@ -12,7 +10,7 @@ message : {
             default  : {
                limit       : 10 // some int
                reportEvery : 10 // some int
-               timespan    : 10 // some int                                       
+               timespan    : 10 // some int
             }
 
             MemoryCheck : {
@@ -25,11 +23,10 @@ message : {
                limit       : 10
                reportEvery : 2
             }
-            
+
 
          }
 
-      } 
+      }
    }
 }
-

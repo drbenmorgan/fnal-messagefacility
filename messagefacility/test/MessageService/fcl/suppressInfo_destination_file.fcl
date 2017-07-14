@@ -1,18 +1,14 @@
-process_name: TestSuppressInfo
-
 message : {
 
    suppressInfo : ["MFTest","module5"]
 
-   destinations : { 
-      dest1 : { 
+   destinations : {
+      dest1 : {
 
          type     : file
          filename : "dest1.log"
 
       }
-      
-   } 
+
+   }
 }
-
-

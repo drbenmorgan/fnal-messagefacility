@@ -1,18 +1,14 @@
-process_name: TestSuppressWarning
-
 message : {
 
    suppressWarning : ["MFTest","module5"]
 
-   destinations : { 
-      dest1 : { 
+   destinations : {
+      dest1 : {
 
          type     : file
          filename : "dest1.log"
 
       }
-      
-   } 
+
+   }
 }
-
-

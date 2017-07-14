@@ -1,7 +1,5 @@
-process_name: TestFileDest_Threshold
-
 message : {
-   destinations : { 
+   destinations : {
       log_zeroSeverity    : { type : file  filename : "threshold_zeroSeverity.log"      threshold : "--"       }
       log_incidental      : { type : file  filename : "threshold_incidental.log"        threshold : ".."       }
       log_success         : { type : file  filename : "threshold_success.log"           threshold : "Debug"    }
@@ -19,4 +17,3 @@ message : {
       log_highestSeverity : { type : file  filename : "threshold_highestSeverity.log"   threshold : "!!"       }
    }
 }
-

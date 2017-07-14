@@ -1,5 +1,3 @@
-process_name: TestFileDest_FilenameOptions
-
 # This is just a test of the file-naming functionalities.
 # The 'threshold' parameter has been ratched up to highest severity
 # so that the filesizes are small (if not non-existent)
