@@ -8,6 +8,7 @@
 #include "messagefacility/MessageService/MessageDrop.h"
 #include "messagefacility/MessageService/ELdestConfigCheck.h"
 #include "messagefacility/MessageService/ELdestination.h"
+#include "messagefacility/Utilities/bold_fontify.h"
 
 #include <fstream>
 #include <iostream>
@@ -16,6 +17,8 @@
 std::string const
 cet::PluginTypeDeducer<mf::service::ELdestination>::
 value = "ELdestination";
+
+using namespace std::string_literals;
 
 namespace mf {
   namespace service {
@@ -410,36 +413,63 @@ namespace mf {
     void
     ELdestination::configure(fhicl::OptionalDelegatedParameter const& cat_config)
     {
+      std::vector<std::string> configuration_errors;
+
       // Grab this destination's category configurations.
       fhicl::ParameterSet cats_pset{};
       cat_config.get_if_present<fhicl::ParameterSet>(cats_pset);
 
       // Grab the list of categories, removing the default category
       // since it is handled specially.
+      auto const default_category_name = "default"s;
       auto categories = cats_pset.get_pset_names();
       auto erase_from = std::remove_if(begin(categories), end(categories),
-                                       [](auto const& category) {
-                                         return category == "default";
+                                       [&default_category_name](auto const& category) {
+                                         return category == default_category_name;
                                        });
       categories.erase(erase_from, categories.cend());
 
       // Setup the default configuration for categories--this involves
       // resetting the limits table according to the user-specified
       // default configuration.
-      WrappedTable<ELlimitsTable::CategoryConfig> default_params{cats_pset.get<fhicl::ParameterSet>("default", {})};
-      stats.limits = ELlimitsTable{default_params().limit(), default_params().reportEvery(), default_params().timespan()};
+      auto const& default_pset = cats_pset.get<fhicl::ParameterSet>(default_category_name, {});
+      try {
+        WrappedTable<Category::Config> default_params{default_pset};
+        stats.limits = ELlimitsTable{default_params().limit(), default_params().reportEvery(), default_params().timespan()};
+      }
+      catch (fhicl::detail::validationException const& e) {
+        std::string msg {"Category: " + detail::bold_fontify(default_category_name) + "\n\n"};
+        msg += e.what();
+        configuration_errors.push_back(std::move(msg));
+      }
 
       // Now establish this destination's limit/interval/timespan for
       // each category, using the values of the possibly-specified
       // default configuration when a given category is missing the
       // fields.
       for (auto const& category : categories) {
-        fhicl::Table<ELlimitsTable::CategoryConfig> category_params{fhicl::Name{category}, default_params.get_PSet()};
-        category_params.validate_ParameterSet(cats_pset.get<fhicl::ParameterSet>(category));
+        fhicl::Table<Category::Config> category_params{fhicl::Name{category}, default_pset};
+        try {
+          category_params.validate_ParameterSet(cats_pset.get<fhicl::ParameterSet>(category));
+        }
+        catch (fhicl::detail::validationException const& e) {
+          std::string msg {"Category: " + detail::bold_fontify(category) + "\n\n"};
+          msg += e.what();
+          configuration_errors.push_back(std::move(msg));
+        }
+
         stats.limits.setCategory(category,
                                  category_params().limit(),
                                  category_params().reportEvery(),
                                  category_params().timespan());
+      }
+
+      if (!configuration_errors.empty()) {
+        std::string msg{"The following categories were misconfigured:\n\n"};
+        for (auto const& error : configuration_errors) {
+          msg += error;
+        }
+        throw fhicl::detail::validationException{msg};
       }
 
     }

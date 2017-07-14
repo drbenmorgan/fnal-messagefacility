@@ -197,17 +197,6 @@ namespace mf {
     void
     MessageLoggerScribe::configure_errorlog()
     {
-      // The following is present to test pre-configuration message handling:
-      auto const& preconfiguration_message = jobConfig_->get<std::string>("generate_preconfiguration_message", {});
-
-      if (!preconfiguration_message.empty()) {
-        // To test a preconfiguration message without first going thru
-        // the configuration we are about to do, we issue the message
-        // (so it sits on the queue), then copy the processing that
-        // the LOG_A_MESSAGE case does.
-        LogError("preconfiguration") << preconfiguration_message;
-      }
-
       if (admin_.destinations().size() > 1) {
         LogWarning ("multiLogConfig")
           << "The message logger has been configured multiple times";
@@ -269,9 +258,6 @@ namespace mf {
         // Retrieve the destination pset object.
         auto dest_pset = dests.get<fhicl::ParameterSet>(psetname);
 
-        // Check that this destination is not just a placeholder.
-        if (dest_pset.get<bool>("placeholder", false)) continue;
-
         // If the provided parameter set is empty, replace its
         // configuration with the default one.
         if (dest_pset.is_empty()) {
@@ -308,17 +294,22 @@ namespace mf {
             dest.noTerminationSummary();
         }
         catch (fhicl::detail::validationException const& e) {
-          std::string msg{"Configuration error for destination: "+ psetname};
+          std::string msg{"Configuration error for destination: "+ detail::bold_fontify(psetname) + "\n\n"};
           msg += e.what();
           config_errors.push_back(std::move(msg));
         }
       }
 
       if (!config_errors.empty()) {
-        std::string msg{"The following destinations have configuration errors:"};
+        std::string msg{"\nThe following messagefacility destinations have configuration errors:\n\n"};
+        std::string const horizontal_rule(60, '=');
+        msg += horizontal_rule;
+        msg += "\n\n";
         for (auto const& error : config_errors) {
           msg += error;
         }
+        msg += horizontal_rule;
+        msg += "\n\n";
         throw Exception(errors::Configuration) << msg;
       }
     } // make_destinations()

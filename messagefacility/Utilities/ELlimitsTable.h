@@ -55,21 +55,6 @@ namespace mf {
 
     public:
 
-      struct CategoryConfig {
-
-        CategoryConfig() = default;
-
-        explicit CategoryConfig(fhicl::ParameterSet const& pset) :
-          limit{fhicl::Name{"limit"}, pset.get<int>("limit", -1)},
-          reportEvery{fhicl::Name{"reportEvery"}, pset.get<int>("reportEvery", -1)},
-          timespan{fhicl::Name{"timespan"}, pset.get<int>("timespan", -1)}
-        {}
-
-        fhicl::Atom<int> limit{fhicl::Name{"limit"}, -1};
-        fhicl::Atom<int> reportEvery{fhicl::Name{"reportEvery"}, -1};
-        fhicl::Atom<int> timespan{fhicl::Name{"timespan"}, -1};
-      };
-
       ELlimitsTable(int defaultLimit = -1, int defaultInterval = -1, int defaultTimespan = -1);
 
       bool add(ELextendedID const& xid);

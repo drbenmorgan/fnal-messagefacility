@@ -4,58 +4,43 @@ process_name: messageFacility
 
 message : {
 
-   generate_preconfiguration_message : "some string"
+  destinations :  {
 
-   destinations :  {
+    dest1 : {
 
-      dest1 : {
+      type       : file // or cerr, cout, syslog, sqlite   ### TEST DEVELOPED ###
+      filename   : "somefile.txt"                          ### TEST DEVELOPED ###
+      extension  : ".someextension"                        ### TEST DEVELOPED ###
 
-         type       : file // or cerr, cout, syslog, sqlite (eventually)   ### TEST DEVELOPED ###
-         output     : "someDefaultFileName"                                ### TEST DEVELOPED ###
-         filename   : "somefile.txt"                                       ### TEST DEVELOPED ###
-         extension  : ".someextension"                                     ### TEST DEVELOPED ###
+      outputStatistics : false
+      resetStatistics  : false
 
-         outputStatistics : false
-         resetStatistics  : false
+      categories : {
 
-         categories : {
-
-            default : {
-               limit       : 10 // some int
-               reportEvery : 10 // some int
-               timespan    : 10 // some int
-            }
-
-         }
-
-         threshold       : "INFO" // some string   ### TEST DEVELOPED ###
-         placeholder     : true                    ### TEST DEVELOPED ###
-         noLineBreaks    : true                    ### TEST DEVELOPED ###
-         lineLength      : 144 // some int         ### TEST DEVELOPED ###
-         noTimeStamps    : false                   ### TEST DEVELOPED ###
-         useMilliseconds : false                   ### TEST DEVELOPED ###
+        default : {
+          limit1      : 10 // some int
+          reportEvery : 10 // some int
+          timespan    : 10 // some int
+        }
 
       }
 
-      statistics : {                                 ### TEST DEVELOPED ###
+      threshold       : "INFO" // some string   ### TEST DEVELOPED ###
+      noLineBreaks    : true                    ### TEST DEVELOPED ###
+      noTimeStamps    : false                   ### TEST DEVELOPED ###
+      useMilliseconds : false                   ### TEST DEVELOPED ###
 
-         dest1 : {                                   ### TEST DEVELOPED ###
-            type      : file                         ### TEST DEVELOPED ###
-            filename  : "statistics.txt"             ### TEST DEVELOPED ###
-            extension : ".something"                 ### TEST DEVELOPED ###
-            reset     : true                         ### TEST DEVELOPED ###
-         }
+    }
+
+    statistics : {                               ### TEST DEVELOPED ###
+
+
+      dest1 : {                                 ### TEST DEVELOPED ###
+        type      : file                       ### TEST DEVELOPED ###
+        filename  : "statistics.txt"           ### TEST DEVELOPED ###
+        extension : ".something"               ### TEST DEVELOPED ###
+        reset     : true                       ### TEST DEVELOPED ###
       }
-   }
-
-   fwkJobReports : [ "report1", "report2", "report3" ]    ### TEST DEVELOPED ###
-
-   report1 : {                                            ### TEST DEVELOPED ###
-
-      placeholder : true                                  ### TEST DEVELOPED ###
-      filename    : "someFwkJobReportsFile.txt"           ### TEST DEVELOPED ###
-      extension   : ".something"                          ### TEST DEVELOPED ###
-
-   }                                                      ### TEST DEVELOPED ###
-
+    }
+  }
 }
