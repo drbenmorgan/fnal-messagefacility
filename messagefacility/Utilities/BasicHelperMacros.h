@@ -1,5 +1,5 @@
-#ifndef art_Utilities_BasicHelperMacros_h
-#define art_Utilities_BasicHelperMacros_h
+#ifndef messagefacility_Utilities_BasicHelperMacros_h
+#define messagefacility_Utilities_BasicHelperMacros_h
 
 // =====================================================================
 //
@@ -65,7 +65,7 @@ namespace mf {
     return mf::detail::AllowedConfiguration<klass>::get(name);         \
   }
 
-#endif /* art_Utilities_BasicHelperMacros_h */
+#endif /* messagefacility_Utilities_BasicHelperMacros_h */
 
 // Local Variables:
 // mode: c++

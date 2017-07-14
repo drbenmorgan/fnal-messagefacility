@@ -21,19 +21,12 @@ namespace mf {
     //======================================================================
 
     ELstatistics::ELstatistics(Parameters const& pset, std::ostream& osp)
-      : ELdestination{pset().elDestConfig()}
-      , termStream{osp}
+      : ELstatistics{pset(), cet::ostream_handle{osp}}
     {}
 
-    ELstatistics::ELstatistics(Parameters const& pset)
-      : ELstatistics{pset, std::cerr}
-    {}
-
-    ELstatistics::ELstatistics(Parameters const& pset,
-                               std::string const& fileName,
-                               bool const append)
-      : ELdestination{pset().elDestConfig()}
-      , termStream{fileName, append ? std::ios::app : std::ios::trunc}
+    ELstatistics::ELstatistics(Config const& config, cet::ostream_handle&& osh)
+      : ELdestination{config.elDestConfig()}
+      , termStream{std::move(osh)}
     {}
 
     // ----------------------------------------------------------------------

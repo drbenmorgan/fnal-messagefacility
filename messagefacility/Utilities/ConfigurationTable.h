@@ -30,7 +30,9 @@ namespace mf {
   class WrappedTable : public ConfigurationTable {
   public:
     WrappedTable(fhicl::Name&& name) : table_{std::move(name)} {}
-    WrappedTable(fhicl::ParameterSet const& pset) : table_{pset} {}
+    template <typename... ARGS>
+    WrappedTable(fhicl::ParameterSet const& pset, ARGS&&... args) : table_{pset, std::forward<ARGS>(args)...} {}
+    void print_allowed_configuration(std::ostream& os) { table_.print_allowed_configuration(os); }
     auto const& operator()() const { return table_(); }
     auto const& get_PSet() const { return table_.get_PSet(); }
   private:
@@ -42,4 +44,4 @@ namespace mf {
 // Local variables:
 // mode: c++
 // End:
-#endif /* art_Utilities_ConfigurationTable_h */
+#endif /* messagefacility_Utilities_ConfigurationTable_h */

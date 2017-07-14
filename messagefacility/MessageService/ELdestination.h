@@ -98,8 +98,6 @@ namespace mf {
       virtual void summary(std::ostream& os, std::string const& title = {});
       virtual void summary(std::string& s, std::string const& title = {});
 
-      virtual void changeFile(std::ostream& os);
-      virtual void changeFile(std::string const& filename);
       virtual void flush();
 
     protected:

@@ -4,6 +4,7 @@
 //
 //======================================================================
 
+#include "fhiclcpp/types/Table.h"
 #include "messagefacility/MessageService/MessageDrop.h"
 #include "messagefacility/MessageService/ELdestConfigCheck.h"
 #include "messagefacility/MessageService/ELdestination.h"
@@ -24,14 +25,10 @@ namespace mf {
       std::string const noSummaryMsg {"No summary()"};
       std::string const hereMsg {"available via this destination"};
       std::string const noosMsg {"No ostream"};
-      std::string const notELoutputMsg {"This destination is not an ELoutput"};
       std::string const preamble {"%MSG"};
     }
 
     //=============================================================================
-    // ELdestination::ELdestination()
-    //   : ELdestination{fhicl::ParameterSet{}}
-    // {}
 
     ELdestination::ELdestination(Config const& pset)
       : stats{pset.msgStatistics()}
@@ -386,20 +383,6 @@ namespace mf {
       log(msg);
     }
 
-    void ELdestination::changeFile(std::ostream&)
-    {
-      mf::ErrorObj msg {ELwarning, noosMsg};
-      msg << notELoutputMsg;
-      log(msg);
-    }
-
-    void ELdestination::changeFile(std::string const& filename)
-    {
-      mf::ErrorObj msg {ELwarning, noosMsg};
-      msg << notELoutputMsg << '\n' << "file requested is" << filename;
-      log(msg);
-    }
-
     void ELdestination::flush()
     {
       mf::ErrorObj msg {ELwarning, noosMsg};
@@ -415,73 +398,49 @@ namespace mf {
     {
       if (respondToMostModules) {
         return ignoreThese.find(s) != ignoreThese.end();
-      } else if (ignoreMostModules) {
-        return respondToThese.find(s) == respondToThese.end();
-      } else {
+      }
+      else if (ignoreMostModules) {
+        return respondToThese.find(s) == cend(respondToThese);
+      }
+      else {
         return false;
       }
     }
 
     void
-    ELdestination::configure(fhicl::OptionalDelegatedParameter const& pset)
+    ELdestination::configure(fhicl::OptionalDelegatedParameter const& cat_config)
     {
-      // Defaults:
-      std::vector<std::string> const severities {"WARNING", "INFO", "ERROR", "DEBUG"};
-
-      // grab the pset for category list for this destination
+      // Grab this destination's category configurations.
       fhicl::ParameterSet cats_pset{};
-      pset.get_if_present<fhicl::ParameterSet>(cats_pset);
+      cat_config.get_if_present<fhicl::ParameterSet>(cats_pset);
 
-      // grab list of categories
+      // Grab the list of categories, removing the default category
+      // since it is handled specially.
       auto categories = cats_pset.get_pset_names();
-      auto erase_from = std::remove_if(categories.begin(), categories.end(),
+      auto erase_from = std::remove_if(begin(categories), end(categories),
                                        [](auto const& category) {
                                          return category == "default";
                                        });
       categories.erase(erase_from, categories.cend());
 
-      // default threshold for the destination grab this destination's
-      // default limit/interval/timespan:
-      auto const& default_category_pset = cats_pset.get<fhicl::ParameterSet>("default", {});
+      // Setup the default configuration for categories--this involves
+      // resetting the limits table according to the user-specified
+      // default configuration.
+      WrappedTable<ELlimitsTable::CategoryConfig> default_params{cats_pset.get<fhicl::ParameterSet>("default", {})};
+      stats.limits = ELlimitsTable{default_params().limit(), default_params().reportEvery(), default_params().timespan()};
 
-      int constexpr NO_VALUE_SET {-45654};
-
-      struct Spec {
-        int limit;
-        int interval;
-        int timespan;
-      };
-
-      auto setCategoryFields = [this](fhicl::ParameterSet const& pset, Spec& defaults) {
-        pset.get_if_present<int>("limit", defaults.limit);
-        pset.get_if_present<int>("reportEvery", defaults.interval);
-        pset.get_if_present<int>("timespan", defaults.timespan);
-      };
-
-      Spec defaults{NO_VALUE_SET, NO_VALUE_SET, NO_VALUE_SET};
-      setCategoryFields(default_category_pset, defaults);
-      // Reset limit table according to specified default category configuration.
-      // FIXME: This is the place where we will pass in a ParameterSet
-      stats.limits = ELlimitsTable{defaults.limit, defaults.interval, defaults.timespan};
-
-      // establish this destination's limit/interval/timespan for each category:
+      // Now establish this destination's limit/interval/timespan for
+      // each category, using the values of the possibly-specified
+      // default configuration when a given category is missing the
+      // fields.
       for (auto const& category : categories) {
-        auto const& category_pset = cats_pset.get<fhicl::ParameterSet>(category, default_category_pset);
-
-        int limit    = category_pset.get<int>("limit"      , defaults.limit);
-        int interval = category_pset.get<int>("reportEvery", defaults.interval);
-        int timespan = category_pset.get<int>("timespan"   , defaults.timespan);
-
-        if (limit != NO_VALUE_SET)  {
-          stats.limits.setLimit(category, limit);
-        }
-        if (interval != NO_VALUE_SET)  {
-          stats.limits.setInterval(category, interval);
-        }
-        if (timespan != NO_VALUE_SET)  {
-          stats.limits.setTimespan(category, timespan);
-        }
-      }  // for
+        fhicl::Table<ELlimitsTable::CategoryConfig> category_params{fhicl::Name{category}, default_params.get_PSet()};
+        category_params.validate_ParameterSet(cats_pset.get<fhicl::ParameterSet>(category));
+        stats.limits.setCategory(category,
+                                 category_params().limit(),
+                                 category_params().reportEvery(),
+                                 category_params().timespan());
+      }
 
     }
 

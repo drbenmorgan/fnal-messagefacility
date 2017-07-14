@@ -17,6 +17,7 @@
 #include "messagefacility/MessageService/ThreadQueue.h"
 #include "messagefacility/MessageService/default_destinations_config.h"
 #include "messagefacility/Utilities/exception.h"
+#include "messagefacility/Utilities/bold_fontify.h"
 
 #include <algorithm>
 #include <cassert>
@@ -42,9 +43,9 @@ namespace {
     fhicl::ParameterSet result;
     if (ordinaryDests.is_empty()) {
       std::string const config {
-        "cerr_stats: {"
+        "file_stats: {"
           "  type: file"
-          "  filename: \"cerr.log\""
+          "  filename: \"err.log\""
           "  threshold: WARNING"
           "}"
           };
@@ -59,10 +60,16 @@ namespace mf {
   namespace service {
 
     MessageLoggerScribe::MessageLoggerScribe()
-      : earlyDest_{admin_.attach("cerr_early", make_unique<ELostreamOutput>(default_destination_config(),
-                                                                            cet::ostream_handle{std::cerr},
-                                                                            false))}
+    try : earlyDest_{admin_.attach("file_early", makePlugin_(pluginFactory_,
+                                                             "file",
+                                                             "file_early",
+                                                             default_destination_config()))}
     {}
+    catch (fhicl::detail::validationException const& e) {
+      std::string msg{"\nConfiguration error for destination: "+detail::bold_fontify("cerr_early")+"\n\n"};
+      msg += e.what();
+      throw Exception(errors::Configuration) << msg;
+    }
 
     //=============================================================================
     MessageLoggerScribe::~MessageLoggerScribe()
@@ -301,12 +308,14 @@ namespace mf {
             dest.noTerminationSummary();
         }
         catch (fhicl::detail::validationException const& e) {
-          config_errors.push_back(e.what());
+          std::string msg{"Configuration error for destination: "+ psetname};
+          msg += e.what();
+          config_errors.push_back(std::move(msg));
         }
       }
 
       if (!config_errors.empty()) {
-        std::string msg;
+        std::string msg{"The following destinations have configuration errors:"};
         for (auto const& error : config_errors) {
           msg += error;
         }

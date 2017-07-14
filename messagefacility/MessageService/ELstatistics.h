@@ -30,25 +30,11 @@ namespace mf {
 
       struct Config {
         fhicl::TableFragment<ELdestination::Config> elDestConfig;
-
-        // The following is just crying out for templatizing ELostreamOutput.
-        fhicl::Atom<std::string> filename {fhicl::Name{"filename"},
-            fhicl::Comment{"The 'filename' parameter is required if the destination type is 'file'."},
-              [this]{ return elDestConfig().dest_type() == "file"; }};
-        fhicl::Atom<std::string> extension {fhicl::Name{"extension"},
-            fhicl::Comment{"The 'extension' parameter is allowed if the destination type is 'file'."},
-              [this]{ return elDestConfig().dest_type() == "file"; },
-                {}};
-        fhicl::Atom<bool> append {fhicl::Name{"append"},
-            fhicl::Comment{"The 'append' parameter is allowed if the destination type is 'file'."},
-              [this]{ return elDestConfig().dest_type() == "file"; },
-                false};
       };
-
       using Parameters = WrappedTable<Config>;
-      ELstatistics(Parameters const& pset);
+
       ELstatistics(Parameters const& pset, std::ostream& osp);
-      ELstatistics(Parameters const& pset, std::string const& filename, bool const append);
+      ELstatistics(Config const& confit, cet::ostream_handle&& osh);
 
       void log(mf::ErrorObj& msg) override;
 

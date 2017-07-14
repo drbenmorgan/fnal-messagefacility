@@ -12,7 +12,7 @@
 //
 // The fundamental operation is
 //
-//      bool add( const ELextendedID & )
+//      bool add(ELextendedID const&)
 //
 // which checks if the extended id is in the main map.  If it is not, it
 // looks for the specified limit (by id, then severity, then wildcard) and
@@ -28,9 +28,11 @@
 // ----------------------------------------------------------------------
 
 #include "fhiclcpp/types/Atom.h"
+#include "messagefacility/Utilities/ConfigurationTable.h"
 #include "messagefacility/Utilities/ELseverityLevel.h"
 #include "messagefacility/Utilities/ELextendedID.h"
 #include "messagefacility/Utilities/ELmap.h"
+#include "messagefacility/Utilities/Category.h"
 
 #include <array>
 
@@ -53,10 +55,19 @@ namespace mf {
 
     public:
 
-      struct Config {
-        fhicl::Atom<int> limit{fhicl::Name{"limit"}};
-        fhicl::Atom<int> reportEvery{fhicl::Name{"reportEvery"}};
-        fhicl::Atom<int> timespan{fhicl::Name{"timespan"}};
+      struct CategoryConfig {
+
+        CategoryConfig() = default;
+
+        explicit CategoryConfig(fhicl::ParameterSet const& pset) :
+          limit{fhicl::Name{"limit"}, pset.get<int>("limit", -1)},
+          reportEvery{fhicl::Name{"reportEvery"}, pset.get<int>("reportEvery", -1)},
+          timespan{fhicl::Name{"timespan"}, pset.get<int>("timespan", -1)}
+        {}
+
+        fhicl::Atom<int> limit{fhicl::Name{"limit"}, -1};
+        fhicl::Atom<int> reportEvery{fhicl::Name{"reportEvery"}, -1};
+        fhicl::Atom<int> timespan{fhicl::Name{"timespan"}, -1};
       };
 
       ELlimitsTable(int defaultLimit = -1, int defaultInterval = -1, int defaultTimespan = -1);
@@ -65,6 +76,7 @@ namespace mf {
 
       void wipe();  // Clears everything -- counts and limits established.
 
+      void setCategory(std::string const& id, int limit, int interval, int timespan);
       void setLimit   (std::string const& id, int n);
       void setInterval(std::string const& id, int interval);
       void setTimespan(std::string const& id, int n);

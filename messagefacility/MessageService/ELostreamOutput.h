@@ -29,28 +29,19 @@ namespace mf {
 
       struct Config {
         fhicl::TableFragment<ELdestination::Config> elDestConfig;
-
-        // The following is just crying out for templatizing ELostreamOutput.
-        fhicl::Atom<std::string> filename {fhicl::Name{"filename"},
-            fhicl::Comment{"The 'filename' parameter is required if the destination type is 'file'."},
-              [this]{ return elDestConfig().dest_type() == "file"; }};
-        fhicl::Atom<std::string> extension {fhicl::Name{"extension"},
-            fhicl::Comment{"The 'extension' parameter is allowed if the destination type is 'file'."},
-              [this]{ return elDestConfig().dest_type() == "file"; },
-                {}};
-        fhicl::Atom<bool> append {fhicl::Name{"append"},
-            fhicl::Comment{"The 'append' parameter is allowed if the destination type is 'file'."},
-              [this]{ return elDestConfig().dest_type() == "file"; },
-                false};
       };
 
       using Parameters = WrappedTable<Config>;
-      ELostreamOutput(Parameters const& ps,
+      ELostreamOutput(Parameters const& config,
                       cet::ostream_handle&&,
                       bool emitAtStart = false);
 
-      ELostreamOutput(Parameters const& ps,
+      ELostreamOutput(Parameters const& config,
                       std::ostream&,
+                      bool emitAtStart = false);
+
+      ELostreamOutput(Config const& config,
+                      cet::ostream_handle&&,
                       bool emitAtStart = false);
 
       // Disable copy c'tor/assignment
@@ -63,8 +54,6 @@ namespace mf {
                         mf::ErrorObj const& msg) override;
       void summarization(std::string const& fullTitle, std::string const& sumLines) override;
 
-      void changeFile(std::ostream& os) override;
-      void changeFile(std::string const& filename) override;
       void flush() override;
 
       cet::ostream_handle osh;

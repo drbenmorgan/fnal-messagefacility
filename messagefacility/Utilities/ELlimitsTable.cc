@@ -45,16 +45,21 @@ namespace mf {
       std::swap(tmp, *this);
     }
 
+    void ELlimitsTable::setCategory(std::string const& id,
+                                    int const limit,
+                                    int const interval,
+                                    int const timespan)
+    {
+      setLimit(id, limit);
+      setInterval(id, interval);
+      setTimespan(id, timespan);
+    }
 
     void ELlimitsTable::setLimit(std::string const& id, int n)
     {
       if (n < 0) n = two_billion();
       limits[id].limit = n;
     }
-
-    // void ELlimitsTable::set(std::string const& id, fhicl::ParameterSet const& ps)
-    // {
-    // }
 
     void ELlimitsTable::setInterval(std::string const& id, int const interval)
     {

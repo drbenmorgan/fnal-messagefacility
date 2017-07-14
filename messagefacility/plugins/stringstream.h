@@ -1,5 +1,5 @@
-#ifndef art_test_Framework_Services_System_tstream_h
-#define art_test_Framework_Services_System_tstream_h
+#ifndef messagefacility_plugins_stringstream_h
+#define messagefacility_plugins_stringstream_h
 
 #include "cetlib/ostream_handle.h"
 
@@ -10,7 +10,7 @@ namespace mf {
     getStringStream(std::string const & psetName);
 }
 
-#endif /* art_test_Framework_Services_System_tstream_h */
+#endif /* messagefacility_plugins_stringstream_h */
 
 // Local Variables:
 // mode: c++

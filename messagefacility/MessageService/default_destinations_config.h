@@ -9,7 +9,7 @@ namespace mf {
     {
       return {
         "  type: file"
-        "  filename: \"cerr.log\""
+        "  filename: \"err.log\""
         "  categories: {"
         "    default: {"
         "      limit: 10000000"
