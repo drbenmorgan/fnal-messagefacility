@@ -140,6 +140,10 @@ int main(int argc, char* argv[])
     std::cerr << e.what() << std::endl;
     return 6;
   }
+  catch (cet::exception const& e) {
+    std::cerr << e.what() << '\n';
+    return 7;
+  }
   catch (...) {
     std::cerr << "Caught unknown exception from mf::StartMessageFacility" << std::endl;
     return 5;

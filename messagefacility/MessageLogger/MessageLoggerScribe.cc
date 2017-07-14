@@ -120,7 +120,7 @@ namespace mf {
             purgeMode_ = true;
           }
         }
-        catch(...) {
+        catch (...) {
           std::cerr << "MessageLoggerScribe caught an unknown exception and "
                     << "will no longer be processing "
                     << "messages. (entering purge mode)\n";
@@ -265,7 +265,13 @@ namespace mf {
         }
 
         // Grab the destination type and filename.
-        auto const& dest_type = dest_pset.get<std::string>("type");
+        // FIXME: This should only be part of the configuration
+        // validation!
+        std::string dest_type{};
+        if (!dest_pset.get_if_present("type", dest_type)) {
+          throw Exception(errors::Configuration)
+            << "No 'type' specified for destination '" << psetname << ".\n";
+        }
         ELdestConfig::checkType(dest_type, configuration);
 
         bool const throw_on_duplicate_id = (configuration == ELdestConfig::STATISTICS);
@@ -302,11 +308,16 @@ namespace mf {
 
       if (!config_errors.empty()) {
         std::string msg{"\nThe following messagefacility destinations have configuration errors:\n\n"};
-        std::string const horizontal_rule(60, '=');
+        std::string const horizontal_rule(60,'=');
         msg += horizontal_rule;
         msg += "\n\n";
-        for (auto const& error : config_errors) {
-          msg += error;
+        auto start = cbegin(config_errors);
+        msg += *start;
+        ++start;
+        for (auto it = start, e = cend(config_errors); it != e; ++it) {
+          msg += std::string(60,'-');
+          msg += "\n\n";
+          msg += *it;
         }
         msg += horizontal_rule;
         msg += "\n\n";
