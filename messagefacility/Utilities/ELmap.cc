@@ -51,8 +51,8 @@ namespace mf {
 
     if (skipped < interval) return false;
 
-    if ( limit == 0 ) return false;        // Zero limit - never react to this
-    if ( (limit < 0)  || ( n <= limit )) {
+    if (limit == 0) return false;        // Zero limit - never react to this
+    if ((limit < 0) || (n <= limit)) {
       skipped = 0;
       return true;
     }
@@ -63,13 +63,13 @@ namespace mf {
     if ( r*limit != diff ) { // Not a multiple of limit - don't react
       return false;
     }
-    if ( r == 1 )   {     // Exactly twice limit - react
+    if ( r == 1 ) {     // Exactly twice limit - react
       skipped = 0;
       return true;
     }
 
-    while ( r > 1 )  {
-      if ( (r & 1) != 0 )  return false;  // Not 2**n times limit - don't react
+    while (r > 1)  {
+      if ((r & 1) != 0)  return false;  // Not 2**n times limit - don't react
       r >>= 1;
     }
     // If you never get an odd number till one, r is 2**n so react

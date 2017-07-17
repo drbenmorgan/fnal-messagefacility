@@ -2,6 +2,7 @@
 // MessageLoggerScribe.cc
 // ----------------------------------------------------------------------
 
+#include "cetlib/HorizontalRule.h"
 #include "cetlib/container_algorithms.h"
 #include "cetlib/sqlite/ConnectionFactory.h"
 #include "cetlib/trim.h"
@@ -75,10 +76,10 @@ namespace mf {
     MessageLoggerScribe::~MessageLoggerScribe()
     {
       // If there are any waiting message, finish them off
-      ErrorObj* errorobj_p=nullptr;
+      ErrorObj* errorobj_p = nullptr;
       while (waitingMessages_.try_pop(errorobj_p)) {
         if (!purgeMode_) {
-          for (auto const & cat : parseCategories(errorobj_p->xid().id())) {
+          for (auto const& cat : parseCategories(errorobj_p->xid().id())) {
             errorobj_p->setID(cat);
             admin_.log( *errorobj_p );  // route the message text
           }
@@ -102,13 +103,13 @@ namespace mf {
         break;
       }
       case LOG_A_MESSAGE: {
-        ErrorObj* errorobj_p = static_cast<ErrorObj*>(operand);
+        auto errorobj_p = static_cast<ErrorObj*>(operand);
         try {
           if (active_ && !purgeMode_) {
             log(errorobj_p);
           }
         }
-        catch(cet::exception const& e) {
+        catch (cet::exception const& e) {
           ++count_;
           std::cerr << "MessageLoggerScribe caught " << count_
                     << " cet::exceptions, text = \n"
@@ -129,8 +130,8 @@ namespace mf {
         break;
       }
       case CONFIGURE: {
-        jobConfig_ = std::unique_ptr<fhicl::ParameterSet>(static_cast<fhicl::ParameterSet*>(operand));
-        configure_errorlog();
+        auto config = std::unique_ptr<MessageLoggerQ::Config>(static_cast<MessageLoggerQ::Config*>(operand));
+        configure_errorlog(std::move(config));
         break;
       }
       case SUMMARIZE: {
@@ -161,7 +162,7 @@ namespace mf {
 
     }  // MessageLoggerScribe::runCommand(opcode, operand)
 
-    void MessageLoggerScribe::setApplication(std::string const & application)
+    void MessageLoggerScribe::setApplication(std::string const& application)
     {
       admin_.setApplication(application);
     }
@@ -195,7 +196,7 @@ namespace mf {
 
     //=============================================================================
     void
-    MessageLoggerScribe::configure_errorlog()
+    MessageLoggerScribe::configure_errorlog(std::unique_ptr<MessageLoggerQ::Config>&& config)
     {
       if (admin_.destinations().size() > 1) {
         LogWarning ("multiLogConfig")
@@ -203,38 +204,27 @@ namespace mf {
         cleanSlateConfiguration_ = false;
       }
 
-      fetchDestinations();
+      fetchDestinations(std::move(config));
     }  // MessageLoggerScribe::configure_errorlog()
 
 
     //=============================================================================
     void
-    MessageLoggerScribe::fetchDestinations()
+    MessageLoggerScribe::fetchDestinations(std::unique_ptr<MessageLoggerQ::Config> config)
     {
-      // Below, we do not use the
-      //
-      //    auto ps = jobConfig_->get(key, default_config());
-      //
-      // construction because "default_config()" will be called
-      // everytime even if the 'key' exists.  The has the side effect
-      // of unnecessarily bloating the ParameterSetRegistry.  Instead,
-      // we use the ParameterSet::get_if_present function and only
-      // call default_config() if the key does not exist in the
-      // parameter set.
-
+      fhicl::ParameterSet dest_psets;
       fhicl::ParameterSet ordinaryDests;
-      if (!jobConfig_->get_if_present("destinations", ordinaryDests))
-        ordinaryDests = default_destinations_config();
-
+      if (!config->destinations.get_if_present(dest_psets)) {
+        dest_psets = default_destinations_config();
+      }
+      ordinaryDests = dest_psets;
       ordinaryDests.erase("statistics");
 
       // Dial down the early destination once the ordinary
       // destinations are filled.
       earlyDest_.setThreshold(ELhighestSeverity);
 
-      fhicl::ParameterSet statDests;
-      if (!jobConfig_->get_if_present("destinations.statistics", statDests))
-        statDests = default_statistics_config(ordinaryDests);
+      auto statDests = dest_psets.get<fhicl::ParameterSet>("statistics", default_statistics_config(ordinaryDests));
 
       // Initialize universal suppression variables
       MessageDrop::debugAlwaysSuppressed = true;
@@ -308,18 +298,18 @@ namespace mf {
 
       if (!config_errors.empty()) {
         std::string msg{"\nThe following messagefacility destinations have configuration errors:\n\n"};
-        std::string const horizontal_rule(60,'=');
-        msg += horizontal_rule;
+        constexpr cet::HorizontalRule rule{60};
+        msg += rule('=');
         msg += "\n\n";
         auto start = cbegin(config_errors);
         msg += *start;
         ++start;
         for (auto it = start, e = cend(config_errors); it != e; ++it) {
-          msg += std::string(60,'-');
+          msg += rule('-');
           msg += "\n\n";
           msg += *it;
         }
-        msg += horizontal_rule;
+        msg += rule('=');
         msg += "\n\n";
         throw Exception(errors::Configuration) << msg;
       }

@@ -2,6 +2,7 @@
 #include "cetlib/ProvideFilePathMacro.h"
 #include "cetlib/ostream_handle.h"
 #include "fhiclcpp/types/AllowedConfigurationMacro.h"
+#include "fhiclcpp/types/TableFragment.h"
 #include "messagefacility/MessageService/ELdestination.h"
 #include "messagefacility/MessageService/ELostreamOutput.h"
 #include "messagefacility/plugins/formatFilename.h"
@@ -18,9 +19,7 @@ namespace {
   struct WrappedConfig {
     struct Config {
       fhicl::TableFragment<ELostreamOutput::Config> ostream_dest;
-      fhicl::Atom<std::string> filename {fhicl::Name{"filename"}};
-      fhicl::Atom<std::string> extension {fhicl::Name{"extension"}, {}};
-      fhicl::Atom<bool> append {fhicl::Name{"append"}, false};
+      fhicl::TableFragment<mfplugins::FileConfig> file_config;
     };
     using Parameters = fhicl::WrappedTable<Config>;
   };
@@ -32,9 +31,10 @@ extern "C" {
                   fhicl::ParameterSet const& pset)
   {
     WrappedConfig::Parameters const ps{pset};
-    std::string const& filename = mfplugins::formatFilename(ps().filename(),
-                                                            ps().extension());
-    cet::ostream_handle osh {filename, ps().append() ? std::ios::app : std::ios::trunc};
+    auto const& fConfig = ps().file_config();
+    std::string const& filename = mfplugins::formatFilename(fConfig.filename(),
+                                                            fConfig.extension());
+    cet::ostream_handle osh {filename, fConfig.append() ? std::ios::app : std::ios::trunc};
     return std::make_unique<ELostreamOutput>(ps().ostream_dest(), std::move(osh));
   }
 

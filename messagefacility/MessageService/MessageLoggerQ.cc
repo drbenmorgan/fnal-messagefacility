@@ -114,7 +114,7 @@ MessageLoggerQ::MLqLOG(ErrorObj* p)
 
 
 void
-MessageLoggerQ::MLqCFG(fhicl::ParameterSet* p)
+MessageLoggerQ::MLqCFG(Config* p)
 {
   handshakedCommand(CONFIGURE, p, "CFG");
 }

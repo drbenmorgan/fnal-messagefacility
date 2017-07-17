@@ -1,14 +1,3 @@
-// -*- C++ -*-
-//
-// Package:     Services
-// Class  :     MessageLoggerImpl
-//
-// Implementation:
-//     <Notes on implementation>
-//
-// Original Author:  W. Brown, M. Fischler
-//         Created:  Fri Nov 11 16:42:39 CST 2005
-
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageLogger/MessageLoggerImpl.h"
 #include "messagefacility/MessageService/MessageLoggerQ.h"
@@ -25,16 +14,14 @@ namespace mf {
 
   // constructors and destructor
   //
-  mf::MessageLoggerImpl::MessageLoggerImpl(fhicl::ParameterSet const& pset)
-    : messageServicePSetHasBeenValidated_{false}
-    , messageServicePSetValidatationResults_{}
-    , anyDebugEnabled_{false}
+  mf::MessageLoggerImpl::MessageLoggerImpl(Parameters const& ps)
+    : anyDebugEnabled_{false}
   {
     using modules_t = std::vector<std::string>;
-    auto const& debugModules = pset.get<modules_t>("debugModules", {});
-    auto const& suppressDebug = pset.get<modules_t>("suppressDebug", {});
-    auto const& suppressInfo = pset.get<modules_t>("suppressInfo", {});
-    auto const& suppressWarning = pset.get<modules_t>("suppressWarning", {});
+    auto const& debugModules = ps().debugModules();
+    auto const& suppressDebug = ps().suppressDebug();
+    auto const& suppressInfo = ps().suppressInfo();
+    auto const& suppressWarning = ps().suppressWarning();
 
     // Use these lists to prepare a map to use in tracking suppression
     // .. (Do suppressDebug first and suppressWarning last to get
@@ -59,7 +46,9 @@ namespace mf {
       }
     }
 
-    MessageLoggerQ::MLqCFG(new fhicl::ParameterSet{pset});
+    // fhicl::ParameterSet dests_pset;
+    // ps().destinations.get_if_present(dests_pset);
+    MessageLoggerQ::MLqCFG(new MessageLoggerQ::Config{ps().destinations()});
 
   } // ctor
 
@@ -89,7 +78,7 @@ namespace mf {
   }
 
   void
-  MessageLoggerImpl::restoreEnabledState(EnabledState previousEnabledState)
+  MessageLoggerImpl::restoreEnabledState(EnabledState const previousEnabledState)
   {
     auto md = MessageDrop::instance();
     md->debugEnabled = previousEnabledState.debugEnabled();
