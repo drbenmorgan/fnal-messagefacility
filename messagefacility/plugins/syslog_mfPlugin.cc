@@ -1,10 +1,10 @@
 #include "cetlib/PluginTypeDeducer.h"
+#include "cetlib/ProvideFilePathMacro.h"
 #include "fhiclcpp/ParameterSet.h"
-
+#include "fhiclcpp/types/AllowedConfigurationMacro.h"
+#include "fhiclcpp/types/ConfigurationTable.h"
 #include "messagefacility/MessageService/ELdestination.h"
 #include "messagefacility/MessageService/MessageDrop.h"
-#include "messagefacility/Utilities/BasicHelperMacros.h"
-#include "messagefacility/Utilities/ConfigurationTable.h"
 #include "messagefacility/Utilities/ELseverityLevel.h"
 #include "messagefacility/Utilities/exception.h"
 
@@ -31,7 +31,7 @@ namespace mfplugins {
     struct Config {
       fhicl::TableFragment<ELdestination::Config> elDestConfig;
     };
-    using Parameters = mf::WrappedTable<Config>;
+    using Parameters = fhicl::WrappedTable<Config>;
     ELsyslog(Parameters const& pset);
 
     void fillPrefix(std::ostringstream&, ErrorObj const&) override;
@@ -142,8 +142,8 @@ extern "C" {
                   fhicl::ParameterSet const& pset) {
     return std::make_unique<mfplugins::ELsyslog>(pset);
   }
-  PROVIDE_FILE_PATH()
-  PROVIDE_ALLOWED_CONFIGURATION(mfplugins::ELsyslog)
+  CET_PROVIDE_FILE_PATH()
+  FHICL_PROVIDE_ALLOWED_CONFIGURATION(mfplugins::ELsyslog)
 
 }
 DEFINE_BASIC_PLUGINTYPE_FUNC(mf::service::ELdestination)

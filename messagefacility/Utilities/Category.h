@@ -1,6 +1,11 @@
 #ifndef messagefacility_Utilities_Category_h
 #define messagefacility_Utilities_Category_h
 
+// FIXME: Explain purpose and clean up.
+
+#include "fhiclcpp/ParameterSet.h"
+#include "fhiclcpp/types/Atom.h"
+
 namespace mf {
   struct Category {
     struct Config {

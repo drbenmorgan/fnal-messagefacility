@@ -9,12 +9,12 @@
 // ----------------------------------------------------------------------
 
 #include "cetlib/ostream_handle.h"
+#include "fhiclcpp/types/Atom.h"
+#include "fhiclcpp/types/ConfigurationTable.h"
+#include "fhiclcpp/types/TableFragment.h"
 #include "messagefacility/MessageService/ELdestination.h"
-#include "messagefacility/Utilities/ConfigurationTable.h"
 #include "messagefacility/Utilities/ELextendedID.h"
 #include "messagefacility/Utilities/ELmap.h"
-#include "fhiclcpp/types/Atom.h"
-#include "fhiclcpp/types/TableFragment.h"
 
 #include <memory>
 #include <set>
@@ -31,7 +31,7 @@ namespace mf {
       struct Config {
         fhicl::TableFragment<ELdestination::Config> elDestConfig;
       };
-      using Parameters = WrappedTable<Config>;
+      using Parameters = fhicl::WrappedTable<Config>;
 
       ELstatistics(Parameters const& pset, std::ostream& osp);
       ELstatistics(Config const& confit, cet::ostream_handle&& osh);

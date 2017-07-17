@@ -31,7 +31,7 @@ namespace mf {
         fhicl::TableFragment<ELdestination::Config> elDestConfig;
       };
 
-      using Parameters = WrappedTable<Config>;
+      using Parameters = fhicl::WrappedTable<Config>;
       ELostreamOutput(Parameters const& config,
                       cet::ostream_handle&&,
                       bool emitAtStart = false);

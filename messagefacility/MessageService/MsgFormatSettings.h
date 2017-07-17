@@ -1,9 +1,9 @@
 #ifndef messagefacility_MessageService_MsgFormatSettings_h
 #define messagefacility_MessageService_MsgFormatSettings_h
 
+#include "fhiclcpp/types/ConfigurationTable.h"
 #include "fhiclcpp/types/OptionalAtom.h"
 #include "fhiclcpp/types/Table.h"
-#include "messagefacility/Utilities/ConfigurationTable.h"
 #include "messagefacility/Utilities/formatTime.h"
 #include <bitset>
 #include <functional>

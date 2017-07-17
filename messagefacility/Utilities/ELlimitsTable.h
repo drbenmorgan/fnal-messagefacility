@@ -27,8 +27,6 @@
 //
 // ----------------------------------------------------------------------
 
-#include "fhiclcpp/types/Atom.h"
-#include "messagefacility/Utilities/ConfigurationTable.h"
 #include "messagefacility/Utilities/ELseverityLevel.h"
 #include "messagefacility/Utilities/ELextendedID.h"
 #include "messagefacility/Utilities/ELmap.h"

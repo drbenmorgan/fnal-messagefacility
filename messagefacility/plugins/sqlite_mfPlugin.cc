@@ -1,11 +1,11 @@
-#include "messagefacility/MessageService/MessageDrop.h"
-#include "messagefacility/MessageService/ELdestination.h"
-#include "messagefacility/Utilities/BasicHelperMacros.h"
-#include "messagefacility/Utilities/ConfigurationTable.h"
-#include "messagefacility/Utilities/ErrorObj.h"
-
+#include "cetlib/ProvideFilePathMacro.h"
 #include "cetlib/sqlite/ConnectionFactory.h"
 #include "cetlib/sqlite/Ntuple.h"
+#include "fhiclcpp/types/ConfigurationTable.h"
+#include "fhiclcpp/types/AllowedConfigurationMacro.h"
+#include "messagefacility/MessageService/MessageDrop.h"
+#include "messagefacility/MessageService/ELdestination.h"
+#include "messagefacility/Utilities/ErrorObj.h"
 
 #include <cstdint>
 #include <memory>
@@ -27,7 +27,7 @@ namespace {
       fhicl::TableFragment<ELdestination::Config> elDestConfig;
       fhicl::Atom<string> filename{fhicl::Name{"filename"}};
     };
-    using Parameters = mf::WrappedTable<Config>;
+    using Parameters = fhicl::WrappedTable<Config>;
     sqlite3Plugin(Parameters const&, ConnectionFactory& cf);
 
   private:
@@ -93,6 +93,6 @@ extern "C" {
     return std::make_unique<sqlite3Plugin>(pset, cf);
   }
 }
-PROVIDE_FILE_PATH()
-PROVIDE_ALLOWED_CONFIGURATION(sqlite3Plugin)
+CET_PROVIDE_FILE_PATH()
+FHICL_PROVIDE_ALLOWED_CONFIGURATION(sqlite3Plugin)
 DEFINE_BASIC_PLUGINTYPE_FUNC(mf::service::ELdestination)

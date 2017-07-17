@@ -434,7 +434,7 @@ namespace mf {
       // default configuration.
       auto const& default_pset = cats_pset.get<fhicl::ParameterSet>(default_category_name, {});
       try {
-        WrappedTable<Category::Config> default_params{default_pset};
+        fhicl::WrappedTable<Category::Config> default_params{default_pset};
         stats.limits = ELlimitsTable{default_params().limit(), default_params().reportEvery(), default_params().timespan()};
       }
       catch (fhicl::detail::validationException const& e) {

@@ -1,9 +1,10 @@
 #include "cetlib/PluginTypeDeducer.h"
+#include "cetlib/ProvideFilePathMacro.h"
 #include "cetlib/ostream_handle.h"
+#include "fhiclcpp/types/AllowedConfigurationMacro.h"
 #include "fhiclcpp/types/TableFragment.h"
 #include "messagefacility/MessageService/ELdestination.h"
 #include "messagefacility/MessageService/ELstatistics.h"
-#include "messagefacility/Utilities/BasicHelperMacros.h"
 #include "messagefacility/plugins/formatFilename.h"
 
 #include <fstream>
@@ -20,7 +21,7 @@ namespace {
       fhicl::Atom<std::string> extension {fhicl::Name{"extension"}, {}};
       fhicl::Atom<bool> append {fhicl::Name{"append"}, false};
     };
-    using Parameters = mf::WrappedTable<Config>;
+    using Parameters = fhicl::WrappedTable<Config>;
   };
 }
 
@@ -38,6 +39,6 @@ extern "C" {
 
 }
 
-PROVIDE_FILE_PATH()
-PROVIDE_ALLOWED_CONFIGURATION(WrappedConfig)
+CET_PROVIDE_FILE_PATH()
+FHICL_PROVIDE_ALLOWED_CONFIGURATION(WrappedConfig)
 DEFINE_BASIC_PLUGINTYPE_FUNC(ELdestination)

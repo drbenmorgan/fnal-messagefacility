@@ -1,11 +1,11 @@
 #include "messagefacility/plugins/stringstream.h"
 
 #include "cetlib/PluginTypeDeducer.h"
+#include "cetlib/ProvideFilePathMacro.h"
 #include "fhiclcpp/ParameterSet.h"
-
+#include "fhiclcpp/types/AllowedConfigurationMacro.h"
 #include "messagefacility/MessageService/ELdestination.h"
 #include "messagefacility/MessageService/ELostreamOutput.h"
-#include "messagefacility/Utilities/BasicHelperMacros.h"
 #include "messagefacility/Utilities/exception.h"
 
 #include <iostream>
@@ -41,6 +41,6 @@ extern "C" {
   }
 }
 
-PROVIDE_FILE_PATH()
-PROVIDE_ALLOWED_CONFIGURATION(ELostreamOutput)
+CET_PROVIDE_FILE_PATH()
+FHICL_PROVIDE_ALLOWED_CONFIGURATION(ELostreamOutput)
 DEFINE_BASIC_PLUGINTYPE_FUNC(mf::service::ELdestination)
