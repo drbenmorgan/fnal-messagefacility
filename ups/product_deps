@@ -8,7 +8,7 @@ perllib  product_dir
 product		version
 tbb		v2017_7
 fhiclcpp        v4_05_01
-cetbuildtools	v5_10_01	-	only_for_build
+cetbuildtools	v5_12_00	-	only_for_build
 catch		v1_9_6		-nq-	only_for_build
 end_product_list
 
