@@ -61,9 +61,9 @@ namespace mf {
   namespace service {
 
     MessageLoggerScribe::MessageLoggerScribe()
-    try : earlyDest_{admin_.attach("file_early", makePlugin_(pluginFactory_,
-                                                             "file",
-                                                             "file_early",
+    try : earlyDest_{admin_.attach("cerr_early", makePlugin_(pluginFactory_,
+                                                             "cerr",
+                                                             "cerr_early",
                                                              default_destination_config()))}
     {}
     catch (fhicl::detail::validationException const& e) {

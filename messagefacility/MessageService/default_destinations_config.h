@@ -8,8 +8,7 @@ namespace mf {
     inline std::string default_destination_config_string()
     {
       return {
-        "  type: file"
-        "  filename: \"err.log\""
+        "  type: cerr"
         "  categories: {"
         "    default: {"
         "      limit: 10000000"
