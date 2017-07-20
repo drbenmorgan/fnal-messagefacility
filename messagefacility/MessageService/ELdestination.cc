@@ -37,7 +37,6 @@ namespace mf {
       : stats{pset.msgStatistics()}
       , format{pset.format()}
       , threshold{pset.threshold()}
-      , lineLength_{pset.noLineBreaks() ? 32000ull : pset.lineLength()}
       , enableStats{pset.outputStatistics()}
     {
       // Modify automatic suppression if necessary.
@@ -47,14 +46,6 @@ namespace mf {
       { MessageDrop::infoAlwaysSuppressed = false; }
       if (threshold <= ELseverityLevel::ELsev_warning)
       { MessageDrop::warningAlwaysSuppressed = false; }
-
-      if (pset.noTimeStamps()) {
-        format.suppress(TIMESTAMP);
-      }
-
-      if (pset.useMilliseconds()) {
-        format.include(MILLISECOND);
-      }
 
       configure(pset.categories);
     }
@@ -80,7 +71,7 @@ namespace mf {
       if (format.preambleMode) {
 
         //Accounts for newline @ the beginning of the std::string
-        if (first == '\n' || (charsOnLine + static_cast<int>(s.length())) > lineLength_) {
+        if (first == '\n' || (charsOnLine + static_cast<int>(s.length())) > format.lineLength) {
           charsOnLine = 0;
           if (second != ' ') {
             os << ' ';

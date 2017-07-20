@@ -2,62 +2,32 @@
 #include "messagefacility/MessageService/MsgFormatSettings.h"
 #include <iostream>
 
-namespace {
-  bool constexpr default_preambleMode() { return false; }
-
-  constexpr auto default_flags()
-  {
-    // bits are given in reverse order of enum declaration, so that
-    // the literal specified in the return statement corresponds to
-    //    noLineBreaks         :  false (0)
-    //    wantTimestamp        :  true  (1)
-    //    wantMillisecond      :  false (0)
-    //    wantModule           :  true  (1)
-    //    wantSubroutine       :  true  (1)
-    //    wantText             :  true  (1)
-    //    wantSomeContext      :  true  (1)
-    //    wantSerial           :  false (0)
-    //    wantFullContext      :  false (0)
-    //    wantTimeSeparate     :  false (0)
-    //    wantEpilogueSeparate :  false (0)
-    return std::bitset<mf::service::NFLAGS>{0b1111'0000'1111010};
-  }
-}
-
 namespace mf {
   namespace service {
 
-    // Default c'tor
-    MsgFormatSettings::MsgFormatSettings()
-      : preambleMode{default_preambleMode()}
-      , flags{default_flags().to_string()}
-      , timeStamp_{mf::timestamp::legacy}
-    {}
-
     MsgFormatSettings::MsgFormatSettings(Config const& config)
-      : MsgFormatSettings{}
     {
-      std::string value;
-      if (config.timestamp(value)) {
-        if (value == "none") {
-          timeStamp_ = mf::timestamp::none;
-          flags.set(TIMESTAMP, false);
-        }
-        else if (value == "default") timeStamp_ = mf::timestamp::legacy;
-        else if (value == "default_ms") timeStamp_ = mf::timestamp::legacy_ms;
-        else timeStamp_ = std::bind(mf::timestamp::user, std::placeholders::_1, value);
-      }
-      bool valueb {false};
-      if (config.noLineBreaks(valueb)        ) flags.set(NO_LINE_BREAKS   , valueb);
-      if (config.wantMillisecond(valueb)     ) flags.set(MILLISECOND      , valueb);
-      if (config.wantModule(valueb)          ) flags.set(MODULE           , valueb);
-      if (config.wantSubroutine(valueb)      ) flags.set(SUBROUTINE       , valueb);
-      if (config.wantText(valueb)            ) flags.set(TEXT             , valueb);
-      if (config.wantSomeContext(valueb)     ) flags.set(SOME_CONTEXT     , valueb);
-      if (config.wantSerial(valueb)          ) flags.set(SERIAL           , valueb);
-      if (config.wantFullContext(valueb)     ) flags.set(FULL_CONTEXT     , valueb);
-      if (config.wantTimeSeparate(valueb)    ) flags.set(TIME_SEPARATE    , valueb);
-      if (config.wantEpilogueSeparate(valueb)) flags.set(EPILOGUE_SEPARATE, valueb);
+      using namespace mf::timestamp;
+      auto const& value = config.timestamp();
+      bool const use_timestamp = (value != "none");
+      flags.set(TIMESTAMP, use_timestamp);
+
+      if (!use_timestamp) timeStamp_ = None::get_time;
+      else if (value == "default") timeStamp_ = Legacy::get_time;
+      else if (value == Legacy::format) timeStamp_ = Legacy::get_time;
+      else if (value == "default_ms") timeStamp_ = Legacy_ms::get_time;
+      else timeStamp_ = std::bind(User::get_time, std::placeholders::_1, value);
+
+      flags.set(NO_LINE_BREAKS   , config.noLineBreaks());
+      flags.set(MODULE           , config.wantModule());
+      flags.set(SUBROUTINE       , config.wantSubroutine());
+      flags.set(TEXT             , config.wantText());
+      flags.set(SOME_CONTEXT     , config.wantSomeContext());
+      flags.set(SERIAL           , config.wantSerial());
+      flags.set(FULL_CONTEXT     , config.wantFullContext());
+      flags.set(TIME_SEPARATE    , config.wantTimeSeparate());
+      flags.set(EPILOGUE_SEPARATE, config.wantEpilogueSeparate());
+      lineLength = config.noLineBreaks() ? 32000ull : config.lineLength();
     }
 
   } // end of namespace service

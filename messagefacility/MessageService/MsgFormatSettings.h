@@ -1,8 +1,8 @@
 #ifndef messagefacility_MessageService_MsgFormatSettings_h
 #define messagefacility_MessageService_MsgFormatSettings_h
 
+#include "fhiclcpp/types/Atom.h"
 #include "fhiclcpp/types/ConfigurationTable.h"
-#include "fhiclcpp/types/OptionalAtom.h"
 #include "fhiclcpp/types/Table.h"
 #include "messagefacility/Utilities/formatTime.h"
 #include <bitset>
@@ -33,37 +33,34 @@ namespace mf {
 
       struct Config {
         using Name = fhicl::Name;
-        fhicl::OptionalAtom<std::string> timestamp   { Name("timestamp")    };
-        fhicl::OptionalAtom<bool> noLineBreaks       { Name("noLineBreaks")    };
-        fhicl::OptionalAtom<bool> wantMillisecond    { Name("wantMillisecond") };
-        fhicl::OptionalAtom<bool> wantModule         { Name("wantModule")      };
-        fhicl::OptionalAtom<bool> wantSubroutine     { Name("wantSubroutine")  };
-        fhicl::OptionalAtom<bool> wantText           { Name("wantText")        };
-        fhicl::OptionalAtom<bool> wantSomeContext    { Name("wantSomeContext") };
-        fhicl::OptionalAtom<bool> wantSerial         { Name("wantSerial")      };
-        fhicl::OptionalAtom<bool> wantFullContext    { Name("wantFullContext") };
-        fhicl::OptionalAtom<bool> wantTimeSeparate   { Name("wantTimeSeparate") };
-        fhicl::OptionalAtom<bool> wantEpilogueSeparate { Name("wantEpilogueSeparate") };
+        fhicl::Atom<std::string> timestamp   { Name("timestamp"),
+            fhicl::Comment("The 'timestamp' parameter represents a format that can be interpreted\n"
+                           "by strftime.  Allowed values include:\n\n"
+                           "  - \"none\" (suppress timestamp printing)\n"
+                           "  - \"default\" (format string shown below)\n"
+                           "  - \"default_ms\" (use millisecond precision)\n"
+                           "  - any user-specified format interpretable by strftime"),
+            mf::timestamp::Legacy::format
+            };
+        fhicl::Atom<bool> noLineBreaks { Name("noLineBreaks"), false};
+        fhicl::Atom<unsigned long long> lineLength{fhicl::Name{"lineLength"},
+            fhicl::Comment{"The following parameter is allowed only if 'noLineBreaks' has been set to 'false'."},
+              [this]{ return !noLineBreaks(); }, 80ull};
+        fhicl::Atom<bool> wantModule       { Name("wantModule"), true};
+        fhicl::Atom<bool> wantSubroutine   { Name("wantSubroutine"), true};
+        fhicl::Atom<bool> wantText         { Name("wantText"), true};
+        fhicl::Atom<bool> wantSomeContext  { Name("wantSomeContext"), true};
+        fhicl::Atom<bool> wantSerial       { Name("wantSerial"), false};
+        fhicl::Atom<bool> wantFullContext  { Name("wantFullContext"), false};
+        fhicl::Atom<bool> wantTimeSeparate { Name("wantTimeSeparate"), false};
+        fhicl::Atom<bool> wantEpilogueSeparate { Name("wantEpilogueSeparate"), false};
       };
-
-      MsgFormatSettings();
 
       MsgFormatSettings(Config const& config);
 
-      bool want(flag_enum FLAG) const
+      bool want(flag_enum const FLAG) const
       {
         return flags.test(FLAG);
-      }
-
-      void suppress(flag_enum FLAG)
-      {
-        flags.set(FLAG,false);
-      }
-
-      void include (flag_enum FLAG)
-      {
-        flags.set(FLAG,true );
-        if ( FLAG == MILLISECOND ) timeStamp_ = mf::timestamp::legacy_ms;
       }
 
       std::string timestamp(timeval const& t)
@@ -71,8 +68,9 @@ namespace mf {
         return timeStamp_(t);
       }
 
-      bool preambleMode;
+      bool preambleMode{false};
       std::bitset<NFLAGS> flags;
+      std::size_t lineLength;
 
     private:
       std::function<std::string(timeval const& t)> timeStamp_;

@@ -88,7 +88,7 @@ namespace mf {
   bool        MessageFacilityMsg::empty()       const { return empty_; }
   ErrorObj    MessageFacilityMsg::ErrorObject() const { return *ep; }
   timeval     MessageFacilityMsg::timestamp()   const { return ep->timestamp(); }
-  std::string MessageFacilityMsg::timestr()     const { return mf::timestamp::legacy(ep->timestamp()); }
+  std::string MessageFacilityMsg::timestr()     const { return mf::timestamp::Legacy::get_time(ep->timestamp()); }
   std::string MessageFacilityMsg::severity()    const { return ep->xid().severity().getInputStr(); }
   std::string MessageFacilityMsg::category()    const { return ep->xid().id(); }
   std::string MessageFacilityMsg::hostname()    const { return ep->xid().hostname(); }
