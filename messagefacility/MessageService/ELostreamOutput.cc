@@ -70,7 +70,7 @@ namespace mf {
 
       // title:
       std::string const title(fullTitle, 0, titleMaxLength);
-      int const q = (lineLength_ - title.length() - 2) / 2;
+      int const q = (format.lineLength - title.length() - 2) / 2;
       std::string line(q, '=');
       emitToken(osh, "", true);
       emitToken(osh, line);
@@ -84,7 +84,7 @@ namespace mf {
 
       // finish:
       emitToken(osh, "", true);
-      emitToken(osh, std::string(lineLength_, '='), true);
+      emitToken(osh, std::string(format.lineLength, '='), true);
     }  // summarization()
 
 

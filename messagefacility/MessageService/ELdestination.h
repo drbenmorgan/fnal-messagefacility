@@ -41,6 +41,12 @@ namespace mf {
 
       struct Config {
         fhicl::Atom<std::string> dest_type{fhicl::Name{"type"}};
+        fhicl::Atom<std::string> threshold {
+          fhicl::Name{"threshold"},
+          fhicl::Comment{"The 'threshold' parameter specifies the lowest severity level of\n"
+                         "messages that will be logged to the destination"},
+          "INFO"
+        };
         fhicl::Table<MsgFormatSettings::Config> format{fhicl::Name{"format"}};
         // Assembling the following comment is, shall we say, icky.
         // It's bad; really bad: worse than ending a sentence with a
@@ -94,18 +100,6 @@ Category parameters
   +"\n\n"+Category::Config::reportEvery_comment()
   +"\n\n"+Category::Config::timespan_comment()}
         };
-        fhicl::Atom<std::string> threshold {
-          fhicl::Name{"threshold"},
-          fhicl::Comment{"The 'threshold' parameter specifies the lowest severity level of\n"
-                         "messages that will be logged to the destination"},
-          "INFO"
-        };
-        fhicl::Atom<bool> noTimeStamps{fhicl::Name{"noTimeStamps"}, false};
-        fhicl::Atom<bool> noLineBreaks{fhicl::Name{"noLineBreaks"}, false};
-        fhicl::Atom<unsigned long long> lineLength{fhicl::Name{"lineLength"},
-                                                   fhicl::Comment{"The following parameter is allowed only if 'noLineBreaks' has been set to 'false'."},
-                                                   [this]{ return !noLineBreaks(); }, 80ull};
-        fhicl::Atom<bool> useMilliseconds{fhicl::Name{"useMilliseconds"}, false};
         fhicl::Atom<bool> outputStatistics{fhicl::Name{"outputStatistics"}, false};
         fhicl::TableFragment<MsgStatistics::Config> msgStatistics;
       };
@@ -163,7 +157,6 @@ Category parameters
       MsgStatistics stats;
       MsgFormatSettings format;
       ELseverityLevel threshold;
-      std::size_t lineLength_;
 
     private:
 

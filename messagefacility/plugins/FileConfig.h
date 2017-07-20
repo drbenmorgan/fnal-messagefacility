@@ -1,5 +1,5 @@
-#ifndef messagefacility_plugins_formatFilename_h
-#define messagefacility_plugins_formatFilename_h
+#ifndef messagefacility_plugins_FileConfig_h
+#define messagefacility_plugins_FileConfig_h
 
 #include "fhiclcpp/types/Atom.h"
 
@@ -11,7 +11,6 @@ namespace mfplugins {
 
   struct FileConfig {
     fhicl::Atom<std::string> filename {fhicl::Name{"filename"}};
-    fhicl::Atom<std::string> extension {fhicl::Name{"extension"}, {}};
     fhicl::Atom<bool> append {
       fhicl::Name{"append"},
       fhicl::Comment{"If 'append' is set to 'true', then the contents\n"
@@ -20,11 +19,9 @@ namespace mfplugins {
     };
   };
 
-  std::string formatFilename(std::string filename,
-                             std::string const& extension);
 }
 
-#endif /* messagefacility_plugins_formatFilename_h */
+#endif /* messagefacility_plugins_FileConfig_h */
 
 // Local variables:
 // mode: c++

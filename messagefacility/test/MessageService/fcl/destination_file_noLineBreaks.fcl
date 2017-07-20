@@ -1,5 +1,11 @@
-message : {
-   destinations : {
-      log_noLineBreaks : { type : file  filename : "noLineBreaks.log"   noLineBreaks : true  }
-   }
+message: {
+  destinations: {
+    log_noLineBreaks: {
+      type: file
+      filename: "noLineBreaks.log"
+      format: {
+        noLineBreaks: true
+      }
+    }
+  }
 }

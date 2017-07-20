@@ -2,41 +2,19 @@
 # The 'threshold' parameter has been ratched up to highest severity
 # so that the filesizes are small (if not non-existent)
 
-message : {
-   destinations : {
+message: {
+  destinations: {
 
-      log_filenameOption1 : {
-         type      : file
-         filename  : "outputFileName1"
-      }
+    log_filenameOption1: {
+      type      : file
+      filename  : "outputFileName1"
+    }
 
-      log_filenameOption2 : {
-         type      : file
-         filename  : "filenameOption2"
-         extension : ".log2"
-         threshold : "!!"
-      }
+    log_filenameOption2: {
+      type      : file
+      filename  : "filenameOption2.log"
+      threshold : "!!"
+    }
 
-      log_filenameOption3 : {
-         type      : file
-         filename  : "filenameOption3.log"
-         extension : ".log3"
-         threshold : "!!"
-      }
-
-      log_filenameOption4 : {
-         type      : file
-         filename  : "filenameOption4.logx"
-         extension : ".log4"
-         threshold : "!!"
-      }
-
-      log_filenameOption5 : {
-         type      : file
-         filename  : "filenameOption5"
-         extension : "log5" # no '.' before suffix
-         threshold : "!!"
-      }
-
-   }
+  }
 }

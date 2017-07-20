@@ -6,7 +6,6 @@ message : {
 
       type       : file // or cerr, cout, syslog, sqlite   ### TEST DEVELOPED ###
       filename   : "somefile.txt"                          ### TEST DEVELOPED ###
-      extension  : ".someextension"                        ### TEST DEVELOPED ###
 
       outputStatistics : false
       resetStatistics  : false
@@ -21,23 +20,23 @@ message : {
 
       }
 
-      threshold       : "INFO" // some string   ### TEST DEVELOPED ###
-      noLineBreaks    : true                    ### TEST DEVELOPED ###
-      noTimeStamps    : false                   ### TEST DEVELOPED ###
-      useMilliseconds : false                   ### TEST DEVELOPED ###
+      threshold       : "INFO" // some string  ### TEST DEVELOPED ###
+      format: {
+        timestamp: default_ms                  ### TEST DEVELOPED ###
+        noLineBreaks    : true                 ### TEST DEVELOPED ###
+      }
 
     }
 
     dest2: {
       type: cout
     }
-    statistics : {                               ### TEST DEVELOPED ###
+    statistics : {                             ### TEST DEVELOPED ###
 
 
-      dest1 : {                                 ### TEST DEVELOPED ###
+      dest1 : {                                ### TEST DEVELOPED ###
         type      : file                       ### TEST DEVELOPED ###
         filename  : "statistics.txt"           ### TEST DEVELOPED ###
-        extension : ".something"               ### TEST DEVELOPED ###
         reset     : true                       ### TEST DEVELOPED ###
       }
     }
