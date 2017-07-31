@@ -42,6 +42,9 @@ namespace mf {
                            "  - any user-specified format interpretable by strftime"),
             mf::timestamp::Legacy::format
             };
+        // The following parameter "noLineBreaks' will be removed in a
+        // future release.  Its behavior can be enabled by specifying
+        // a lineLength of 0 or less.
         fhicl::Atom<bool> noLineBreaks { Name("noLineBreaks"), false};
         fhicl::Atom<unsigned long long> lineLength{fhicl::Name{"lineLength"},
             fhicl::Comment{"The following parameter is allowed only if 'noLineBreaks' has been set to 'false'."},
