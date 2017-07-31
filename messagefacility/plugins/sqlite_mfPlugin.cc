@@ -16,6 +16,9 @@ namespace {
   using std::uint32_t;
   using namespace cet::sqlite;
 
+  // Centrally-managed factory for SQLite destinations.
+  ConnectionFactory factory;
+
   //==========================================================
   // sqlite plugin declaration
   //==========================================================
@@ -28,7 +31,7 @@ namespace {
       fhicl::Atom<string> filename{fhicl::Name{"filename"}};
     };
     using Parameters = fhicl::WrappedTable<Config>;
-    sqlite3Plugin(Parameters const&, ConnectionFactory& cf);
+    sqlite3Plugin(Parameters const&);
 
   private:
 
@@ -42,9 +45,9 @@ namespace {
 
   // Implementation
   //===============================================================================================================
-  sqlite3Plugin::sqlite3Plugin(Parameters const& ps, ConnectionFactory& cf)
+  sqlite3Plugin::sqlite3Plugin(Parameters const& ps)
     : ELdestination{ps().elDestConfig()}
-    , connection_{cf.make(ps().filename())}
+    , connection_{factory.make(ps().filename())}
     , msgTable_{connection_, "Messages", {"Timestamp","Hostname","Hostaddress","Severity","Category","AppName","ProcessId","RunEventNo","ModuleName","Message"}}
   {}
 
@@ -88,9 +91,9 @@ namespace {
 //======================================================================
 
 extern "C" {
-  auto makePlugin(std::string const&, fhicl::ParameterSet const& pset, ConnectionFactory& cf)
+  auto makePlugin(std::string const&, fhicl::ParameterSet const& pset)
   {
-    return std::make_unique<sqlite3Plugin>(pset, cf);
+    return std::make_unique<sqlite3Plugin>(pset);
   }
 }
 CET_PROVIDE_FILE_PATH()

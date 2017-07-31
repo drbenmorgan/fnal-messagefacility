@@ -4,7 +4,6 @@
 #include "cetlib/BasicPluginFactory.h"
 #include "cetlib/exempt_ptr.h"
 #include "cetlib/propagate_const.h"
-#include "cetlib/sqlite/ConnectionFactory.h"
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageService/AbstractMLscribe.h"
 #include "messagefacility/MessageService/ELadministrator.h"
@@ -57,7 +56,6 @@ namespace mf {
       std::vector<std::string> parseCategories(std::string const& s);
 
       // --- data:
-      cet::sqlite::ConnectionFactory dbConnectionFactory_{};
       ELadministrator admin_{};
       cet::BasicPluginFactory pluginFactory_{"mfPlugin"};
       cet::BasicPluginFactory pluginStatsFactory_{"mfStatsPlugin"};

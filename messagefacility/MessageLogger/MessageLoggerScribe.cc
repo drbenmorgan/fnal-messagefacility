@@ -4,7 +4,6 @@
 
 #include "cetlib/HorizontalRule.h"
 #include "cetlib/container_algorithms.h"
-#include "cetlib/sqlite/ConnectionFactory.h"
 #include "cetlib/trim.h"
 #include "fhiclcpp/make_ParameterSet.h"
 #include "fhiclcpp/types/detail/validationException.h"
@@ -449,7 +448,7 @@ namespace mf {
       try {
         auto const pluginType = plugin_factory.pluginType(libspec);
         if (pluginType == cet::PluginTypeDeducer<ELdestination>::value) {
-          result = plugin_factory.makePlugin<std::unique_ptr<ELdestination>>(libspec, psetname, pset, dbConnectionFactory_);
+          result = plugin_factory.makePlugin<std::unique_ptr<ELdestination>>(libspec, psetname, pset);
         } else {
           throw Exception(errors::Configuration, "MessageLoggerScribe: ")
             << "unrecognized plugin type "
