@@ -1,4 +1,4 @@
-parent messagefacility v2_00_02
+parent messagefacility v2_01_00
 defaultqual e14
 #
 fcldir -
@@ -7,8 +7,8 @@ perllib  product_dir
 # define product/version pairs
 product		version
 tbb		v2017_7
-fhiclcpp        v4_05_01
-cetbuildtools	v5_13_00	-	only_for_build
+fhiclcpp        v4_06_00
+cetbuildtools	v5_13_01	-	only_for_build
 catch		v1_9_6		-nq-	only_for_build
 end_product_list
 
