@@ -59,11 +59,13 @@ namespace {
 namespace mf {
   namespace service {
 
-    MessageLoggerScribe::MessageLoggerScribe()
-    try : earlyDest_{admin_.attach("cerr_early", makePlugin_(pluginFactory_,
-                                                             "cerr",
-                                                             "cerr_early",
-                                                             default_destination_config()))}
+    MessageLoggerScribe::MessageLoggerScribe(std::string const & applicationName)
+    try :
+      admin_{applicationName},
+      earlyDest_{admin_.attach("cerr_early", makePlugin_(pluginFactory_,
+                                                         "cerr",
+                                                         "cerr_early",
+                                                         default_destination_config()))}
     {}
     catch (fhicl::detail::validationException const& e) {
       std::string msg{"\nConfiguration error for destination: "+detail::bold_fontify("cerr_early")+"\n\n"};
@@ -164,6 +166,21 @@ namespace mf {
     void MessageLoggerScribe::setApplication(std::string const& application)
     {
       admin_.setApplication(application);
+    }
+
+    void MessageLoggerScribe::setHostName(std::string const& hostName)
+    {
+      admin_.hostname_ = hostName;
+    }
+
+    void MessageLoggerScribe::setHostAddr(std::string const& hostAddr)
+    {
+      admin_.hostaddr_ = hostAddr;
+    }
+
+    void MessageLoggerScribe::setPID(long pid)
+    {
+      admin_.pid_ = pid;
     }
 
     //=============================================================================

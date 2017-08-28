@@ -91,10 +91,11 @@ public:
 
 private:
 
-  ELadministrator();
+  ELadministrator(std::string const & applicationName);
 
   std::array<int, ELseverityLevel::nLevels> severityCounts_ {{0}}; // fill by aggregation
   ELseverityLevel highSeverity_ {ELseverityLevel::ELsev_zeroSeverity};
+  void updateMsg_(ErrorObj &msg) const;
 
   std::string hostname_ {};
   std::string hostaddr_ {};

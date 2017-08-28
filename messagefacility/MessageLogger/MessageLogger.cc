@@ -85,7 +85,8 @@ mf::MessageFacilityService & mf::MessageFacilityService::instance()
 }
 
 // Start MessageFacility service
-void mf::StartMessageFacility(fhicl::ParameterSet const& pset)
+void mf::StartMessageFacility(fhicl::ParameterSet const& pset,
+                              std::string const & applicationName)
 {
   auto& mfs = MessageFacilityService::instance();
   std::lock_guard<std::mutex> lock {mfs.m};
@@ -94,7 +95,7 @@ void mf::StartMessageFacility(fhicl::ParameterSet const& pset)
     return;
 
   // MessageServicePresence
-  mfs.MFPresence = std::make_unique<Presence>();
+  mfs.MFPresence = std::make_unique<Presence>(applicationName);
 
   // The MessageLogger
   mfs.theML = std::make_unique<MessageLoggerImpl>(pset);

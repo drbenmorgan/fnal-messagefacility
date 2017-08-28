@@ -6,9 +6,9 @@
 #include <memory>
 
 namespace mf {
-  Presence::Presence()
+  Presence::Presence(std::string const & applicationName)
   {
-    MessageLoggerQ::setMLscribe_ptr(std::make_unique<service::MessageLoggerScribe>());
+    MessageLoggerQ::setMLscribe_ptr(std::make_unique<service::MessageLoggerScribe>(applicationName));
     MessageDrop::instance()->messageLoggerScribeIsRunning = MLSCRIBE_RUNNING_INDICATOR;
   }
 

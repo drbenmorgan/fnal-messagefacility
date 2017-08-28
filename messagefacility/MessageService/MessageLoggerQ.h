@@ -96,8 +96,11 @@ If a value for 'destinations' is not supplied, one will be provided for you.)"}
     static bool ignore(mf::ELseverityLevel severity,
                        std::string const& category);
 
-    // --- Allow the setting of the global application name.
+    // --- Allow the setting of global information.
     static void setApplication(std::string const & application);
+    static void setHostName(std::string const & name);
+    static void setHostAddr(std::string const & addr);
+    static void setPID(long PID);
 
     // --- no copying:
     MessageLoggerQ(MessageLoggerQ const&) = delete;

@@ -6,7 +6,7 @@
 namespace mf  {
     class Presence {
     public:
-      Presence();
+      Presence(std::string const & applicationName);
       ~Presence();
 
       Presence(Presence const&) = delete;
