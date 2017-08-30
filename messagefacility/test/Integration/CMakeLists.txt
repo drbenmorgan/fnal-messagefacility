@@ -18,6 +18,7 @@ cet_make_exec(mfexample
 
 basic_plugin(Issue17457TestDestination mfPlugin
   MF_MessageLogger fhiclcpp ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY}
+  NO_INSTALL
   )
 
 foreach (N 01 02) # 03 04 05)
