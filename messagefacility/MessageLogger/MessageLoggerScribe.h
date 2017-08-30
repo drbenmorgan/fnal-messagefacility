@@ -84,10 +84,8 @@ namespace mf {
 
     };  // MessageLoggerScribe
 
-
   }   // end of namespace service
 }  // namespace mf
-
 
 #endif /* messagefacility_MessageLogger_MessageLoggerScribe_h */
 
