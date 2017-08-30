@@ -33,7 +33,7 @@ namespace mf  {
                "suppressed.  The default list is empty, implying no suppressions.";
       }
 
-      using strings_t = fhicl::Sequence<std::string>::dtype;
+      using strings_t = fhicl::Sequence<std::string>::default_type;
       fhicl::Sequence<std::string> debugModules{
         fhicl::Name{"debugModules"},
         fhicl::Comment{"The 'debugModules' parameter is a sequence of strings that\n"
