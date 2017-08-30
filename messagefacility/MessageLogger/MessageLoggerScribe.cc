@@ -276,7 +276,7 @@ namespace mf {
         std::string dest_type{};
         if (!dest_pset.get_if_present("type", dest_type)) {
           throw Exception(errors::Configuration)
-            << "No 'type' specified for destination '" << psetname << ".\n";
+            << "No 'type' specified for destination '" << psetname << "'.\n";
         }
         ELdestConfig::checkType(dest_type, configuration);
 
