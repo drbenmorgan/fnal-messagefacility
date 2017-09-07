@@ -57,7 +57,8 @@ namespace mf {
 
   // For frameworks and standalone applications: start and stop the
   // system.
-  void StartMessageFacility(fhicl::ParameterSet const& pset);
+  void StartMessageFacility(fhicl::ParameterSet const& pset,
+                            std::string const & applicationName = "");
   void EndMessageFacility();
 
   // Basic setup.

@@ -19,12 +19,6 @@ namespace mfplugins {
   using mf::service::ELdestination;
   using std::string;
 
-  //======================================================================
-  //
-  // syslog destination plugin
-  //
-  //======================================================================
-
   class ELsyslog : public ELdestination {
   public:
 
@@ -34,23 +28,14 @@ namespace mfplugins {
     using Parameters = fhicl::WrappedTable<Config>;
     ELsyslog(Parameters const& pset);
 
+  private:
     void fillPrefix(std::ostringstream&, ErrorObj const&) override;
     void fillUsrMsg(std::ostringstream&, ErrorObj const&) override;
     void fillSuffix(std::ostringstream&, ErrorObj const&) override {}
     void routePayload(std::ostringstream const&, ErrorObj const&) override;
-
-  private:
     int syslogLevel(ELseverityLevel);
-
   };
 
-  // END DECLARATION
-  //======================================================================
-  // BEGIN IMPLEMENTATION
-
-
-  //======================================================================
-  // ELsyslog c'tor
   //======================================================================
 
   ELsyslog::ELsyslog(Parameters const& pset)
@@ -59,31 +44,25 @@ namespace mfplugins {
     openlog("MF",0,LOG_LOCAL0);
   }
 
-  //======================================================================
-  // Message prefix filler ( overriddes ELdestination::fillPrefix )
-  //======================================================================
   void ELsyslog::fillPrefix(std::ostringstream& oss,
                             ErrorObj const& msg)
   {
     auto const& xid = msg.xid();
-    oss << format.timestamp(msg.timestamp())+std::string("|")     // timestamp
-        << xid.hostname()+std::string("|")                          // host name
-        << xid.hostaddr()+std::string("|")                          // host address
-        << xid.severity().getName()+std::string("|")                // severity
-        << xid.id()+std::string("|")                                // category
-        << xid.application()+std::string("|")                       // application
-        << xid.pid()<<std::string("|")                              // process id
+    oss << format.timestamp(msg.timestamp())+std::string("|")      // timestamp
+        << xid.hostname()+std::string("|")                         // host name
+        << xid.hostaddr()+std::string("|")                         // host address
+        << xid.severity().getName()+std::string("|")               // severity
+        << xid.id()+std::string("|")                               // category
+        << xid.application()+std::string("|")                      // application
+        << xid.pid()<<std::string("|")                             // process id
         << mf::MessageDrop::instance()->iteration+std::string("|") // run/event no
-        << xid.module()+std::string("|");                           // module name
+        << xid.module()+std::string("|");                          // module name
   }
 
-  //======================================================================
-  // Message filler ( overriddes ELdestination::fillUsrMsg )
-  //======================================================================
   void ELsyslog::fillUsrMsg(std::ostringstream& oss, ErrorObj const& msg)
   {
     std::ostringstream tmposs;
-    ELdestination::fillUsrMsg( tmposs, msg );
+    ELdestination::fillUsrMsg(tmposs, msg);
 
     // remove leading "\n" if present
     std::string const& usrMsg = !tmposs.str().compare(0,1,"\n") ? tmposs.str().erase(0,1) : tmposs.str();
@@ -91,9 +70,6 @@ namespace mfplugins {
     oss << usrMsg;
   }
 
-  //======================================================================
-  // Message router ( overriddes ELdestination::routePayload )
-  //======================================================================
   void ELsyslog::routePayload(std::ostringstream const& oss,
                               ErrorObj const& msg)
   {
@@ -108,38 +84,31 @@ namespace mfplugins {
     //     LOG_EMERG  ; //0
     //     LOG_ALERT  ; //1
     //     LOG_NOTICE ; //5
-
-    int level{-1};
-
-    switch ( severity.getLevel() ) {
-      //    Used by:
-    case ELseverityLevel::ELsev_severe  : level = LOG_CRIT   ; break; // LogAbsolute, LogSystem
-    case ELseverityLevel::ELsev_error   : level = LOG_ERR    ; break; // LogError, LogProblem
-    case ELseverityLevel::ELsev_warning : level = LOG_WARNING; break; // LogPrint, LogWarning
-    case ELseverityLevel::ELsev_info    : level = LOG_INFO   ; break; // LogInfo, LogVerbatim
-    case ELseverityLevel::ELsev_success : level = LOG_DEBUG  ; break; // LogDebug, LogTrace
-    default : {
-      throw mf::Exception ( mf::errors::LogicError )
+    switch (severity.getLevel()) {                           // Used by:
+    case ELseverityLevel::ELsev_severe : return LOG_CRIT;    //   LogAbsolute, LogSystem
+    case ELseverityLevel::ELsev_error  : return LOG_ERR;     //   LogError, LogProblem
+    case ELseverityLevel::ELsev_warning: return LOG_WARNING; //   LogPrint, LogWarning
+    case ELseverityLevel::ELsev_info   : return LOG_INFO;    //   LogInfo, LogVerbatim
+    case ELseverityLevel::ELsev_success: return LOG_DEBUG;   //   LogDebug, LogTrace
+    default: {
+      throw mf::Exception(mf::errors::LogicError)
         <<"ELseverityLevel: " << severity
         << " not currently supported for syslog destination\n";
     }
     }
-
-    return level;
+    return -1;
   }
 
 } // end namespace mfplugins
 
-//======================================================================
-//
+// ======================================================================
 // makePlugin function
-//
-//======================================================================
+// ======================================================================
 
 extern "C" {
 
-  auto makePlugin(std::string const&,
-                  fhicl::ParameterSet const& pset) {
+  auto makePlugin(std::string const&, fhicl::ParameterSet const& pset)
+  {
     return std::make_unique<mfplugins::ELsyslog>(pset);
   }
   CET_PROVIDE_FILE_PATH()

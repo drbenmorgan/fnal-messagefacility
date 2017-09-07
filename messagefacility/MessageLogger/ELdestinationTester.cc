@@ -130,7 +130,7 @@ int main(int argc, char* argv[])
 
   // Start MessageFacility Service
   try {
-    mf::StartMessageFacility(main_pset.get<fhicl::ParameterSet>("message"));
+    mf::StartMessageFacility(main_pset.get<fhicl::ParameterSet>("message"), std::string("MessageFacility"));
   }
   catch (mf::Exception const& e) {
     std::cerr << e.what() << std::endl;
@@ -150,7 +150,6 @@ int main(int argc, char* argv[])
   }
 
   // Set module name for the main thread
-  mf::SetApplicationName("MessageFacility");
   mf::MessageDrop::instance()->setSinglet("MFTest");
   mf::SetContextIteration("pre-event");
 

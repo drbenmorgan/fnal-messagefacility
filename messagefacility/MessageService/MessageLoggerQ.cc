@@ -156,3 +156,18 @@ void MessageLoggerQ::setApplication(std::string const & application)
 {
   mlscribe_ptr->setApplication(application);
 }
+
+void MessageLoggerQ::setHostName(std::string const & hostName)
+{
+  mlscribe_ptr->setHostName(hostName);
+}
+
+void MessageLoggerQ::setHostAddr(std::string const & hostAddr)
+{
+  mlscribe_ptr->setHostAddr(hostAddr);
+}
+
+void MessageLoggerQ::setPID(long pid)
+{
+  mlscribe_ptr->setPID(pid);
+}

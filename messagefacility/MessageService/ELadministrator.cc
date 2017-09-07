@@ -19,6 +19,7 @@ void
 mf::service::ELadministrator::log(ErrorObj& msg)
 {
   auto const severity = msg.xid().severity();
+  updateMsg_(msg);
   int const lev = severity.getLevel();
   ++severityCounts_[lev];
   if (severity > highSeverity_)
@@ -106,7 +107,7 @@ resetSeverityCount()
 }
 
 mf::service::ELadministrator::
-ELadministrator()
+ELadministrator(std::string const & applicationName)
 {
   // hostname
   char hostname[1024];
@@ -164,21 +165,35 @@ ELadministrator()
   // process id
   pid_ = static_cast<long>(getpid());
 
-  // get process name from '/proc/pid/cmdline'
-  std::stringstream ss;
-  ss << "//proc//" << pid_ << "//cmdline";
-  std::ifstream procfile {ss.str().c_str()};
+  if (applicationName.empty()) {
+    // get process name from '/proc/pid/cmdline'
+    std::stringstream ss;
+    ss << "//proc//" << pid_ << "//cmdline";
+    std::ifstream procfile {ss.str().c_str()};
 
-  std::string procinfo;
+    std::string procinfo;
 
-  if(procfile.is_open()) {
-    procfile >> procinfo;
-    procfile.close();
+    if(procfile.is_open()) {
+      procfile >> procinfo;
+      procfile.close();
+    }
+
+    size_t end = procinfo.find('\0');
+    size_t start = procinfo.find_last_of('/',end);
+
+    application_ = procinfo.substr(start+1, end-start-1);
+  } else {
+    application_ = applicationName;
   }
-
-  size_t end = procinfo.find('\0');
-  size_t start = procinfo.find_last_of('/',end);
-
-  application_ = procinfo.substr(start+1, end-start-1);
-
 }  // ELadministrator()
+
+void
+mf::service::ELadministrator::
+updateMsg_(ErrorObj & msg) const
+{
+  auto const & xid = msg.xid();
+  if (xid.hostname().empty()) { msg.setHostName(hostname()); }
+  if (xid.hostaddr().empty()) { msg.setHostAddr(hostaddr()); }
+  if (xid.application().empty()) { msg.setApplication(application()); }
+  if (xid.pid() == 0) { msg.setPID(pid()); }
+}

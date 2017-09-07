@@ -59,11 +59,13 @@ namespace {
 namespace mf {
   namespace service {
 
-    MessageLoggerScribe::MessageLoggerScribe()
-    try : earlyDest_{admin_.attach("cerr_early", makePlugin_(pluginFactory_,
-                                                             "cerr",
-                                                             "cerr_early",
-                                                             default_destination_config()))}
+    MessageLoggerScribe::MessageLoggerScribe(std::string const & applicationName)
+    try :
+      admin_{applicationName},
+      earlyDest_{admin_.attach("cerr_early", makePlugin_(pluginFactory_,
+                                                         "cerr",
+                                                         "cerr_early",
+                                                         default_destination_config()))}
     {}
     catch (fhicl::detail::validationException const& e) {
       std::string msg{"\nConfiguration error for destination: "+detail::bold_fontify("cerr_early")+"\n\n"};
@@ -166,6 +168,21 @@ namespace mf {
       admin_.setApplication(application);
     }
 
+    void MessageLoggerScribe::setHostName(std::string const& hostName)
+    {
+      admin_.hostname_ = hostName;
+    }
+
+    void MessageLoggerScribe::setHostAddr(std::string const& hostAddr)
+    {
+      admin_.hostaddr_ = hostAddr;
+    }
+
+    void MessageLoggerScribe::setPID(long pid)
+    {
+      admin_.pid_ = pid;
+    }
+
     //=============================================================================
     void MessageLoggerScribe::log(ErrorObj* errorobj_p)
     {
@@ -259,7 +276,7 @@ namespace mf {
         std::string dest_type{};
         if (!dest_pset.get_if_present("type", dest_type)) {
           throw Exception(errors::Configuration)
-            << "No 'type' specified for destination '" << psetname << ".\n";
+            << "No 'type' specified for destination '" << psetname << "'.\n";
         }
         ELdestConfig::checkType(dest_type, configuration);
 

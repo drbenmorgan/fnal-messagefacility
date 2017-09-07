@@ -26,7 +26,7 @@ namespace mf {
     public:
 
       ~MessageLoggerScribe();
-      MessageLoggerScribe();
+      MessageLoggerScribe(std::string const & applicationName);
 
       MessageLoggerScribe(MessageLoggerScribe const&) = delete;
       MessageLoggerScribe& operator = (MessageLoggerScribe const&) = delete;
@@ -34,8 +34,11 @@ namespace mf {
       // --- receive and act on messages:
       void runCommand(OpCode opcode, void* operand) override;
 
-      // Set current application name
+      // Set context items.
       void setApplication(std::string const& application) override;
+      void setHostName(std::string const& hostName) override;
+      void setHostAddr(std::string const& hostAddr) override;
+      void setPID(long pid) override;
 
     private:
 
@@ -56,7 +59,7 @@ namespace mf {
       std::vector<std::string> parseCategories(std::string const& s);
 
       // --- data:
-      ELadministrator admin_{};
+      ELadministrator admin_;
       cet::BasicPluginFactory pluginFactory_{"mfPlugin"};
       cet::BasicPluginFactory pluginStatsFactory_{"mfStatsPlugin"};
       ELdestination& earlyDest_;
@@ -84,10 +87,8 @@ namespace mf {
 
     };  // MessageLoggerScribe
 
-
   }   // end of namespace service
 }  // namespace mf
-
 
 #endif /* messagefacility_MessageLogger_MessageLoggerScribe_h */
 

@@ -19,8 +19,11 @@ namespace mf  {
       // ---  methods needed for logging
       virtual void runCommand(OpCode opcode, void * operand) = 0;
 
-      // Optional function to set application name.
+      // Optional function to set context items.
       virtual void setApplication(std::string const & application [[gnu::unused]]) { }
+      virtual void setHostName(std::string const & hostName [[gnu::unused]]) { }
+      virtual void setHostAddr(std::string const & hostAddr [[gnu::unused]]) { }
+      virtual void setPID(long pid [[gnu::unused]]) { }
     };  // AbstractMLscribe
 
   }   // end of namespace service
