@@ -40,7 +40,7 @@ namespace mf {
   using LogInfo      = MaybeLogger_<ELseverityLevel::ELsev_info,    false, true,  detail::ConditionalLogger>;
   using LogVerbatim  = MaybeLogger_<ELseverityLevel::ELsev_info,    true , false, detail::ConditionalLogger>;
   using LogWarning   = MaybeLogger_<ELseverityLevel::ELsev_warning, false, true,  detail::ConditionalLogger>;
-  using LogPrint     = MaybeLogger_<ELseverityLevel::ELsev_warning, true , false, detail::ConditionalLogger>;  
+  using LogPrint     = MaybeLogger_<ELseverityLevel::ELsev_warning, true , false, detail::ConditionalLogger>;
   using LogError     = MaybeLogger_<ELseverityLevel::ELsev_error,   false, true,  detail::AlwaysLogger>;
   using LogProblem   = MaybeLogger_<ELseverityLevel::ELsev_error,   true , false, detail::AlwaysLogger>;
   using LogSystem    = MaybeLogger_<ELseverityLevel::ELsev_severe,  false, false, detail::AlwaysLogger>;
@@ -77,7 +77,7 @@ namespace mf {
   // according to the needs of the framework or standalone application.
   EnabledState setEnabledState(std::string const & moduleLabel);
   void restoreEnabledState(EnabledState previousEnabledState);
-  
+
   // Control and cleanup.
   void ClearMessageLogger();
   void HaltMessageLogging();

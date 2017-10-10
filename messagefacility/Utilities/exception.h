@@ -6,9 +6,7 @@
 
 namespace mf {
   namespace errors {
-    enum error { Configuration = 1
-                  , LogicError
-    };
+    enum error {Configuration = 1, LogicError, OtherError};
   } // error
 
   namespace detail {

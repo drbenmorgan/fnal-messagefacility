@@ -32,9 +32,9 @@ namespace {
 namespace mf {
   namespace service {
 
-    MsgStatistics::MsgStatistics(fhicl::ParameterSet const& pset)
-      : reset{pset.get<bool>("reset", false) || // for statistics dest.
-              pset.get<bool>("resetStatistics", false)}  // for ordinary dest.
+    MsgStatistics::MsgStatistics(Config const& config)
+      : reset{config.reset() || // for statistics dest.
+              config.resetStatistics()}  // for ordinary dest.
     {}
 
     // ----------------------------------------------------------------------

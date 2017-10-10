@@ -1,4 +1,4 @@
-parent messagefacility v2_00_02
+parent messagefacility v2_01_01
 defaultqual e14
 #
 fcldir -
@@ -6,9 +6,10 @@ perllib  product_dir
 #
 # define product/version pairs
 product		version
-tbb		v2017_3c
-fhiclcpp        v4_05_01
-cetbuildtools	v5_08_01	-	only_for_build
+tbb		v2017_7
+fhiclcpp        v4_06_01
+cetbuildtools	v5_13_01	-	only_for_build
+catch		v1_9_6		-nq-	only_for_build
 end_product_list
 
 
@@ -16,10 +17,6 @@ end_product_list
 qualifier	fhiclcpp	tbb		compiler	notes
 e14:debug	e14:debug	e14:debug	gcc
 e14:prof	e14:prof	e14:prof	gcc
-e12:debug	e12:debug	e14:debug	gcc
-e12:prof	e12:prof	e14:prof	gcc
-e10:debug	e10:debug	e14:debug	gcc
-e10:prof	e10:prof	e14:prof	gcc
 end_qualifier_list
 
 # Local Variables:

@@ -18,15 +18,15 @@ namespace mf {
     class MsgStatistics {
     public:
 
-      // struct Config {
-      //   fhicl::Atom<bool> reset { fhicl::Name("reset"),
-      //       fhicl::Comment("Used for statistics destinations"),
-      //       false};
-      //   fhicl::Atom<bool> resetStatistics { fhicl::Name("resetStatistics"),
-      //       false};
-      // };
+      struct Config {
+        fhicl::Atom<bool> reset { fhicl::Name("reset"),
+            fhicl::Comment("Used for statistics destinations"),
+            false};
+        fhicl::Atom<bool> resetStatistics { fhicl::Name("resetStatistics"),
+            false};
+      };
 
-      MsgStatistics(fhicl::ParameterSet const& pset);
+      MsgStatistics(Config const& config);
 
       // copy c'tor/assignment disabled
       MsgStatistics(MsgStatistics const&) = delete;

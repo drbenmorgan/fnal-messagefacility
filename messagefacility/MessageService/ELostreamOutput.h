@@ -11,6 +11,9 @@
 #include "cetlib/ostream_handle.h"
 #include "messagefacility/Utilities/ELextendedID.h"
 #include "messagefacility/MessageService/ELdestination.h"
+#include "fhiclcpp/types/Atom.h"
+#include "fhiclcpp/types/OptionalAtom.h"
+#include "fhiclcpp/types/TableFragment.h"
 
 #include <memory>
 
@@ -24,11 +27,21 @@ namespace mf {
     class ELostreamOutput : public ELdestination  {
     public:
 
-      ELostreamOutput(fhicl::ParameterSet const& psetFormat,
+      struct Config {
+        fhicl::TableFragment<ELdestination::Config> elDestConfig;
+      };
+
+      using Parameters = fhicl::WrappedTable<Config>;
+      ELostreamOutput(Parameters const& config,
                       cet::ostream_handle&&,
                       bool emitAtStart = false);
 
-      ELostreamOutput(cet::ostream_handle&&,
+      ELostreamOutput(Parameters const& config,
+                      std::ostream&,
+                      bool emitAtStart = false);
+
+      ELostreamOutput(Config const& config,
+                      cet::ostream_handle&&,
                       bool emitAtStart = false);
 
       // Disable copy c'tor/assignment
@@ -41,8 +54,6 @@ namespace mf {
                         mf::ErrorObj const& msg) override;
       void summarization(std::string const& fullTitle, std::string const& sumLines) override;
 
-      void changeFile(std::ostream& os) override;
-      void changeFile(std::string const& filename) override;
       void flush() override;
 
       cet::ostream_handle osh;

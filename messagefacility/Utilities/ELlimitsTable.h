@@ -1,7 +1,6 @@
 #ifndef messagefacility_Utilities_ELlimitsTable_h
 #define messagefacility_Utilities_ELlimitsTable_h
 
-
 // ----------------------------------------------------------------------
 //
 // ELlimitsTable is a class holding two maps:  One listing various
@@ -13,7 +12,7 @@
 //
 // The fundamental operation is
 //
-//      bool add( const ELextendedID & )
+//      bool add(ELextendedID const&)
 //
 // which checks if the extended id is in the main map.  If it is not, it
 // looks for the specified limit (by id, then severity, then wildcard) and
@@ -28,10 +27,10 @@
 //
 // ----------------------------------------------------------------------
 
-
 #include "messagefacility/Utilities/ELseverityLevel.h"
 #include "messagefacility/Utilities/ELextendedID.h"
 #include "messagefacility/Utilities/ELmap.h"
+#include "messagefacility/Utilities/Category.h"
 
 #include <array>
 
@@ -54,28 +53,22 @@ namespace mf {
 
     public:
 
-      ELlimitsTable();
+      ELlimitsTable(int defaultLimit = -1, int defaultInterval = -1, int defaultTimespan = -1);
 
       bool add(ELextendedID const& xid);
 
       void wipe();  // Clears everything -- counts and limits established.
 
+      void setCategory(std::string const& id, int limit, int interval, int timespan);
       void setLimit   (std::string const& id, int n);
       void setInterval(std::string const& id, int interval);
       void setTimespan(std::string const& id, int n);
 
-      void setLimit   (ELseverityLevel sev, int n);
-      void setInterval(ELseverityLevel sev, int interval);
-      void setTimespan(ELseverityLevel sev, int n);
-
     protected:
 
-      std::array<int, ELseverityLevel::nLevels> severityLimits;
-      std::array<int, ELseverityLevel::nLevels> severityTimespans;
-      std::array<int, ELseverityLevel::nLevels> severityIntervals;
-      int wildcardLimit {-1};
-      int wildcardInterval {-1};
-      int wildcardTimespan {-1};
+      int wildcardLimit;
+      int wildcardInterval;
+      int wildcardTimespan;
 
       ELmap_limits limits {};
       ELmap_counts counts {};

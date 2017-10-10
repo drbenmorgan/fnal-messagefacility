@@ -6,6 +6,7 @@ mf::detail::translate( mf::errors::error code )
   switch( code ) {
   case mf::errors::Configuration : return "Configuration error";
   case mf::errors::LogicError    : return "Logic error";
+  case mf::errors::OtherError    : return "Other error";
   default            : return "Unknown code";
   }
 }
