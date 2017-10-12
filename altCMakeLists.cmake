@@ -16,22 +16,16 @@
 #  make package (builds distribution tarfile)
 
 cmake_minimum_required(VERSION 3.3)
-project(messagefacility VERSION 2.0.2)
+project(messagefacility VERSION 2.1.1)
 
 # cetbuildtools contains our cmake modules
 # - Cetbuildtools, version2
 find_package(cetbuildtools2 0.1.0 REQUIRED)
 set(CMAKE_MODULE_PATH ${cetbuildtools2_MODULE_PATH})
+set(CET_COMPILER_CXX_STANDARD_MINIMUM 14)
 include(CetInstallDirs)
 include(CetCMakeSettings)
 include(CetCompilerSettings)
-
-# C++ Standard Config (14)
-set(CMAKE_CXX_EXTENSIONS OFF)
-set(messagefacility_COMPILE_FEATURES
-  cxx_auto_type
-  cxx_generic_lambdas
-  )
 
 # these are minimum required versions, not the actual product versions
 # find_ups_product defines variables for external libraries and executables

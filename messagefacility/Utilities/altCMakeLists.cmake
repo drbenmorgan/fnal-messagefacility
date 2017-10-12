@@ -5,6 +5,7 @@
 #  CMake build file for library Utilities and UtilitiesS
 #
 add_library(MF_Utilities SHARED
+  Category.h
   DebugMacros.cc
   DebugMacros.h
   ELextendedID.cc
@@ -28,6 +29,7 @@ add_library(MF_Utilities SHARED
   SingleConsumerQ.h
   UnixSignalHandlers.cc
   UnixSignalHandlers.h
+  bold_fontify.h
   eq_nocase.cc
   eq_nocase.h
   exception.cc
@@ -35,10 +37,6 @@ add_library(MF_Utilities SHARED
   formatTime.cc
   formatTime.h
   )
-target_compile_features(MF_Utilities
-  PUBLIC
-    ${messagefacility_COMPILE_FEATURES}
-    )
 target_include_directories(MF_Utilities
   PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
@@ -48,6 +46,9 @@ target_link_libraries(MF_Utilities
   cetlib::cetlib
   Threads::Threads
   )
+
+# - Custom catch-main (NOT YET CLEAR WHAT THIS IS FOR...)
+#add_library(mf_catch_main STATIC catch-main.cc)
 
 # - Install
 install(TARGETS MF_Utilities

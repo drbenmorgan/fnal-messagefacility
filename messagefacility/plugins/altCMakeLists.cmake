@@ -1,20 +1,24 @@
 # From cetbuildtools2
 include(BasicPlugin)
 
-add_library(MF_FileFormat SHARED formatFilename.h formatFilename.cc)
-target_link_libraries(MF_FileFormat PUBLIC MF_MessageLogger fhiclcpp::fhiclcpp)
+set(mf_plugin_libraries
+  MF_MessageLogger
+  fhiclcpp::fhiclcpp
+  Boost::filesystem
+  )
 
 # ordinary destination plugins
-basic_plugin(cout   mfPlugin MF_MessageLogger)
-basic_plugin(cerr   mfPlugin MF_MessageLogger)
-basic_plugin(file   mfPlugin MF_FileFormat)
-basic_plugin(syslog mfPlugin MF_MessageLogger)
-basic_plugin(sqlite mfPlugin MF_MessageLogger SQLite::SQLite)
+basic_plugin(cout mfPlugin ${mf_plugin_libraries})
+basic_plugin(cerr mfPlugin ${mf_plugin_libraries})
+basic_plugin(file mfPlugin ${mf_plugin_libraries})
+basic_plugin(syslog mfPlugin ${mf_plugin_libraries})
+basic_plugin(sqlite mfPlugin ${mf_plugin_libraries} SQLite::SQLite)
+basic_plugin(stringstream mfPlugin ${mf_plugin_libraries})
 
 # statistics destination plugins
-basic_plugin(cout mfStatsPlugin MF_MessageLogger)
-basic_plugin(cerr mfStatsPlugin MF_MessageLogger)
-basic_plugin(file mfStatsPlugin MF_FileFormat)
+basic_plugin(cout mfStatsPlugin ${mf_plugin_libraries})
+basic_plugin(cerr mfStatsPlugin ${mf_plugin_libraries})
+basic_plugin(file mfStatsPlugin ${mf_plugin_libraries})
 
 # Install plugins - messy because names are derived
 # Do NOT want install in basic_plugin because that couples it to
@@ -23,14 +27,14 @@ basic_plugin(file mfStatsPlugin MF_FileFormat)
 # AT present, don't export plugins as don't expect to link to them?
 install(
   TARGETS
-    MF_FileFormat
-    messagefacility_plugins_cerr_mfPlugin
-    messagefacility_plugins_cerr_mfStatsPlugin
     messagefacility_plugins_cout_mfPlugin
-    messagefacility_plugins_cout_mfStatsPlugin
+    messagefacility_plugins_cerr_mfPlugin
     messagefacility_plugins_file_mfPlugin
-    messagefacility_plugins_file_mfStatsPlugin
     messagefacility_plugins_syslog_mfPlugin
     messagefacility_plugins_sqlite_mfPlugin
+    messagefacility_plugins_stringstream_mfPlugin
+    messagefacility_plugins_cout_mfStatsPlugin
+    messagefacility_plugins_cerr_mfStatsPlugin
+    messagefacility_plugins_file_mfStatsPlugin
   DESTINATION ${CMAKE_INSTALL_LIBDIR}
   )

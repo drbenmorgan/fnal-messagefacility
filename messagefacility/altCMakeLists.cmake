@@ -35,19 +35,16 @@ add_library(MF_MessageLogger SHARED
   MessageService/OpCode.h
   MessageService/ThreadQueue.cc
   MessageService/ThreadQueue.h
+  MessageService/default_destinations_config.h
   )
-target_compile_features(MF_MessageLogger
-  PUBLIC
-    ${messagefacility_COMPILE_FEATURES}
-    )
-  target_include_directories(MF_MessageLogger
+target_include_directories(MF_MessageLogger
   PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
 target_link_libraries(MF_MessageLogger PUBLIC
   MF_Utilities
-  cetlib::cetlib
+  cetlib_except::cetlib_except
   fhiclcpp::fhiclcpp
   ${TBB_LIBRARY_RELEASE}
   )
