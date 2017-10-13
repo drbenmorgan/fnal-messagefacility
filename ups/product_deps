@@ -17,6 +17,8 @@ end_product_list
 qualifier	fhiclcpp	tbb		compiler	notes
 e14:debug	e14:debug	e14:debug	gcc
 e14:prof	e14:prof	e14:prof	gcc
+e15:debug	e15:debug	e15:debug	gcc
+e15:prof	e15:prof	e15:prof	gcc
 end_qualifier_list
 
 # Local Variables:
