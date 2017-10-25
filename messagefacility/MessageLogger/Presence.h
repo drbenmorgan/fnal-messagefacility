@@ -1,7 +1,7 @@
 #ifndef messagefacility_MessageLogger_Presence_h
 #define messagefacility_MessageLogger_Presence_h
 
-#include "messagefacility/MessageLogger/Presence.h"
+#include <string>
 
 namespace mf {
   class Presence {
