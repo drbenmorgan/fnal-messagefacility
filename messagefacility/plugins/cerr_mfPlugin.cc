@@ -11,11 +11,12 @@
 using mf::service::ELostreamOutput;
 
 extern "C" {
-  auto makePlugin(std::string const&,
-                  fhicl::ParameterSet const& pset)
-  {
-    return std::make_unique<ELostreamOutput>(pset, cet::ostream_handle{std::cerr});
-  }
+auto
+makePlugin(std::string const&, fhicl::ParameterSet const& pset)
+{
+  return std::make_unique<ELostreamOutput>(pset,
+                                           cet::ostream_handle{std::cerr});
+}
 }
 
 CET_PROVIDE_FILE_PATH()

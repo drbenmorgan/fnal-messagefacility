@@ -27,15 +27,15 @@ namespace {
 
 extern "C" {
 
-  auto makePlugin(std::string const&,
-                  fhicl::ParameterSet const& pset)
-  {
-    WrappedConfig::Parameters const ps{pset};
-    auto const& fConfig = ps().file_config();
-    cet::ostream_handle osh {fConfig.filename(), fConfig.append() ? std::ios::app : std::ios::trunc};
-    return std::make_unique<ELstatistics>(ps().stats_dest(), std::move(osh));
-  }
-
+auto
+makePlugin(std::string const&, fhicl::ParameterSet const& pset)
+{
+  WrappedConfig::Parameters const ps{pset};
+  auto const& fConfig = ps().file_config();
+  cet::ostream_handle osh{fConfig.filename(),
+                          fConfig.append() ? std::ios::app : std::ios::trunc};
+  return std::make_unique<ELstatistics>(ps().stats_dest(), std::move(osh));
+}
 }
 
 CET_PROVIDE_FILE_PATH()

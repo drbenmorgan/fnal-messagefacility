@@ -27,10 +27,10 @@
 //
 // ----------------------------------------------------------------------
 
-#include "messagefacility/Utilities/ELseverityLevel.h"
+#include "messagefacility/Utilities/Category.h"
 #include "messagefacility/Utilities/ELextendedID.h"
 #include "messagefacility/Utilities/ELmap.h"
-#include "messagefacility/Utilities/Category.h"
+#include "messagefacility/Utilities/ELseverityLevel.h"
 
 #include <array>
 
@@ -47,41 +47,41 @@ namespace mf {
     // ELlimitsTable:
     // ----------------------------------------------------------------------
 
-    class ELlimitsTable  {
+    class ELlimitsTable {
 
       friend class ELdestination;
 
     public:
-
-      ELlimitsTable(int defaultLimit = -1, int defaultInterval = -1, int defaultTimespan = -1);
+      ELlimitsTable(int defaultLimit = -1,
+                    int defaultInterval = -1,
+                    int defaultTimespan = -1);
 
       bool add(ELextendedID const& xid);
 
-      void wipe();  // Clears everything -- counts and limits established.
+      void wipe(); // Clears everything -- counts and limits established.
 
-      void setCategory(std::string const& id, int limit, int interval, int timespan);
-      void setLimit   (std::string const& id, int n);
+      void setCategory(std::string const& id,
+                       int limit,
+                       int interval,
+                       int timespan);
+      void setLimit(std::string const& id, int n);
       void setInterval(std::string const& id, int interval);
       void setTimespan(std::string const& id, int n);
 
     protected:
-
       int wildcardLimit;
       int wildcardInterval;
       int wildcardTimespan;
 
-      ELmap_limits limits {};
-      ELmap_counts counts {};
+      ELmap_limits limits{};
+      ELmap_counts counts{};
 
-    };  // ELlimitsTable
-
+    }; // ELlimitsTable
 
     // ----------------------------------------------------------------------
 
-
-  }        // end of namespace service
-}        // end of namespace mf
-
+  } // end of namespace service
+} // end of namespace mf
 
 #endif /* messagefacility_Utilities_ELlimitsTable_h */
 

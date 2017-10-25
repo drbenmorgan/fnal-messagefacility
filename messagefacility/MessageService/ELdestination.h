@@ -12,14 +12,14 @@
 
 #include "cetlib/PluginTypeDeducer.h"
 #include "fhiclcpp/ParameterSet.h"
+#include "fhiclcpp/types/OptionalDelegatedParameter.h"
 #include "fhiclcpp/types/Table.h"
 #include "fhiclcpp/types/TableFragment.h"
-#include "fhiclcpp/types/OptionalDelegatedParameter.h"
+#include "messagefacility/MessageService/MsgFormatSettings.h"
+#include "messagefacility/MessageService/MsgStatistics.h"
 #include "messagefacility/Utilities/ELextendedID.h"
 #include "messagefacility/Utilities/ELset.h"
 #include "messagefacility/Utilities/ErrorObj.h"
-#include "messagefacility/MessageService/MsgFormatSettings.h"
-#include "messagefacility/MessageService/MsgStatistics.h"
 
 namespace mf {
   namespace service {
@@ -28,7 +28,8 @@ namespace mf {
 }
 
 namespace cet {
-  template <> struct PluginTypeDeducer<mf::service::ELdestination> {
+  template <>
+  struct PluginTypeDeducer<mf::service::ELdestination> {
     static std::string const value;
   };
 }
@@ -38,15 +39,14 @@ namespace mf {
 
     class ELdestination {
     public:
-
       struct Config {
         fhicl::Atom<std::string> dest_type{fhicl::Name{"type"}};
-        fhicl::Atom<std::string> threshold {
+        fhicl::Atom<std::string> threshold{
           fhicl::Name{"threshold"},
-          fhicl::Comment{"The 'threshold' parameter specifies the lowest severity level of\n"
-                         "messages that will be logged to the destination"},
-          "INFO"
-        };
+          fhicl::Comment{
+            "The 'threshold' parameter specifies the lowest severity level of\n"
+            "messages that will be logged to the destination"},
+          "INFO"};
         fhicl::Table<MsgFormatSettings::Config> format{fhicl::Name{"format"}};
         // Assembling the following comment is, shall we say, icky.
         // It's bad; really bad: worse than ending a sentence with a
@@ -67,9 +67,10 @@ namespace mf {
         //    would be registered as belonging to whatever
         //    encapsulating table is currently on the
         //    TableMemberRegistry stack.  This is bad.
-        fhicl::OptionalDelegatedParameter categories{fhicl::Name{"categories"},
-            fhicl::Comment{
-R"(The 'categories' parameter (if provided) is a FHiCL table that
+        fhicl::OptionalDelegatedParameter categories{
+          fhicl::Name{"categories"},
+          fhicl::Comment{
+            R"(The 'categories' parameter (if provided) is a FHiCL table that
 configures the behavior of logging to this destination for the specified
 category.  For example, if the following appears in C++ source code:
 
@@ -96,11 +97,11 @@ routed to other destinations are not be affected.
 Category parameters
 ===================
 
-)"+Category::Config::limit_comment()
-  +"\n\n"+Category::Config::reportEvery_comment()
-  +"\n\n"+Category::Config::timespan_comment()}
-        };
-        fhicl::Atom<bool> outputStatistics{fhicl::Name{"outputStatistics"}, false};
+)" + Category::Config::limit_comment() +
+            "\n\n" + Category::Config::reportEvery_comment() + "\n\n" +
+            Category::Config::timespan_comment()}};
+        fhicl::Atom<bool> outputStatistics{fhicl::Name{"outputStatistics"},
+                                           false};
         fhicl::TableFragment<MsgStatistics::Config> msgStatistics;
       };
 
@@ -108,28 +109,36 @@ Category parameters
 
       // Suppress copy operations
       ELdestination(ELdestination const& orig) = delete;
-      ELdestination& operator= (ELdestination const& orig) = delete;
+      ELdestination& operator=(ELdestination const& orig) = delete;
 
       virtual ~ELdestination() noexcept = default;
 
-
       virtual void finish();
       virtual void log(mf::ErrorObj& msg);
-      virtual void noTerminationSummary(){}
+      virtual void
+      noTerminationSummary()
+      {}
       virtual void summarization(std::string const& title,
                                  std::string const& sumLines);
       virtual void summary();
       virtual void wipe();
 
       void setThreshold(ELseverityLevel sv);
-      void userWantsStats() { enableStats = true; }
-      bool resetStats() const { return stats.reset; }
+      void
+      userWantsStats()
+      {
+        enableStats = true;
+      }
+      bool
+      resetStats() const
+      {
+        return stats.reset;
+      }
 
     protected:
-
       void emitToken(std::ostream& os, std::string const& s, bool nl = false);
 
-      bool passLogMsgThreshold  (mf::ErrorObj const& msg);
+      bool passLogMsgThreshold(mf::ErrorObj const& msg);
       bool passLogStatsThreshold(mf::ErrorObj const& msg) const;
 
       virtual void fillPrefix(std::ostringstream& oss, mf::ErrorObj const& msg);
@@ -151,7 +160,6 @@ Category parameters
       virtual void flush();
 
     protected:
-
       // This block of protected data is icky.  Should find a way to
       // make it private.
       MsgStatistics stats;
@@ -159,15 +167,14 @@ Category parameters
       ELseverityLevel threshold;
 
     private:
-
       void configure(fhicl::OptionalDelegatedParameter const&);
 
-      std::string indent {std::string(6,' ')};
-      std::size_t charsOnLine {};
-      ELset_string respondToThese {};
-      bool ignoreMostModules {false};
-      bool respondToMostModules {false};
-      ELset_string ignoreThese {};
+      std::string indent{std::string(6, ' ')};
+      std::size_t charsOnLine{};
+      ELset_string respondToThese{};
+      bool ignoreMostModules{false};
+      bool respondToMostModules{false};
+      ELset_string ignoreThese{};
 
       bool enableStats;
 
@@ -175,7 +182,6 @@ Category parameters
 
   } // end of namespace service
 } // end of namespace mf
-
 
 #endif /* messagefacility_MessageService_ELdestination_h */
 

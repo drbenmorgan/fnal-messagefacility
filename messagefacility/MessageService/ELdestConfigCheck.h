@@ -14,24 +14,27 @@ namespace mf {
 
       enum dest_config { ORDINARY, STATISTICS };
 
-      inline void checkType(std::string const& type, dest_config const configuration)
+      inline void
+      checkType(std::string const& type, dest_config const configuration)
       {
-        if (configuration != STATISTICS) return;
+        if (configuration != STATISTICS)
+          return;
 
         // Check for ostream-supported types for statistics
-        if (!cet::search_all(std::set<std::string>{"cout","cerr","file"}, type)) {
+        if (!cet::search_all(std::set<std::string>{"cout", "cerr", "file"},
+                             type)) {
           throw mf::Exception{mf::errors::Configuration}
-            <<"\n"
-            <<"Unsupported type [ " << type << " ] chosen for statistics printout.\n"
-            <<"Must choose ostream type: \"cout\", \"cerr\", or \"file\""
-            <<"\n";
+            << "\n"
+            << "Unsupported type [ " << type
+            << " ] chosen for statistics printout.\n"
+            << "Must choose ostream type: \"cout\", \"cerr\", or \"file\""
+            << "\n";
         }
       }
 
-    }    // end of namespace ELdestConfig
+    } // end of namespace ELdestConfig
   }   // end of namespace service
-}  // namespace mf
-
+} // namespace mf
 
 #endif /* messagefacility_MessageService_ELdestConfigCheck_h */
 

@@ -24,8 +24,8 @@ namespace mf {
 
     private:
       // --- buffer parameters:  (were private but needed by MainThreadMLscribe)
-      static constexpr int buf_depth {500};
-      static constexpr int buf_size {sizeof(OpCode)+sizeof(void*)};
+      static constexpr int buf_depth{500};
+      static constexpr int buf_size{sizeof(OpCode) + sizeof(void*)};
       SingleConsumerQ m_buf;
     };
 

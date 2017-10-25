@@ -4,19 +4,18 @@
 //
 //======================================================================
 
-#include "fhiclcpp/types/Table.h"
-#include "messagefacility/MessageService/MessageDrop.h"
-#include "messagefacility/MessageService/ELdestConfigCheck.h"
 #include "messagefacility/MessageService/ELdestination.h"
+#include "fhiclcpp/types/Table.h"
+#include "messagefacility/MessageService/ELdestConfigCheck.h"
+#include "messagefacility/MessageService/MessageDrop.h"
 #include "messagefacility/Utilities/bold_fontify.h"
 
 #include <fstream>
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 
-std::string const
-cet::PluginTypeDeducer<mf::service::ELdestination>::
-value = "ELdestination";
+std::string const cet::PluginTypeDeducer<mf::service::ELdestination>::value =
+  "ELdestination";
 
 using namespace std::string_literals;
 
@@ -24,11 +23,11 @@ namespace mf {
   namespace service {
 
     namespace {
-      std::string const noSummarizationMsg {"No summarization()"};
-      std::string const noSummaryMsg {"No summary()"};
-      std::string const hereMsg {"available via this destination"};
-      std::string const noosMsg {"No ostream"};
-      std::string const preamble {"%MSG"};
+      std::string const noSummarizationMsg{"No summarization()"};
+      std::string const noSummaryMsg{"No summary()"};
+      std::string const hereMsg{"available via this destination"};
+      std::string const noosMsg{"No ostream"};
+      std::string const preamble{"%MSG"};
     }
 
     //=============================================================================
@@ -40,21 +39,27 @@ namespace mf {
       , enableStats{pset.outputStatistics()}
     {
       // Modify automatic suppression if necessary.
-      if (threshold <= ELseverityLevel::ELsev_success)
-      { MessageDrop::debugAlwaysSuppressed = false; }
-      if (threshold <= ELseverityLevel::ELsev_info)
-      { MessageDrop::infoAlwaysSuppressed = false; }
-      if (threshold <= ELseverityLevel::ELsev_warning)
-      { MessageDrop::warningAlwaysSuppressed = false; }
+      if (threshold <= ELseverityLevel::ELsev_success) {
+        MessageDrop::debugAlwaysSuppressed = false;
+      }
+      if (threshold <= ELseverityLevel::ELsev_info) {
+        MessageDrop::infoAlwaysSuppressed = false;
+      }
+      if (threshold <= ELseverityLevel::ELsev_warning) {
+        MessageDrop::warningAlwaysSuppressed = false;
+      }
 
       configure(pset.categories);
     }
 
     //=============================================================================
-    void ELdestination::emitToken(std::ostream& os, std::string const& s, bool const nl)
+    void
+    ELdestination::emitToken(std::ostream& os,
+                             std::string const& s,
+                             bool const nl)
     {
       if (s.empty()) {
-        if (nl)  {
+        if (nl) {
           os << '\n';
           charsOnLine = 0;
         }
@@ -63,15 +68,16 @@ namespace mf {
 
       char const first = s[0];
       char const second = (s.length() < 2) ? '\0' : s[1];
-      char const last = (s.length() < 2) ? '\0' : s[s.length()-1];
-      char const last2 = (s.length() < 3) ? '\0' : s[s.length()-2];
+      char const last = (s.length() < 2) ? '\0' : s[s.length() - 1];
+      char const last2 = (s.length() < 3) ? '\0' : s[s.length() - 2];
       // checking -2 because the very last char is sometimes a ' '
       // inserted by ErrorLog::operator<<
 
       if (format.preambleMode) {
 
-        //Accounts for newline @ the beginning of the std::string
-        if (first == '\n' || (charsOnLine + static_cast<int>(s.length())) > format.lineLength) {
+        // Accounts for newline @ the beginning of the std::string
+        if (first == '\n' ||
+            (charsOnLine + static_cast<int>(s.length())) > format.lineLength) {
           charsOnLine = 0;
           if (second != ' ') {
             os << ' ';
@@ -79,60 +85,70 @@ namespace mf {
           }
           if (first == '\n') {
             os << s.substr(1);
-          }
-          else {
+          } else {
             os << s;
           }
-        }
-        else {
+        } else {
           os << s;
         }
 
-        if (last == '\n' || last2 == '\n') {  // accounts for newline @ end
-          os << indent;                       // of the std::string
+        if (last == '\n' || last2 == '\n') { // accounts for newline @ end
+          os << indent;                      // of the std::string
           if (last != ' ')
             os << ' ';
           charsOnLine = indent.length() + 1;
         }
 
-        if (nl) { os << '\n'; charsOnLine = 0;           }
-        else    {             charsOnLine += s.length(); }
+        if (nl) {
+          os << '\n';
+          charsOnLine = 0;
+        } else {
+          charsOnLine += s.length();
+        }
       }
 
       if (!format.preambleMode) {
         os << s;
       }
 
-    }  // emitToken()
+    } // emitToken()
 
     //=============================================================================
-    bool ELdestination::passLogStatsThreshold(mf::ErrorObj const& msg) const
+    bool
+    ELdestination::passLogStatsThreshold(mf::ErrorObj const& msg) const
     {
       // See if this message is to be counted.
-      if (msg.xid().severity() < threshold) return false;
-      if (thisShouldBeIgnored(msg.xid().module())) return false;
+      if (msg.xid().severity() < threshold)
+        return false;
+      if (thisShouldBeIgnored(msg.xid().module()))
+        return false;
 
       return true;
     }
 
     //=============================================================================
-    bool ELdestination::passLogMsgThreshold(mf::ErrorObj const& msg)
+    bool
+    ELdestination::passLogMsgThreshold(mf::ErrorObj const& msg)
     {
       auto const& xid = msg.xid();
 
       // See if this message is to be acted upon, and add it to limits table
       // if it was not already present:
-      if (xid.severity() < threshold)  return false;
-      if (xid.severity() < ELsevere && thisShouldBeIgnored(xid.module())) return false;
-      if (xid.severity() < ELsevere && !stats.limits.add(xid)) return false;
+      if (xid.severity() < threshold)
+        return false;
+      if (xid.severity() < ELsevere && thisShouldBeIgnored(xid.module()))
+        return false;
+      if (xid.severity() < ELsevere && !stats.limits.add(xid))
+        return false;
 
       return true;
     }
 
-    void ELdestination::fillPrefix(std::ostringstream& oss,
-                                   mf::ErrorObj const& msg)
+    void
+    ELdestination::fillPrefix(std::ostringstream& oss, mf::ErrorObj const& msg)
     {
-      if (msg.is_verbatim()) return;
+      if (msg.is_verbatim())
+        return;
 
       // Output the prologue:
       //
@@ -160,25 +176,24 @@ namespace mf {
       //
       bool needAspace = true;
       if (format.want(EPILOGUE_SEPARATE)) {
-        if (xid.module().length()+xid.subroutine().length() > 0) {
-          emitToken(oss,"\n");
+        if (xid.module().length() + xid.subroutine().length() > 0) {
+          emitToken(oss, "\n");
           needAspace = false;
-        }
-        else if (format.want(TIMESTAMP) && !format.want(TIME_SEPARATE)) {
-          emitToken(oss,"\n");
+        } else if (format.want(TIMESTAMP) && !format.want(TIME_SEPARATE)) {
+          emitToken(oss, "\n");
           needAspace = false;
         }
       }
       if (format.want(MODULE) && (xid.module().length() > 0)) {
         if (needAspace) {
-          emitToken(oss," ");
+          emitToken(oss, " ");
           needAspace = false;
         }
         emitToken(oss, xid.module() + " ");
       }
       if (format.want(SUBROUTINE) && (xid.subroutine().length() > 0)) {
         if (needAspace) {
-          emitToken(oss," ");
+          emitToken(oss, " ");
           needAspace = false;
         }
         emitToken(oss, xid.subroutine() + "() ");
@@ -186,13 +201,13 @@ namespace mf {
 
       // Provide time stamp:
       //
-      if (format.want(TIMESTAMP))  {
-        if (format.want(TIME_SEPARATE))  {
+      if (format.want(TIMESTAMP)) {
+        if (format.want(TIME_SEPARATE)) {
           emitToken(oss, "\n");
           needAspace = false;
         }
         if (needAspace) {
-          emitToken(oss," ");
+          emitToken(oss, " ");
           needAspace = false;
         }
         emitToken(oss, format.timestamp(msg.timestamp()) + " ");
@@ -202,7 +217,7 @@ namespace mf {
       //
       if (format.want(SOME_CONTEXT)) {
         if (needAspace) {
-          emitToken(oss," ");
+          emitToken(oss, " ");
           needAspace = false;
         }
         emitToken(oss, msg.context());
@@ -210,9 +225,11 @@ namespace mf {
     }
 
     //=============================================================================
-    void ELdestination::fillUsrMsg(std::ostringstream& oss, mf::ErrorObj const& msg)
+    void
+    ELdestination::fillUsrMsg(std::ostringstream& oss, mf::ErrorObj const& msg)
     {
-      if (!format.want(TEXT)) return;
+      if (!format.want(TEXT))
+        return;
 
       format.preambleMode = false;
       auto const usrMsgStart = std::next(msg.items().cbegin(), 4);
@@ -225,17 +242,18 @@ namespace mf {
         while (it != usrMsgStart) {
           if (!it->compare(" ") && !std::next(it)->compare("--")) {
             // Do not emitToken if " --:0" is the match
-            std::advance(it,4);
-          }
-          else {
+            std::advance(it, 4);
+          } else {
             // Emit if <FILENAME> and <LINE> are meaningful
             emitToken(oss, *it++);
           }
         }
 
         // Check for user-requested line breaks
-        if (format.want(NO_LINE_BREAKS)) emitToken(oss, " ==> ");
-        else emitToken(oss, "", true);
+        if (format.want(NO_LINE_BREAKS))
+          emitToken(oss, " ==> ");
+        else
+          emitToken(oss, "", true);
       }
 
       // For verbatim (and user-supplied) messages, just print the contents
@@ -243,22 +261,21 @@ namespace mf {
       for (; it != end; ++it) {
         emitToken(oss, *it);
       }
-
     }
 
     //=============================================================================
-    void ELdestination::fillSuffix(std::ostringstream& oss,
-                                   mf::ErrorObj const& msg)
+    void
+    ELdestination::fillSuffix(std::ostringstream& oss, mf::ErrorObj const& msg)
     {
       if (!msg.is_verbatim() && !format.want(NO_LINE_BREAKS)) {
-        emitToken(oss,"\n%MSG");
+        emitToken(oss, "\n%MSG");
       }
       oss << '\n';
     }
 
     //=============================================================================
-    void ELdestination::routePayload(std::ostringstream const&,
-                                     mf::ErrorObj const&)
+    void
+    ELdestination::routePayload(std::ostringstream const&, mf::ErrorObj const&)
     {}
 
     // ----------------------------------------------------------------------
@@ -266,9 +283,11 @@ namespace mf {
     // ----------------------------------------------------------------------
 
     //=============================================================================
-    void ELdestination::log(mf::ErrorObj& msgObj)
+    void
+    ELdestination::log(mf::ErrorObj& msgObj)
     {
-      if (!passLogMsgThreshold(msgObj)) return;
+      if (!passLogMsgThreshold(msgObj))
+        return;
 
       std::ostringstream payload;
       fillPrefix(payload, msgObj);
@@ -290,14 +309,16 @@ namespace mf {
     // the no-op methods will issue an ELwarning2 at their own
     // destination.
 
-    void ELdestination::wipe()
+    void
+    ELdestination::wipe()
     {
       stats.limits.wipe();
     }
 
-    void ELdestination::respondToModule(std::string const& moduleName)
+    void
+    ELdestination::respondToModule(std::string const& moduleName)
     {
-      if (moduleName=="*") {
+      if (moduleName == "*") {
         ignoreMostModules = false;
         respondToMostModules = true;
         ignoreThese.clear();
@@ -308,9 +329,10 @@ namespace mf {
       }
     }
 
-    void ELdestination::ignoreModule(std::string const& moduleName)
+    void
+    ELdestination::ignoreModule(std::string const& moduleName)
     {
-      if (moduleName=="*") {
+      if (moduleName == "*") {
         respondToMostModules = false;
         ignoreMostModules = true;
         respondToThese.clear();
@@ -321,65 +343,71 @@ namespace mf {
       }
     }
 
-    void ELdestination::filterModule(std::string const& moduleName)
+    void
+    ELdestination::filterModule(std::string const& moduleName)
     {
       ignoreModule("*");
       respondToModule(moduleName);
     }
 
-    void ELdestination::excludeModule(std::string const& moduleName)
+    void
+    ELdestination::excludeModule(std::string const& moduleName)
     {
       respondToModule("*");
       ignoreModule(moduleName);
     }
 
-    void ELdestination::summary()
+    void
+    ELdestination::summary()
     {
-      if (enableStats && stats.updatedStats && stats.printAtTermination)
-        {
-          std::ostringstream payload;
-          payload << "\n=============================================\n\n"
-                  << "MessageLogger Summary\n"
-                  << stats.formSummary();
-          routePayload(payload, mf::ErrorObj{ELzeroSeverity, noosMsg});
-        }
+      if (enableStats && stats.updatedStats && stats.printAtTermination) {
+        std::ostringstream payload;
+        payload << "\n=============================================\n\n"
+                << "MessageLogger Summary\n"
+                << stats.formSummary();
+        routePayload(payload, mf::ErrorObj{ELzeroSeverity, noosMsg});
+      }
     }
 
-    void ELdestination::summary(std::ostream& os, std::string const& title)
+    void
+    ELdestination::summary(std::ostream& os, std::string const& title)
     {
-      os << preamble
-         << ELwarning.getSymbol() << " "
-         << noSummaryMsg << " "
+      os << preamble << ELwarning.getSymbol() << " " << noSummaryMsg << " "
          << hereMsg << '\n'
          << title << '\n';
     }
 
-    void ELdestination::summary(std::string& s, std::string const& title)
+    void
+    ELdestination::summary(std::string& s, std::string const& title)
     {
       std::ostringstream ss;
       summary(ss, title);
       s = ss.str();
     }
 
-    void ELdestination::finish()
+    void
+    ELdestination::finish()
     {}
 
-    void ELdestination::setThreshold(ELseverityLevel const sv)
+    void
+    ELdestination::setThreshold(ELseverityLevel const sv)
     {
       threshold = sv;
     }
 
-    void ELdestination::summarization(std::string const& title,
-                                      std::string const& /*sumfines*/)
+    void
+    ELdestination::summarization(std::string const& title,
+                                 std::string const& /*sumfines*/)
     {
-      mf::ErrorObj msg {ELwarning, noSummarizationMsg};
+      mf::ErrorObj msg{ELwarning, noSummarizationMsg};
       msg << hereMsg << '\n' << title;
       log(msg);
     }
 
-    void ELdestination::flush()
+    void
+    ELdestination::flush()
     {
-      mf::ErrorObj msg {ELwarning, noosMsg};
+      mf::ErrorObj msg{ELwarning, noosMsg};
       msg << "cannot flush()";
       log(msg);
     }
@@ -388,21 +416,21 @@ namespace mf {
     // Protected helper methods:
     // ----------------------------------------------------------------------
 
-    bool ELdestination::thisShouldBeIgnored(std::string const& s) const
+    bool
+    ELdestination::thisShouldBeIgnored(std::string const& s) const
     {
       if (respondToMostModules) {
         return ignoreThese.find(s) != ignoreThese.end();
-      }
-      else if (ignoreMostModules) {
+      } else if (ignoreMostModules) {
         return respondToThese.find(s) == cend(respondToThese);
-      }
-      else {
+      } else {
         return false;
       }
     }
 
     void
-    ELdestination::configure(fhicl::OptionalDelegatedParameter const& cat_config)
+    ELdestination::configure(
+      fhicl::OptionalDelegatedParameter const& cat_config)
     {
       std::vector<std::string> configuration_errors;
 
@@ -414,22 +442,28 @@ namespace mf {
       // since it is handled specially.
       auto const default_category_name = "default"s;
       auto categories = cats_pset.get_pset_names();
-      auto erase_from = std::remove_if(begin(categories), end(categories),
-                                       [&default_category_name](auto const& category) {
-                                         return category == default_category_name;
-                                       });
+      auto erase_from =
+        std::remove_if(begin(categories),
+                       end(categories),
+                       [&default_category_name](auto const& category) {
+                         return category == default_category_name;
+                       });
       categories.erase(erase_from, categories.cend());
 
       // Setup the default configuration for categories--this involves
       // resetting the limits table according to the user-specified
       // default configuration.
-      auto const& default_pset = cats_pset.get<fhicl::ParameterSet>(default_category_name, {});
+      auto const& default_pset =
+        cats_pset.get<fhicl::ParameterSet>(default_category_name, {});
       try {
         fhicl::WrappedTable<Category::Config> default_params{default_pset};
-        stats.limits = ELlimitsTable{default_params().limit(), default_params().reportEvery(), default_params().timespan()};
+        stats.limits = ELlimitsTable{default_params().limit(),
+                                     default_params().reportEvery(),
+                                     default_params().timespan()};
       }
       catch (fhicl::detail::validationException const& e) {
-        std::string msg {"Category: " + detail::bold_fontify(default_category_name) + "\n\n"};
+        std::string msg{
+          "Category: " + detail::bold_fontify(default_category_name) + "\n\n"};
         msg += e.what();
         configuration_errors.push_back(std::move(msg));
       }
@@ -439,12 +473,15 @@ namespace mf {
       // default configuration when a given category is missing the
       // fields.
       for (auto const& category : categories) {
-        fhicl::Table<Category::Config> category_params{fhicl::Name{category}, default_pset};
+        fhicl::Table<Category::Config> category_params{fhicl::Name{category},
+                                                       default_pset};
         try {
-          category_params.validate_ParameterSet(cats_pset.get<fhicl::ParameterSet>(category));
+          category_params.validate_ParameterSet(
+            cats_pset.get<fhicl::ParameterSet>(category));
         }
         catch (fhicl::detail::validationException const& e) {
-          std::string msg {"Category: " + detail::bold_fontify(category) + "\n\n"};
+          std::string msg{"Category: " + detail::bold_fontify(category) +
+                          "\n\n"};
           msg += e.what();
           configuration_errors.push_back(std::move(msg));
         }
@@ -462,7 +499,6 @@ namespace mf {
         }
         throw fhicl::detail::validationException{msg};
       }
-
     }
 
   } // end of namespace service

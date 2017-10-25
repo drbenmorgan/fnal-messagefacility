@@ -1,7 +1,6 @@
 #ifndef messagefacility_Utilities_ELmap_h
 #define messagefacility_Utilities_ELmap_h
 
-
 // ----------------------------------------------------------------------
 //
 // ELmap.h      Provides a map class with the semantics of std::map.
@@ -32,8 +31,6 @@
 //
 // ----------------------------------------------------------------------
 
-
-
 #include "messagefacility/Utilities/ELextendedID.h"
 
 #include <map>
@@ -41,58 +38,51 @@
 
 namespace mf {
 
-  class LimitAndTimespan  {
+  class LimitAndTimespan {
   public:
-
     int limit;
     int timespan;
     int interval;
 
     LimitAndTimespan(int lim = -1, int ts = -1, int ivl = -1);
 
-  };  // LimitAndTimespan
+  }; // LimitAndTimespan
 
-
-  class CountAndLimit  {
+  class CountAndLimit {
   public:
-
-    int    n {};
-    int    aggregateN {};
+    int n{};
+    int aggregateN{};
     time_t lastTime;
-    int    limit;
-    int    timespan;
-    int    interval;
-    int    skipped;
+    int limit;
+    int timespan;
+    int interval;
+    int skipped;
 
     CountAndLimit(int lim = -1, int ts = -1, int ivl = -1);
     bool add();
 
-  };  // CountAndLimit
+  }; // CountAndLimit
 
-
-  class StatsCount  {
+  class StatsCount {
   public:
-
-    int n {};
-    int aggregateN {};
-    bool ignoredFlag {false};
-    std::string context1 {};
-    std::string context2 {};
-    std::string contextLast {};
+    int n{};
+    int aggregateN{};
+    bool ignoredFlag{false};
+    std::string context1{};
+    std::string context2{};
+    std::string contextLast{};
 
     void add(std::string const& context, bool reactedTo);
 
-  };  // StatsCount
-
+  }; // StatsCount
 
   // ----------------------------------------------------------------------
 
   using ELmap_limits = std::map<std::string, LimitAndTimespan>;
   using ELmap_counts = std::map<ELextendedID, CountAndLimit>;
-  using ELmap_stats  = std::map<ELextendedID, StatsCount>;
+  using ELmap_stats = std::map<ELextendedID, StatsCount>;
 
   // See ELseverityLevel.cc for another map:  ELmap_sevTran
-
 }
 
 #endif /* messagefacility_Utilities_ELmap_h */

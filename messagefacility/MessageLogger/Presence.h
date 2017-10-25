@@ -3,15 +3,15 @@
 
 #include "messagefacility/MessageLogger/Presence.h"
 
-namespace mf  {
-    class Presence {
-    public:
-      Presence(std::string const & applicationName);
-      ~Presence();
+namespace mf {
+  class Presence {
+  public:
+    Presence(std::string const& applicationName);
+    ~Presence();
 
-      Presence(Presence const&) = delete;
-      Presence operator=(Presence const&) = delete;
-    };
+    Presence(Presence const&) = delete;
+    Presence operator=(Presence const&) = delete;
+  };
 } // namespace mf
 
 #endif /* messagefacility_MessageLogger_Presence_h */

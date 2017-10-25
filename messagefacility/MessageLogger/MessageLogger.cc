@@ -15,53 +15,66 @@ namespace mf {
   class MessageFacilityService;
 }
 
-void mf::LogStatistics()
+void
+mf::LogStatistics()
 {
   MessageLoggerQ::MLqSUM(); // trigger summary info
 }
 
-void mf::LogErrorObj(ErrorObj* eo_p)
+void
+mf::LogErrorObj(ErrorObj* eo_p)
 {
   MessageLoggerQ::MLqLOG(eo_p);
 }
 
-bool mf::isDebugEnabled()
+bool
+mf::isDebugEnabled()
 {
   return detail::enabled<ELseverityLevel::ELsev_success>();
 }
 
-bool mf::isInfoEnabled()
+bool
+mf::isInfoEnabled()
 {
   return detail::enabled<ELseverityLevel::ELsev_info>();
 }
 
-bool mf::isWarningEnabled()
+bool
+mf::isWarningEnabled()
 {
   return detail::enabled<ELseverityLevel::ELsev_warning>();
 }
 
-void mf::HaltMessageLogging()
+void
+mf::HaltMessageLogging()
 {
   MessageLoggerQ::MLqSHT(); // Shut the logger up
 }
 
-void mf::FlushMessageLog()
+void
+mf::FlushMessageLog()
 {
-  if (MessageDrop::instance()->messageLoggerScribeIsRunning != MLSCRIBE_RUNNING_INDICATOR) return;
+  if (MessageDrop::instance()->messageLoggerScribeIsRunning !=
+      MLSCRIBE_RUNNING_INDICATOR)
+    return;
   MessageLoggerQ::MLqFLS(); // Flush the message log queue
 }
 
-bool mf::isMessageProcessingSetUp()
+bool
+mf::isMessageProcessingSetUp()
 {
-  return MessageDrop::instance()->messageLoggerScribeIsRunning == MLSCRIBE_RUNNING_INDICATOR;
+  return MessageDrop::instance()->messageLoggerScribeIsRunning ==
+         MLSCRIBE_RUNNING_INDICATOR;
 }
 
-void mf::setStandAloneMessageThreshold(ELseverityLevel const severity)
+void
+mf::setStandAloneMessageThreshold(ELseverityLevel const severity)
 {
   MessageLoggerQ::standAloneThreshold(severity);
 }
 
-void mf::squelchStandAloneMessageCategory(std::string const & category)
+void
+mf::squelchStandAloneMessageCategory(std::string const& category)
 {
   MessageLoggerQ::squelch(category);
 }
@@ -70,26 +83,28 @@ class mf::MessageFacilityService {
 public:
   static MessageFacilityService& instance();
 
-  std::unique_ptr<Presence> MFPresence {nullptr};
-  std::unique_ptr<MessageLoggerImpl> theML {nullptr};
-  std::mutex m {};
-  bool MFServiceEnabled {false};
+  std::unique_ptr<Presence> MFPresence{nullptr};
+  std::unique_ptr<MessageLoggerImpl> theML{nullptr};
+  std::mutex m{};
+  bool MFServiceEnabled{false};
 
   MessageFacilityService() = default;
 };
 
-mf::MessageFacilityService & mf::MessageFacilityService::instance()
+mf::MessageFacilityService&
+mf::MessageFacilityService::instance()
 {
   static MessageFacilityService mfs;
   return mfs;
 }
 
 // Start MessageFacility service
-void mf::StartMessageFacility(fhicl::ParameterSet const& pset,
-                              std::string const & applicationName)
+void
+mf::StartMessageFacility(fhicl::ParameterSet const& pset,
+                         std::string const& applicationName)
 {
   auto& mfs = MessageFacilityService::instance();
-  std::lock_guard<std::mutex> lock {mfs.m};
+  std::lock_guard<std::mutex> lock{mfs.m};
 
   if (mfs.MFServiceEnabled)
     return;
@@ -103,24 +118,27 @@ void mf::StartMessageFacility(fhicl::ParameterSet const& pset,
   mfs.MFServiceEnabled = true;
 }
 
-void mf::EndMessageFacility()
+void
+mf::EndMessageFacility()
 {
   MessageFacilityService::instance().MFPresence.reset();
 }
 
-void mf::SetApplicationName(std::string const& application)
+void
+mf::SetApplicationName(std::string const& application)
 {
   auto& mfs = MessageFacilityService::instance();
-  if (!mfs.MFServiceEnabled) return;
+  if (!mfs.MFServiceEnabled)
+    return;
 
-  std::lock_guard<std::mutex> lock {mfs.m};
+  std::lock_guard<std::mutex> lock{mfs.m};
 
   MessageLoggerQ::setApplication(application);
   MessageDrop::instance()->setSinglet(application);
 }
 
 mf::EnabledState
-mf::setEnabledState(std::string const & moduleLabel)
+mf::setEnabledState(std::string const& moduleLabel)
 {
   return MessageFacilityService::instance().theML->setEnabledState(moduleLabel);
 }
@@ -128,10 +146,12 @@ mf::setEnabledState(std::string const & moduleLabel)
 void
 mf::restoreEnabledState(EnabledState previousEnabledState)
 {
-  MessageFacilityService::instance().theML->restoreEnabledState(previousEnabledState);
+  MessageFacilityService::instance().theML->restoreEnabledState(
+    previousEnabledState);
 }
 
-void mf::ClearMessageLogger()
+void
+mf::ClearMessageLogger()
 {
   MessageDrop::instance()->clear();
 }

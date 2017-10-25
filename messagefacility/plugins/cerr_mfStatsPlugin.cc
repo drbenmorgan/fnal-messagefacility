@@ -12,12 +12,11 @@ using mf::service::ELstatistics;
 
 extern "C" {
 
-  auto makePlugin(std::string const&,
-                  fhicl::ParameterSet const& pset)
-  {
-    return std::make_unique<ELstatistics>(pset, std::cerr);
-  }
-
+auto
+makePlugin(std::string const&, fhicl::ParameterSet const& pset)
+{
+  return std::make_unique<ELstatistics>(pset, std::cerr);
+}
 }
 
 CET_PROVIDE_FILE_PATH()

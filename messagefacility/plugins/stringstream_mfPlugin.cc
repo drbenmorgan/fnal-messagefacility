@@ -18,12 +18,13 @@ namespace {
   std::map<std::string, cet::ostream_handle> streams;
 }
 
-std::ostringstream &
-mf::getStringStream(std::string const & psetName)
+std::ostringstream&
+mf::getStringStream(std::string const& psetName)
 {
   auto const sIter = streams.find(psetName);
   if (sIter != streams.end()) {
-    return dynamic_cast<std::ostringstream&>(static_cast<std::ostream&>(sIter->second));
+    return dynamic_cast<std::ostringstream&>(
+      static_cast<std::ostream&>(sIter->second));
   } else { // Configuration error!
     throw Exception(errors::Configuration, "mf::getStringStream:")
       << "Unable to find specified messagefacility logging stream \""
@@ -33,12 +34,13 @@ mf::getStringStream(std::string const & psetName)
 }
 
 extern "C" {
-  auto makePlugin(std::string const & psetName,
-                  fhicl::ParameterSet const& pset)
-  {
-    auto ret = streams.emplace(psetName, cet::ostream_handle{std::ostringstream{}});
-    return std::make_unique<ELostreamOutput>(pset, ret.first->second);
-  }
+auto
+makePlugin(std::string const& psetName, fhicl::ParameterSet const& pset)
+{
+  auto ret =
+    streams.emplace(psetName, cet::ostream_handle{std::ostringstream{}});
+  return std::make_unique<ELostreamOutput>(pset, ret.first->second);
+}
 }
 
 CET_PROVIDE_FILE_PATH()
