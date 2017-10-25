@@ -30,47 +30,88 @@
     done with it
 */
 
-#include <vector>
 #include <condition_variable>
 #include <mutex>
+#include <vector>
 
 namespace mf {
 
   class SingleConsumerQ {
   public:
-
     struct Buffer {
       Buffer() = default;
-      Buffer(void* p,int const len) : ptr_{p},len_{len} {}
+      Buffer(void* p, int const len) : ptr_{p}, len_{len} {}
 
-      void* ptr_ {nullptr};
-      int len_ {};
+      void* ptr_{nullptr};
+      int len_{};
     };
 
     SingleConsumerQ(int const max_event_size, int const max_queue_depth);
 
     struct ConsumerType {
-      static SingleConsumerQ::Buffer get(SingleConsumerQ& b) { return b.getConsumerBuffer(); }
-      static void release(SingleConsumerQ& b, void* v) { b.releaseConsumerBuffer(v); }
-      static void commit(SingleConsumerQ& b, void* v, int size) { b.commitConsumerBuffer(v,size); }
+      static SingleConsumerQ::Buffer
+      get(SingleConsumerQ& b)
+      {
+        return b.getConsumerBuffer();
+      }
+      static void
+      release(SingleConsumerQ& b, void* v)
+      {
+        b.releaseConsumerBuffer(v);
+      }
+      static void
+      commit(SingleConsumerQ& b, void* v, int size)
+      {
+        b.commitConsumerBuffer(v, size);
+      }
     };
 
     struct ProducerType {
-      static SingleConsumerQ::Buffer get(SingleConsumerQ& b) { return b.getProducerBuffer(); }
-      static void release(SingleConsumerQ& b, void* v) { b.releaseProducerBuffer(v); }
-      static void commit(SingleConsumerQ& b, void* v, int size) { b.commitProducerBuffer(v,size); }
+      static SingleConsumerQ::Buffer
+      get(SingleConsumerQ& b)
+      {
+        return b.getProducerBuffer();
+      }
+      static void
+      release(SingleConsumerQ& b, void* v)
+      {
+        b.releaseProducerBuffer(v);
+      }
+      static void
+      commit(SingleConsumerQ& b, void* v, int size)
+      {
+        b.commitProducerBuffer(v, size);
+      }
     };
 
     template <class T>
     class OperateBuffer {
     public:
-      explicit OperateBuffer(SingleConsumerQ& b): b_{b},v_{T::get(b)},committed_{false} {}
+      explicit OperateBuffer(SingleConsumerQ& b)
+        : b_{b}, v_{T::get(b)}, committed_{false}
+      {}
       ~OperateBuffer()
-      { if(!committed_) T::release(b_,v_.ptr_); }
+      {
+        if (!committed_)
+          T::release(b_, v_.ptr_);
+      }
 
-      void* buffer() const { return v_.ptr_; }
-      int size() const { return v_.len_; }
-      void commit(int const theSize=0) { T::commit(b_, v_.ptr_, theSize); committed_=true; }
+      void*
+      buffer() const
+      {
+        return v_.ptr_;
+      }
+      int
+      size() const
+      {
+        return v_.len_;
+      }
+      void
+      commit(int const theSize = 0)
+      {
+        T::commit(b_, v_.ptr_, theSize);
+        committed_ = true;
+      }
 
     private:
       SingleConsumerQ& b_;
@@ -83,20 +124,27 @@ namespace mf {
 
     Buffer getProducerBuffer();
     void releaseProducerBuffer(void*);
-    void commitProducerBuffer(void*,int);
+    void commitProducerBuffer(void*, int);
 
     Buffer getConsumerBuffer();
     void releaseConsumerBuffer(void*);
-    void commitConsumerBuffer(void*,int);
+    void commitConsumerBuffer(void*, int);
 
-    int maxEventSize() const { return max_event_size_; }
-    int maxQueueDepth() const { return max_queue_depth_; }
+    int
+    maxEventSize() const
+    {
+      return max_event_size_;
+    }
+    int
+    maxQueueDepth() const
+    {
+      return max_queue_depth_;
+    }
 
     SingleConsumerQ(SingleConsumerQ const&) = delete;
     SingleConsumerQ operator=(SingleConsumerQ const&) = delete;
 
   private:
-
     // the memory for the buffers
     using ByteArray = std::vector<char>;
     // the pool of buffers
@@ -108,19 +156,16 @@ namespace mf {
     int max_queue_depth_;
     int pos_; // use pool as stack of available buffers
     ByteArray mem_;
-    Pool buffer_pool_ {};
+    Pool buffer_pool_{};
     Queue queue_;
-    unsigned int fpos_ {}, bpos_ {}; // positions for queue - front and back
+    unsigned int fpos_{}, bpos_{}; // positions for queue - front and back
 
-    std::mutex pool_mutex_ {};
-    std::mutex queue_mutex_ {};
-    std::condition_variable pool_cond_ {};
-    std::condition_variable pop_cond_ {};
-    std::condition_variable push_cond_ {};
-
+    std::mutex pool_mutex_{};
+    std::mutex queue_mutex_{};
+    std::condition_variable pool_cond_{};
+    std::condition_variable pop_cond_{};
+    std::condition_variable push_cond_{};
   };
-
-
 }
 #endif /* messagefacility_Utilities_SingleConsumerQ_h */
 

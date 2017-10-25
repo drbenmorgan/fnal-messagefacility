@@ -6,8 +6,7 @@
 #include <sstream>
 
 namespace mf {
-  std::ostringstream &
-    getStringStream(std::string const & psetName);
+  std::ostringstream& getStringStream(std::string const& psetName);
 }
 
 #endif /* messagefacility_plugins_stringstream_h */

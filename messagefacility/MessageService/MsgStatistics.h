@@ -17,13 +17,13 @@ namespace mf {
   namespace service {
     class MsgStatistics {
     public:
-
       struct Config {
-        fhicl::Atom<bool> reset { fhicl::Name("reset"),
-            fhicl::Comment("Used for statistics destinations"),
-            false};
-        fhicl::Atom<bool> resetStatistics { fhicl::Name("resetStatistics"),
-            false};
+        fhicl::Atom<bool> reset{
+          fhicl::Name("reset"),
+          fhicl::Comment("Used for statistics destinations"),
+          false};
+        fhicl::Atom<bool> resetStatistics{fhicl::Name("resetStatistics"),
+                                          false};
       };
 
       MsgStatistics(Config const& config);
@@ -40,21 +40,19 @@ namespace mf {
       void wipe();
       void noTerminationSummary();
 
-      ELlimitsTable limits {};
-      ELmap_stats statsMap {};
-      bool updatedStats {false};
+      ELlimitsTable limits{};
+      ELmap_stats statsMap{};
+      bool updatedStats{false};
       bool reset;
-      bool printAtTermination {true};
+      bool printAtTermination{true};
 
     private:
-
       std::string dualLogName(std::string const& s);
 
-    };  // MsgStatistics
+    }; // MsgStatistics
 
   } // end of namespace service
 } // end of namespace mf
-
 
 #endif /* messagefacility_MessageService_MsgStatistics_h */
 

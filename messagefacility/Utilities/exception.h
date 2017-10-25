@@ -6,15 +6,14 @@
 
 namespace mf {
   namespace errors {
-    enum error {Configuration = 1, LogicError, OtherError};
+    enum error { Configuration = 1, LogicError, OtherError };
   } // error
 
   namespace detail {
-    std::string translate( errors::error );
+    std::string translate(errors::error);
   }
 
-  typedef  cet::coded_exception<errors::error,detail::translate>
-  Exception;
+  typedef cet::coded_exception<errors::error, detail::translate> Exception;
 } // mf
 
 #endif /* messagefacility_Utilities_exception_h */

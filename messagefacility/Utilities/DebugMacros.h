@@ -6,16 +6,22 @@ namespace mf {
 
     debugvalue();
 
-    int operator()() { return value_; }
+    int
+    operator()()
+    {
+      return value_;
+    }
 
     const char* cvalue_;
     int value_;
   };
 
-extern debugvalue debugit;
+  extern debugvalue debugit;
 }
 
-#define FDEBUG(lev) if(lev <= debugit()) std::cerr
+#define FDEBUG(lev)                                                            \
+  if (lev <= debugit())                                                        \
+  std::cerr
 
 #endif /* messagefacility_Utilities_DebugMacros_h */
 

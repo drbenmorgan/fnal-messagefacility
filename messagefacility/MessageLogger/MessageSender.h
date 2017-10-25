@@ -19,31 +19,34 @@ namespace mf {
     ~MessageSender() noexcept;
 
     // ---  stream out the next part of a message:
-    template<class T>
+    template <class T>
     MessageSender&
-    operator<< (T const& t)
+    operator<<(T const& t)
     {
       (*errorobj_p) << t;
       return *this;
     }
 
     // Movable.
-    MessageSender(MessageSender &&) = default;
+    MessageSender(MessageSender&&) = default;
 
     // No copying or move assignment.
-    MessageSender & operator = (MessageSender &&) = delete;
-    MessageSender(MessageSender const &) = delete;
-    MessageSender & operator = (MessageSender const &) = delete;
+    MessageSender& operator=(MessageSender&&) = delete;
+    MessageSender(MessageSender const&) = delete;
+    MessageSender& operator=(MessageSender const&) = delete;
 
-    bool isValid() const { return errorobj_p != nullptr; }
+    bool
+    isValid() const
+    {
+      return errorobj_p != nullptr;
+    }
 
   private:
-    std::unique_ptr<ErrorObj> errorobj_p {nullptr};
+    std::unique_ptr<ErrorObj> errorobj_p{nullptr};
 
-  };  // MessageSender
+  }; // MessageSender
 
-
-}  // namespace mf
+} // namespace mf
 
 #endif /* messagefacility_MessageLogger_MessageSender_h */
 

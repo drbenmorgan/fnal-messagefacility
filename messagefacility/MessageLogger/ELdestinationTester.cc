@@ -1,8 +1,8 @@
 //#define NDEBUG
-#define ML_DEBUG    // always enable debug
+#define ML_DEBUG // always enable debug
 
-#include <iostream>
 #include <cstdlib>
+#include <iostream>
 
 #include "boost/filesystem.hpp"
 #include "boost/program_options.hpp"
@@ -16,7 +16,8 @@
 
 namespace {
 
-  void runModule(std::string const& modulename)
+  void
+  runModule(std::string const& modulename)
   {
     mf::MessageDrop::instance()->setSinglet(modulename);
 
@@ -24,18 +25,17 @@ namespace {
     mf::SetContextIteration("postBeginJob");
     mf::LogAbsolute("TimeReport")
       << "TimeReport> Report activated\n"
-      "TimeReport> Report columns headings for events: "
-      "eventnum runnum timetaken\n"
-      "TimeReport> Report columns headings for modules: "
-      "eventnum runnum modulelabel modulename timetaken";
+         "TimeReport> Report columns headings for events: "
+         "eventnum runnum timetaken\n"
+         "TimeReport> Report columns headings for modules: "
+         "eventnum runnum modulelabel modulename timetaken";
 
     // Post end job
     mf::SetContextIteration("postEndJob");
     mf::LogAbsolute("TimeReport")
-      << "TimeReport> Time report complete in "
-      << 0.0402123 << " seconds\n"
+      << "TimeReport> Time report complete in " << 0.0402123 << " seconds\n"
       << " Time Summary: \n"
-      << " Min: " << 303  << "\n"
+      << " Min: " << 303 << "\n"
       << " Max: " << 5555 << "\n"
       << " Avg: " << 4000 << "\n";
 
@@ -50,17 +50,15 @@ namespace {
     mf::LogAbsolute("TimeModule")
       << "TimeModule> "
       << "run: 1   subRun: 2    event: 456 "
-      << "someString "
-      << modulename << " "
-      << 0.04404;
+      << "someString " << modulename << " " << 0.04404;
 
     mf::LogSystem("system") << "This would be a major problem, I guess.";
   }
-
 }
 
 namespace bpo = boost::program_options;
-int main(int argc, char* argv[])
+int
+main(int argc, char* argv[])
 {
   std::ostringstream descstr;
   descstr << "\nELdestinationTester is a sample program that can be used\n"
@@ -77,23 +75,22 @@ int main(int argc, char* argv[])
           << "      ...\n"
           << "    }\n"
           << "  }\n\n";
-  descstr << "Usage: "
-          << boost::filesystem::path(argv[0]).filename().native()
+  descstr << "Usage: " << boost::filesystem::path(argv[0]).filename().native()
           << " -c <config-file> \n\n"
           << "Allowed options";
-  bpo::options_description desc {descstr.str()};
-  desc.add_options()
-    ("config,c", bpo::value<std::string>(), "Configuration file.")
-    ("help,h", "produce help message");
+  bpo::options_description desc{descstr.str()};
+  desc.add_options()("config,c",
+                     bpo::value<std::string>(),
+                     "Configuration file.")("help,h", "produce help message");
   bpo::variables_map vm;
 
   try {
     bpo::store(bpo::parse_command_line(argc, argv, desc), vm);
     bpo::notify(vm);
   }
-  catch (bpo::error const & e) {
-    std::cerr << "Exception from command line processing in "
-              << argv[0] << ": " << e.what() << "\n";
+  catch (bpo::error const& e) {
+    std::cerr << "Exception from command line processing in " << argv[0] << ": "
+              << e.what() << "\n";
     return 2;
   }
   if (vm.count("help")) {
@@ -101,12 +98,13 @@ int main(int argc, char* argv[])
     return 1;
   }
   if (!vm.count("config")) {
-    std::cerr << "ERROR: No configuration specified ( -c <config_file> )" << std::endl;
+    std::cerr << "ERROR: No configuration specified ( -c <config_file> )"
+              << std::endl;
     return 3;
   }
   std::string const config_string = vm["config"].as<std::string>();
 
-  cet::filepath_lookup_nonabsolute filepath {"FHICL_FILE_PATH"};
+  cet::filepath_lookup_nonabsolute filepath{"FHICL_FILE_PATH"};
 
   fhicl::ParameterSet main_pset;
   try {
@@ -114,9 +112,9 @@ int main(int argc, char* argv[])
     make_ParameterSet(config_string, filepath, main_pset);
   }
   catch (cet::exception const& e) {
-    std::cerr << "ERROR: Failed to create a parameter set from an input configuration string with exception "
-              << e.what()
-              << ".\n";
+    std::cerr << "ERROR: Failed to create a parameter set from an input "
+                 "configuration string with exception "
+              << e.what() << ".\n";
     std::cerr << "       Input configuration string follows:\n"
               << "------------------------------------"
               << "------------------------------------"
@@ -130,7 +128,8 @@ int main(int argc, char* argv[])
 
   // Start MessageFacility Service
   try {
-    mf::StartMessageFacility(main_pset.get<fhicl::ParameterSet>("message"), std::string("MessageFacility"));
+    mf::StartMessageFacility(main_pset.get<fhicl::ParameterSet>("message"),
+                             std::string("MessageFacility"));
   }
   catch (mf::Exception const& e) {
     std::cerr << e.what() << std::endl;
@@ -145,7 +144,8 @@ int main(int argc, char* argv[])
     return 7;
   }
   catch (...) {
-    std::cerr << "Caught unknown exception from mf::StartMessageFacility" << std::endl;
+    std::cerr << "Caught unknown exception from mf::StartMessageFacility"
+              << std::endl;
     return 5;
   }
 
@@ -154,14 +154,17 @@ int main(int argc, char* argv[])
   mf::SetContextIteration("pre-event");
 
   // Memory Check output
-  mf::LogWarning("MemoryCheck") << "MemoryCheck: module G4:g4run VSIZE 1030.34 0 RSS 357.043 0.628906";
-  mf::LogWarning("MemoryCheck") << "MemoryCheck: module G4:g4run VSIZE 1030.34 0 RSS 357.25 0.199219";
-  mf::LogWarning("MemoryCheck") << "MemoryCheck: module G4:g4run VSIZE 1030.34 5.2 RSS 357.453 0.1875";
+  mf::LogWarning("MemoryCheck")
+    << "MemoryCheck: module G4:g4run VSIZE 1030.34 0 RSS 357.043 0.628906";
+  mf::LogWarning("MemoryCheck")
+    << "MemoryCheck: module G4:g4run VSIZE 1030.34 0 RSS 357.25 0.199219";
+  mf::LogWarning("MemoryCheck")
+    << "MemoryCheck: module G4:g4run VSIZE 1030.34 5.2 RSS 357.453 0.1875";
 
   mf::LogInfo linfo("info");
   linfo << " vint contains: ";
 
-  std::vector<int> vint {1, 2, 5, 89, 3};
+  std::vector<int> vint{1, 2, 5, 89, 3};
 
   auto i = std::begin(vint);
   auto const e = std::end(vint);
@@ -180,11 +183,11 @@ int main(int argc, char* argv[])
   mf::SetContextIteration("pro-event");
 
   // Log Debugs
-  for(int i = 0; i != 5; ++i) {
-    mf::LogError("catError")     << "Error information.";
+  for (int i = 0; i != 5; ++i) {
+    mf::LogError("catError") << "Error information.";
     mf::LogWarning("catWarning") << "Warning information.";
-    mf::LogInfo("catInfo")       << "Info information.";
-    LOG_DEBUG("debug")           << "DEBUG information.";
+    mf::LogInfo("catInfo") << "Info information.";
+    LOG_DEBUG("debug") << "DEBUG information.";
   }
 
   // Test move operations
@@ -201,5 +204,4 @@ int main(int argc, char* argv[])
   runModule("module1");
   runModule("module5");
   mf::LogStatistics();
-
 }
