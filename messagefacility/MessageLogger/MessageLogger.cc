@@ -115,6 +115,11 @@ mf::StartMessageFacility(fhicl::ParameterSet const& pset,
   // The MessageLogger
   mfs.theML = std::make_unique<MessageLoggerImpl>(pset);
 
+  // Process the wildcard module name in the debug config
+  // without requiring the user to call setEnabledState()
+  // to get it.
+  mfs.theML->setWildcardDebug();
+
   mfs.MFServiceEnabled = true;
 }
 

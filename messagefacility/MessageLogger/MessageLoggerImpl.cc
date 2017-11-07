@@ -58,6 +58,17 @@ namespace mf {
 
   } // ctor
 
+  void
+  MessageLoggerImpl::setWildcardDebug()
+  {
+    auto md = MessageDrop::instance();
+    if (!anyDebugEnabled_) {
+      md->debugEnabled = false;
+    } else if (everyDebugEnabled_) {
+      md->debugEnabled = true;
+    }
+  }
+
   mf::EnabledState
   MessageLoggerImpl::setEnabledState(std::string const& levelsConfigLabel)
   {
