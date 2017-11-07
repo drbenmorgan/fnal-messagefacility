@@ -68,6 +68,8 @@ namespace mf {
     using Parameters = fhicl::WrappedTable<Config>;
     MessageLoggerImpl(Parameters const&);
 
+    void setWildcardDebug();
+
     // Set the state of the enabled flags for debug, info and warning
     // messages appropriate for the given module label, returning
     // previous state. User is responsible for being thread-safe with

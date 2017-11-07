@@ -10,6 +10,21 @@ cet_test(Presence_init_t
   MF_MessageLogger
   fhiclcpp)
 
+cet_test(WildcardDebug_t
+  LIBRARIES
+    MF_MessageLogger
+    fhiclcpp
+    ${Boost_SYSTEM_LIBRARY}
+    ${Boost_FILESYSTEM_LIBRARY}
+    ${Boost_PROGRAM_OPTIONS_LIBRARY}
+  DATAFILES
+    fcl/WildcardDebug_t.fcl
+  TEST_ARGS
+    -c WildcardDebug_t.fcl
+  REF
+    ${CMAKE_CURRENT_SOURCE_DIR}/WildcardDebug_t-ref.txt
+)
+
 cet_make_exec(mfexample
   LIBRARIES
   MF_MessageLogger
