@@ -57,8 +57,8 @@ namespace mf {
 
       // --- data:
       ELadministrator admin_{};
-      cet::BasicPluginFactory pluginFactory_{"mfPlugin"};
-      cet::BasicPluginFactory pluginStatsFactory_{"mfStatsPlugin"};
+      cet::BasicPluginFactory pluginFactory_;
+      cet::BasicPluginFactory pluginStatsFactory_;
       ELdestination& earlyDest_;
       bool cleanSlateConfiguration_{true};
       bool active_{true};

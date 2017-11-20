@@ -4,6 +4,7 @@
 
 #include "cetlib/HorizontalRule.h"
 #include "cetlib/container_algorithms.h"
+#include "cetlib/os_libpath.h"
 #include "cetlib/trim.h"
 #include "fhiclcpp/make_ParameterSet.h"
 #include "fhiclcpp/types/detail/validationException.h"
@@ -54,13 +55,29 @@ namespace {
     return result;
   }
 
+  auto runtime_plugin_searchpath()
+  {
+    // https://cdcvs.fnal.gov/redmine/issues/17900
+    // 1. Use `MF_PLUGIN_PATH` if set in the environment.
+    // 2. Else use system loader path
+    try {
+      return cet::search_path{"MF_PLUGIN_PATH"};
+    }
+    catch (cet::exception const& e){
+      // Check category is "getenv"?
+    }
+    // If we get to here, use default
+    return cet::search_path{cet::os_libpath()};
+  }
 }
 
 namespace mf {
   namespace service {
 
     MessageLoggerScribe::MessageLoggerScribe()
-    try : earlyDest_{admin_.attach("cerr_early", makePlugin_(pluginFactory_,
+    try : pluginFactory_{runtime_plugin_searchpath(), "mfPlugin"},
+          pluginStatsFactory_{runtime_plugin_searchpath(), "mfStatsPlugin"},
+          earlyDest_{admin_.attach("cerr_early", makePlugin_(pluginFactory_,
                                                              "cerr",
                                                              "cerr_early",
                                                              default_destination_config()))}
