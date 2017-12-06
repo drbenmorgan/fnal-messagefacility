@@ -6,7 +6,7 @@ perllib  product_dir
 #
 # define product/version pairs
 product		version
-tbb		v2018
+tbb		v2018_1
 fhiclcpp        v4_06_03
 cetbuildtools	v6_00_02	-	only_for_build
 catch		v1_11_0		-nq-	only_for_build
