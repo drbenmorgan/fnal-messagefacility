@@ -30,8 +30,8 @@ using vstring = std::vector<std::string>;
 
 namespace {
 
-  bool constexpr throw_on_clean_slate{true};
-  bool constexpr no_throw_on_clean_slate{false};
+  bool constexpr throw_on_clean_slate [[gnu::unused]] {true};
+  bool constexpr no_throw_on_clean_slate [[gnu::unused]] {false};
 
   auto
   default_statistics_config(fhicl::ParameterSet const& ordinaryDests)
@@ -502,7 +502,7 @@ namespace mf {
         throw Exception(errors::Configuration, "MessageLoggerScribe: ", e)
           << "Exception caught while processing plugin spec.\n";
       }
-      return std::move(result);
+      return result;
     } //
 
   } // end of namespace service

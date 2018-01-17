@@ -1,5 +1,6 @@
 #include "cetlib/PluginTypeDeducer.h"
 #include "cetlib/ProvideFilePathMacro.h"
+#include "cetlib/ProvideMakePluginMacros.h"
 #include "fhiclcpp/ParameterSet.h"
 #include "fhiclcpp/types/AllowedConfigurationMacro.h"
 #include "fhiclcpp/types/ConfigurationTable.h"
@@ -116,14 +117,12 @@ namespace mfplugins {
 // makePlugin function
 // ======================================================================
 
-extern "C" {
-
-auto
-makePlugin(std::string const&, fhicl::ParameterSet const& pset)
+MAKE_PLUGIN_START(auto, std::string const&, fhicl::ParameterSet const& pset)
 {
   return std::make_unique<mfplugins::ELsyslog>(pset);
-}
+} MAKE_PLUGIN_END
+
 CET_PROVIDE_FILE_PATH()
 FHICL_PROVIDE_ALLOWED_CONFIGURATION(mfplugins::ELsyslog)
-}
+
 DEFINE_BASIC_PLUGINTYPE_FUNC(mf::service::ELdestination)

@@ -1,5 +1,6 @@
 #include "cetlib/PluginTypeDeducer.h"
 #include "cetlib/ProvideFilePathMacro.h"
+#include "cetlib/ProvideMakePluginMacros.h"
 #include "fhiclcpp/ParameterSet.h"
 #include "fhiclcpp/types/AllowedConfigurationMacro.h"
 #include "messagefacility/MessageService/ELdestination.h"
@@ -10,14 +11,10 @@
 
 using mf::service::ELstatistics;
 
-extern "C" {
-
-auto
-makePlugin(std::string const&, fhicl::ParameterSet const& pset)
+MAKE_PLUGIN_START(auto, std::string const&, fhicl::ParameterSet const& pset)
 {
   return std::make_unique<ELstatistics>(pset, std::cout);
-}
-}
+} MAKE_PLUGIN_END
 
 CET_PROVIDE_FILE_PATH()
 FHICL_PROVIDE_ALLOWED_CONFIGURATION(ELstatistics)
