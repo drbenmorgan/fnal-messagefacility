@@ -1,5 +1,6 @@
 #include "cetlib/PluginTypeDeducer.h"
 #include "cetlib/ProvideFilePathMacro.h"
+#include "cetlib/ProvideMakePluginMacros.h"
 #include "cetlib/ostream_handle.h"
 #include "fhiclcpp/types/AllowedConfigurationMacro.h"
 #include "fhiclcpp/types/TableFragment.h"
@@ -25,18 +26,14 @@ namespace {
   };
 }
 
-extern "C" {
-
-auto
-makePlugin(std::string const&, fhicl::ParameterSet const& pset)
+MAKE_PLUGIN_START(auto, std::string const&, fhicl::ParameterSet const& pset)
 {
   WrappedConfig::Parameters const ps{pset};
   auto const& fConfig = ps().file_config();
   cet::ostream_handle osh{fConfig.filename(),
                           fConfig.append() ? std::ios::app : std::ios::trunc};
   return std::make_unique<ELostreamOutput>(ps().ostream_dest(), std::move(osh));
-}
-}
+} MAKE_PLUGIN_END
 
 CET_PROVIDE_FILE_PATH()
 FHICL_PROVIDE_ALLOWED_CONFIGURATION(WrappedConfig)

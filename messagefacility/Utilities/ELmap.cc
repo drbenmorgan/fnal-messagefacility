@@ -1,5 +1,7 @@
 #include "messagefacility/Utilities/ELmap.h"
 
+#include <ctime>
+
 namespace mf {
 
   // ----------------------------------------------------------------------
