@@ -1,7 +1,7 @@
 #ifndef messagefacility_Utilities_exception_h
 #define messagefacility_Utilities_exception_h
 
-#include "cetlib/coded_exception.h"
+#include "cetlib_except/coded_exception.h"
 #include <string>
 
 namespace mf {
