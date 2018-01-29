@@ -16,7 +16,7 @@
 #  make package (builds distribution tarfile)
 
 cmake_minimum_required(VERSION 3.3)
-project(messagefacility VERSION 2.1.1)
+project(messagefacility VERSION 2.1.6)
 
 # cetbuildtools contains our cmake modules
 # - Cetbuildtools, version2
