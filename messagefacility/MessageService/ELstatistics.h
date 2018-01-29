@@ -19,15 +19,18 @@
 #include <memory>
 #include <set>
 
-namespace fhicl { class ParameterSet; }
-namespace mf { class ErrorObj; }
+namespace fhicl {
+  class ParameterSet;
+}
+namespace mf {
+  class ErrorObj;
+}
 
 namespace mf {
   namespace service {
 
     class ELstatistics : public ELdestination {
     public:
-
       struct Config {
         fhicl::TableFragment<ELdestination::Config> elDestConfig;
       };
@@ -43,18 +46,16 @@ namespace mf {
       ELstatistics& operator=(ELstatistics const&) = delete;
 
     private:
-
       void summary(std::ostream& os, std::string const& title = {}) override;
       void summary(std::string& s, std::string const& title = {}) override;
       void summary() override;
       void noTerminationSummary() override;
 
       cet::ostream_handle termStream;
-    };  // ELstatistics
+    }; // ELstatistics
 
   } // end of namespace service
 } // end of namespace mf
-
 
 #endif /* messagefacility_MessageService_ELstatistics_h */
 

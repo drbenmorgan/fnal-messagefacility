@@ -2,13 +2,13 @@
 #define messagefacility_MessageService_MessageLoggerQ_h
 
 #include "fhiclcpp/types/OptionalDelegatedParameter.h"
-#include "messagefacility/Utilities/ELseverityLevel.h"
 #include "messagefacility/MessageService/OpCode.h"
+#include "messagefacility/Utilities/ELseverityLevel.h"
 
-#include <string>
 #include <map>
 #include <memory>
 #include <set>
+#include <string>
 
 namespace fhicl {
   class ParameterSet;
@@ -24,7 +24,6 @@ namespace mf {
 
   class MessageLoggerQ {
   public:
-
     // ---  birth via a surrogate:
     static MessageLoggerQ* instance();
 
@@ -45,7 +44,7 @@ namespace mf {
       fhicl::OptionalDelegatedParameter destinations{
         fhicl::Name{"destinations"},
         fhicl::Comment{
-R"(The 'destinations' parameter represents a FHiCL table of named
+          R"(The 'destinations' parameter represents a FHiCL table of named
 destinations, each of which are configured to specify how messages
 are logged to a given target.  It has the general form of:
 
@@ -79,8 +78,7 @@ destinations and the allowed configuration corresponding to a given
 statistics destination, replace the 'mfPlugin' specification with
 'mfStatsPlugin'.
 
-If a value for 'destinations' is not supplied, one will be provided for you.)"}
-      };
+If a value for 'destinations' is not supplied, one will be provided for you.)"}};
     };
     static void MLqCFG(Config* p);
     static void MLqSUM();
@@ -88,7 +86,8 @@ If a value for 'destinations' is not supplied, one will be provided for you.)"}
     static void MLqFLS();
 
     // ---  bookkeeping for single-thread mode
-    static void setMLscribe_ptr(std::unique_ptr<mf::service::AbstractMLscribe> m);
+    static void setMLscribe_ptr(
+      std::unique_ptr<mf::service::AbstractMLscribe> m);
 
     // --- special control of standAlone logging behavior
     static void standAloneThreshold(mf::ELseverityLevel severity);
@@ -96,15 +95,17 @@ If a value for 'destinations' is not supplied, one will be provided for you.)"}
     static bool ignore(mf::ELseverityLevel severity,
                        std::string const& category);
 
-    // --- Allow the setting of the global application name.
-    static void setApplication(std::string const & application);
+    // --- Allow the setting of global information.
+    static void setApplication(std::string const& application);
+    static void setHostName(std::string const& name);
+    static void setHostAddr(std::string const& addr);
+    static void setPID(long PID);
 
     // --- no copying:
     MessageLoggerQ(MessageLoggerQ const&) = delete;
     MessageLoggerQ& operator=(MessageLoggerQ const&) = delete;
 
   private:
-
     // ---  traditional birth/death, but disallowed to users:
     MessageLoggerQ() = default;
     ~MessageLoggerQ() = default;
@@ -120,11 +121,9 @@ If a value for 'destinations' is not supplied, one will be provided for you.)"}
     static mf::ELseverityLevel threshold;
     static std::set<std::string> squelchSet;
 
-  };  // MessageLoggerQ
+  }; // MessageLoggerQ
 
-
-}  // namespace mf
-
+} // namespace mf
 
 #endif /* messagefacility_MessageService_MessageLoggerQ_h */
 

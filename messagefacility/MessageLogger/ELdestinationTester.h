@@ -1,2 +1,2 @@
 // header for MFTest
-int main(int arg,char** argv);
+int main(int arg, char** argv);

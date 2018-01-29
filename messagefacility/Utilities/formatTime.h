@@ -23,9 +23,9 @@ namespace mf {
     };
 
     struct User {
-      static std::string get_time(timeval const& t, std::string const& user_supplied_format);
+      static std::string get_time(timeval const& t,
+                                  std::string const& user_supplied_format);
     };
-
   }
 }
 
