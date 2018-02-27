@@ -62,17 +62,17 @@ namespace {
     : ELdestination{ps().elDestConfig()}
     , connection_{factory.make(ps().filename())}
     , msgTable_{connection_,
-          "Messages",
-          {{"Timestamp",
-                "Hostname",
-                "Hostaddress",
-                "Severity",
-                "Category",
-                "AppName",
-                "ProcessId",
-                "RunEventNo",
-                "ModuleName",
-                "Message"}}}
+                "Messages",
+                {{"Timestamp",
+                  "Hostname",
+                  "Hostaddress",
+                  "Severity",
+                  "Category",
+                  "AppName",
+                  "ProcessId",
+                  "RunEventNo",
+                  "ModuleName",
+                  "Message"}}}
   {}
 
   //===============================================================================================================
@@ -118,7 +118,8 @@ namespace {
 MAKE_PLUGIN_START(auto, std::string const&, fhicl::ParameterSet const& pset)
 {
   return std::make_unique<sqlite3Plugin>(pset);
-} MAKE_PLUGIN_END
+}
+MAKE_PLUGIN_END
 CET_PROVIDE_FILE_PATH()
 FHICL_PROVIDE_ALLOWED_CONFIGURATION(sqlite3Plugin)
 DEFINE_BASIC_PLUGINTYPE_FUNC(mf::service::ELdestination)

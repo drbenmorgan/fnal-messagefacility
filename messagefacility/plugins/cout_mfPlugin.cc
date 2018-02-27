@@ -15,7 +15,8 @@ MAKE_PLUGIN_START(auto, std::string const&, fhicl::ParameterSet const& pset)
 {
   return std::make_unique<ELostreamOutput>(pset,
                                            cet::ostream_handle{std::cout});
-} MAKE_PLUGIN_END
+}
+MAKE_PLUGIN_END
 
 CET_PROVIDE_FILE_PATH()
 FHICL_PROVIDE_ALLOWED_CONFIGURATION(ELostreamOutput)

@@ -33,7 +33,8 @@ MAKE_PLUGIN_START(auto, std::string const&, fhicl::ParameterSet const& pset)
   cet::ostream_handle osh{fConfig.filename(),
                           fConfig.append() ? std::ios::app : std::ios::trunc};
   return std::make_unique<ELostreamOutput>(ps().ostream_dest(), std::move(osh));
-} MAKE_PLUGIN_END
+}
+MAKE_PLUGIN_END
 
 CET_PROVIDE_FILE_PATH()
 FHICL_PROVIDE_ALLOWED_CONFIGURATION(WrappedConfig)

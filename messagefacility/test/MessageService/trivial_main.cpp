@@ -2,4 +2,8 @@
 // destructor is **disabled** (commented out) to verify that we have cured
 // the use-of-threads-after-main headache.
 
-int main() { return 0; }
+int
+main()
+{
+  return 0;
+}
