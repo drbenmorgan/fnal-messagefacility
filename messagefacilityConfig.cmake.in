@@ -22,11 +22,14 @@ set(@PROJECT_NAME@_INCLUDE_DIRS "${@PROJECT_NAME@_INCLUDE_DIR}")
 find_package(cetlib @cetlib_VERSION@ EXACT REQUIRED)
 find_package(fhiclcpp @fhiclcpp_VERSION@ EXACT REQUIRED)
 find_package(Boost @Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@.@Boost_SUBMINOR_VERSION@ EXACT REQUIRED
-  thread program_options filesystem
+  program_options filesystem
   )
 # NB: This assumes presence of FindSQLite module
 find_package(SQLite @SQLite_VERSION@ EXACT REQUIRED)
+# NB: This assumes the presence of FindTBB module
+find_package(TBB @TBB_VERSION@ EXACT REQUIRED)
 find_package(Threads REQUIRED)
+
 
 
 # - Include our targets
