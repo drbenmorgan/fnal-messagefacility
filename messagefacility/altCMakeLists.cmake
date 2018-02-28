@@ -46,7 +46,7 @@ target_link_libraries(MF_MessageLogger PUBLIC
   MF_Utilities
   cetlib_except::cetlib_except
   fhiclcpp::fhiclcpp
-  ${TBB_LIBRARY_RELEASE}
+  TBB::tbb
   )
 
 # Still recurse into directory to build ELdestinationTester program
@@ -79,11 +79,12 @@ install(TARGETS MF_MessageLogger
 # Handle installation of headers and support files here, as the current
 # Install directory for headers - do this way and here as we don't have
 # optional headers so no filtering/selection required, except
-# that we need to exclude the ELdestinationTester header and several cruft directories
+# that we need to exclude the ELdestinationTester and catch headers and several cruft directories
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
   FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp" PATTERN "*.icc"
   PATTERN "ELdestinationTester.h" EXCLUDE
+  PATTERN "catch" EXCLUDE
   PATTERN "doc" EXCLUDE
   PATTERN "examples" EXCLUDE
   PATTERN "python" EXCLUDE
