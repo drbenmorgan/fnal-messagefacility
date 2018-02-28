@@ -1,7 +1,3 @@
-# - When user supplies "-DALT_CMAKE" use the non-CET/UPS system
-if(ALT_CMAKE)
-  include(altCMakeLists.cmake)
-else()
 # ======================================================================
 #
 # Testing script
@@ -29,11 +25,27 @@ cet_test(WildcardDebug_t
     ${CMAKE_CURRENT_SOURCE_DIR}/WildcardDebug_t-ref.txt
 )
 
+if(ALT_CMAKE)
+  # much easier to do...
+  add_executable(mfexample mfexample.cc)
+  target_link_libraries(mfexample PRIVATE MF_MessageLogger fhiclcpp::fhiclcpp)
+  # Need to clarify installation - doesn't do much,
+  # and fails anyway on Mac:
+  # libc++abi.dylib: terminating with uncaught exception of type fhicl::detail::validationException: Any parameters prefaced with '#' are optional.
+  # Unsupported parameters:
+  #
+  # + statistics                     [ -:1 ]
+  # + statistics[0]                  [ -:1 ]
+  #
+  #
+  # Abort trap: 6
+else()
 cet_make_exec(mfexample
   LIBRARIES
   MF_MessageLogger
   fhiclcpp
   )
+endif()
 
 basic_plugin(Issue17457TestDestination mfPlugin
   MF_MessageLogger fhiclcpp ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY}
@@ -51,5 +63,3 @@ foreach (N 01 02) # 03 04 05)
     ${CMAKE_CURRENT_SOURCE_DIR}/${test_stem}-ref.err
     )
 endforeach()
-
-endif() # ALT_CMAKE

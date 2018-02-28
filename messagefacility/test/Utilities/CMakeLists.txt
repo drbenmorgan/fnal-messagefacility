@@ -1,7 +1,3 @@
-if(ALT_CMAKE)
-  include(altCMakeLists.cmake)
-else()
-
 # ======================================================================
 #
 # Testing script
@@ -14,4 +10,3 @@ cet_test(Exception_t LIBRARIES MF_Utilities cetlib_except)
 cet_test(ExceptionDerived_t LIBRARIES MF_Utilities cetlib_except)
 cet_test(Simple_t LIBRARIES MF_Utilities cetlib_except)
 
-endif() # ALT_CMAKE

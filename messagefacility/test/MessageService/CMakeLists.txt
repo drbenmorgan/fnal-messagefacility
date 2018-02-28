@@ -1,8 +1,3 @@
-# - When user supplies "-DALT_CMAKE" use the non-CET/UPS system
-if(ALT_CMAKE)
-  include(altCMakeLists.cmake)
-else()
-
 # ======================================================================
 #
 # Testing script
@@ -35,4 +30,3 @@ cet_test(statistics_duplicateDest_t HANDBUILT
   TEST_PROPERTIES WILL_FAIL TRUE
   )
 
-endif() # ALT_CMAKE
