@@ -73,7 +73,7 @@ add_custom_command(TARGET mf_catch_main
   POST_BUILD COMMAND strip -S $<TARGET_FILE:mf_catch_main>
   )
 # - Custom install of vendored catch header
-install(FILES catch/catch.hpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/)
+install(FILES catch/catch.hpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/catch/)
 
 # - Install
 install(TARGETS MF_Utilities mf_catch_main
