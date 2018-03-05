@@ -52,12 +52,14 @@ target_link_libraries(MF_Utilities
 # Install in messagefacility/catch.hpp?
 # It's then namespaced correctly, and users writing
 # tests to use MF use exactly the right one.
+# TEMP: use project name in install interface as upstream clients
+# still expect "catch/catch.hpp" form.
 add_library(mf_catch_main STATIC catch_main.cc)
 target_include_directories(mf_catch_main
   PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>
   )
 # Uses cetlib, fhicl-cpp and messagelogger privately,
 # but must link to use!

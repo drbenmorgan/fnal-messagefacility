@@ -24,7 +24,13 @@ basic_plugin(file mfStatsPlugin ${mf_plugin_libraries})
 # Do NOT want install in basic_plugin because that couples it to
 # the install scheme, as well as requiring a workaround "NO_INSTALL"
 # option. KISS in action...
-# AT present, don't export plugins as don't expect to link to them?
+# Export stringstream plugin as that provides a public interface.
+install(TARGETS messagefacility_plugins_stringstream_mfPlugin
+  EXPORT ${PROJECT_NAME}Targets
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  )
+
+# Remainder are libraries not intended for linking(?)
 install(
   TARGETS
     messagefacility_plugins_cout_mfPlugin
@@ -32,7 +38,6 @@ install(
     messagefacility_plugins_file_mfPlugin
     messagefacility_plugins_syslog_mfPlugin
     messagefacility_plugins_sqlite_mfPlugin
-    messagefacility_plugins_stringstream_mfPlugin
     messagefacility_plugins_cout_mfStatsPlugin
     messagefacility_plugins_cerr_mfStatsPlugin
     messagefacility_plugins_file_mfStatsPlugin
