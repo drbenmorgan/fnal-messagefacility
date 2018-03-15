@@ -8,31 +8,32 @@
 
 using namespace mf;
 
-void anotherLogger()
+void
+anotherLogger()
 {
   MessageDrop::instance()->setSinglet("anotherLogger");
 
   LogWarning("cat1 | cat2") << "Followed by a WARNING message.";
-  LogDebug("cat")           << "The debug message in the other thread";
+  LogDebug("cat") << "The debug message in the other thread";
 
   return;
 }
 
-int main()
+int
+main()
 {
   fhicl::ParameterSet ps;
-  std::string const psString {
+  std::string const psString{
     "debugModules:[\"*\"]"
-      "statistics:[\"stats\"] "
-      "destinations : { "
-      "  console : { type : \"cout\" threshold : \"DEBUG\" } "
-      "  file : { "
-      "    type : \"file\" threshold : \"DEBUG\" "
-      "    filename : \"mylog\" "
-      "    append : false"
-      "  } "
-      "} "
-  };
+    "statistics:[\"stats\"] "
+    "destinations : { "
+    "  console : { type : \"cout\" threshold : \"DEBUG\" } "
+    "  file : { "
+    "    type : \"file\" threshold : \"DEBUG\" "
+    "    filename : \"mylog\" "
+    "    append : false"
+    "  } "
+    "} "};
 
   fhicl::make_ParameterSet(psString, ps);
 
@@ -57,10 +58,10 @@ int main()
   SetContextIteration("pro-event");
 
   // Logs
-  LogError("catError")     << "Error information.";
+  LogError("catError") << "Error information.";
   LogWarning("catWarning") << "Warning information.";
-  LogInfo("catInfo")       << "Info information.";
-  LogDebug("debug")        << "DEBUG information.";
+  LogInfo("catInfo") << "Info information.";
+  LogDebug("debug") << "DEBUG information.";
 
   // Thread join
   loggerThread.join();
@@ -68,7 +69,7 @@ int main()
   // Log statistics
   LogStatistics();
 
-  //sleep(2);
+  // sleep(2);
 
   return 0;
 }

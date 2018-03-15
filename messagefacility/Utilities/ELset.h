@@ -1,7 +1,6 @@
 #ifndef messagefacility_Utilities_ELset_h
 #define messagefacility_Utilities_ELset_h
 
-
 // ----------------------------------------------------------------------
 //
 // ELset.h     Provides a set class with the semantics of std::set.
@@ -15,7 +14,6 @@
 //
 // ----------------------------------------------------------------------
 
-
 #include <set>
 #include <string>
 
@@ -24,8 +22,12 @@ namespace mf {
 
     struct ELsetS {
       std::string s;
-      ELsetS (std::string const& ss) : s{ss} {}
-      bool operator< (ELsetS const& t) const { return (s<t.s); }
+      ELsetS(std::string const& ss) : s{ss} {}
+      bool
+      operator<(ELsetS const& t) const
+      {
+        return (s < t.s);
+      }
     };
 
     using ELset_string = std::set<ELsetS>;

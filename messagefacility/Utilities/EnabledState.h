@@ -17,28 +17,43 @@ public:
   EnabledState() = default;
   EnabledState(bool const d, bool const i, bool const w);
 
-  void reset() { isValid_ = false; }
+  void
+  reset()
+  {
+    isValid_ = false;
+  }
 
-  bool isValid() const { return isValid_; }
-  bool debugEnabled() const { return debugEnabled_; }
-  bool infoEnabled() const { return infoEnabled_; }
-  bool warningEnabled() const { return warningEnabled_; }
+  bool
+  isValid() const
+  {
+    return isValid_;
+  }
+  bool
+  debugEnabled() const
+  {
+    return debugEnabled_;
+  }
+  bool
+  infoEnabled() const
+  {
+    return infoEnabled_;
+  }
+  bool
+  warningEnabled() const
+  {
+    return warningEnabled_;
+  }
 
 private:
-  bool debugEnabled_ {false};
-  bool infoEnabled_ {false};
-  bool warningEnabled_ {false};
-  bool isValid_ {false};
+  bool debugEnabled_{false};
+  bool infoEnabled_{false};
+  bool warningEnabled_{false};
+  bool isValid_{false};
 };
 
-inline
-mf::EnabledState::
-EnabledState(bool const d, bool const i, bool const w)
-  : debugEnabled_{d}
-  , infoEnabled_{i}
-  , warningEnabled_{w}
-  , isValid_{true}
-  {}
+inline mf::EnabledState::EnabledState(bool const d, bool const i, bool const w)
+  : debugEnabled_{d}, infoEnabled_{i}, warningEnabled_{w}, isValid_{true}
+{}
 
 #endif /* messagefacility_Utilities_EnabledState_h */
 

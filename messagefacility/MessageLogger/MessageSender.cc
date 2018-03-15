@@ -1,14 +1,15 @@
 #include "messagefacility/MessageLogger/MessageSender.h"
-#include "messagefacility/MessageService/MessageLoggerQ.h"
 #include "messagefacility/MessageService/MessageDrop.h"
+#include "messagefacility/MessageService/MessageLoggerQ.h"
 
 using namespace mf;
 
 MessageSender::MessageSender(ELseverityLevel const sev,
-                             std::string const & id,
+                             std::string const& id,
                              bool const verbatim,
                              bool suppressed)
-  : errorobj_p{suppressed ? nullptr : std::make_unique<ErrorObj>(sev,id,verbatim)}
+  : errorobj_p{suppressed ? nullptr :
+                            std::make_unique<ErrorObj>(sev, id, verbatim)}
 {}
 
 MessageSender::~MessageSender() noexcept
@@ -29,13 +30,12 @@ MessageSender::~MessageSender() noexcept
 
     MessageLoggerQ::MLqLOG(errorobj_p.release());
   }
- catch (...)
-   {
-     // nothing to do
+  catch (...) {
+    // nothing to do
 
-     // for test that removal of thread-involved static works,
-     // simply throw here, then run in trivial_main in totalview
-     // and Next or Step so that the exception would be detected.
-     // That test has been done 12/14/07.
-   }
+    // for test that removal of thread-involved static works,
+    // simply throw here, then run in trivial_main in totalview
+    // and Next or Step so that the exception would be detected.
+    // That test has been done 12/14/07.
+  }
 }

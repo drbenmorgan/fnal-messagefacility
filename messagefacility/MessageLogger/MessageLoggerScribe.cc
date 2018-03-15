@@ -2,22 +2,22 @@
 // MessageLoggerScribe.cc
 // ----------------------------------------------------------------------
 
+#include "messagefacility/MessageLogger/MessageLoggerScribe.h"
 #include "cetlib/HorizontalRule.h"
 #include "cetlib/container_algorithms.h"
 #include "cetlib/trim.h"
 #include "fhiclcpp/make_ParameterSet.h"
 #include "fhiclcpp/types/detail/validationException.h"
-#include "messagefacility/Utilities/ErrorObj.h"
-#include "messagefacility/Utilities/ELseverityLevel.h"
-#include "messagefacility/MessageService/MessageDrop.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
-#include "messagefacility/MessageLogger/MessageLoggerScribe.h"
 #include "messagefacility/MessageService/ELostreamOutput.h"
 #include "messagefacility/MessageService/ELstatistics.h"
+#include "messagefacility/MessageService/MessageDrop.h"
 #include "messagefacility/MessageService/ThreadQueue.h"
 #include "messagefacility/MessageService/default_destinations_config.h"
-#include "messagefacility/Utilities/exception.h"
+#include "messagefacility/Utilities/ELseverityLevel.h"
+#include "messagefacility/Utilities/ErrorObj.h"
 #include "messagefacility/Utilities/bold_fontify.h"
+#include "messagefacility/Utilities/exception.h"
 
 #include <algorithm>
 #include <cassert>
@@ -30,10 +30,11 @@ using vstring = std::vector<std::string>;
 
 namespace {
 
-  bool constexpr throw_on_clean_slate {true};
-  bool constexpr no_throw_on_clean_slate {false};
+  bool constexpr throw_on_clean_slate [[gnu::unused]] {true};
+  bool constexpr no_throw_on_clean_slate [[gnu::unused]] {false};
 
-  auto default_statistics_config(fhicl::ParameterSet const& ordinaryDests)
+  auto
+  default_statistics_config(fhicl::ParameterSet const& ordinaryDests)
   {
     // Provide default statistics destinations but only if there is
     // also no list of ordinary destinations.  (If a configuration
@@ -42,31 +43,34 @@ namespace {
 
     fhicl::ParameterSet result;
     if (ordinaryDests.is_empty()) {
-      std::string const config {
-        "file_stats: {"
-          "  type: file"
-          "  filename: \"err.log\""
-          "  threshold: WARNING"
-          "}"
-          };
+      std::string const config{"file_stats: {"
+                               "  type: file"
+                               "  filename: \"err.log\""
+                               "  threshold: WARNING"
+                               "}"};
       fhicl::make_ParameterSet(config, result);
     }
     return result;
   }
-
 }
 
 namespace mf {
   namespace service {
 
-    MessageLoggerScribe::MessageLoggerScribe()
-    try : earlyDest_{admin_.attach("cerr_early", makePlugin_(pluginFactory_,
-                                                             "cerr",
-                                                             "cerr_early",
-                                                             default_destination_config()))}
+    MessageLoggerScribe::MessageLoggerScribe(
+      std::string const& applicationName) try : admin_ {
+      applicationName
+    }
+    , earlyDest_{admin_.attach("cerr_early",
+                               makePlugin_(pluginFactory_,
+                                           "cerr",
+                                           "cerr_early",
+                                           default_destination_config()))}
     {}
-    catch (fhicl::detail::validationException const& e) {
-      std::string msg{"\nConfiguration error for destination: "+detail::bold_fontify("cerr_early")+"\n\n"};
+    catch (fhicl::detail::validationException const& e)
+    {
+      std::string msg{"\nConfiguration error for destination: " +
+                      detail::bold_fontify("cerr_early") + "\n\n"};
       msg += e.what();
       throw Exception(errors::Configuration) << msg;
     }
@@ -80,7 +84,7 @@ namespace mf {
         if (!purgeMode_) {
           for (auto const& cat : parseCategories(errorobj_p->xid().id())) {
             errorobj_p->setID(cat);
-            admin_.log( *errorobj_p );  // route the message text
+            admin_.log(*errorobj_p); // route the message text
           }
         }
         delete errorobj_p;
@@ -90,100 +94,120 @@ namespace mf {
 
     //=============================================================================
     void
-    MessageLoggerScribe::runCommand(OpCode const opcode,
-                                    void* operand)
+    MessageLoggerScribe::runCommand(OpCode const opcode, void* operand)
     {
-      switch(opcode) {
-      default: {
-        assert(false);  // can't happen (we certainly hope!)
-        break;
-      }
-      case END_THREAD: {
-        break;
-      }
-      case LOG_A_MESSAGE: {
-        auto errorobj_p = static_cast<ErrorObj*>(operand);
-        try {
-          if (active_ && !purgeMode_) {
-            log(errorobj_p);
-          }
+      switch (opcode) {
+        default: {
+          assert(false); // can't happen (we certainly hope!)
+          break;
         }
-        catch (cet::exception const& e) {
-          ++count_;
-          std::cerr << "MessageLoggerScribe caught " << count_
-                    << " cet::exceptions, text = \n"
-                    << e.what() << "\n";
+        case END_THREAD: {
+          break;
+        }
+        case LOG_A_MESSAGE: {
+          auto errorobj_p = static_cast<ErrorObj*>(operand);
+          try {
+            if (active_ && !purgeMode_) {
+              log(errorobj_p);
+            }
+          }
+          catch (cet::exception const& e) {
+            ++count_;
+            std::cerr << "MessageLoggerScribe caught " << count_
+                      << " cet::exceptions, text = \n"
+                      << e.what() << "\n";
 
-          if (count_ > 25) {
-            std::cerr << "MessageLogger will no longer be processing "
-                      << "messages due to errors (entering purge mode).\n";
+            if (count_ > 25) {
+              std::cerr << "MessageLogger will no longer be processing "
+                        << "messages due to errors (entering purge mode).\n";
+              purgeMode_ = true;
+            }
+          }
+          catch (...) {
+            std::cerr << "MessageLoggerScribe caught an unknown exception and "
+                      << "will no longer be processing "
+                      << "messages. (entering purge mode)\n";
             purgeMode_ = true;
           }
+          break;
         }
-        catch (...) {
-          std::cerr << "MessageLoggerScribe caught an unknown exception and "
-                    << "will no longer be processing "
-                    << "messages. (entering purge mode)\n";
-          purgeMode_ = true;
+        case CONFIGURE: {
+          auto config = std::unique_ptr<MessageLoggerQ::Config>(
+            static_cast<MessageLoggerQ::Config*>(operand));
+          configure_errorlog(std::move(config));
+          break;
         }
-        break;
-      }
-      case CONFIGURE: {
-        auto config = std::unique_ptr<MessageLoggerQ::Config>(static_cast<MessageLoggerQ::Config*>(operand));
-        configure_errorlog(std::move(config));
-        break;
-      }
-      case SUMMARIZE: {
-        assert(operand == nullptr);
-        try {
-          triggerStatisticsSummaries();
+        case SUMMARIZE: {
+          assert(operand == nullptr);
+          try {
+            triggerStatisticsSummaries();
+          }
+          catch (cet::exception const& e) {
+            std::cerr << "MessageLoggerScribe caught exception "
+                      << "during summarize:\n"
+                      << e.what() << "\n";
+          }
+          catch (...) {
+            std::cerr << "MessageLoggerScribe caught unkonwn exception type "
+                      << "during summarize. (Ignored)\n";
+          }
+          break;
         }
-        catch(cet::exception const& e) {
-          std::cerr << "MessageLoggerScribe caught exception "
-                    << "during summarize:\n"
-                    << e.what() << "\n";
+        case SHUT_UP: {
+          assert(operand == nullptr);
+          active_ = false;
+          break;
         }
-        catch(...) {
-          std::cerr << "MessageLoggerScribe caught unkonwn exception type "
-                    << "during summarize. (Ignored)\n";
+        case FLUSH_LOG_Q: {
+          break;
         }
-        break;
-      }
-      case SHUT_UP:  {
-        assert(operand == nullptr);
-        active_ = false;
-        break;
-      }
-      case FLUSH_LOG_Q:  {
-        break;
-      }
-      }  // switch
+      } // switch
 
-    }  // MessageLoggerScribe::runCommand(opcode, operand)
+    } // MessageLoggerScribe::runCommand(opcode, operand)
 
-    void MessageLoggerScribe::setApplication(std::string const& application)
+    void
+    MessageLoggerScribe::setApplication(std::string const& application)
     {
       admin_.setApplication(application);
     }
 
+    void
+    MessageLoggerScribe::setHostName(std::string const& hostName)
+    {
+      admin_.hostname_ = hostName;
+    }
+
+    void
+    MessageLoggerScribe::setHostAddr(std::string const& hostAddr)
+    {
+      admin_.hostaddr_ = hostAddr;
+    }
+
+    void
+    MessageLoggerScribe::setPID(long pid)
+    {
+      admin_.pid_ = pid;
+    }
+
     //=============================================================================
-    void MessageLoggerScribe::log(ErrorObj* errorobj_p)
+    void
+    MessageLoggerScribe::log(ErrorObj* errorobj_p)
     {
       bool expected = false;
       std::unique_ptr<ErrorObj> obj(errorobj_p);
-      if (messageBeingSent_.compare_exchange_strong(expected,true)) {
+      if (messageBeingSent_.compare_exchange_strong(expected, true)) {
         // Process the current message.
         for (auto const& cat : parseCategories(errorobj_p->xid().id())) {
           errorobj_p->setID(cat);
-          admin_.log(*errorobj_p);  // route the message text
+          admin_.log(*errorobj_p); // route the message text
         }
-        //process any waiting messages
+        // process any waiting messages
         errorobj_p = nullptr;
         while (!purgeMode_ && waitingMessages_.try_pop(errorobj_p)) {
           obj.reset(errorobj_p);
           for (auto const& cat : parseCategories(errorobj_p->xid().id())) {
             errorobj_p->setID(cat);
-            admin_.log(*errorobj_p);  // route the message text
+            admin_.log(*errorobj_p); // route the message text
           }
         }
         messageBeingSent_.store(false);
@@ -195,21 +219,22 @@ namespace mf {
 
     //=============================================================================
     void
-    MessageLoggerScribe::configure_errorlog(std::unique_ptr<MessageLoggerQ::Config>&& config)
+    MessageLoggerScribe::configure_errorlog(
+      std::unique_ptr<MessageLoggerQ::Config>&& config)
     {
       if (admin_.destinations().size() > 1) {
-        LogWarning ("multiLogConfig")
+        LogWarning("multiLogConfig")
           << "The message logger has been configured multiple times";
         cleanSlateConfiguration_ = false;
       }
 
       fetchDestinations(std::move(config));
-    }  // MessageLoggerScribe::configure_errorlog()
-
+    } // MessageLoggerScribe::configure_errorlog()
 
     //=============================================================================
     void
-    MessageLoggerScribe::fetchDestinations(std::unique_ptr<MessageLoggerQ::Config> config)
+    MessageLoggerScribe::fetchDestinations(
+      std::unique_ptr<MessageLoggerQ::Config> config)
     {
       fhicl::ParameterSet dest_psets;
       fhicl::ParameterSet ordinaryDests;
@@ -223,7 +248,8 @@ namespace mf {
       // destinations are filled.
       earlyDest_.setThreshold(ELhighestSeverity);
 
-      auto statDests = dest_psets.get<fhicl::ParameterSet>("statistics", default_statistics_config(ordinaryDests));
+      auto statDests = dest_psets.get<fhicl::ParameterSet>(
+        "statistics", default_statistics_config(ordinaryDests));
 
       // Initialize universal suppression variables
       MessageDrop::debugAlwaysSuppressed = true;
@@ -236,8 +262,9 @@ namespace mf {
 
     //=============================================================================
     void
-    MessageLoggerScribe::makeDestinations(fhicl::ParameterSet const& dests,
-                                          ELdestConfig::dest_config const configuration)
+    MessageLoggerScribe::makeDestinations(
+      fhicl::ParameterSet const& dests,
+      ELdestConfig::dest_config const configuration)
     {
       std::set<std::string> ids;
 
@@ -263,25 +290,26 @@ namespace mf {
         }
         ELdestConfig::checkType(dest_type, configuration);
 
-        bool const throw_on_duplicate_id = (configuration == ELdestConfig::STATISTICS);
-        std::string const& outputId = createId(ids, dest_type, psetname, dest_pset, throw_on_duplicate_id);
+        bool const throw_on_duplicate_id =
+          (configuration == ELdestConfig::STATISTICS);
+        std::string const& outputId =
+          createId(ids, dest_type, psetname, dest_pset, throw_on_duplicate_id);
 
         // Use previously defined configuration of duplicated destination
-        if (duplicateDestination(outputId, configuration, no_throw_on_clean_slate)) continue;
+        if (duplicateDestination(
+              outputId, configuration, no_throw_on_clean_slate))
+          continue;
 
         std::string const& libspec = dest_type;
-        auto& plugin_factory =
-          configuration == ELdestConfig::STATISTICS ?
-          pluginStatsFactory_ :
-          pluginFactory_;
+        auto& plugin_factory = configuration == ELdestConfig::STATISTICS ?
+                                 pluginStatsFactory_ :
+                                 pluginFactory_;
 
         // attach the current destination, keeping a control handle to it:
         try {
-          ELdestination& dest = admin_.attach(outputId,
-                                              makePlugin_(plugin_factory,
-                                                          libspec,
-                                                          psetname,
-                                                          dest_pset));
+          ELdestination& dest = admin_.attach(
+            outputId,
+            makePlugin_(plugin_factory, libspec, psetname, dest_pset));
 
           // Suppress the desire to do an extra termination summary just because
           // of end-of-job info message for statistics jobs
@@ -289,14 +317,16 @@ namespace mf {
             dest.noTerminationSummary();
         }
         catch (fhicl::detail::validationException const& e) {
-          std::string msg{"Configuration error for destination: "+ detail::bold_fontify(psetname) + "\n\n"};
+          std::string msg{"Configuration error for destination: " +
+                          detail::bold_fontify(psetname) + "\n\n"};
           msg += e.what();
           config_errors.push_back(std::move(msg));
         }
       }
 
       if (!config_errors.empty()) {
-        std::string msg{"\nThe following messagefacility destinations have configuration errors:\n\n"};
+        std::string msg{"\nThe following messagefacility destinations have "
+                        "configuration errors:\n\n"};
         constexpr cet::HorizontalRule rule{60};
         msg += rule('=');
         msg += "\n\n";
@@ -324,20 +354,21 @@ namespace mf {
       //        encounters an empty categories string
 
       auto const npos = s.length();
-      decltype(s.length()) i {};
+      decltype(s.length()) i{};
 
       while (i <= npos) {
 
-        if (i==npos) {
+        if (i == npos) {
           cats.push_back(std::string());
           return cats;
         }
 
-        auto const j = s.find('|',i);
-        std::string cat = cet::trim_copy(s.substr(i,j-i), " \t\n"s);
+        auto const j = s.find('|', i);
+        std::string cat = cet::trim_copy(s.substr(i, j - i), " \t\n"s);
         cats.push_back(cat);
         i = j;
-        while ( (i < npos) && (s[i] == '|') ) ++i;
+        while ((i < npos) && (s[i] == '|'))
+          ++i;
         // the above handles cases of || and also | at end of string
       }
       return cats;
@@ -363,9 +394,10 @@ namespace mf {
                                   fhicl::ParameterSet const& pset,
                                   bool const should_throw)
     {
-      std::string output_id {type};
-      if (!cet::search_all(std::vector<std::string>{"cout","cerr","syslog"}, type)) {
-        output_id += ":"+pset.get<std::string>("filename", file_name);
+      std::string output_id{type};
+      if (!cet::search_all(std::vector<std::string>{"cout", "cerr", "syslog"},
+                           type)) {
+        output_id += ":" + pset.get<std::string>("filename", file_name);
       }
 
       // Emplace and check that output_id doesn't already exist
@@ -374,10 +406,11 @@ namespace mf {
         // destinations, but to throw for statistics destinations.
         if (should_throw) {
           throw mf::Exception{mf::errors::Configuration}
-          << "\n"
-               << " Output identifier: \"" << output_id << "\""
-               << " already specified within ordinary/statistics block in FHiCL file"
-               << "\n";
+            << "\n"
+            << " Output identifier: \"" << output_id << "\""
+            << " already specified within ordinary/statistics block in FHiCL "
+               "file"
+            << "\n";
         }
       }
 
@@ -386,26 +419,34 @@ namespace mf {
 
     //=============================================================================
     bool
-    MessageLoggerScribe::duplicateDestination(std::string const& output_id,
-                                              ELdestConfig::dest_config const configuration,
-                                              bool const should_throw)
+    MessageLoggerScribe::duplicateDestination(
+      std::string const& output_id,
+      ELdestConfig::dest_config const configuration,
+      bool const should_throw)
     {
       std::string config_str;
       switch (configuration) {
-      case ELdestConfig::ORDINARY    : config_str = "MessageLogger"; break;
-      case ELdestConfig::STATISTICS  : config_str = "MessageLogger Statistics"; break;
+        case ELdestConfig::ORDINARY:
+          config_str = "MessageLogger";
+          break;
+        case ELdestConfig::STATISTICS:
+          config_str = "MessageLogger Statistics";
+          break;
       }
 
       auto dest_pr = admin_.destinations().find(output_id);
-      if (dest_pr == admin_.destinations().end()) return false;
+      if (dest_pr == admin_.destinations().end())
+        return false;
 
       // For duplicate destinations
-      std::string const hrule {"\n============================================================================ \n"};
+      std::string const hrule{"\n=============================================="
+                              "============================== \n"};
       std::ostringstream except_msg, orig_config_msg;
-      except_msg      << hrule
-                      << "\n    Duplicate name for a " << config_str << " destination: \"" << output_id << "\"";
-      orig_config_msg << "\n    Only original configuration instructions are used. \n"
-                      << hrule;
+      except_msg << hrule << "\n    Duplicate name for a " << config_str
+                 << " destination: \"" << output_id << "\"";
+      orig_config_msg
+        << "\n    Only original configuration instructions are used. \n"
+        << hrule;
 
       //------------------------------------------------------------------
       // Handle statistics case where duplicate destinations are okay
@@ -424,14 +465,15 @@ namespace mf {
       if (cleanSlateConfiguration_) {
 
         if (should_throw) {
-          throw mf::Exception{mf::errors::Configuration} << "\n" << except_msg.str();
-        }
-        else LogError("duplicateDestination") << except_msg.str()
-                                              << orig_config_msg.str();
+          throw mf::Exception{mf::errors::Configuration} << "\n"
+                                                         << except_msg.str();
+        } else
+          LogError("duplicateDestination")
+            << except_msg.str() << orig_config_msg.str();
 
       } else { // !cleanSlateConfiguration_
-        LogWarning("duplicateDestination") << except_msg.str()
-                                           << orig_config_msg.str();
+        LogWarning("duplicateDestination")
+          << except_msg.str() << orig_config_msg.str();
       }
 
       return true;
@@ -448,21 +490,19 @@ namespace mf {
       try {
         auto const pluginType = plugin_factory.pluginType(libspec);
         if (pluginType == cet::PluginTypeDeducer<ELdestination>::value) {
-          result = plugin_factory.makePlugin<std::unique_ptr<ELdestination>>(libspec, psetname, pset);
+          result = plugin_factory.makePlugin<std::unique_ptr<ELdestination>>(
+            libspec, psetname, pset);
         } else {
           throw Exception(errors::Configuration, "MessageLoggerScribe: ")
-            << "unrecognized plugin type "
-            << pluginType
-            << "for plugin "
-            << libspec
-            << ".\n";
+            << "unrecognized plugin type " << pluginType << "for plugin "
+            << libspec << ".\n";
         }
       }
       catch (cet::exception const& e) {
         throw Exception(errors::Configuration, "MessageLoggerScribe: ", e)
           << "Exception caught while processing plugin spec.\n";
       }
-      return std::move(result);
+      return result;
     } //
 
   } // end of namespace service

@@ -1,37 +1,36 @@
 #include "messagefacility/Utilities/SingleConsumerQ.h"
 
-namespace mf
-{
+namespace mf {
 
-  SingleConsumerQ::SingleConsumerQ(int max_event_size, int max_queue_depth):
-    max_event_size_(max_event_size),
-    max_queue_depth_(max_queue_depth),
-    pos_(max_queue_depth-1),
-    mem_(max_event_size * max_queue_depth),
-    queue_(max_queue_depth)
+  SingleConsumerQ::SingleConsumerQ(int max_event_size, int max_queue_depth)
+    : max_event_size_(max_event_size)
+    , max_queue_depth_(max_queue_depth)
+    , pos_(max_queue_depth - 1)
+    , mem_(max_event_size * max_queue_depth)
+    , queue_(max_queue_depth)
   {
     // throw if event size 0 or queue depth 0
 
-    for(char* i=&mem_[0];i<&mem_[mem_.size()];i+=max_event_size)
+    for (char* i = &mem_[0]; i < &mem_[mem_.size()]; i += max_event_size)
       buffer_pool_.push_back(i);
-
   }
 
-  SingleConsumerQ::Buffer SingleConsumerQ::getProducerBuffer()
+  SingleConsumerQ::Buffer
+  SingleConsumerQ::getProducerBuffer()
   {
     // get lock
     std::unique_lock<std::mutex> sl(pool_mutex_);
     // wait for buffer to appear
-    while(pos_ < 0)
-      {
-        pool_cond_.wait(sl);
-      }
+    while (pos_ < 0) {
+      pool_cond_.wait(sl);
+    }
     void* v = buffer_pool_[pos_];
     --pos_;
-    return Buffer(v,max_event_size_);
+    return Buffer(v, max_event_size_);
   }
 
-  void SingleConsumerQ::releaseProducerBuffer(void* v)
+  void
+  SingleConsumerQ::releaseProducerBuffer(void* v)
   {
     // get lock
     std::lock_guard<std::mutex> sl(pool_mutex_);
@@ -40,32 +39,32 @@ namespace mf
     pool_cond_.notify_all();
   }
 
-  void SingleConsumerQ::commitProducerBuffer(void* v, int len)
+  void
+  SingleConsumerQ::commitProducerBuffer(void* v, int len)
   {
     // get lock
     std::unique_lock<std::mutex> sl(queue_mutex_);
     // if full, wait for item to be removed
-    while((bpos_+max_queue_depth_)==fpos_)
-      {
-        push_cond_.wait(sl);
-      }
+    while ((bpos_ + max_queue_depth_) == fpos_) {
+      push_cond_.wait(sl);
+    }
 
     // put buffer into queue
-    queue_[fpos_ % max_queue_depth_]=Buffer(v,len);
+    queue_[fpos_ % max_queue_depth_] = Buffer(v, len);
     ++fpos_;
     // signal consumer
     pop_cond_.notify_all();
   }
 
-  SingleConsumerQ::Buffer SingleConsumerQ::getConsumerBuffer()
+  SingleConsumerQ::Buffer
+  SingleConsumerQ::getConsumerBuffer()
   {
     // get lock
     std::unique_lock<std::mutex> sl(queue_mutex_);
     // if empty, wait for item to appear
-    while(bpos_==fpos_)
-      {
-        pop_cond_.wait(sl);
-      }
+    while (bpos_ == fpos_) {
+      pop_cond_.wait(sl);
+    }
     // get a buffer from the queue and return it
     Buffer v = queue_[bpos_ % max_queue_depth_];
     ++bpos_;
@@ -75,7 +74,8 @@ namespace mf
     return v;
   }
 
-  void SingleConsumerQ::releaseConsumerBuffer(void* v)
+  void
+  SingleConsumerQ::releaseConsumerBuffer(void* v)
   {
     // should the buffer be placed back onto the queue and not released?
     // we got here because a commit did to occur in the consumer.
@@ -85,7 +85,8 @@ namespace mf
     releaseProducerBuffer(v);
   }
 
-  void SingleConsumerQ::commitConsumerBuffer(void* v, int)
+  void
+  SingleConsumerQ::commitConsumerBuffer(void* v, int)
   {
     releaseProducerBuffer(v);
   }

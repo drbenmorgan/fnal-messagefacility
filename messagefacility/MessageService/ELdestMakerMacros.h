@@ -6,28 +6,27 @@ namespace fhicl {
 
 namespace mf {
 
-namespace service {
+  namespace service {
 
-class ELdestination;
-class ELdestinationFactory;
+    class ELdestination;
+    class ELdestinationFactory;
 
-struct DestinationMaker
-{
-  DestinationMaker( std::string const & type_str,
-      ELdestination* (*f)(std::string const &, fhicl::ParameterSet const &) )
-  {
-    ELdestinationFactory::reg(type_str, f);
-  }
+    struct DestinationMaker {
+      DestinationMaker(std::string const& type_str,
+                       ELdestination* (*f)(std::string const&,
+                                           fhicl::ParameterSet const&))
+      {
+        ELdestinationFactory::reg(type_str, f);
+      }
+    };
+  };
 };
 
-};
-};
-
-#define REG_DESTINATION(type_str, type_name)            \
-  ELdestination * type_name ## _maker_func(             \
-        std::string const & name,                       \
-        fhicl::ParameterSet const & pset )              \
-    { return new type_name(name, pset); }               \
-  DestinationMaker type_name ## _maker_func_global_var( \
-        #type_str,                                      \
-        &type_name ## _maker_func );
+#define REG_DESTINATION(type_str, type_name)                                   \
+  ELdestination* type_name##_maker_func(std::string const& name,               \
+                                        fhicl::ParameterSet const& pset)       \
+  {                                                                            \
+    return new type_name(name, pset);                                          \
+  }                                                                            \
+  DestinationMaker type_name##_maker_func_global_var(#type_str,                \
+                                                     &type_name##_maker_func);

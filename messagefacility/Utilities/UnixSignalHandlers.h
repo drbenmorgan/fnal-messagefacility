@@ -7,11 +7,11 @@ and manipulate Unix-style signal handling.
 
 ----------------------------------------------------------------------*/
 
-#include <signal.h>
 #include <mutex>
+#include <signal.h>
 
 namespace mf {
-    void disableAllSigs(sigset_t* oldset);
+  void disableAllSigs(sigset_t* oldset);
 }
 
 #endif /* messagefacility_Utilities_UnixSignalHandlers_h */

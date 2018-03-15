@@ -7,15 +7,15 @@
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageService/AbstractMLscribe.h"
 #include "messagefacility/MessageService/ELadministrator.h"
-#include "messagefacility/MessageService/ELdestination.h"
 #include "messagefacility/MessageService/ELdestConfigCheck.h"
+#include "messagefacility/MessageService/ELdestination.h"
 #include "messagefacility/MessageService/MessageLoggerQ.h"
 
 #include <atomic>
 #include <iosfwd>
-#include <vector>
 #include <map>
 #include <memory>
+#include <vector>
 
 #include "tbb/concurrent_queue.h"
 
@@ -24,21 +24,22 @@ namespace mf {
 
     class MessageLoggerScribe : public AbstractMLscribe {
     public:
-
       ~MessageLoggerScribe();
-      MessageLoggerScribe();
+      MessageLoggerScribe(std::string const& applicationName);
 
       MessageLoggerScribe(MessageLoggerScribe const&) = delete;
-      MessageLoggerScribe& operator = (MessageLoggerScribe const&) = delete;
+      MessageLoggerScribe& operator=(MessageLoggerScribe const&) = delete;
 
       // --- receive and act on messages:
       void runCommand(OpCode opcode, void* operand) override;
 
-      // Set current application name
+      // Set context items.
       void setApplication(std::string const& application) override;
+      void setHostName(std::string const& hostName) override;
+      void setHostAddr(std::string const& hostAddr) override;
+      void setPID(long pid) override;
 
     private:
-
       // --- log one consumed message
       void log(ErrorObj* errorobj_p);
 
@@ -46,9 +47,11 @@ namespace mf {
       void triggerStatisticsSummaries();
 
       // --- handle details of configuring via a ParameterSet:
-      void configure_errorlog(std::unique_ptr<MessageLoggerQ::Config>&& dests_config);
+      void configure_errorlog(
+        std::unique_ptr<MessageLoggerQ::Config>&& dests_config);
 
-      void fetchDestinations(std::unique_ptr<MessageLoggerQ::Config> dests_config);
+      void fetchDestinations(
+        std::unique_ptr<MessageLoggerQ::Config> dests_config);
       void makeDestinations(fhicl::ParameterSet const& dests,
                             ELdestConfig::dest_config const config);
 
@@ -56,7 +59,7 @@ namespace mf {
       std::vector<std::string> parseCategories(std::string const& s);
 
       // --- data:
-      ELadministrator admin_{};
+      ELadministrator admin_;
       cet::BasicPluginFactory pluginFactory_{"mfPlugin"};
       cet::BasicPluginFactory pluginStatsFactory_{"mfStatsPlugin"};
       ELdestination& earlyDest_;
@@ -77,15 +80,16 @@ namespace mf {
                                 ELdestConfig::dest_config const config,
                                 bool const should_throw);
 
-      std::unique_ptr<ELdestination> makePlugin_(cet::BasicPluginFactory& pluginFactory,
-                                                 std::string const& libspec,
-                                                 std::string const& psetname,
-                                                 fhicl::ParameterSet const& pset);
+      std::unique_ptr<ELdestination> makePlugin_(
+        cet::BasicPluginFactory& pluginFactory,
+        std::string const& libspec,
+        std::string const& psetname,
+        fhicl::ParameterSet const& pset);
 
-    };  // MessageLoggerScribe
+    }; // MessageLoggerScribe
 
-  }   // end of namespace service
-}  // namespace mf
+  } // end of namespace service
+} // namespace mf
 
 #endif /* messagefacility_MessageLogger_MessageLoggerScribe_h */
 

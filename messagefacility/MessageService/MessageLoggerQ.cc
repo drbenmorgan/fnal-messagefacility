@@ -1,7 +1,7 @@
 #include "messagefacility/MessageService/MessageLoggerQ.h"
 #include "messagefacility/MessageService/AbstractMLscribe.h"
-#include "messagefacility/Utilities/exception.h"
 #include "messagefacility/Utilities/ErrorObj.h"
+#include "messagefacility/Utilities/exception.h"
 
 #include <cstring>
 #include <iostream>
@@ -14,50 +14,51 @@ namespace {
   class StandAloneScribe : public AbstractMLscribe {
   public:
     StandAloneScribe() = default;
-    StandAloneScribe(StandAloneScribe const &) = delete;
-    StandAloneScribe& operator= (StandAloneScribe const&) = delete;
+    StandAloneScribe(StandAloneScribe const&) = delete;
+    StandAloneScribe& operator=(StandAloneScribe const&) = delete;
 
     void runCommand(OpCode opcode, void* operand) override;
   };
 
   void
-  StandAloneScribe::runCommand(OpCode const opcode, void* const operand) {
-    //even though we don't print, have to clean up memory
+  StandAloneScribe::runCommand(OpCode const opcode, void* const operand)
+  {
+    // even though we don't print, have to clean up memory
     switch (opcode) {
-    case LOG_A_MESSAGE: {
-      mf::ErrorObj* errorobj_p = static_cast<mf::ErrorObj*>(operand);
-      if (MessageLoggerQ::ignore(errorobj_p->xid().severity(), errorobj_p->xid().id())) {
+      case LOG_A_MESSAGE: {
+        mf::ErrorObj* errorobj_p = static_cast<mf::ErrorObj*>(operand);
+        if (MessageLoggerQ::ignore(errorobj_p->xid().severity(),
+                                   errorobj_p->xid().id())) {
+          delete errorobj_p;
+          break;
+        }
+        if (errorobj_p->is_verbatim()) {
+          std::cerr << errorobj_p->fullText() << std::endl;
+        } else {
+          std::cerr << "%MSG" << errorobj_p->xid().severity().getSymbol() << " "
+                    << errorobj_p->xid().id() << ": \n"
+                    << errorobj_p->fullText() << "\n"
+                    << "%MSG" << std::endl;
+        }
         delete errorobj_p;
         break;
       }
-      if (errorobj_p->is_verbatim()) {
-        std::cerr<< errorobj_p->fullText() << std::endl;
-      } else {
-        std::cerr<< "%MSG" << errorobj_p->xid().severity().getSymbol()
-                 << " " << errorobj_p->xid().id() << ": \n"
-                 << errorobj_p->fullText() << "\n"
-                 << "%MSG"
-                 << std::endl;
-      }
-      delete errorobj_p;
-      break;
-    }
-    default:
-      break;
+      default:
+        break;
     }
   }
 
-  std::unique_ptr<StandAloneScribe> obtainStandAloneScribePtr()
+  std::unique_ptr<StandAloneScribe>
+  obtainStandAloneScribePtr()
   {
     static auto standAloneScribe_ptr = std::make_unique<StandAloneScribe>();
     return std::move(standAloneScribe_ptr);
   }
 
-
 } // end of anonymous namespace
 
-std::unique_ptr<AbstractMLscribe>
-MessageLoggerQ::mlscribe_ptr = obtainStandAloneScribePtr();
+std::unique_ptr<AbstractMLscribe> MessageLoggerQ::mlscribe_ptr =
+  obtainStandAloneScribePtr();
 
 MessageLoggerQ*
 MessageLoggerQ::instance()
@@ -84,15 +85,14 @@ MessageLoggerQ::simpleCommand(OpCode const opcode, void* operand)
 void
 MessageLoggerQ::handshakedCommand(OpCode const opcode,
                                   void* operand,
-                                  std::string const& commandMnemonic)
-  try {
-    mlscribe_ptr->runCommand(opcode, operand);
-  }
-  catch(mf::Exception const& ex) {
-    throw Exception(errors::OtherError,
-                    "Exception from MessageLoggerQ::"+commandMnemonic,
-                    ex);
-  } // handshakedCommand
+                                  std::string const& commandMnemonic) try {
+  mlscribe_ptr->runCommand(opcode, operand);
+}
+catch (mf::Exception const& ex) {
+  throw Exception(errors::OtherError,
+                  "Exception from MessageLoggerQ::" + commandMnemonic,
+                  ex);
+} // handshakedCommand
 
 void
 MessageLoggerQ::MLqEND()
@@ -112,7 +112,6 @@ MessageLoggerQ::MLqLOG(ErrorObj* p)
   simpleCommand(LOG_A_MESSAGE, static_cast<void*>(p));
 }
 
-
 void
 MessageLoggerQ::MLqCFG(Config* p)
 {
@@ -131,28 +130,52 @@ MessageLoggerQ::MLqFLS()
   handshakedCommand(FLUSH_LOG_Q, nullptr, "FLS");
 }
 
-mf::ELseverityLevel MessageLoggerQ::threshold (ELseverityLevel::ELsev_warning);
+mf::ELseverityLevel MessageLoggerQ::threshold(ELseverityLevel::ELsev_warning);
 std::set<std::string> MessageLoggerQ::squelchSet;
 
-void MessageLoggerQ::standAloneThreshold(ELseverityLevel const severity)
+void
+MessageLoggerQ::standAloneThreshold(ELseverityLevel const severity)
 {
   threshold = severity;
 }
 
-void MessageLoggerQ::squelch(std::string const& category)
+void
+MessageLoggerQ::squelch(std::string const& category)
 {
   squelchSet.insert(category);
 }
 
-bool MessageLoggerQ::ignore (mf::ELseverityLevel const severity,
-                             std::string const& category)
+bool
+MessageLoggerQ::ignore(mf::ELseverityLevel const severity,
+                       std::string const& category)
 {
-  if (severity < threshold) return true;
-  if (squelchSet.count(category) > 0) return true;
+  if (severity < threshold)
+    return true;
+  if (squelchSet.count(category) > 0)
+    return true;
   return false;
 }
 
-void MessageLoggerQ::setApplication(std::string const & application)
+void
+MessageLoggerQ::setApplication(std::string const& application)
 {
   mlscribe_ptr->setApplication(application);
+}
+
+void
+MessageLoggerQ::setHostName(std::string const& hostName)
+{
+  mlscribe_ptr->setHostName(hostName);
+}
+
+void
+MessageLoggerQ::setHostAddr(std::string const& hostAddr)
+{
+  mlscribe_ptr->setHostAddr(hostAddr);
+}
+
+void
+MessageLoggerQ::setPID(long pid)
+{
+  mlscribe_ptr->setPID(pid);
 }

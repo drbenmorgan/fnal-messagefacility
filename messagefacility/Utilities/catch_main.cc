@@ -10,20 +10,20 @@
 #include <cstring>
 #include <iostream>
 
-[[noreturn]]
-void usage(Catch::Session & session, std::string processName) {
-  std::cout << "usage:\n  "
-            << processName << " [-h]\n";
-  std::cout << "  " << processName << " <fhicl-config-file> [catch-options]+\n\n";
+[[noreturn]] void
+usage(Catch::Session& session, std::string processName)
+{
+  std::cout << "usage:\n  " << processName << " [-h]\n";
+  std::cout << "  " << processName
+            << " <fhicl-config-file> [catch-options]+\n\n";
   std::cout << "Catch usage:" << std::endl;
   session.showHelp(processName + " <fhicl-config-file>");
   exit(1);
 }
 
 std::string
-processOptions(Catch::Session & session,
-               int & argc,
-               char * * & argv) {
+processOptions(Catch::Session& session, int& argc, char**& argv)
+{
   std::string processName(argv[0]);
   auto slashPos = processName.find_last_of('/');
   if (slashPos == std::string::npos) {
@@ -36,7 +36,8 @@ processOptions(Catch::Session & session,
   if (argc < 2) {
     std::cout << "ERROR: expected at least one argument.\n\n";
     usage(session, processName);
-  } else if ((strcmp("-h", argv[1]) == 0) || (strncmp("--h", argv[1], 3) == 0)) {
+  } else if ((strcmp("-h", argv[1]) == 0) ||
+             (strncmp("--h", argv[1], 3) == 0)) {
     usage(session, processName);
   } else {
     fhiclConfigFileName = argv[1];
@@ -48,7 +49,8 @@ processOptions(Catch::Session & session,
 }
 
 // Need our own main in order to set up messagefacility.
-int main(int argc, char ** argv)
+int
+main(int argc, char** argv)
 {
   Catch::Session catchSession;
   auto const fhiclConfigFileName = processOptions(catchSession, argc, argv);
@@ -66,5 +68,5 @@ int main(int argc, char ** argv)
     result = catchSession.run();
   }
 
-  return ( result < 0xff ? result : 0xff );
+  return (result < 0xff ? result : 0xff);
 }
