@@ -1,119 +1,132 @@
 #ifndef messagefacility_Utilities_ErrorObj_h
 #define messagefacility_Utilities_ErrorObj_h
+// vim: set sw=2 expandtab :
 
 #include "messagefacility/Utilities/ELextendedID.h"
-#include "messagefacility/Utilities/ELlist.h"
 #include "messagefacility/Utilities/ELseverityLevel.h"
 
+#include <list>
 #include <sstream>
 #include <string>
-#include <sys/time.h>
 #include <type_traits>
+
+#include <sys/time.h>
 
 namespace mf {
 
-  namespace detail {
-    template <typename T>
-    struct is_string_literal {
-      static bool constexpr value{std::is_same<T, char const*>::value ||
-                                  std::is_same<T, char const* const>::value};
-    };
-  }
-
   class ErrorLog;
 
+  // Note: This class is virtual because it is user-visible and customizable.
   class ErrorObj {
-  public:
-    ErrorObj(ELseverityLevel const sev,
-             std::string const& id,
-             bool verbatim = false);
 
-    ErrorObj(ErrorObj const&); // this should go away as soon as we can use
-                               // moveable streams!
-    virtual ~ErrorObj() = default;
+  public:
+    virtual ~ErrorObj();
+    ErrorObj() = delete;
+    ErrorObj(ELseverityLevel const sev,
+             std::string const& category,
+             bool verbatim = false,
+             std::string const& filename = "",
+             int lineNumber = 0);
+    ErrorObj(ErrorObj const&);
 
     int serial() const;
     ELextendedID const& xid() const;
     std::string const& idOverflow() const;
     timeval timestamp() const;
-    ELlist_string const& items() const;
+    std::list<std::string> const& items() const;
     bool reactedTo() const;
+
+    // Return concatenated items, the full text of the message.
     std::string fullText() const;
+
+    // Note: Obsolete! Remove me when user code migrated.
     std::string const& context() const;
+    std::string const& iteration() const;
     bool is_verbatim() const;
+    std::string const& filename() const;
+    int lineNumber() const;
 
-    virtual void setSeverity(const ELseverityLevel sev);
-    virtual void setID(const std::string& ID);
-    virtual void setModule(const std::string& module);
-    virtual void setSubroutine(const std::string& subroutine);
-    virtual void setContext(const std::string& context);
-    virtual void setHostName(const std::string& hostname);
-    virtual void setHostAddr(const std::string& hostaddr);
-    virtual void setApplication(const std::string& application);
-    virtual void setPID(long pid);
-    virtual void setTimestamp(const timeval& t);
-    //-| process is always determined through ErrorLog or
-    //-| an ELdestControl, both of which talk to ELadministrator.
+    // mine
+    virtual void setTimestamp(timeval const&);
+    // Note: Obsolete! Remove me when user code migrated.
+    virtual void setContext(std::string const&);
+    virtual void setIteration(std::string const&);
 
-    // -----  Methods for ErrorLog or for physicists logging errors:
-    //
+    // part of xid
+    virtual void setSeverity(ELseverityLevel const);
+    virtual void setID(std::string const&);
+    virtual void setModule(std::string const&);
+    virtual void setSubroutine(std::string const&);
+
+    // Per-message overrides for the global settings, part of xid
+    virtual void setHostName(std::string const&);
+    virtual void setHostAddr(std::string const&);
+    virtual void setApplication(std::string const&);
+    virtual void setPID(long);
+
+    ErrorObj& operator<<(std::ostream& (*f)(std::ostream&));
+
+    ErrorObj& operator<<(std::ios_base& (*f)(std::ios_base&));
+
+    // Force conversion of char arrays to string.
+    ErrorObj& opltlt(std::string const&);
+
+    // Force conversion of char arrays to string.
     template <class T>
-    inline std::enable_if_t<!detail::is_string_literal<T>::value, ErrorObj&>
-    opltlt(T const& t);
-    ErrorObj& opltlt(std::string const& s);
-    inline ErrorObj& operator<<(std::ostream& (*f)(std::ostream&));
-    inline ErrorObj& operator<<(std::ios_base& (*f)(std::ios_base&));
+    std::enable_if_t<!std::is_same<T, char const*>::value &&
+                       !std::is_same<T, char const* const>::value,
+                     ErrorObj&>
+    opltlt(T const&);
 
-    virtual ErrorObj& eo_emit(const std::string& txt);
+    virtual ErrorObj& eo_emit(std::string const&);
 
-    // ---  mutators for use by ELadministrator
-    //
     virtual void clear();
-    virtual void set(ELseverityLevel const sev, std::string const& id);
-    virtual void setReactedTo(bool r);
+    virtual void set(ELseverityLevel const, std::string const& id);
+    virtual void setReactedTo(bool);
 
   private:
-    ErrorObj() = default;
+    int serial_{};
+    ELextendedID xid_{};
+    std::string idOverflow_{};
+    timeval timestamp_{0, 0};
+    std::list<std::string> items_{};
+    bool reactedTo_{false};
+    std::string iteration_{};
+    std::ostringstream oss_{};
+    bool verbatim_{false};
+    std::string filename_{};
+    int lineNumber_{};
+  };
 
-    // ---  data members:
-    //
-    int mySerial{};
-    ELextendedID myXid{};
-    std::string myIdOverflow{};
-    timeval myTimestamp{0, 0};
-    ELlist_string myItems{};
-    bool myReactedTo{false};
-    std::string myContext{};
-    std::ostringstream myOs{};
-    bool verbatim{false};
-
-  }; // ErrorObj
-
-  // ----------------------------------------------------------------------
-
-  // -----  Method for ErrorLog
-  //
+  // Force conversion of char arrays to string.
   template <class T>
-  inline std::enable_if_t<!detail::is_string_literal<T>::value, ErrorObj&>
-  operator<<(ErrorObj& e, T const& t);
-
-  inline ErrorObj&
-  operator<<(ErrorObj& e, std::string const& s)
+  std::enable_if_t<!std::is_same<T, char const*>::value &&
+                     !std::is_same<T, char const* const>::value,
+                   ErrorObj&>
+  ErrorObj::opltlt(T const& t)
   {
-    return e.opltlt(s);
+    oss_.str({});
+    oss_ << t;
+    if (!oss_.str().empty()) {
+      eo_emit(oss_.str());
+    }
+    return *this;
   }
 
-} // end of namespace mf
+  // Force conversion of char arrays to string.
+  ErrorObj& operator<<(ErrorObj& e, std::string const& s);
 
-  // ----------------------------------------------------------------------
-  // .icc
-  // ----------------------------------------------------------------------
+  // Force conversion of char arrays to string.
+  template <class T>
+  std::enable_if_t<!std::is_same<T, char const*>::value &&
+                     !std::is_same<T, char const* const>::value,
+                   ErrorObj&>
+  operator<<(ErrorObj& e, T const& t)
+  {
+    return e.opltlt(t);
+  }
 
-  // The icc file contains the template for operator<< (ErrorObj&, T)
-
-#define ERROROBJ_ICC
-#include "messagefacility/Utilities/ErrorObj.icc"
-#undef ERROROBJ_ICC
+} // namespace mf
 
 #endif /* messagefacility_Utilities_ErrorObj_h */
 

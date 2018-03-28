@@ -1,22 +1,22 @@
+#Category.cc
+#DebugMacros.cc
+#ELlimitsTable.cc
+#ELmap.cc
+#UnixSignalHandlers.cc
+#eq_nocase.cc
+#formatTime.cc
+
 cet_make_library(
   LIBRARY_NAME
   MF_Utilities
   SOURCE
-  DebugMacros.cc
   ELextendedID.cc
-  ELlimitsTable.cc
-  ELmap.cc
   ELseverityLevel.cc
   ErrorObj.cc
-  eq_nocase.cc
   exception.cc
-  formatTime.cc
-  MessageFacilityMsg.cc
-  SingleConsumerQ.cc
-  UnixSignalHandlers.cc
   LIBRARIES
   cetlib
-  -lpthread
+  fhiclcpp
   )
 
 # Not using cet_make_library() because we explicitly *don't* want a

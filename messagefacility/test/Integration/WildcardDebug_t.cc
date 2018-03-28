@@ -8,7 +8,8 @@
 #include "fhiclcpp/make_ParameterSet.h"
 #include "fhiclcpp/types/detail/validationException.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
-#include "messagefacility/MessageService/MessageDrop.h"
+#include "messagefacility/Utilities/exception.h"
+
 #include <cstdlib>
 #include <iostream>
 

@@ -1,28 +1,18 @@
-// ----------------------------------------------------------------------
-//
-// ELseverityLevel.cc - implement objects that encode a message's urgency
-//
-//      Both frameworker and user will often pass one of the
-//      instantiated severity levels to logger methods.
-//
-//      The only other methods of ELseverityLevel a frameworker
-//      might use is to check the relative level of two severities
-//      using operator<() or the like.
-//
-// ----------------------------------------------------------------------
-
-#include <ostream>
-
-#include "messagefacility/Utilities/ELmap.h"
 #include "messagefacility/Utilities/ELseverityLevel.h"
+// vim: set sw=2 expandtab :
 
-using ELmap = std::map<std::string const, mf::ELseverityLevel::ELsev_>;
+#include <map>
+#include <ostream>
+#include <string>
+
+using namespace std;
 
 namespace {
 
   template <mf::ELseverityLevel(F)()>
   void
-  setSeverity(ELmap& m, mf::ELslProxy<F> const proxy)
+  setSeverity(map<string const, mf::ELseverityLevel::ELsev_>& m,
+              mf::ELslProxy<F> const proxy)
   {
     auto const severity =
       static_cast<mf::ELseverityLevel::ELsev_>(proxy.getLevel());
@@ -31,44 +21,37 @@ namespace {
     m[proxy.getInputStr()] = severity;
     m[proxy.getVarName()] = severity;
   }
-}
+
+} // unnamed namespace
 
 namespace mf {
 
-  // ----------------------------------------------------------------------
-  // Helper to construct the string->ELsev_ map on demand:
-  // ----------------------------------------------------------------------
+  namespace {
 
-  static ELmap const&
-  loadMap()
+    map<string const, mf::ELseverityLevel::ELsev_> const&
+    loadMap()
+    {
+      static map<string const, mf::ELseverityLevel::ELsev_> m;
+      setSeverity(m, ELzeroSeverity);
+      setSeverity(m, ELsuccess);
+      setSeverity(m, ELdebug);
+      setSeverity(m, ELinfo);
+      setSeverity(m, ELwarning);
+      setSeverity(m, ELerror);
+      setSeverity(m, ELunspecified);
+      setSeverity(m, ELsevere);
+      setSeverity(m, ELhighestSeverity);
+      return m;
+    }
+
+  } // unnamed namespace
+
+  ELseverityLevel::ELseverityLevel(string const& s)
   {
-    static ELmap m;
-    setSeverity(m, ELzeroSeverity);
-    setSeverity(m, ELsuccess);
-    setSeverity(m, ELdebug);
-    setSeverity(m, ELinfo);
-    setSeverity(m, ELwarning);
-    setSeverity(m, ELerror);
-    setSeverity(m, ELunspecified);
-    setSeverity(m, ELsevere);
-    setSeverity(m, ELhighestSeverity);
-    return m;
-  }
-
-  // ----------------------------------------------------------------------
-  // Birth/death:
-  // ----------------------------------------------------------------------
-
-  ELseverityLevel::ELseverityLevel(std::string const& s)
-  {
-    static ELmap const& m = loadMap();
+    static map<string const, mf::ELseverityLevel::ELsev_> const& m = loadMap();
     auto i = m.find(s);
     myLevel = (i == m.end()) ? ELsev_unspecified : i->second;
   }
-
-  // ----------------------------------------------------------------------
-  // Comparator:
-  // ----------------------------------------------------------------------
 
   int
   ELseverityLevel::cmp(ELseverityLevel const e) const
@@ -76,21 +59,16 @@ namespace mf {
     return myLevel - e.myLevel;
   }
 
-  // ----------------------------------------------------------------------
-  // Accessors:
-  // ----------------------------------------------------------------------
-
   int
   ELseverityLevel::getLevel() const
   {
     return myLevel;
   }
 
-  std::string
+  string
   ELseverityLevel::getSymbol() const
   {
-    std::string result;
-
+    string result;
     switch (myLevel) {
       default:
         result = "0";
@@ -120,15 +98,13 @@ namespace mf {
         result = "!!";
         break;
     }
-
     return result;
   }
 
-  std::string
+  string
   ELseverityLevel::getName() const
   {
-    std::string result;
-
+    string result;
     switch (myLevel) {
       default:
         result = "?no value?";
@@ -158,15 +134,13 @@ namespace mf {
         result = "!!";
         break;
     }
-
     return result;
   }
 
-  std::string
+  string
   ELseverityLevel::getInputStr() const
   {
-    std::string result;
-
+    string result;
     switch (myLevel) {
       default:
         result = "?no value?";
@@ -196,15 +170,13 @@ namespace mf {
         result = "HIGHEST";
         break;
     }
-
     return result;
   }
 
-  std::string
+  string
   ELseverityLevel::getVarName() const
   {
-    std::string result;
-
+    string result;
     switch (myLevel) {
       default:
         result = "?no value?       ";
@@ -234,18 +206,13 @@ namespace mf {
         result = "ELhighestSeverity";
         break;
     }
-
     return result;
   }
 
-  // ----------------------------------------------------------------------
-  // Emitter:
-  // ----------------------------------------------------------------------
-
-  std::ostream&
-  operator<<(std::ostream& os, ELseverityLevel const sev)
+  ostream&
+  operator<<(ostream& os, ELseverityLevel const sev)
   {
     return os << " -" << sev.getName() << "- ";
   }
 
-} // end of namespace mf  */
+} // namespace mf

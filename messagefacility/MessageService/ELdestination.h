@@ -1,187 +1,289 @@
 #ifndef messagefacility_MessageService_ELdestination_h
 #define messagefacility_MessageService_ELdestination_h
-
-// ----------------------------------------------------------------------
-//
-// ELdestination   is a virtual class defining the interface to a
-//                 destination.  The ELadministrator owns
-//                 a list of ELdestination* as well as the objects those
-//                 list elements point to.
-//
-// ----------------------------------------------------------------------
+// vim: set sw=2 expandtab :
 
 #include "cetlib/PluginTypeDeducer.h"
 #include "fhiclcpp/ParameterSet.h"
+#include "fhiclcpp/types/Atom.h"
+#include "fhiclcpp/types/ConfigurationTable.h"
 #include "fhiclcpp/types/OptionalDelegatedParameter.h"
 #include "fhiclcpp/types/Table.h"
 #include "fhiclcpp/types/TableFragment.h"
-#include "messagefacility/MessageService/MsgFormatSettings.h"
-#include "messagefacility/MessageService/MsgStatistics.h"
 #include "messagefacility/Utilities/ELextendedID.h"
-#include "messagefacility/Utilities/ELset.h"
 #include "messagefacility/Utilities/ErrorObj.h"
 
-namespace mf {
-  namespace service {
-    class ELdestination;
-  }
-}
-
-namespace cet {
-  template <>
-  struct PluginTypeDeducer<mf::service::ELdestination> {
-    static std::string const value;
-  };
-}
+#include <bitset>
+#include <cstddef>
+#include <map>
+#include <ostream>
+#include <sstream>
+#include <string>
 
 namespace mf {
   namespace service {
 
     class ELdestination {
+
+      // Types
+    public:
+      // Allowed values of MsgFormatSettings::flags
+      enum flag_enum {
+        NO_LINE_BREAKS,
+        TIMESTAMP,
+        MILLISECOND,
+        MODULE,
+        SUBROUTINE,
+        TEXT,
+        SOME_CONTEXT,
+        SERIAL,
+        FULL_CONTEXT,
+        TIME_SEPARATE,
+        EPILOGUE_SEPARATE,
+        NFLAGS
+      };
+
+      struct Category {
+
+        struct Config {
+
+          ~Config();
+          Config();
+          explicit Config(fhicl::ParameterSet const& pset);
+
+          static std::string limit_comment();
+          static std::string reportEvery_comment();
+          static std::string timespan_comment();
+
+          fhicl::Atom<int> limit{fhicl::Name{"limit"}, -1};
+          fhicl::Atom<int> reportEvery{fhicl::Name{"reportEvery"}, -1};
+          fhicl::Atom<int> timespan{fhicl::Name{"timespan"}, -1};
+        };
+
+        ~Category();
+        Category();
+      };
+
+      struct CategoryParams {
+
+        ~CategoryParams();
+        CategoryParams();
+
+        int limit_;
+        int reportEvery_;
+        int timespan_;
+      };
+
+      struct XidLimiter {
+
+        ~XidLimiter();
+        XidLimiter();
+
+        time_t previousTimestamp_;
+        int msgCount_{};
+        int skippedMsgCount_;
+
+        int limit_;
+        int reportEvery_;
+        int timespan_;
+      };
+
+      struct StatsCount {
+
+        ~StatsCount();
+        StatsCount();
+        void add(std::string const& context, bool reactedTo);
+
+        int n_{};
+        int aggregateN_{};
+        bool ignoredFlag_{false};
+        std::string context1_{};
+        std::string context2_{};
+        std::string contextLast_{};
+      };
+
+      class MsgFormatSettings {
+
+        // Configuration
+      public:
+        struct Config {
+
+          ~Config();
+          Config();
+
+          fhicl::Atom<std::string> timestamp;
+          fhicl::Atom<bool> noLineBreaks;
+          fhicl::Atom<unsigned long long> lineLength;
+          fhicl::Atom<bool> wantModule;
+          fhicl::Atom<bool> wantSubroutine;
+          fhicl::Atom<bool> wantText;
+          fhicl::Atom<bool> wantSomeContext;
+          fhicl::Atom<bool> wantSerial;
+          fhicl::Atom<bool> wantFullContext;
+          fhicl::Atom<bool> wantTimeSeparate;
+          fhicl::Atom<bool> wantEpilogueSeparate;
+        };
+
+        // Special Member Functions
+      public:
+        ~MsgFormatSettings();
+        MsgFormatSettings(Config const& config);
+
+        // API
+      public:
+        bool want(flag_enum const) const;
+        std::string timestamp(timeval const&);
+
+        // My Data
+      public:
+        std::bitset<NFLAGS> flags;
+        std::size_t lineLength;
+
+        // My Data
+      private:
+        int timeMethod_{0};
+        std::string timeFmt_{};
+      };
+
+      class MsgStatistics {
+
+        // Configuration
+      public:
+        struct Config {
+          ~Config();
+          Config();
+          // FIXME: I think we will want this to apply to resetLimiters() only.
+          fhicl::Atom<bool> reset{
+            fhicl::Name("reset"),
+            fhicl::Comment("Used for statistics destinations"),
+            false};
+          // FIXME: I think we will want this to apply to resetMsgCounters()
+          // only.
+          fhicl::Atom<bool> resetStatistics{fhicl::Name("resetStatistics"),
+                                            false};
+        };
+
+        // Special Member Functions
+      public:
+        ~MsgStatistics() = delete;
+        MsgStatistics() = delete;
+        MsgStatistics(MsgStatistics const&) = delete;
+        MsgStatistics(MsgStatistics&&) = delete;
+        MsgStatistics& operator=(MsgStatistics const&) = delete;
+        MsgStatistics& operator=(MsgStatistics&&) = delete;
+      };
+
+      // Configuration
     public:
       struct Config {
-        fhicl::Atom<std::string> dest_type{fhicl::Name{"type"}};
-        fhicl::Atom<std::string> threshold{
-          fhicl::Name{"threshold"},
-          fhicl::Comment{
-            "The 'threshold' parameter specifies the lowest severity level of\n"
-            "messages that will be logged to the destination"},
-          "INFO"};
-        fhicl::Table<MsgFormatSettings::Config> format{fhicl::Name{"format"}};
-        // Assembling the following comment is, shall we say, icky.
-        // It's bad; really bad: worse than ending a sentence with a
-        // preposition; worse than parallel octaves in counterpoint
-        // music.  But alas, it cannot be helped:
-        //
-        //  - The fhicl-cpp types system would need to be expanded to
-        //    provide some mechanism that says "I want to have a table
-        //    whose members all have the form of X.  We don't have
-        //    that.
-        //
-        //  - Since C++ does not provide reflection facilities into
-        //    struct members and so forth, the 'RegisterIfTableMember'
-        //    base class is intentionally instantiated for every
-        //    parameter.  This means that even if I wanted to create a
-        //    temporary Table<mf::Category::Config> to automatically
-        //    generate the allowed configuration, that temporary table
-        //    would be registered as belonging to whatever
-        //    encapsulating table is currently on the
-        //    TableMemberRegistry stack.  This is bad.
-        fhicl::OptionalDelegatedParameter categories{
-          fhicl::Name{"categories"},
-          fhicl::Comment{
-            R"(The 'categories' parameter (if provided) is a FHiCL table that
-configures the behavior of logging to this destination for the specified
-category.  For example, if the following appears in C++ source code:
-
-  mf::LogInfo{"Tracking"} << my_track.diagnostics();
-
-the category is 'Tracking', and its behavior can be specified via:
-
-  categories: {
-    Tracking: {
-      limit: -1  # default
-      reportEvery: -1 # default
-      timespan: -1 # default
-    }
-  }
-
-Within the 'categories' table, it is permitted to specify a 'default'
-category, which becomes the configuration for all message categories
-that are not explicitly listed.
-
-Note the categories listed only customize the behavior of messages
-that are logged specifically to this destination. Messages that are
-routed to other destinations are not be affected.
-
-Category parameters
-===================
-
-)" + Category::Config::limit_comment() +
-            "\n\n" + Category::Config::reportEvery_comment() + "\n\n" +
-            Category::Config::timespan_comment()}};
-        fhicl::Atom<bool> outputStatistics{fhicl::Name{"outputStatistics"},
-                                           false};
+        ~Config();
+        Config();
+        fhicl::Atom<std::string> dest_type;
+        fhicl::Atom<std::string> threshold;
+        fhicl::Table<MsgFormatSettings::Config> format;
+        fhicl::OptionalDelegatedParameter categories;
+        fhicl::Atom<bool> outputStatistics;
         fhicl::TableFragment<MsgStatistics::Config> msgStatistics;
       };
 
-      ELdestination(Config const& pset);
-
-      // Suppress copy operations
-      ELdestination(ELdestination const& orig) = delete;
-      ELdestination& operator=(ELdestination const& orig) = delete;
-
+      // Special Member Functions
+    public:
       virtual ~ELdestination() noexcept = default;
+      ELdestination(Config const&);
+      ELdestination(ELdestination const&) = delete;
+      ELdestination(ELdestination&&) = delete;
+      ELdestination& operator=(ELdestination const&) = delete;
+      ELdestination& operator=(ELdestination&&) = delete;
 
-      virtual void finish();
-      virtual void log(mf::ErrorObj& msg);
-      virtual void
-      noTerminationSummary()
-      {}
-      virtual void summarization(std::string const& title,
-                                 std::string const& sumLines);
-      virtual void summary();
-      virtual void wipe();
-
+      // API
+    public:
+      // Used only by MessageLoggerScribe to disable
+      // cerr_early once startup is complete.
       void setThreshold(ELseverityLevel sv);
-      void
-      userWantsStats()
-      {
-        enableStats = true;
-      }
-      bool
-      resetStats() const
-      {
-        return stats.reset;
-      }
 
+      // API which may be overridden by subclasses
+      // Currently the only overrider is ELstatistics
+      // and then only log() and summary(), not finish()
+    public:
+      // Called only by MessageLoggerScribe::sendMsgToDests
+      //   Called by MessageLoggerScribe::logMessage
+      //     Called by MessageLogger::LogErrorObj
+      //       Called by MaybeLogger_ dtor
+      //   Called by MessageLoggerScribe dtor
+      //     Called by MessageLogger::EndMessageFacility
+      //     Called by global dtor of MessageLogger::mlscribe_ptr
+      virtual void log(mf::ErrorObj&);
+
+      // Called only by MessageLoggerScribe dtor.
+      // Called at message facility shutdown.
+      virtual void finish();
+
+      // Called only by MessageLoggerScribe::summarize()
+      //   Called only by MessageLogger::LogStatistics()
+      virtual void summary();
+
+      // API provided to subclasses
     protected:
-      void emitToken(std::ostream& os, std::string const& s, bool nl = false);
+      std::string summarizeContext(std::string const&);
+      void emitToken(std::ostream& os,
+                     std::string const& s,
+                     bool nl = false,
+                     bool preambleMode = false);
+      std::string formSummary();
 
-      bool passLogMsgThreshold(mf::ErrorObj const& msg);
-      bool passLogStatsThreshold(mf::ErrorObj const& msg) const;
+      // A return value of true tells the destination
+      // to not log this message.
+      // Called by ELdestination::log().
+      bool skipMsg(ELextendedID const&);
 
-      virtual void fillPrefix(std::ostringstream& oss, mf::ErrorObj const& msg);
-      virtual void fillUsrMsg(std::ostringstream& oss, mf::ErrorObj const& msg);
-      virtual void fillSuffix(std::ostringstream& oss, mf::ErrorObj const& msg);
+      // Called by ELdestination::summary()
+      // Called by ELstatistics::summary()
+      void resetLimiters();
 
-      virtual void routePayload(std::ostringstream const& oss,
+      // Called by ELdestination::summary()
+      // Called by ELstatistics::summary()
+      void resetMsgCounters();
+
+      // API to be provided by subclasses
+    protected:
+      virtual void fillPrefix(std::ostringstream&, mf::ErrorObj const& msg);
+      virtual void fillUsrMsg(std::ostringstream&, mf::ErrorObj const& msg);
+      virtual void fillSuffix(std::ostringstream&, mf::ErrorObj const& msg);
+      virtual void routePayload(std::ostringstream const&,
                                 mf::ErrorObj const& msg);
 
-      virtual void filterModule(std::string const& moduleName);
-      virtual void excludeModule(std::string const& moduleName);
-      virtual void ignoreModule(std::string const& moduleName);
-      virtual void respondToModule(std::string const& moduleName);
-      virtual bool thisShouldBeIgnored(std::string const& s) const;
-
-      virtual void summary(std::ostream& os, std::string const& title = {});
-      virtual void summary(std::string& s, std::string const& title = {});
-
+      // We never call this, but artdaq mfextensions needs it.
       virtual void flush();
 
+      // Member Data for subclasses
     protected:
-      // This block of protected data is icky.  Should find a way to
-      // make it private.
-      MsgStatistics stats;
-      MsgFormatSettings format;
-      ELseverityLevel threshold;
+      ELseverityLevel threshold_;
+      MsgFormatSettings format_;
+      int defaultLimit_;
+      int defaultReportEvery_;
+      int defaultTimespan_;
+      std::map<std::string const, CategoryParams> categoryParams_;
+      std::map<ELextendedID const, XidLimiter> xidLimiters_;
+      std::map<ELextendedID const, StatsCount> statsMap_;
+      bool outputStatistics_{false};
+      bool updatedStats_{false};
+      bool reset_{false};
 
+      // Member Data for myself
     private:
-      void configure(fhicl::OptionalDelegatedParameter const&);
+      std::size_t charsOnLine_{};
+    };
 
-      std::string indent{std::string(6, ' ')};
-      std::size_t charsOnLine{};
-      ELset_string respondToThese{};
-      bool ignoreMostModules{false};
-      bool respondToMostModules{false};
-      ELset_string ignoreThese{};
+  } // namespace service
+} // namespace mf
 
-      bool enableStats;
+namespace cet {
 
-    }; // ELdestination
+  template <>
+  struct PluginTypeDeducer<mf::service::ELdestination> {
+    static std::string const value;
+  };
 
-  } // end of namespace service
-} // end of namespace mf
+} // namespace cet
 
 #endif /* messagefacility_MessageService_ELdestination_h */
 
