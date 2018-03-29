@@ -1,24 +1,3 @@
-#Category.cc
-#DebugMacros.cc
-#ELlimitsTable.cc
-#ELmap.cc
-#UnixSignalHandlers.cc
-#eq_nocase.cc
-#formatTime.cc
-
-cet_make_library(
-  LIBRARY_NAME
-  MF_Utilities
-  SOURCE
-  ELextendedID.cc
-  ELseverityLevel.cc
-  ErrorObj.cc
-  exception.cc
-  LIBRARIES
-  cetlib
-  fhiclcpp
-  )
-
 # Not using cet_make_library() because we explicitly *don't* want a
 # shared library.
 add_library(mf_catch_main STATIC catch_main.cc)
