@@ -5,10 +5,21 @@
 # ======================================================================
 include(BasicPlugin)
 
+cet_make_exec(ELdestinationTester
+  SOURCE
+    ELdestinationTester.cc
+  LIBRARIES
+    MF_MessageLogger
+    ${Boost_SYSTEM_LIBRARY}
+    ${Boost_FILESYSTEM_LIBRARY}
+    ${Boost_PROGRAM_OPTIONS_LIBRARY}
+)
+
 cet_test(Presence_init_t
   LIBRARIES
   MF_MessageLogger
-  fhiclcpp)
+  fhiclcpp
+)
 
 cet_test(WildcardDebug_t
   LIBRARIES
@@ -29,6 +40,7 @@ cet_make_exec(mfexample
   LIBRARIES
   MF_MessageLogger
   fhiclcpp
+  pthread
   )
 
 basic_plugin(Issue17457TestDestination mfPlugin
