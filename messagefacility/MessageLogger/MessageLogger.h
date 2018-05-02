@@ -82,32 +82,18 @@ namespace mf {
   bool isWarningEnabled();
 
   class NeverLogger_ {
-
   public:
-    // Force conversion of char arrays to string.
-    template <class T>
-    std::enable_if_t<!std::is_same<T, char const*>::value &&
-                       !std::is_same<T, char const* const>::value,
-                     NeverLogger_&>
-    operator<<(T const&) &
+
+    // Dedicated function for char const* to avoid unnecessary
+    // template instantiations of char const[].  Will take precedence
+    // over the template version.
+    decltype(auto) operator<<(char const*)
     {
       return std::forward<NeverLogger_>(*this);
     }
 
-    // Force conversion of char arrays to string.
     template <class T>
-    std::enable_if_t<!std::is_same<T, char const*>::value &&
-                       !std::is_same<T, char const* const>::value,
-                     NeverLogger_&&>
-    operator<<(T const&) &&
-    {
-      return std::forward<NeverLogger_>(*this);
-    }
-
-    // Force conversion of char arrays to string.
-    template <class T>
-    decltype(auto)
-    operator<<(std::string const&)
+    decltype(auto) operator<<(T const&)
     {
       return std::forward<NeverLogger_>(*this);
     }
@@ -169,12 +155,10 @@ namespace mf {
         SEV, category, VERBATIM, filename, line_number));
     }
 
-    // Force conversion of char arrays to string.
-    template <class T>
-    std::enable_if_t<!std::is_same<T, char const*>::value &&
-                       !std::is_same<T, char const* const>::value,
-                     MaybeLogger_&>
-    operator<<(std::string const& s) &
+    // Dedicated function for char const* to avoid unnecessary
+    // template instantiations of char const[].  Will take precedence
+    // over the template version.
+    decltype(auto) operator<<(char const* s)
     {
       if (msg_) {
         (*msg_) << s;
@@ -182,20 +166,6 @@ namespace mf {
       return std::forward<MaybeLogger_>(*this);
     }
 
-    // Force conversion of char arrays to string.
-    template <class T>
-    std::enable_if_t<!std::is_same<T, char const*>::value &&
-                       !std::is_same<T, char const* const>::value,
-                     MaybeLogger_&&>
-    operator<<(std::string const& s) &&
-    {
-      if (msg_) {
-        (*msg_) << s;
-      }
-      return std::forward<MaybeLogger_>(*this);
-    }
-
-    // Force conversion of char arrays to string.
     template <class T>
     decltype(auto)
     operator<<(T const& t)
