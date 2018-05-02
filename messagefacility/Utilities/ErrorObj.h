@@ -65,18 +65,14 @@ namespace mf {
     virtual void setPID(long);
 
     ErrorObj& operator<<(std::ostream& (*f)(std::ostream&));
-
     ErrorObj& operator<<(std::ios_base& (*f)(std::ios_base&));
 
-    // Force conversion of char arrays to string.
-    ErrorObj& opltlt(std::string const&);
+    // Explicit function for char const* to avoid unnecessary
+    // instantiations of char const[] types.
+    ErrorObj& opltlt(char const*);
 
-    // Force conversion of char arrays to string.
     template <class T>
-    std::enable_if_t<!std::is_same<T, char const*>::value &&
-                       !std::is_same<T, char const* const>::value,
-                     ErrorObj&>
-    opltlt(T const&);
+    ErrorObj& opltlt(T const&);
 
     virtual ErrorObj& eo_emit(std::string const&);
 
@@ -98,11 +94,8 @@ namespace mf {
     int lineNumber_{};
   };
 
-  // Force conversion of char arrays to string.
   template <class T>
-  std::enable_if_t<!std::is_same<T, char const*>::value &&
-                     !std::is_same<T, char const* const>::value,
-                   ErrorObj&>
+  ErrorObj&
   ErrorObj::opltlt(T const& t)
   {
     oss_.str({});
@@ -113,14 +106,12 @@ namespace mf {
     return *this;
   }
 
-  // Force conversion of char arrays to string.
-  ErrorObj& operator<<(ErrorObj& e, std::string const& s);
+  //
+  ErrorObj& operator<<(ErrorObj& e, char const* s);
 
   // Force conversion of char arrays to string.
   template <class T>
-  std::enable_if_t<!std::is_same<T, char const*>::value &&
-                     !std::is_same<T, char const* const>::value,
-                   ErrorObj&>
+  ErrorObj&
   operator<<(ErrorObj& e, T const& t)
   {
     return e.opltlt(t);

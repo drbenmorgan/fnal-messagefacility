@@ -260,7 +260,7 @@ namespace mf {
 
   // Force conversion of char arrays to string.
   ErrorObj&
-  ErrorObj::opltlt(std::string const& s)
+  ErrorObj::opltlt(char const* s)
   {
     oss_.str({});
     oss_ << s;
@@ -272,7 +272,7 @@ namespace mf {
 
   // Force conversion of char arrays to string.
   ErrorObj&
-  operator<<(ErrorObj& e, std::string const& s)
+  operator<<(ErrorObj& e, char const* s)
   {
     return e.opltlt(s);
   }
