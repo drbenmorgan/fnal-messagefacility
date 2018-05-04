@@ -9,7 +9,7 @@ product         version
 tbb             v2018_2a
 fhiclcpp        v4_06_07
 hep_concurrency v1_00_01
-cetbuildtools   v7_03_02        -       only_for_build
+cetbuildtools   v7_03_03        -       only_for_build
 catch           v1_11_0         -nq-    only_for_build
 end_product_list
 
