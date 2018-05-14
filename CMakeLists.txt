@@ -1,7 +1,8 @@
 # - When user supplies "-DALT_CMAKE" use the non-CET/UPS system
 if(ALT_CMAKE)
   include(altCMakeLists.cmake)
-else()
+  return()
+endif()
 
 #
 #  CMakeLists.txt
@@ -64,4 +65,3 @@ add_subdirectory(ups)
 # packaging utility
 include(UseCPack)
 
-endif() # ALT_CMAKE

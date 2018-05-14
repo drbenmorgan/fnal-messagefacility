@@ -1,41 +1,25 @@
 # Now just build single "MF_MessageLogger" lib
 # from Message{Logger,Service} sources
 add_library(MF_MessageLogger SHARED
+  MessageLogger/MFConfig.cc
+  MessageLogger/MFConfig.h
   MessageLogger/MessageLogger.cc
   MessageLogger/MessageLogger.h
-  MessageLogger/MessageLogger.icc
-  MessageLogger/MessageLoggerDefinitions.h
-  MessageLogger/MessageLoggerImpl.cc
-  MessageLogger/MessageLoggerImpl.h
-  MessageLogger/MessageLoggerScribe.cc
-  MessageLogger/MessageLoggerScribe.h
-  MessageLogger/MessageSender.cc
-  MessageLogger/MessageSender.h
-  MessageLogger/Presence.cc
-  MessageLogger/Presence.h
-  MessageService/AbstractMLscribe.h
-  MessageService/ELadministrator.cc
-  MessageService/ELadministrator.h
-  MessageService/ELdestConfigCheck.h
-  MessageService/ELdestMakerMacros.h
   MessageService/ELdestination.cc
   MessageService/ELdestination.h
   MessageService/ELostreamOutput.cc
   MessageService/ELostreamOutput.h
   MessageService/ELstatistics.cc
   MessageService/ELstatistics.h
-  MessageService/MessageDrop.cc
-  MessageService/MessageDrop.h
-  MessageService/MessageLoggerQ.cc
-  MessageService/MessageLoggerQ.h
-  MessageService/MsgFormatSettings.cc
-  MessageService/MsgFormatSettings.h
-  MessageService/MsgStatistics.cc
-  MessageService/MsgStatistics.h
-  MessageService/OpCode.h
-  MessageService/ThreadQueue.cc
-  MessageService/ThreadQueue.h
-  MessageService/default_destinations_config.h
+  Utilities/ELextendedID.cc
+  Utilities/ELextendedID.h
+  Utilities/ELseverityLevel.cc
+  Utilities/ELseverityLevel.h
+  Utilities/ErrorObj.cc
+  Utilities/ErrorObj.h
+  Utilities/exception.cc
+  Utilities/exception.h
+
   )
 target_include_directories(MF_MessageLogger
   PUBLIC
@@ -43,20 +27,11 @@ target_include_directories(MF_MessageLogger
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
 target_link_libraries(MF_MessageLogger PUBLIC
-  MF_Utilities
   cetlib_except::cetlib_except
   fhiclcpp::fhiclcpp
+  hep_concurrency::hep_concurrency
   TBB::tbb
   )
-
-# Still recurse into directory to build ELdestinationTester program
-add_subdirectory(MessageLogger)
-
-# No longer anything to do in MessageService
-#add_subdirectory(MessageService)
-
-# Still build MF_Utilities
-add_subdirectory(Utilities)
 
 # Plugins
 add_subdirectory(plugins)

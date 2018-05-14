@@ -1,7 +1,8 @@
 # - When user supplies "-DALT_CMAKE" use the non-CET/UPS system
 if(ALT_CMAKE)
   include(altCMakeLists.cmake)
-else()
+  return()
+endif()
 
 include(BasicPlugin)
 
@@ -26,4 +27,3 @@ basic_plugin(file mfStatsPlugin ${mf_plugin_libraries})
 
 install_headers()
 install_source()
-endif() # ALT_CMAKE

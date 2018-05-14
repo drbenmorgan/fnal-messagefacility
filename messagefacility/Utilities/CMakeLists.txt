@@ -1,7 +1,8 @@
 # - When user supplies "-DALT_CMAKE" use the non-CET/UPS system
 if(ALT_CMAKE)
   include(altCMakeLists.cmake)
-else()
+  return()
+endif()
 
 # Not using cet_make_library() because we explicitly *don't* want a
 # shared library.
@@ -18,5 +19,3 @@ install(TARGETS mf_catch_main ARCHIVE DESTINATION ${${product}_lib_dir})
 # install files
 install_headers()
 install_source()
-
-endif() # ALT_CMAKE

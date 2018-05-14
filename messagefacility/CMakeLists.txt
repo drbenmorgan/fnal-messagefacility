@@ -1,7 +1,8 @@
 # - When user supplies "-DALT_CMAKE" use the non-CET/UPS system
 if(ALT_CMAKE)
   include(altCMakeLists.cmake)
-else()
+  return()
+endif()
 
 include(CetMake)
 
@@ -32,4 +33,3 @@ add_subdirectory(plugins)
 # Testing
 add_subdirectory(test)
 
-endif() # ALT_CMAKE

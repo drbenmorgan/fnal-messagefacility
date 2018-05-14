@@ -5,6 +5,23 @@
 # ======================================================================
 include(BasicPlugin)
 
+if(ALT_CMAKE)
+  add_executable(ELdestinationTester ELdestinationTester.cc)
+  target_link_libraries(ELdestinationTester PRIVATE
+    MF_MessageLogger
+    cetlib::cetlib
+    fhiclcpp::fhiclcpp
+    Boost::program_options
+    Boost::filesystem
+    Boost::system
+    )
+  # Though it's a test executable, does seem to be installed so
+  # that clients can test new destinations?
+  install(TARGETS ELdestinationTester
+    EXPORT ${PROJECT_NAME}Targets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    )
+else()
 cet_make_exec(ELdestinationTester
   SOURCE
     ELdestinationTester.cc
@@ -14,6 +31,7 @@ cet_make_exec(ELdestinationTester
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
 )
+endif()
 
 cet_test(Presence_init_t
   LIBRARIES
