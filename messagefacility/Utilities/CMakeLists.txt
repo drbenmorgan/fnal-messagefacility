@@ -3,27 +3,6 @@ if(ALT_CMAKE)
   include(altCMakeLists.cmake)
 else()
 
-cet_make_library(
-  LIBRARY_NAME
-  MF_Utilities
-  SOURCE
-  DebugMacros.cc
-  ELextendedID.cc
-  ELlimitsTable.cc
-  ELmap.cc
-  ELseverityLevel.cc
-  ErrorObj.cc
-  eq_nocase.cc
-  exception.cc
-  formatTime.cc
-  MessageFacilityMsg.cc
-  SingleConsumerQ.cc
-  UnixSignalHandlers.cc
-  LIBRARIES
-  cetlib
-  -lpthread
-  )
-
 # Not using cet_make_library() because we explicitly *don't* want a
 # shared library.
 add_library(mf_catch_main STATIC catch_main.cc)

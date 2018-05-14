@@ -1,24 +1,27 @@
-parent messagefacility v2_01_06
+parent messagefacility v2_02_00
 defaultqual e15
 #
 fcldir -
 perllib  product_dir
 #
 # define product/version pairs
-product		version
-tbb		v2018_2
-fhiclcpp        v4_06_05
-cetbuildtools	v7_00_02	-	only_for_build
-catch		v1_11_0		-nq-	only_for_build
+product         version
+tbb             v2018_2a
+fhiclcpp        v4_06_07
+hep_concurrency v1_00_00
+cetbuildtools   v7_03_01        -       only_for_build
+catch           v1_11_0         -nq-    only_for_build
 end_product_list
 
 
 # Matrix of qualifiers versus dependent products
-qualifier	fhiclcpp	tbb		notes
-e15:debug	e15:debug	e15:debug
-e15:prof	e15:prof	e15:prof
-c2:debug	c2:debug	c2:debug
-c2:prof		c2:prof		c2:prof
+qualifier       fhiclcpp        tbb         hep_concurrency     notes
+e15:debug       e15:debug       e15:debug   e15:debug
+e15:prof        e15:prof        e15:prof    e15:prof
+e17:debug       e17:debug       e17:debug   e17:debug
+e17:prof        e17:prof        e17:prof    e17:prof
+c2:debug        c2:debug        c2:debug    c2:debug
+c2:prof         c2:prof         c2:prof     c2:prof
 end_qualifier_list
 
 # Local Variables:

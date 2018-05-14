@@ -1,17 +1,15 @@
 #ifndef messagefacility_plugins_FileConfig_h
 #define messagefacility_plugins_FileConfig_h
+// vim: set sw=2 expandtab :
 
 #include "fhiclcpp/types/Atom.h"
 
 #include <string>
 
-namespace fhicl {
-  class ParameterSet;
-}
-
 namespace mfplugins {
 
   struct FileConfig {
+
     fhicl::Atom<std::string> filename{fhicl::Name{"filename"}};
     fhicl::Atom<bool> append{
       fhicl::Name{"append"},
@@ -19,7 +17,8 @@ namespace mfplugins {
                      "of an already-existing file are retained."},
       false};
   };
-}
+
+} // namespace mfplugins
 
 #endif /* messagefacility_plugins_FileConfig_h */
 

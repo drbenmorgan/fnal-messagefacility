@@ -44,13 +44,13 @@ sub constructors {
 sub defineMacro {
   my ($self, $qual_name) = @_;
   return <<EOF;
-EXTERN_C_FUNC_DECLARE_START
+extern "C" {
   auto makePlugin(std::string const & psetName,
                   fhicl::ParameterSet const & pset)
   {
     return std::make_unique<${qual_name}>( /* args as necessary. */ );
   }
-EXTERN_C_FUNC_DECLARE_END
+}
 DEFINE_BASIC_PLUGINTYPE_FUNC(mf::service::ELdestination)
 EOF
 }

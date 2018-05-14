@@ -1,3 +1,5 @@
+// vim: set sw=2 expandtab :
+
 #include "cetlib/PluginTypeDeducer.h"
 #include "cetlib/ProvideFilePathMacro.h"
 #include "cetlib/ProvideMakePluginMacros.h"
@@ -8,14 +10,17 @@
 
 #include <iostream>
 #include <memory>
+#include <string>
 
+using namespace std;
 using mf::service::ELstatistics;
 
-MAKE_PLUGIN_START(auto, std::string const&, fhicl::ParameterSet const& pset)
+MAKE_PLUGIN_START(auto, string const&, fhicl::ParameterSet const& pset)
 {
-  return std::make_unique<ELstatistics>(pset, std::cout);
-} MAKE_PLUGIN_END
+  return make_unique<ELstatistics>(pset, cout);
+}
+MAKE_PLUGIN_END
 
 CET_PROVIDE_FILE_PATH()
-FHICL_PROVIDE_ALLOWED_CONFIGURATION(ELstatistics)
 DEFINE_BASIC_PLUGINTYPE_FUNC(mf::service::ELdestination)
+FHICL_PROVIDE_ALLOWED_CONFIGURATION(ELstatistics)

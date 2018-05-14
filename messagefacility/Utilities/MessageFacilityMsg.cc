@@ -1,207 +1,233 @@
 #include "messagefacility/Utilities/MessageFacilityMsg.h"
+// vim: set sw=2 expandtab :
+
 #include "messagefacility/Utilities/ErrorObj.h"
 #include "messagefacility/Utilities/formatTime.h"
 
+using namespace std;
+
 namespace mf {
-
-  MessageFacilityMsg::MessageFacilityMsg(ErrorObj const& errorobj)
-    : ep(new ErrorObj(errorobj)), empty_(false)
-  {}
-
-  MessageFacilityMsg::MessageFacilityMsg()
-    : ep(new ErrorObj(ELseverityLevel("INFO"), "")), empty_(true)
-  {}
 
   MessageFacilityMsg::~MessageFacilityMsg() {}
 
-  // Set methods
+  MessageFacilityMsg::MessageFacilityMsg(ErrorObj const& msg)
+    : msg_(new ErrorObj(msg)), empty_(false)
+  {}
+
+  MessageFacilityMsg::MessageFacilityMsg()
+    : msg_(new ErrorObj(ELseverityLevel("INFO"), "")), empty_(true)
+  {}
+
   void
   MessageFacilityMsg::setTimestamp(timeval const& tv)
   {
-    ep->setTimestamp(tv);
+    msg_->setTimestamp(tv);
     empty_ = false;
   }
 
   void
-  MessageFacilityMsg::setSeverity(std::string const& severity)
+  MessageFacilityMsg::setSeverity(string const& severity)
   {
-    ep->setSeverity(mf::ELseverityLevel(severity));
+    msg_->setSeverity(mf::ELseverityLevel(severity));
     empty_ = false;
   }
 
   void
-  MessageFacilityMsg::setCategory(std::string const& category)
+  MessageFacilityMsg::setCategory(string const& category)
   {
-    ep->setID(category);
+    msg_->setID(category);
     empty_ = false;
   }
 
   void
-  MessageFacilityMsg::setHostname(std::string const& hostname)
+  MessageFacilityMsg::setHostname(string const& hostname)
   {
-    ep->setHostName(hostname);
+    msg_->setHostName(hostname);
     empty_ = false;
   }
 
   void
-  MessageFacilityMsg::setHostaddr(std::string const& hostaddr)
+  MessageFacilityMsg::setHostaddr(string const& hostaddr)
   {
-    ep->setHostAddr(hostaddr);
+    msg_->setHostAddr(hostaddr);
     empty_ = false;
   }
 
   void
   MessageFacilityMsg::setPid(long const pid)
   {
-    ep->setPID(pid);
+    msg_->setPID(pid);
     empty_ = false;
   }
 
   void
-  MessageFacilityMsg::setApplication(std::string const& app)
+  MessageFacilityMsg::setApplication(string const& app)
   {
-    ep->setApplication(app);
+    msg_->setApplication(app);
     empty_ = false;
   }
 
   void
-  MessageFacilityMsg::setModule(std::string const& module)
+  MessageFacilityMsg::setModule(string const& module)
   {
-    ep->setModule(module);
+    msg_->setModule(module);
     empty_ = false;
   }
 
   void
-  MessageFacilityMsg::setContext(std::string const& context)
+  MessageFacilityMsg::setContext(string const& s)
   {
-    ep->setContext(context);
+    msg_->setIteration(s);
     empty_ = false;
   }
 
   void
-  MessageFacilityMsg::setMessage(std::string const& file,
-                                 std::string const& line,
-                                 std::string const& message)
+  MessageFacilityMsg::setIteration(string const& s)
   {
-    *ep << " " << file << ":" << line << "\n" << message;
+    msg_->setIteration(s);
     empty_ = false;
   }
 
-  // Get methods
+  void
+  MessageFacilityMsg::setMessage(string const& file,
+                                 string const& line,
+                                 string const& message)
+  {
+    *msg_ << " " << file << ":" << line << "\n" << message;
+    empty_ = false;
+  }
+
   bool
   MessageFacilityMsg::empty() const
   {
     return empty_;
   }
+
   ErrorObj
   MessageFacilityMsg::ErrorObject() const
   {
-    return *ep;
+    return *msg_;
   }
+
   timeval
   MessageFacilityMsg::timestamp() const
   {
-    return ep->timestamp();
+    return msg_->timestamp();
   }
-  std::string
+
+  // FIXME: The get_time function is gone!
+  string
   MessageFacilityMsg::timestr() const
   {
-    return mf::timestamp::Legacy::get_time(ep->timestamp());
+    return mf::timestamp::Legacy::get_time(msg_->timestamp());
   }
-  std::string
+
+  string
   MessageFacilityMsg::severity() const
   {
-    return ep->xid().severity().getInputStr();
+    return msg_->xid().severity().getInputStr();
   }
-  std::string
+
+  string
   MessageFacilityMsg::category() const
   {
-    return ep->xid().id();
+    return msg_->xid().id();
   }
-  std::string
+
+  string
   MessageFacilityMsg::hostname() const
   {
-    return ep->xid().hostname();
+    return msg_->xid().hostname();
   }
-  std::string
+
+  string
   MessageFacilityMsg::hostaddr() const
   {
-    return ep->xid().hostaddr();
+    return msg_->xid().hostaddr();
   }
+
   long
   MessageFacilityMsg::pid() const
   {
-    return ep->xid().pid();
+    return msg_->xid().pid();
   }
-  std::string
+
+  string
   MessageFacilityMsg::application() const
   {
-    return ep->xid().application();
+    return msg_->xid().application();
   }
-  std::string
+
+  string
   MessageFacilityMsg::module() const
   {
-    return ep->xid().module();
+    return msg_->xid().module();
   }
-  std::string
+
+  string
   MessageFacilityMsg::context() const
   {
-    return ep->context();
+    return msg_->iteration();
   }
 
-  std::string
+  string
+  MessageFacilityMsg::iteration() const
+  {
+    return msg_->iteration();
+  }
+
+  // FIXME: We don't put the file in the items any more!
+  string
   MessageFacilityMsg::file() const
   {
-
     int idx = 0;
-    std::list<std::string>::const_iterator it = ep->items().begin();
-
-    for (; it != ep->items().end(); ++it) {
+    for (list<string>::const_iterator it = msg_->items().begin();
+         it != msg_->items().end();
+         ++it) {
       ++idx;
-      if (idx == 2)
+      if (idx == 2) {
         return *it;
+      }
     }
-
     return "";
   }
 
+  // FIXME: We don't put the line in the items any more!
   long
   MessageFacilityMsg::line() const
   {
-
     int idx = 0;
     int line = 0;
-    std::list<std::string>::const_iterator it = ep->items().begin();
-
-    for (; it != ep->items().end(); ++it) {
+    for (list<string>::const_iterator it = msg_->items().begin();
+         it != msg_->items().end();
+         ++it) {
       ++idx;
-
       if (idx == 4) {
-        std::istringstream ss(*it);
-        if (ss >> line)
+        istringstream ss(*it);
+        if (ss >> line) {
           return line;
-        else
-          return 0;
+        }
+        return 0;
       }
     }
-
     return 0;
   }
 
-  std::string
+  // FIXME: We don't put the file, line in the items any more!
+  string
   MessageFacilityMsg::message() const
   {
-
     int idx = 0;
-    std::string msg;
-    std::list<std::string>::const_iterator it = ep->items().begin();
-
-    for (; it != ep->items().end(); ++it) {
+    string msg;
+    for (list<string>::const_iterator it = msg_->items().begin();
+         it != msg_->items().end();
+         ++it) {
       ++idx;
-      if (idx > 5)
+      if (idx > 5) {
         msg += *it;
+      }
     }
-
     return msg;
   }
-}
+
+} // namespace mf
