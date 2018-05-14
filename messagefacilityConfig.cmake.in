@@ -26,6 +26,8 @@ find_package(Boost @Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@.@Boost_SUBMINOR_V
   )
 # NB: This assumes presence of FindSQLite module
 find_package(SQLite @SQLite_VERSION@ EXACT REQUIRED)
+
+find_package(hep_concurrency @hep_concurrency_VERSION@ EXACT REQUIRED)
 # NB: This assumes the presence of FindTBB module
 find_package(TBB @TBB_VERSION@ EXACT REQUIRED)
 find_package(Threads REQUIRED)
