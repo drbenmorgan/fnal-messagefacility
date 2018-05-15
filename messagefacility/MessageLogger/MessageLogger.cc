@@ -21,6 +21,8 @@
 #include "messagefacility/Utilities/ErrorObj.h"
 #include "messagefacility/Utilities/bold_fontify.h"
 #include "messagefacility/Utilities/exception.h"
+// Private to MF
+#include "messagefacility/mf_binreloc.h"
 
 #include <algorithm>
 #include <atomic>
@@ -62,14 +64,49 @@ namespace mf {
 namespace mf {
 
   namespace {
+    //! Get directory of the MF_MessageLogger library
+    //  Builtin plugins will be alongside it
+    std::string
+    getLibraryDir()
+    {
+      BrInitError err;
+      int initResult{br_init_lib(&err)};
+      if (initResult != 1) {
+        // ?? Returns 1 on success, what to do for errors?
+        // Following will result in empty string if init
+        // unsuccessful, but this is not neccessarily an error...
+        //
+      }
+      char* brLibDir{br_find_exe_dir("")};
+      std::string libMFDir{brLibDir};
+      free(brLibDir);
+      return libMFDir;
+    }
 
     cet::search_path
     getPluginPath()
     {
+     // Runtime directory of this lib, empty if binreloc failed
+      std::string libMFDir{getLibraryDir()};
+
+      // When MF_PLUGIN_PATH set
       if (getenv("MF_PLUGIN_PATH") != nullptr) {
-        return cet::search_path{"MF_PLUGIN_PATH"};
+        return libMFDir.empty() ?
+                 cet::search_path{"MF_PLUGIN_PATH"} :
+                 cet::search_path{getenv("MF_PLUGIN_PATH") + ":"s + libMFDir};
       }
-      return cet::search_path{cet::os_libpath()};
+
+      // When os_libpath is set
+      if (getenv(cet::os_libpath()) != nullptr) {
+        return libMFDir.empty() ?
+                 cet::search_path{cet::os_libpath()} :
+                 cet::search_path{getenv(cet::os_libpath()) + ":"s + libMFDir};
+      }
+
+      // Handle default case. True case return is default behaviour to ensure
+      // compatibility
+      return libMFDir.empty() ? cet::search_path{cet::os_libpath()} :
+                                cet::search_path{":"s + libMFDir};
     }
 
     cet::BasicPluginFactory pluginFactory_{getPluginPath(), "mfPlugin"};
