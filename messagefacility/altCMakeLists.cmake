@@ -33,6 +33,9 @@ target_link_libraries(MF_MessageLogger PUBLIC
   TBB::tbb
   )
 
+# For mf_cactch_main
+add_subdirectory(Utilities)
+
 # Plugins
 add_subdirectory(plugins)
 
