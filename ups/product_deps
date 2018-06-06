@@ -1,5 +1,5 @@
 parent messagefacility v2_02_03
-defaultqual e15
+defaultqual e17
 #
 fcldir -
 perllib  product_dir
