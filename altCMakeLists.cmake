@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.3)
-project(messagefacility VERSION 2.2.0)
+project(messagefacility VERSION 2.2.2)
 
 # cetbuildtools contains our cmake modules
 # - Cetbuildtools, version2
