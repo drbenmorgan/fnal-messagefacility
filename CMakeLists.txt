@@ -15,7 +15,7 @@
 #  make install
 #  make package (builds distribution tarfile)
 
-cmake_minimum_required (VERSION 2.8) # use cmake 2.8 or later
+cmake_minimum_required (VERSION 3.11) # use cmake 3.11 or later
 
 project(messagefacility)
 
@@ -33,24 +33,14 @@ cet_set_compiler_flags(DIAGS VIGILANT
   )
 
 if($ENV{CET_SANITIZE_ADDRESS})
-  #message(STATUS "CET_SANITIZE_ADDRESS=$ENV{CET_SANITIZE_ADDRESS}")
   if(NOT "$ENV{GCC_FQ_DIR}" STREQUAL "")
-    #message(STATUS "GCC_FQ_DIR=$ENV{GCC_FQ_DIR}")
     find_file(ASAN_LIB libasan.so NO_DEFAULT_PATH PATHS $ENV{GCC_FQ_DIR}/lib64)
-    if(NOT ASAN_LIB STREQUAL "ASAN_LIB-NOTFOUND")
-      #message(STATUS "ASAN_LIB=${ASAN_LIB}")
-    endif()
   endif()
 endif()
 
 if($ENV{CET_SANITIZE_THREAD})
-  #message(STATUS "CET_SANITIZE_THREAD=$ENV{CET_SANITIZE_THREAD}")
   if(NOT "$ENV{GCC_FQ_DIR}" STREQUAL "")
-    #message(STATUS "GCC_FQ_DIR=$ENV{GCC_FQ_DIR}")
     find_file(TSAN_LIB libtsan.so NO_DEFAULT_PATH PATHS $ENV{GCC_FQ_DIR}/lib64)
-    if(NOT TSAN_LIB STREQUAL "TSAN_LIB-NOTFOUND")
-      #message(STATUS "TSAN_LIB=${TSAN_LIB}")
-    endif()
   endif()
 endif()
 
@@ -82,7 +72,6 @@ find_ups_product(fhiclcpp v2_17_00)
 find_ups_product(sqlite v3_08_05_00 )
 find_ups_product(hep_concurrency)
 find_ups_boost(v1_50_0)
-find_ups_product(tbb)
 
 # SQLite
 cet_find_library(SQLITE3 NAMES sqlite3_ups PATHS ENV SQLITE_LIB NO_DEFAULT_PATH)
