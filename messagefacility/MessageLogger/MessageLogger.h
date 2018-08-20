@@ -12,10 +12,8 @@
 #include <utility>
 
 namespace fhicl {
-
   class ParameterSet;
-
-} // namespace fhicl
+}
 
 namespace mf {
 
@@ -113,7 +111,6 @@ namespace mf {
 
   template <ELseverityLevel::ELsev_ SEV, bool VERBATIM>
   class MaybeLogger_ {
-
   public:
     MaybeLogger_(MaybeLogger_ const&) = delete;
     MaybeLogger_& operator=(MaybeLogger_ const&) = delete;
@@ -134,14 +131,12 @@ namespace mf {
       }
     }
 
-    MaybeLogger_() : msg_{} {}
-
-    MaybeLogger_(MaybeLogger_&& rhs) noexcept : msg_{std::move(rhs.msg_)} {}
+    constexpr MaybeLogger_() noexcept = default;
+    MaybeLogger_(MaybeLogger_&& rhs) noexcept = default;
 
     MaybeLogger_(std::string const& category,
                  std::string const& file = "",
                  int line_number = 0)
-      : msg_{}
     {
       // Verbatim messages have the full file path, otherwise just the basename.
       std::string filename{file};
@@ -152,8 +147,8 @@ namespace mf {
           filename = file.substr(lastSlash + 1, file.size() - lastSlash - 1);
         }
       }
-      msg_ = std::move(std::make_unique<ErrorObj>(
-        SEV, category, VERBATIM, filename, line_number));
+      msg_ = std::make_unique<ErrorObj>(
+        SEV, category, VERBATIM, filename, line_number);
     }
 
     // Dedicated function for char const* to avoid unnecessary
