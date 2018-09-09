@@ -1,6 +1,6 @@
 // vim: set sw=2 expandtab :
 #define CATCH_CONFIG_RUNNER
-#include "catch/catch.hpp"
+#include "catch2/catch.hpp"
 
 #include "cetlib/filepath_maker.h"
 #include "fhiclcpp/ParameterSet.h"
