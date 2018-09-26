@@ -135,8 +135,8 @@ namespace mf {
     MaybeLogger_(MaybeLogger_&& rhs) noexcept = default;
 
     MaybeLogger_(std::string const& category,
-                 std::string const& file = "",
-                 int line_number = 0)
+                 std::string const& file = {},
+                 int const line_number = 0)
     {
       // Verbatim messages have the full file path, otherwise just the basename.
       std::string filename{file};
@@ -192,17 +192,17 @@ namespace mf {
     }
 
   private:
-    std::unique_ptr<ErrorObj> msg_{};
+    std::unique_ptr<ErrorObj> msg_{nullptr};
   };
 
-  //
-  // Usage: LogXXX("category") << stuff. See also LOG_XXX macros, below.
+  //======================================================================
+  // Usage: LogXXX("category") << stuff. See also MF_LOG_XXX macros, below.
   //
   // Statements follow pattern:
   //    using LogXXX = MaybeLogger_<severity-level, verbatim>;
   //
   // Verbatim: "No-frills" formatting.
-  //
+  //======================================================================
 
   // Non-verbatim messages, standard decorations.
   using LogDebug = MaybeLogger_<ELseverityLevel::ELsev_success, false>;
@@ -221,50 +221,58 @@ namespace mf {
 } // namespace mf
 
 // Non-verbatim messages, standard decorations.
-// Note: LOG_DEBUG is below.
-#define LOG_INFO(category) mf::LogInfo(category, __FILE__, __LINE__)
-#define LOG_WARNING(category) mf::LogWarning(category, __FILE__, __LINE__)
-#define LOG_ERROR(category) mf::LogError(category, __FILE__, __LINE__)
-#define LOG_SYSTEM(category) mf::LogSystem(category, __FILE__, __LINE__)
+// Note: MF_LOG_DEBUG is below.
+#define MF_LOG_INFO(category)                                                  \
+  mf::LogInfo { category, __FILE__, __LINE__ }
+#define MF_LOG_WARNING(category)                                               \
+  mf::LogWarning { category, __FILE__, __LINE__ }
+#define MF_LOG_ERROR(category)                                                 \
+  mf::LogError { category, __FILE__, __LINE__ }
+#define MF_LOG_SYSTEM(category)                                                \
+  mf::LogSystem { category, __FILE__, __LINE__ }
 
 // Verbatim messages, no decorations at all.
-// Note: LOG_TRACE is below.
-#define LOG_VERBATIM(category) mf::LogVerbatim(category, __FILE__, __LINE__)
-#define LOG_PRINT(category) mf::LogPrint(category, __FILE__, __LINE__)
-#define LOG_PROBLEM(category) mf::LogProblem(category, __FILE__, __LINE__)
-#define LOG_ABSOLUTE(category) mf::LogAbsolute(category, __FILE__, __LINE__)
+// Note: MF_LOG_TRACE is below.
+#define MF_LOG_VERBATIM(category)                                              \
+  mf::LogVerbatim { category, __FILE__, __LINE__ }
+#define MF_LOG_PRINT(category)                                                 \
+  mf::LogPrint { category, __FILE__, __LINE__ }
+#define MF_LOG_PROBLEM(category)                                               \
+  mf::LogProblem { category, __FILE__, __LINE__ }
+#define MF_LOG_ABSOLUTE(category)                                              \
+  mf::LogAbsolute { category, __FILE__, __LINE__ }
 
-#undef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
+#undef MF_SUPPRESS_LOG_DEBUG
 
-// Suppress LOG_DEBUG/TRACE if NDEBUG or ML_NDEBUG are set,
-// except see below for ML_DEBUG which takes precendence.
-#if defined(NDEBUG) || defined(ML_NDEBUG)
-#define EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
-#endif // NDEBUG || ML_NDEBUG
+// Suppress MF_LOG_DEBUG/TRACE if NDEBUG or MF_NDEBUG are set,
+// except see below for MF_DEBUG which takes precendence.
+#if defined(NDEBUG) || defined(MF_NDEBUG)
+#define MF_SUPPRESS_LOG_DEBUG
+#endif // NDEBUG || MF_NDEBUG
 
-// If ML_DEBUG is defined, LOG_DEBUG/TRACE are active unconditionally,
-// no matter what NDEBUG or ML_NDEBUG say.
-#ifdef ML_DEBUG
-#undef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
-#endif // ML_DEBUG
+// If MF_DEBUG is defined, MF_LOG_DEBUG/TRACE are active unconditionally,
+// no matter what NDEBUG or MF_NDEBUG say.
+#ifdef MF_DEBUG
+#undef MF_SUPPRESS_LOG_DEBUG
+#endif // MF_DEBUG
 
-#ifdef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
+#ifdef MF_SUPPRESS_LOG_DEBUG
 
-#define LOG_DEBUG(id)                                                          \
+#define MF_LOG_DEBUG(id)                                                       \
   mf::NeverLogger_ {}
-#define LOG_TRACE(id)                                                          \
+#define MF_LOG_TRACE(id)                                                       \
   mf::NeverLogger_ {}
 
-#else // EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
+#else // MF_SUPPRESS_LOG_DEBUG
 
-#define LOG_DEBUG(id)                                                          \
+#define MF_LOG_DEBUG(id)                                                       \
   mf::LogDebug { id, __FILE__, __LINE__ }
-#define LOG_TRACE(id)                                                          \
+#define MF_LOG_TRACE(id)                                                       \
   mf::LogTrace { id, __FILE__, __LINE__ }
 
-#endif // EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
+#endif // MF_SUPPRESS_LOG_DEBUG
 
-#undef EDM_MESSAGELOGGER_SUPPRESS_LOGDEBUG
+#undef MF_SUPPRESS_LOG_DEBUG
 
 #endif /* messagefacility_MessageLogger_MessageLogger_h */
 

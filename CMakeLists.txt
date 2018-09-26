@@ -81,6 +81,7 @@ cet_find_library(SQLITE3 NAMES sqlite3_ups PATHS ENV SQLITE_LIB NO_DEFAULT_PATH)
 add_subdirectory(messagefacility)
 add_subdirectory(perllib)
 add_subdirectory(xcompile)
+add_subdirectory(tools/migration)
 add_subdirectory(ups)
 
 # This step enables building the package tarball

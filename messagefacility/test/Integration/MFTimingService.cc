@@ -1,5 +1,5 @@
 //#define NDEBUG
-#define ML_DEBUG // always enable debug
+#define MF_DEBUG // always enable debug
 
 #include <cstdlib>
 #include <iostream>
