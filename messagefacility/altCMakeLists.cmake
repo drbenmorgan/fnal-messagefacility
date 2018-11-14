@@ -31,6 +31,7 @@ target_link_libraries(MF_MessageLogger PUBLIC
   fhiclcpp::fhiclcpp
   hep_concurrency::hep_concurrency
   TBB::tbb
+  Threads::Threads
   )
 
 # For mf_cactch_main

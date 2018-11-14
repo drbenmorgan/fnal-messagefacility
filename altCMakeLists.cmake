@@ -17,6 +17,7 @@ find_package(cetlib REQUIRED)
 find_package(SQLite 3.8.5.0 REQUIRED)
 find_package(Boost 1.50.0 REQUIRED program_options filesystem)
 find_package(hep_concurrency 1.0.1 REQUIRED)
+set(THREADS_PREFER_PTHREAD_FLAG 1)
 find_package(Threads REQUIRED)
 find_package(TBB REQUIRED)
 
