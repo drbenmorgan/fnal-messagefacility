@@ -9,8 +9,8 @@ product         version
 fhiclcpp        v4_08_00
 hep_concurrency v1_02_00
 
-cetbuildtools	v7_07_00	-	only_for_build
-catch		v2_4_0		-nq-	only_for_build
+cetbuildtools	v7_07_02	-	only_for_build
+catch		v2_5_0		-nq-	only_for_build
 end_product_list
 
 
