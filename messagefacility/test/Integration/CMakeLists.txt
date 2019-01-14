@@ -10,7 +10,6 @@ cet_make_exec(ELdestinationTester
     ELdestinationTester.cc
   LIBRARIES
     MF_MessageLogger
-    ${Boost_SYSTEM_LIBRARY}
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
 )
@@ -25,7 +24,6 @@ cet_test(WildcardDebug_t
   LIBRARIES
     MF_MessageLogger
     fhiclcpp
-    ${Boost_SYSTEM_LIBRARY}
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
   DATAFILES
@@ -44,7 +42,7 @@ cet_make_exec(mfexample
   )
 
 basic_plugin(Issue17457TestDestination mfPlugin
-  MF_MessageLogger fhiclcpp ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY}
+  MF_MessageLogger fhiclcpp ${Boost_FILESYSTEM_LIBRARY}
   NO_INSTALL
   )
 

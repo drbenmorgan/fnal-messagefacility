@@ -3,7 +3,6 @@ include(BasicPlugin)
 set(mf_plugin_libraries
   MF_MessageLogger
   fhiclcpp
-  ${Boost_SYSTEM_LIBRARY}
   ${Boost_FILESYSTEM_LIBRARY})
 
 # ordinary destination plugins
