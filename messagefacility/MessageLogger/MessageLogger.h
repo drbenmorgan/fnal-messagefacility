@@ -83,17 +83,18 @@ namespace mf {
 
   class NeverLogger_ {
   public:
-
     // Dedicated function for char const* to avoid unnecessary
     // template instantiations of char const[].  Will take precedence
     // over the template version.
-    decltype(auto) operator<<(char const*)
+    decltype(auto)
+    operator<<(char const*)
     {
       return std::forward<NeverLogger_>(*this);
     }
 
     template <class T>
-    decltype(auto) operator<<(T const&)
+    decltype(auto)
+    operator<<(T const&)
     {
       return std::forward<NeverLogger_>(*this);
     }
@@ -158,7 +159,8 @@ namespace mf {
     // Dedicated function for char const* to avoid unnecessary
     // template instantiations of char const[].  Will take precedence
     // over the template version.
-    decltype(auto) operator<<(char const* s)
+    decltype(auto)
+    operator<<(char const* s)
     {
       if (msg_) {
         (*msg_) << s;
