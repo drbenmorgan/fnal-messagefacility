@@ -20,7 +20,7 @@ cmake_minimum_required (VERSION 3.11) # use cmake 3.11 or later
 project(messagefacility)
 
 # cetbuildtools contains our cmake modules
-find_package(cetbuildtools REQUIRED)
+find_package(cetbuildtools 7.13.00 REQUIRED)
 
 include(CetCMakeEnv)
 cet_cmake_env()
@@ -65,7 +65,6 @@ cet_report_compiler_flags()
 
 # these are minimum required versions, not the actual product versions
 # find_ups_product defines variables for external libraries and executables
-find_ups_product(cetbuildtools v4_14_01)
 find_ups_product(cetlib_except v1_00_00)
 find_ups_product(cetlib v2_00_00)
 find_ups_product(fhiclcpp v2_17_00)
