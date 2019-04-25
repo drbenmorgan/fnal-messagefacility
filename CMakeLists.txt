@@ -15,7 +15,7 @@
 #  make install
 #  make package (builds distribution tarfile)
 
-cmake_minimum_required (VERSION 3.11) # use cmake 3.11 or later
+cmake_minimum_required (VERSION 3.11...3.14 FATAL_ERROR)
 
 project(messagefacility VERSION 2.04.03 LANGUAGES CXX)
 
