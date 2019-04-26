@@ -20,7 +20,7 @@ cmake_minimum_required (VERSION 3.11) # use cmake 3.11 or later
 project(messagefacility)
 
 # cetbuildtools contains our cmake modules
-find_package(cetbuildtools 7.13.00 REQUIRED)
+find_package(cetbuildtools 7.13.01 REQUIRED)
 
 include(CetCMakeEnv)
 cet_cmake_env()
